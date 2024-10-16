@@ -1,0 +1,136 @@
+Directory Breakdown
+Root Level
+
+    CMakeLists.txt: Build configuration file for compiling the project using CMake.
+    README.md: Contains project description, setup instructions, and usage guidelines.
+    LICENSE: Licensing information for the project.
+
+docs/
+
+Documentation related to the project.
+
+    architecture/: Detailed architectural diagrams and explanations.
+    api/: API documentation generated from code comments.
+    user_guides/: Manuals and guides for users and developers.
+
+configs/
+
+Configuration files for various components.
+
+    exchange_configs/: Connection and authentication details for exchanges.
+    strategy_configs/: Parameters and settings for trading strategies.
+    risk_configs/: Risk thresholds and rules definitions.
+
+include/
+
+Header files organized similarly to the src/ directory for clarity and separation.
+
+    common/: Shared utilities and definitions across modules.
+    market_data/: Interfaces and definitions for market data handling.
+    ...
+
+src/
+
+Source code of the project.
+
+    main.cpp: The entry point of the application.
+    common/: Common utilities, constants, and helper functions.
+        utils.cpp/h: General utility functions used across the system.
+    market_data/: Market Data Handler component.
+        market_data_handler.cpp/h: Core functionalities for handling market data.
+        adapters/: Exchange-specific adapters to normalize data.
+            binance_adapter.cpp: Adapter for Binance exchange.
+            coinbase_adapter.cpp: Adapter for Coinbase exchange.
+        protocols/: Implementations of communication protocols.
+            websocket_client.cpp/h: WebSocket client implementation.
+            rest_client.cpp/h: REST API client implementation.
+    strategy/: Strategy Engine component.
+        strategy_engine.cpp/h: Core logic for executing strategies.
+        strategies/: Individual trading strategies.
+            mean_reversion.cpp/h: Mean reversion strategy implementation.
+            momentum.cpp/h: Momentum trading strategy.
+        backtesting/: Tools for backtesting strategies.
+            backtester.cpp/h: Backtesting engine.
+            test_data/: Sample historical data for testing.
+    oms/: Order Management System.
+        oms.cpp/h: Core OMS functionalities.
+        order_execution/: Handles order submissions.
+            order_executor.cpp/h: Logic for executing orders.
+        order_tracking/: Tracks order statuses.
+            order_tracker.cpp/h: Monitors orders from submission to execution.
+        exchange_interfaces/: Interfaces to different exchanges.
+            binance_interface.cpp/h
+            coinbase_interface.cpp/h
+    risk_management/: Risk Management Module.
+        risk_manager.cpp/h: Core risk management logic.
+        pre_trade_checks/: Pre-trade validation checks.
+            checks.cpp/h: Implements various risk checks.
+        position_monitoring/: Monitors open positions and exposures.
+            position_monitor.cpp/h
+        risk_rules/: Defines risk management rules.
+            risk_rule_base.cpp/h: Base class for risk rules.
+    connectivity/: Connectivity Layer.
+        network_manager.cpp/h: Manages network connections.
+        protocols/: Network protocols implementations.
+            fix_client.cpp/h: FIX protocol client.
+            protocol_definitions.h: Protocol constants and definitions.
+    data_storage/: Data Storage and Retrieval.
+        storage_manager.cpp/h: Manages data read/write operations.
+        real_time_data/: Handles real-time data storage.
+            real_time_db.cpp/h
+        historical_data/: Manages historical data access.
+            historical_db.cpp/h
+        serialization/: Data serialization and deserialization.
+            serializer.cpp/h
+    monitoring/: Monitoring and Logging System.
+        monitoring.cpp/h: Core monitoring functionalities.
+        logging/: Logging mechanisms.
+            logger.cpp/h: Implements logging functionalities using spdlog.
+        metrics/: Collects and reports metrics.
+            metrics_collector.cpp/h
+        alerts/: Alerting system.
+            alert_manager.cpp/h
+
+tests/
+
+Test suites for ensuring code quality.
+
+    unit_tests/: Unit tests for individual components.
+        test_market_data_handler.cpp: Tests for the Market Data Handler.
+        test_strategy_engine.cpp: Tests for the Strategy Engine.
+    integration_tests/: Tests that cover end-to-end scenarios.
+        test_end_to_end.cpp: Simulates full trading cycles.
+
+scripts/
+
+Auxiliary scripts for deployment, setup, and utilities.
+
+    deploy.sh: Script for deploying the application.
+    setup_env.sh: Sets up the development environment.
+    utils/: Utility scripts.
+        data_cleanup.py: Cleans up old data files.
+        log_rotate.sh: Rotates log files.
+
+third_party/
+
+Third-party libraries and dependencies that are not managed via package managers.
+
+    boost/: Boost libraries if not using system-installed versions.
+    spdlog/: Logging library.
+    ...
+
+resources/
+
+Static resources required by the application.
+
+    ssl_certificates/: SSL/TLS certificates for secure connections.
+    sample_configs/: Example configuration files for reference.
+
+Additional Notes
+
+    Modularity: Each major component has its own directory within src/ and include/, making it easier to navigate and maintain.
+    Separation of Concerns: By dividing code into logical directories, developers can work on different components with minimal conflicts.
+    Reusability: Common utilities and definitions are placed in common/ to be accessible by all components.
+    Scalability: The structure allows for easy addition of new exchanges, strategies, or risk rules by adding new files or directories in the appropriate place.
+    Testing: Dedicated directories for unit and integration tests ensure that all code changes are properly verified.
+    Configuration Management: Placing configuration files in configs/ allows for dynamic adjustments without altering the codebase.
