@@ -9,6 +9,8 @@ include_directories(/usr/local/include)
 
 # Source files
 file(GLOB_RECURSE SOURCES "src/*.cpp")
+#add spdlog to libraries
+add_subdirectory(third_party/spdlog)
 
 # Libraries
 find_package(Boost REQUIRED COMPONENTS system filesystem thread)

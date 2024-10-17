@@ -18,7 +18,8 @@ sudo apt-get install -y libboost-all-dev
 
 # Install Asio standalone (since C++11, Asio can be used without Boost)
 sudo apt-get install -y asio-dev
-
+#install glibc 6
+sudo apt-get install -y libstdc++6
 # Install SSL libraries
 sudo apt-get install -y libssl-dev
 
@@ -45,3 +46,8 @@ sudo apt-get install -y protobuf-compiler libprotobuf-dev
 # For example, install InfluxDB client library for C++ if using InfluxDB
 
 echo "Environment setup completed successfully."
+sudo apt-get install libstdc++6
+# sudo add-apt-repository ppa:ubuntu-toolchain-r/test 
+# sudo apt-get update
+# sudo apt-get upgrade
+# sudo apt-get dist-upgrade

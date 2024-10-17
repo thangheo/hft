@@ -8,8 +8,8 @@ set -e
 echo "Starting build process..."
 
 # Create build directory if it doesn't exist
-mkdir -p build
-cd build
+mkdir -p ../build
+cd ../build
 
 # Run CMake to configure the project
 cmake ..
