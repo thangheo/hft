@@ -1,3 +1,9 @@
-third_party/*
+third_party/boost/*
+third_party/prometheus-cpp/*
+third_party/spdlog/*
+third_party/timescaledb/*
+third_party/redis-plus-plus/*
+third_party/hiredis/*
 *.log
 build/*
+#ignore built files in third_party
