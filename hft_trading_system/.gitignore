@@ -4,6 +4,8 @@ third_party/spdlog/*
 third_party/timescaledb/*
 third_party/redis-plus-plus/*
 third_party/hiredis/*
+third_party/nlohmann_json/*
+third_party/protobuf/*
 *.log
 build/*
 #ignore built files in third_party

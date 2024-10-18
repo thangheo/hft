@@ -76,6 +76,15 @@ void MarketDataHandler::onExchangeData(const std::string& exchange_name, const s
     // Set the exchange name
     market_data.exchange = exchange_name;
 
+    // Store market data
+    if (storage_manager_) {
+        storage_manager_->storeRealTimeMarketData(market_data);
+        storage_manager_->storeHistoricalMarketData(market_data);
+    }
+     // Cache the market data
+    if (real_time_db_) {
+        real_time_db_->cacheMarketData(market_data);
+    }
     // Invoke the callback
     if (market_data_callback_) {
         market_data_callback_(market_data);
