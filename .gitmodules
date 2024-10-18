@@ -1,3 +1,30 @@
 [submodule "hft_trading_system/third_party/googletest"]
 	path = hft_trading_system/third_party/googletest
 	url = https://github.com/google/googletest.git
+[submodule "hft_trading_system/third_party/nlohmann_json"]
+	path = hft_trading_system/third_party/nlohmann_json
+	url = https://github.com/nlohmann/json.git
+[submodule "hft_trading_system/third_party/boost"]
+	path = hft_trading_system/third_party/boost
+	url = https://github.com/boostorg/boost.git
+[submodule "hft_trading_system/third_party/prometheus-cpp"]
+	path = hft_trading_system/third_party/prometheus-cpp
+	url = https://github.com/jupp0r/prometheus-cpp.git
+[submodule "hft_trading_system/third_party/protobuf"]
+	path = hft_trading_system/third_party/protobuf
+	url = https://github.com/protocolbuffers/protobuf.git
+[submodule "hft_trading_system/third_party/hiredis"]
+	path = hft_trading_system/third_party/hiredis
+	url = https://github.com/redis/hiredis.git
+[submodule "hft_trading_system/third_party/cpp-httplib"]
+	path = hft_trading_system/third_party/cpp-httplib
+	url = https://github.com/yhirose/cpp-httplib.git
+[submodule "hft_trading_system/third_party/timescaledb"]
+	path = hft_trading_system/third_party/timescaledb
+	url = https://github.com/timescale/timescaledb.git
+[submodule "hft_trading_system/third_party/redis-plus-plus"]
+	path = hft_trading_system/third_party/redis-plus-plus
+	url = https://github.com/sewenew/redis-plus-plus.git
+[submodule "hft_trading_system/third_party/spdlog"]
+	path = hft_trading_system/third_party/spdlog
+	url = https://github.com/gabime/spdlog.git
