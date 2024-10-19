@@ -68,6 +68,8 @@ git submodule add https://github.com/protocolbuffers/protobuf.git third_party/pr
 git submodule add https://github.com/yhirose/cpp-httplib.git third_party/cpp-httplib
 git submodule add git submodule add  https://github.com/jtv/libpqxx.git third_party/pqxx
 
+
+#remember to check out version for protobuf and protoc
 git submodule update --init --recursive
 
 sudo apt install timescaledb-tools

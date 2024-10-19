@@ -1,35 +1,65 @@
 #include "strategy_engine.h"
-#include "src/data_storage/real_time_data/real_time_db.h"
-#include "src/common/market_data.h"
+#include <iostream>
+#include <algorithm>  // For std::remove
+#include <vector>     // For std::vector
 
-StrategyEngine::StrategyEngine() : real_time_db_(std::make_shared<RealTimeDB>()) {}
+StrategyEngine::StrategyEngine() {}
 
-StrategyEngine::~StrategyEngine() {}
+StrategyEngine::~StrategyEngine() {
+    shutdown();
+}
+
+bool StrategyEngine::initialize() {
+    // Initialize strategies
+    std::lock_guard<std::mutex> lock(strategies_mutex_);
+    for (auto& strategy : strategies_) {
+        if (!strategy->initialize("")) {
+            std::cerr << "Failed to initialize strategy" << std::endl;
+            return false;
+        }
+    }
+    return true;
+}
+
+// void StrategyEngine::onTick() {
+//     MarketData market_data;
+//     if (real_time_db_->getCachedMarketData("btcusdt", market_data)) {
+//         // Use the cached market data
+//         processMarketData(market_data);
+//     } else {
+//         // Handle cache miss, possibly wait for the next data update
+//     }
+// }
+void StrategyEngine::shutdown() {
+    std::lock_guard<std::mutex> lock(strategies_mutex_);
+    for (auto& strategy : strategies_) {
+        strategy->shutdown();
+    }
+    strategies_.clear();
+}
+
+void StrategyEngine::registerStrategy(std::shared_ptr<IStrategy> strategy) {
+    std::lock_guard<std::mutex> lock(strategies_mutex_);
+    strategies_.push_back(strategy);
+}
+
+void StrategyEngine::unregisterStrategy(std::shared_ptr<IStrategy> strategy) {
+    std::lock_guard<std::mutex> lock(strategies_mutex_);
+    strategies_.erase(std::remove(strategies_.begin(), strategies_.end(), strategy), strategies_.end());
+    // strategies_.erase(std::remove(strategies_.begin(), strategies_.end(), strategy), strategies_.end());
+
+}
 
 void StrategyEngine::onMarketData(const MarketData& data) {
-    // Process market data
-    // For example, update the strategy state
+    std::lock_guard<std::mutex> lock(strategies_mutex_);
+    for (auto& strategy : strategies_) {
+        strategy->onMarketData(data);
+    }
 }
 
 void StrategyEngine::onOrderUpdate(const Order& order) {
-    // Process order update
-    // For example, update the strategy state
-}
-
-// void StrategyEngine::onExecutionReport(const ExecutionReport& report) {
-//     // Process execution report
-//     // For example, update the strategy state
-// }
-void StrategyEngine::setOrderCallback(const std::function<void(const Order&)>& callback) {
-    order_callback_ = callback;
-}
-
-void StrategyEngine::onTick() {
-    MarketData market_data;
-    if (real_time_db_->getCachedMarketData("btcusdt", market_data)) {
-        // Use the cached market data
-        processMarketData(market_data);
-    } else {
-        // Handle cache miss, possibly wait for the next data update
+    std::lock_guard<std::mutex> lock(strategies_mutex_);
+    for (auto& strategy : strategies_) {
+        strategy->onOrderUpdate(order);
     }
 }

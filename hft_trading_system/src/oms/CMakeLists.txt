@@ -10,4 +10,6 @@ add_subdirectory(order_tracking)
 target_include_directories(oms_module PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
 # Link the submodules to the OMS library
-target_link_libraries(oms_module PRIVATE exchange_interfaces_module order_execution_module order_tracking_module)
+target_link_libraries(oms_module PRIVATE exchange_interfaces_module 
+                                         order_execution_module 
+                                         order_tracking_module)

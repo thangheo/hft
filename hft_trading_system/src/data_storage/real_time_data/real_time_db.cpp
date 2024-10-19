@@ -2,6 +2,8 @@
 
 #include "real_time_db.h"
 #include "src/data_storage/serialization/serializer.h"
+#include "src/common/market_data.h"
+
 #include <iostream>
 
 RealTimeDB::RealTimeDB() {}

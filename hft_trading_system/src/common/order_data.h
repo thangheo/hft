@@ -14,11 +14,23 @@ enum class OrderStatus {
     REJECTED
 };
 
+// struct Order {
+//     std::string order_id;
+//     std::string client_order_id;
+//     std::string symbol;
+//     std::string side; // BUY or SELL
+//     double price;
+//     double quantity;
+//     OrderStatus status;
+//     std::chrono::system_clock::time_point timestamp;
+//     // Additional fields as needed
+// };
 struct Order {
     std::string order_id;
     std::string client_order_id;
     std::string symbol;
-    std::string side; // BUY or SELL
+    std::string exchange;        // Add exchange field
+    std::string side;            // "BUY" or "SELL"
     double price;
     double quantity;
     OrderStatus status;

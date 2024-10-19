@@ -6,8 +6,8 @@
 #include <string>
 #include "market_data.pb.h"
 #include "order_data.pb.h"
-#include "src/common/market_data.h"
-#include "src/common/order_data.h"
+#include "../../common/market_data.h"
+#include "../../common/order_data.h"
 
 class Serializer {
 public:
