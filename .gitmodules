@@ -31,3 +31,6 @@
 [submodule "hft_trading_system/third_party/pqxx"]
 	path = hft_trading_system/third_party/pqxx
 	url = https://github.com/jtv/libpqxx.git
+[submodule "hft_trading_system/third_party/openssl"]
+	path = hft_trading_system/third_party/openssl
+	url = https://github.com/openssl/openssl.git

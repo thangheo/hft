@@ -20,6 +20,6 @@ struct MarketData {
     std::vector<OrderBookEntry> asks;
     std::chrono::system_clock::time_point timestamp;
     // Additional fields as needed
-};
+};  
 
 #endif // MARKET_DATA_H

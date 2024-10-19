@@ -16,7 +16,8 @@ public:
 
     bool connect(const std::string& connection_string);
     void disconnect();
-
+    //define to_string
+   
     bool storeMarketData(const MarketData& data);
     bool storeOrder(const Order& order);
     // Add methods for data retrieval
