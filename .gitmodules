@@ -28,3 +28,6 @@
 [submodule "hft_trading_system/third_party/spdlog"]
 	path = hft_trading_system/third_party/spdlog
 	url = https://github.com/gabime/spdlog.git
+[submodule "hft_trading_system/third_party/pqxx"]
+	path = hft_trading_system/third_party/pqxx
+	url = https://github.com/jtv/libpqxx.git
