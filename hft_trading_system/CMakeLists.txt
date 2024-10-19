@@ -44,7 +44,8 @@ target_link_libraries(hft_trading_system
     spdlog::spdlog
     hiredis
     redis++
-    nlohmann_json::nlohmann_json)
+    nlohmann_json::nlohmann_json
+    pqxx)
 
 # Additional settings for build configuration
 target_include_directories(hft_trading_system

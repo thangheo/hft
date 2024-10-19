@@ -66,6 +66,9 @@ git submodule add https://github.com/redis/hiredis.git third_party/hiredis
 git submodule add https://github.com/nlohmann/json.git third_party/nlohmann_json
 git submodule add https://github.com/protocolbuffers/protobuf.git third_party/protobuf
 git submodule add https://github.com/yhirose/cpp-httplib.git third_party/cpp-httplib
+git submodule add git submodule add  https://github.com/jtv/libpqxx.git third_party/pqxx
+
+git submodule update --init --recursive
 
 sudo apt install timescaledb-tools
 sudo timescaledb-tune

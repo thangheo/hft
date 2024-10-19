@@ -8,7 +8,7 @@
 
 using json = nlohmann::json;
 
-int main() {
+int main_test() {
     httplib::Server svr;
 
     HistoricalDB historical_db;

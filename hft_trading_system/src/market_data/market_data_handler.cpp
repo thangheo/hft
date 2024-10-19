@@ -4,7 +4,6 @@
 #include "adapters/binance_adapter.h"
 // Include other exchange adapters as needed
 #include <iostream>
-
 MarketDataHandler::MarketDataHandler() {}
 
 MarketDataHandler::~MarketDataHandler() {
@@ -75,7 +74,7 @@ void MarketDataHandler::onExchangeData(const std::string& exchange_name, const s
 
     // Set the exchange name
     market_data.exchange = exchange_name;
-
+    
     // Store market data
     if (storage_manager_) {
         storage_manager_->storeRealTimeMarketData(market_data);

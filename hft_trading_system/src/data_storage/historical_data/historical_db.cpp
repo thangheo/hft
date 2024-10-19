@@ -5,7 +5,26 @@
 #include <iostream>
 #include <pqxx/pqxx>
 #include <memory>
-
+#include <nlohmann/json.hpp>
+#include <string>
+using json = nlohmann::json;
+// using namespace hft::data_storage;
+std::string to_string(OrderStatus status) {
+        switch (status) {
+            case OrderStatus::NEW:
+                return "NEW";
+            case OrderStatus::PARTIALLY_FILLED:
+                return "PARTIALLY_FILLED";
+            case OrderStatus::FILLED:
+                return "FILLED";
+            case OrderStatus::CANCELED:
+                return "CANCELED";
+            case OrderStatus::REJECTED:
+                return "REJECTED";
+            default:
+                return "UNKNOWN";
+        }
+    }
 HistoricalDB::HistoricalDB() : conn_(nullptr) {}
 
 HistoricalDB::~HistoricalDB() {
@@ -42,8 +61,10 @@ bool HistoricalDB::storeMarketData(const MarketData& data) {
 
     try {
         pqxx::work txn(*conn_);
-        std::string bids_json =     /* Convert bids to JSON string */;
-        std::string asks_json = /* Convert asks to JSON string */;
+        //would do later
+        std::string bids_json =  "bids";
+          /* Convert bids to JSON string */;
+        std::string asks_json = "asks" /* Convert asks to JSON string */;
 
         txn.exec_params(
             "INSERT INTO market_data (exchange, symbol, timestamp, bids, asks) VALUES ($1, $2, $3, $4::jsonb, $5::jsonb)",
@@ -60,7 +81,7 @@ bool HistoricalDB::storeMarketData(const MarketData& data) {
         return false;
     }
 }
-
+ 
 bool HistoricalDB::storeOrder(const Order& order) {
     if (!conn_) {
         std::cerr << "No database connection available." << std::endl;

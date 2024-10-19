@@ -1,7 +1,7 @@
 // real_time_db.cpp
 
 #include "real_time_db.h"
-#include "../serialization/serializer.h"
+#include "src/data_storage/serialization/serializer.h"
 #include <iostream>
 
 RealTimeDB::RealTimeDB() {}

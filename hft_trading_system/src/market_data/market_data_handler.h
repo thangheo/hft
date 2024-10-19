@@ -5,10 +5,12 @@
 
 #include "imarket_data_handler.h"
 #include "adapters/exchange_adapter.h"
-#include "market_data.h"
+#include "src/common/market_data.h"
 #include <map>
 #include <memory>
 #include <string>
+#include "src/data_storage/real_time_data/real_time_db.h"
+#include "src/data_storage/storage_manager.h"
 
 class MarketDataHandler : public IMarketDataHandler {
 public:
@@ -27,6 +29,9 @@ private:
 
     std::map<std::string, std::shared_ptr<IExchangeAdapter>> exchange_adapters_;
     std::function<void(const MarketData&)> market_data_callback_;
+    std::shared_ptr<StorageManager> storage_manager_;  // Assuming StorageManager is the class responsible for storing data
+    std::shared_ptr<RealTimeDB> real_time_db_;         // If you have a caching system like a real-time database
+    // std::function<void(const MarketData&)> market_data_callback_;  
 };
 
 #endif // MARKET_DATA_HANDLER_H
