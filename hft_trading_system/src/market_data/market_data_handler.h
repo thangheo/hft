@@ -11,10 +11,12 @@
 #include <string>
 #include "../data_storage/real_time_data/real_time_db.h"
 #include "../data_storage/storage_manager.h"
+#include <prometheus/counter.h>
+#include <prometheus/registry.h>
 
 class MarketDataHandler : public IMarketDataHandler {
 public:
-    MarketDataHandler();
+    MarketDataHandler(std::shared_ptr<prometheus::Registry> registry);
     ~MarketDataHandler();
 
     bool connect(const std::string& exchange_name) override;
@@ -25,6 +27,9 @@ public:
     void setMarketDataCallback(const std::function<void(const MarketData&)>& callback);
 
 private:
+    // Metrics
+    prometheus::Counter* market_data_messages_counter_;
+    prometheus::Counter* market_data_errors_counter_;
     void onExchangeData(const std::string& exchange_name, const std::string& data);
 
     std::map<std::string, std::shared_ptr<IExchangeAdapter>> exchange_adapters_;

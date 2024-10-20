@@ -3,10 +3,16 @@
 #include "strategy/strategy_engine.h"
 #include "oms/oms.h"
 #include "strategy/strategies/mean_reversion_strategy.h"  // Ensure this is included if defined
-
+#include <prometheus/exposer.h>
+#include <prometheus/registry.h>
+#include <memory>
 int main() {
+    // Create a registry
+    auto registry = std::make_shared<prometheus::Registry>();
+
+    // Initialize components with the registry
+    MarketDataHandler market_data_handler(registry);
     // Initialize components
-    MarketDataHandler market_data_handler;
     StrategyEngine strategy_engine;
     OMS& oms = OMS::getInstance();  // Use the singleton instance
 
@@ -36,7 +42,9 @@ int main() {
 
     // Subscribe to symbols
     market_data_handler.subscribe("btcusdt");
-
+    // Expose metrics
+    prometheus::Exposer exposer{"0.0.0.0:8081"};
+    exposer.RegisterCollectable(registry);
     // Keep the application running
     while (true) {
         std::this_thread::sleep_for(std::chrono::seconds(1));

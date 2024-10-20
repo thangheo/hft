@@ -20,6 +20,8 @@ find_package(OpenSSL REQUIRED)
 find_package(hiredis REQUIRED)
 find_package(redis++ REQUIRED)
 find_package(nlohmann_json REQUIRED)
+find_package(prometheus-cpp CONFIG REQUIRED)
+
 
 # Optional: Display important variables to ensure correct setup
 message(STATUS "Boost libraries: ${Boost_LIBRARIES}")
@@ -57,8 +59,9 @@ target_link_libraries(hft_trading_system
     redis++
     nlohmann_json::nlohmann_json
     ${PQXX_LIBRARIES}  # Add this line to link libpqxx correctly
-   # absl::absl
-)
-
+    prometheus-cpp::core 
+    prometheus-cpp::pull 
+    prometheus-cpp::push 
+    )
 # Include directories for the main executable
 target_include_directories(hft_trading_system PRIVATE ${CMAKE_SOURCE_DIR}/include)

@@ -4,7 +4,21 @@
 #include "adapters/binance_adapter.h"
 // Include other exchange adapters as needed
 #include <iostream>
-MarketDataHandler::MarketDataHandler() {}
+// MarketDataHandler::MarketDataHandler() {}
+MarketDataHandler::MarketDataHandler(std::shared_ptr<prometheus::Registry> registry) {
+    // Initialize counters
+    auto& market_data_messages_family = prometheus::BuildCounter()
+        .Name("market_data_messages_total")
+        .Help("Total number of market data messages received")
+        .Register(*registry);
+    market_data_messages_counter_ = &market_data_messages_family.Add({{"component", "MarketDataHandler"}});
+
+    auto& market_data_errors_family = prometheus::BuildCounter()
+        .Name("market_data_errors_total")
+        .Help("Total number of market data errors")
+        .Register(*registry);
+    market_data_errors_counter_ = &market_data_errors_family.Add({{"component", "MarketDataHandler"}});
+}
 
 MarketDataHandler::~MarketDataHandler() {
     // Disconnect from all exchanges
@@ -71,7 +85,16 @@ void MarketDataHandler::onExchangeData(const std::string& exchange_name, const s
     // Parse the data into internal MarketData structure
     MarketData market_data;
     // ... parsing logic ...
+    //define error
+    bool error = false;
+    // error = !market_data.parse(data);
+    // Increment message counter
+    market_data_messages_counter_->Increment();
 
+    // Handle errors
+    if (error) {
+        market_data_errors_counter_->Increment();
+    }
     // Set the exchange name
     market_data.exchange = exchange_name;
     

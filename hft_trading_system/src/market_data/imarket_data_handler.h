@@ -34,6 +34,7 @@ public:
      * @param symbol The trading pair or symbol to unsubscribe from.
      */
     virtual void unsubscribe(const std::string& symbol) = 0;
+
 };
 
 #endif // IMARKET_DATA_HANDLER_H
