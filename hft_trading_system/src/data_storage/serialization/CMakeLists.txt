@@ -34,5 +34,18 @@ add_library(serialization_module serializer.cpp
 target_link_libraries(serialization_module
     PRIVATE
     protobuf::libprotobuf
-    # Other libraries...
-)
+    market_data_module      # Market data handling module
+    spdlog::spdlog          # Logging library
+    ${Boost_LIBRARIES}      # Boost libraries
+    Threads::Threads        # Multi-threading support
+    ${PROTOBUF_LIBRARIES}   # Protocol Buffers library
+    OpenSSL::SSL            # OpenSSL SSL component
+    OpenSSL::Crypto         # OpenSSL Crypto component
+    hiredis                 # Redis client library
+    redis++                 # C++ wrapper for Redis client
+    nlohmann_json::nlohmann_json  # JSON serialization library
+    pqxx                    # C++ PostgreSQL client library
+    common_module           #common headers
+    real_time_data_module
+    pqxx
+ )

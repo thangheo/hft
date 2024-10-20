@@ -8,6 +8,10 @@ find_package(hiredis REQUIRED)
 find_package(redis++ REQUIRED)
 find_package(nlohmann_json REQUIRED)
 
+# Use pkg-config to find libpqxx
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(PQXX REQUIRED libpqxx)
+
 # Include subdirectories for submodules
 add_subdirectory(historical_data)
 add_subdirectory(real_time_data)
@@ -17,7 +21,7 @@ add_subdirectory(serialization)
 target_link_libraries(data_storage_module
     PRIVATE
     analytic_module         # Module for analytics
-   # api_module              # API module dependency
+    ${PQXX_LIBRARIES}       # Correct linking of libpqxx
     market_data_module      # Market data handling module
     spdlog::spdlog          # Logging library
     ${Boost_LIBRARIES}      # Boost libraries
@@ -28,7 +32,6 @@ target_link_libraries(data_storage_module
     hiredis                 # Redis client library
     redis++                 # C++ wrapper for Redis client
     nlohmann_json::nlohmann_json  # JSON serialization library
-    pqxx                    # C++ PostgreSQL client library
     common_module           #common headers
     historical_data_module
     real_time_data_module

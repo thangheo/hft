@@ -34,3 +34,6 @@
 [submodule "hft_trading_system/third_party/openssl"]
 	path = hft_trading_system/third_party/openssl
 	url = https://github.com/openssl/openssl.git
+[submodule "hft_trading_system/third_party/abseil-cpp"]
+	path = hft_trading_system/third_party/abseil-cpp
+	url = https://github.com/abseil/abseil-cpp.git
