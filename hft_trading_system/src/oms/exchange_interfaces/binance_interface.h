@@ -7,10 +7,11 @@
 #include <mutex>
 #include <functional>
 // #include "../../common/order_data.h"
+#include <yaml-cpp/yaml.h>
 
 class BinanceInterface : public IExchangeInterface {
 public:
-    BinanceInterface();
+    BinanceInterface(const YAML::Node& config);
     ~BinanceInterface();
 
     bool initialize() override;
@@ -19,6 +20,16 @@ public:
     void shutdown() override;
 
 private:
+ // Members initialized from config
+    std::string exchange_name_;
+    std::string api_key_;
+    std::string api_secret_;
+    std::string base_url_;
+    std::string ws_url_;
+    std::vector<std::string> symbols_;
+    std::vector<std::string> order_types_;
+    int requests_per_minute_;
+    int max_order_qty_;
     void orderUpdateThread();
     void onOrderUpdate(const Order& order);  
     std::function<void(const Order&)> order_update_callback_;

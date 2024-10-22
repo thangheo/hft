@@ -1,3 +1,6 @@
 *.log
 build/*
 #ignore built files in third_party
+./data/*
+*.csv
+#no __pycache__

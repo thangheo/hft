@@ -100,8 +100,18 @@ std::string statusToString(const OrderStatus& status) {
     }
 }
 
-MeanReversionStrategy::MeanReversionStrategy()
-    : moving_average_(0.0), sum_(0.0), window_size_(20) {}
+// MeanReversionStrategy::MeanReversionStrategy()
+//     : moving_average_(0.0), sum_(0.0), window_size_(20) {}
+
+MeanReversionStrategy::MeanReversionStrategy(const YAML::Node& config) {
+    strategy_name_ = config["strategy_name"].as<std::string>();
+    symbols_ = config["symbols"].as<std::vector<std::string>>();
+    window_size_ = config["parameters"]["window_size"].as<int>();
+    entry_threshold_ = config["parameters"]["entry_threshold"].as<double>();
+    exit_threshold_ = config["parameters"]["exit_threshold"].as<double>();
+    order_quantity_ = config["parameters"]["order_quantity"].as<double>();
+    // Continue initialization...
+}
 
 MeanReversionStrategy::~MeanReversionStrategy() {}
 

@@ -59,6 +59,7 @@ sudo apt update && sudo apt install bazel -y
 cd -
  ######pqxx
 sudo apt install libpq-dev
+sudo apt-get install libyaml-cpp-dev #yaml-cpp
  # Install other dependencies as needed
 # For example, install InfluxDB client library for C++ if using InfluxDB
 

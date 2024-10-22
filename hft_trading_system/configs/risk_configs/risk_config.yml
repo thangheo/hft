@@ -1,0 +1,8 @@
+max_position_size:
+  btcusdt: 5.0
+  ethusdt: 100.0
+max_order_size:
+  btcusdt: 1.0
+  ethusdt: 20.0
+max_daily_loss: 10000.0  # In USD
+max_order_value: 50000.0 # In USD

@@ -6,7 +6,42 @@
 #include <prometheus/exposer.h>
 #include <prometheus/registry.h>
 #include <memory>
+#include "configs/config_loader.h"
+#include <yaml-cpp/yaml.h>
+
+//load config from json file
+
 int main() {
+    // Initialize ConfigLoader
+    ConfigLoader config_loader("/path/to/hft_trading_system/configs");
+
+    // Load configurations
+    if (!config_loader.loadExchangeConfig("binance")) {
+        std::cerr << "Failed to load Binance exchange config" << std::endl;
+        return 1;
+    }
+
+    if (!config_loader.loadRiskConfig()) {
+        std::cerr << "Failed to load risk config" << std::endl;
+        return 1;
+    }
+
+    if (!config_loader.loadStrategyConfig("mean_reversion")) {
+        std::cerr << "Failed to load Mean Reversion strategy config" << std::endl;
+        return 1;
+    }
+
+    // Access configurations
+    YAML::Node binance_config = config_loader.getExchangeConfig("binance");
+    YAML::Node risk_config = config_loader.getRiskConfig();
+    YAML::Node strategy_config = config_loader.getStrategyConfig("mean_reversion");
+     // Pass configurations to modules
+    BinanceInterface binance_interface(binance_config);
+    RiskManager risk_manager(risk_config);
+    MeanReversionStrategy strategy(strategy_config);
+    /////////////////////////////
+
+
     // Create a registry
     auto registry = std::make_shared<prometheus::Registry>();
 

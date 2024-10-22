@@ -32,7 +32,7 @@ message(STATUS "OpenSSL version: ${OPENSSL_VERSION}")
 add_subdirectory(third_party/spdlog)  # Remove this if you're using spdlog via find_package()
 #add_subdirectory(third_party/absl)
 add_subdirectory(src)
-
+add_subdirectory(configs)
 # Add tests subdirectory
 add_subdirectory(tests)
 
@@ -49,6 +49,7 @@ target_link_libraries(hft_trading_system
     risk_management_module
     data_storage_module
     common_module
+    configs_module
     spdlog::spdlog
     ${Boost_LIBRARIES}
     Threads::Threads

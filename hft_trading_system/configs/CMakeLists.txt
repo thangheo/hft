@@ -1,0 +1,7 @@
+add_library(configs_module config_loader.cpp)
+find_package(yaml-cpp REQUIRED)
+include_directories(${YAML_CPP_INCLUDE_DIRS})
+target_link_libraries(configs_module yaml-cpp)
+#add_subdirectory(exchange_configs)
+#add_subdirectory(strategy_configs)
+#add_subdirectory(risk_configs)

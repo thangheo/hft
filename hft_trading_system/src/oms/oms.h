@@ -9,6 +9,7 @@
 #include "../common/order_data.h"
 #include "exchange_interfaces/exchange_interface.h"
 #include "../risk_management/risk_manager.h"
+#include "../configs/config_loader.h"
 
 class OMS {
 public:

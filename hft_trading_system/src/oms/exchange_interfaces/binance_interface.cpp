@@ -1,8 +1,31 @@
 #include "binance_interface.h"
 #include <iostream>
+#include <chrono>
+//spdlog
+#include <spdlog/spdlog.h>
+BinanceInterface::BinanceInterface(const YAML::Node& config) {
+    exchange_name_ = config["exchange_name"].as<std::string>();
 
-BinanceInterface::BinanceInterface() : running_(false) {}
+    // Retrieve API keys from environment variables
+    api_key_ = std::getenv("BINANCE_API_KEY") ? std::getenv("BINANCE_API_KEY") : "";
+    api_secret_ = std::getenv("BINANCE_API_SECRET") ? std::getenv("BINANCE_API_SECRET") : "";
 
+    if (api_key_.empty() || api_secret_.empty()) {
+        std::cerr << "API Key or Secret not set in environment variables." << std::endl;
+        // Handle error appropriately
+        spdlog::error("API Key or Secret not set in environment variables.");
+    }
+
+    base_url_ = config["base_url"].as<std::string>();
+    ws_url_ = config["ws_url"].as<std::string>();
+    symbols_ = config["symbols"].as<std::vector<std::string>>();
+    order_types_ = config["order_types"].as<std::vector<std::string>>();
+    requests_per_minute_ = config["rate_limits"]["requests_per_minute"].as<int>();
+
+    // Continue initialization...
+    
+
+}
 BinanceInterface::~BinanceInterface() {
     shutdown();
 }

@@ -1,0 +1,13 @@
+exchange_name: binance
+api_key: "${BINANCE_API_KEY}"
+api_secret: "${BINANCE_API_SECRET}"
+base_url: "https://api.binance.com"
+ws_url: "wss://stream.binance.com:9443/ws"
+symbols:
+  - "btcusdt"
+  - "ethusdt"
+order_types:
+  - "LIMIT"
+  - "MARKET"
+rate_limits:
+  requests_per_minute: 1200
