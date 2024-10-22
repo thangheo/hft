@@ -3,7 +3,10 @@
 
 #include "../strategy_interface.h"
 #include <vector>
-
+#include <string>
+#include <fstream>
+#include <nlohmann/json.hpp>
+#include "spdlog/spdlog.h"
 class MomentumStrategy : public IStrategy {
 public:
     MomentumStrategy();
@@ -13,7 +16,10 @@ public:
     void onMarketData(const MarketData& data) override;
     void onOrderUpdate(const Order& order) override;
     void shutdown() override;
-
+    //function to reload configuration file
+    void reloadConfig(const std::string& config_file);
+    //function to get the strategy name
+    std::string getStrategyName();
 private:
     void calculateMomentum(double price);
 

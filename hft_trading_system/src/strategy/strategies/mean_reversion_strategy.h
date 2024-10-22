@@ -35,6 +35,9 @@
 #include <queue>
 #include <string>
 #include <yaml-cpp/yaml.h>
+#include <fstream>
+#include <spdlog/spdlog.h>
+
 class MeanReversionStrategy : public IStrategy {
 public:
     // MeanReversionStrategy();
@@ -52,7 +55,10 @@ public:
 
     // Shuts down the strategy, cleaning up resources if necessary
     void shutdown() override;
-
+    //function to reload the configuration file
+    void reloadConfig(const std::string& config_file);
+    //function to get the strategy name
+    std::string getStrategyName();
 private:
     std::string strategy_name_;
     std::vector<std::string> symbols_;

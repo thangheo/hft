@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import ccxt
+from statsmodels.tsa.ar_model import AutoReg
+from scipy.stats import norm
 
 #function to get 1000 data 1m from binance
 def get_data(symbol,tf='1m'):
@@ -56,16 +58,7 @@ def calculate_autocorrelation(data, lag):
 import numpy as np
 
 def autocorrelation_coefficient(data, lag):
-    """
-    Calculate the autocorrelation coefficient phi at a given lag using NumPy.
-
-    Parameters:
-    - data: A NumPy array of price data.
-    - lag: The lag at which to calculate the autocorrelation.
-
-    Returns:
-    - phi: The autocorrelation coefficient at the specified lag.
-    """
+  
     # Compute logarithmic returns
     ret = np.log(data[1:] / data[:-1])
 
@@ -221,35 +214,53 @@ acf ~= 0
 
 '''
 
+
+
 if __name__ == "__main__":
     # test_on_real_data('AAVEUSDT_1m.csv')
-    symbol = 'BTCUSDT'
+    symbol = 'BTCUSDT' #'SOLUSDT'
     tf = '1m'
-    data = get_data(symbol) 
-    price = data['Close'][-300:].values
-    
+    # data = get_data(symbol)
+    data = pd.read_csv('AAVEUSDT_1m.csv')
+    price = data['Close'][-800:].values
+
+    # Calculate log returns
+    returns = np.log(price[1:] / price[:-1])
+
+    # Fit the AR(1) model
+    model = AutoReg(returns, lags=3, trend='c')
+    model_fit = model.fit()
+    print(model_fit.summary())
+    #get trend
+    trend = model_fit.params[0]
+    print(f"Trend: {trend:.4f}")
+    # Get the AR(1) coefficient
+    ar1 = model_fit.params[1]
+    print(f"AR(1) Coefficient: {ar1 :.4f}")
+    ar2= model_fit.params[2]
+    print(f"AR(2) Coefficient: {ar2 :.4f}")
+    ar3= model_fit.params[3]
+    print(f"AR(3) Coefficient: {ar3 :.4f}")
+
+
+
     #calculate rsi and hurst exponent and variance ratio and autocorrelation with various lags
     rsi = calculate_rsi(price)
     hurst = calculate_hurst_exponent(price)
     variance_ratio = variance_ratio_test(price, 2)
-    autocorrelation = calculate_autocorrelation(price, 1)
+    # autocorrelation = calculate_autocorrelation(price, 1)
     variance_ratio2 = variance_ratio_test(price, 3)
-    autocorrelation2 = calculate_autocorrelation(price, 2)
+    # autocorrelation2 = calculate_autocorrelation(price, 2)
     variance_ratio3 = variance_ratio_test(price, 4)
-    autocorrelation3 = calculate_autocorrelation(price, 3)
+    # autocorrelation3 = calculate_autocorrelation(price, 3)
     #auto correlation coefficient
-    phi1 = autocorrelation_coefficient(price, 1)
-    print(f"new Autocorrelation Coefficient (lag 1): {phi1:.4f}")
-    phi2 = autocorrelation_coefficient(price, 2)
-    print(f"new Autocorrelation Coefficient (lag 2): {phi2:.4f}")
-    phi3 = autocorrelation_coefficient(price, 3)
-    print(f"new Autocorrelation Coefficient (lag 3): {phi3:.4f}")
-    phi4 = autocorrelation_coefficient(price, 4)
-    print(f"new Autocorrelation Coefficient (lag 4): {phi4:.4f}")
-    phi5 = autocorrelation_coefficient(price, 5)
-    print(f"new Autocorrelation Coefficient (lag 5): {phi5:.4f}")
-
-
+    autocorrelation1 = autocorrelation_coefficient(price, 1)
+    print(f"new Autocorrelation Coefficient (lag 1): {autocorrelation1:.4f}")
+    autocorrelation2 = autocorrelation_coefficient(price, 2)
+    print(f"new Autocorrelation Coefficient (lag 2): {autocorrelation2:.4f}")
+    autocorrelation3 = autocorrelation_coefficient(price, 3)
+    print(f"new Autocorrelation Coefficient (lag 3): {autocorrelation3:.4f}")
+   
     #print lastest price and rsi and hurst and variance ratio and autocorrelation
     print(f"Symbol: {symbol}")
     print(f"Latest Price: {price[-1]}")
@@ -258,11 +269,13 @@ if __name__ == "__main__":
     print(f"Variance Ratio: {variance_ratio:.4f}")
     print(f"Variance Ratio (lag 2): {variance_ratio2:.4f}")
     print(f"Variance Ratio (lag 3): {variance_ratio3:.4f}")
-    print(f"Autocorrelation (lag 1): {autocorrelation:.4f}")
-    print(f"Autocorrelation (lag 2): {autocorrelation2:.4f}")
-    print(f"Autocorrelation (lag 3): {autocorrelation3:.4f}")
+    # print(f"Autocorrelation (lag 1): {autocorrelation:.4f}")
+    # print(f"Autocorrelation (lag 2): {autocorrelation2:.4f}")
+    # print(f"Autocorrelation (lag 3): {autocorrelation3:.4f}")
 
     #plot price with analysis
     plt.plot(price, label='Price')
-    plt.title(f"Symbol: {symbol}, RSI: {rsi:.4f}, Hurst Exponent: {hurst:.4f}, Variance Ratio: {variance_ratio:.4f}, Autocorrelation (lag 1): {autocorrelation:.4f}")
+    plt.title(f"Symbol: {symbol}, RSI: {rsi:.4f}, Hurst Exponent: {hurst:.4f}, Variance Ratio: {variance_ratio:.4f}, \
+                Variance Ratio (lag 2): {variance_ratio2:.4f}, Variance Ratio (lag 3): {variance_ratio3:.4f},\
+             Autocorrelation (lag 1): {autocorrelation1:.4f}")
     plt.show()

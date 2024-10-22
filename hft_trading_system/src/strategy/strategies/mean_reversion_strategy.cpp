@@ -112,7 +112,32 @@ MeanReversionStrategy::MeanReversionStrategy(const YAML::Node& config) {
     order_quantity_ = config["parameters"]["order_quantity"].as<double>();
     // Continue initialization...
 }
+//function to reload the configuration file
+void MeanReversionStrategy::reloadConfig(const std::string& config_file) {
+    // Load configuration from JSON file
+    try {
+        std::ifstream config_stream(config_file);
+        if (!config_stream.is_open()) {
+            spdlog::error("Failed to open config file: {}", config_file);
+            return;
+        }
 
+        nlohmann::json config_json;
+        config_stream >> config_json;
+
+        // Load parameters from the configuration file
+        symbol_ = config_json.value("symbol", "btcusdt");
+        window_size_ = config_json.value("window_size", 20);
+        spdlog::info("Initialized strategy for symbol: {} with window size: {}", symbol_, window_size_);
+    } catch (const std::exception& e) {
+        spdlog::error("Error loading configuration: {}", e.what());
+        return;
+    }
+}
+//function to get the strategy name
+std::string MeanReversionStrategy::getStrategyName() {
+    return strategy_name_;
+}
 MeanReversionStrategy::~MeanReversionStrategy() {}
 
 bool MeanReversionStrategy::initialize(const std::string& config_file) {

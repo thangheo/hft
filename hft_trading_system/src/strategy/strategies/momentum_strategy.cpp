@@ -13,7 +13,32 @@ bool MomentumStrategy::initialize(const std::string& config_file) {
     window_size_ = 20;
     return true;
 }
+//function to reload configuration file
+void MomentumStrategy::reloadConfig(const std::string& config_file) {
+    // Load configuration from JSON file
+    try {
+        std::ifstream config_stream(config_file);
+        if (!config_stream.is_open()) {
+            spdlog::error("Failed to open config file: {}", config_file);
+            return;
+        }
 
+        nlohmann::json config_json;
+        config_stream >> config_json;
+
+        // Load parameters from the configuration file
+        symbol_ = config_json.value("symbol", "btcusdt");
+        window_size_ = config_json.value("window_size", 20);
+        spdlog::info("Initialized strategy for symbol: {} with window size: {}", symbol_, window_size_);
+    } catch (const std::exception& e) {
+        spdlog::error("Error loading configuration: {}", e.what());
+        return;
+    }
+}
+//function to get the strategy name
+std::string MomentumStrategy::getStrategyName() {
+    return "Momentum Strategy";
+}
 void MomentumStrategy::onMarketData(const MarketData& data) {
     if (data.symbol != symbol_) {
         return;
