@@ -55,7 +55,6 @@ def calculate_autocorrelation(data, lag):
     denominator = np.sum([(data[i] - mean) ** 2 for i in range(len(data))])
     
     return numerator / denominator
-import numpy as np
 
 def autocorrelation_coefficient(data, lag):
   

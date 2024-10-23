@@ -141,13 +141,13 @@ def strategy_2(current_index,prices, threshold1, threshold2, capital=10000, tran
         # continue
         if price < prices[current_index - 1]  and 2*transaction_cost < atr< 0.007 :
             # and price < prices[i - 1]:
-            print(f"Mean reversion: Long position (price below mean) at price {price}")
+            # print(f"Mean reversion: Long position (price below mean) at price {price}")
             position = 1 
             position_size = (capital / price) *(1-transaction_cost)
         elif price > prices[current_index - 1]  and 2*transaction_cost  < atr < 0.007:
             # continue
             #and price > prices[i - 1]:
-            print(f"Mean reversion: Short position (price above mean) at price {price}")
+            # print(f"Mean reversion: Short position (price above mean) at price {price}")
             position = -1 
             position_size = (capital / price) *(1-transaction_cost)
         #condition to close the position
@@ -159,11 +159,11 @@ def strategy_2(current_index,prices, threshold1, threshold2, capital=10000, tran
         pass
         #just bypass
         if price > prices[current_index - 1] and 2*transaction_cost < atr < 0.007 :
-            print(f"Momentum: Long position (price rising) at price {price}")
+            # print(f"Momentum: Long position (price rising) at price {price}")
             position_size = (capital / price) *(1-transaction_cost)
             position = 1 
         elif price < prices[current_index - 1] and 2*transaction_cost < atr < 0.007 :
-            print(f"Momentum: Short position (price falling) at price {price}")
+            # print(f"Momentum: Short position (price falling) at price {price}")
             position_size = (capital / price) *(1-transaction_cost)
             position = -1  
         #condition to close the position
@@ -175,6 +175,14 @@ def strategy_2(current_index,prices, threshold1, threshold2, capital=10000, tran
     
     return position, position_size
 
+
+# Function to calculate the autocorrelation at lag 'lag'
+def calculate_autocorrelation(data, lag):
+    mean = np.mean(data)
+    numerator = np.sum([(data[i] - mean) * (data[i + lag] - mean) for i in range(len(data) - lag)])
+    denominator = np.sum([(data[i] - mean) ** 2 for i in range(len(data))])
+    
+    return numerator / denominator
 
 def backtest_strategy(prices, threshold1, threshold2, initial_capital=10000, position_size_=100, transaction_cost=0.001):
    
@@ -201,10 +209,15 @@ def backtest_strategy(prices, threshold1, threshold2, initial_capital=10000, pos
         returns = np.log(past_prices[1:] / past_prices[:-1])
 
         # Fit AR(1) model on the calculated returns
-        model = AutoReg(returns, lags=1, trend='c').fit()
+        USE_AUTOGEG = False
+        if USE_AUTOGEG:    
+            model = AutoReg(returns, lags=1, trend='c').fit()
+            phi = model.params[1]  # Extract the phi (lag-1 coefficient)
+            drift = model.params[0]
+        else:
+            phi = calculate_autocorrelation(returns, 1)
+            drift = 0
 
-        phi = model.params[1]  # Extract the phi (lag-1 coefficient)
-        drift = model.params[0]
         #calculate rolling mean
         mean_price = np.mean(past_prices)
         #calculate rolling std
@@ -273,7 +286,7 @@ def backtest_strategy(prices, threshold1, threshold2, initial_capital=10000, pos
     print(f"Candles per trade: {candles_per_trade:.2f}")
     print(f"Calmar ratio: {calmar_ratio:.4f}")
 
-    #plot the profit
+    # #plot the profit
     plot_profit(profit)
     #plot the position
     plot_positions(prices, long_position, short_position)
@@ -365,9 +378,9 @@ if __name__ == '__main__':
     # exit()
     #run backtest_strategy SOLUSDT_1m
     selected_prices = []
-    BACKTEST = True
+    BACKTEST = False
     if BACKTEST :
-        data = pd.read_csv('SOLUSDT_1m.csv')
+        data = pd.read_csv('AAVEUSDT_1m.csv')
         #test on real data
         prices = data['Close'].values
         # Randomly select a portion of the data for optimization
@@ -375,7 +388,7 @@ if __name__ == '__main__':
         index = np.random.randint(0, len(prices) - datalen)
         selected_prices = prices[index:index + datalen]
     else:
-        selected_prices = get_data('SOLUSDT', '1m')
+        selected_prices = get_data('AAVEUSDT', '1m')
         selected_prices = selected_prices['Close'].values
         
    # optimize parasm
@@ -387,19 +400,15 @@ if __name__ == '__main__':
 
     # profit_percentage, sharpe_ratio = backtest_strategy(selected_prices, sharpe_optimal_threshold1, sharpe_optimal_threshold2)
     # print(f"Profit percentage: {profit_percentage:.2f}%")
-    # # print(f"Sharpe ratio: {sharpe_ratio:.4f}")
+    # print(f"Sharpe ratio: {sharpe_ratio:.4f}")
 
     #run test on pre value
-    profit_percentage, sharpe_ratio = backtest_strategy(selected_prices, -0.0678, 0.0486)
+    profit_percentage, sharpe_ratio = backtest_strategy(selected_prices, -0.01643, 0.02928)
     print(f"Profit percentage: {profit_percentage:.2f}%")
     print(f"Sharpe ratio: {sharpe_ratio:.4f}")
     '''
-    Optimal threshold1 for sharpe ratio: -0.4, Optimal threshold2 for sharpe ratio: 0.18
-Optimal threshold1 for profit percentage: -0.07, Optimal threshold2 for profit percentage: 0.2
-    Optimal threshold1 for sharpe ratio: -0.1, Optimal threshold2 for sharpe ratio: 0.08944444444444445
-    Profit percentage: 1.69%
-    Sharpe ratio: 6.9576
-    Profit percentage: -4.51%
-    Sharpe ratio: 6.9937
+    SOLUSDT_1m -0.0678, 0.0486)
+    AAVEUSDT_1m  -0.01643, 0.02928
+    
 
     '''

@@ -62,6 +62,8 @@ sudo apt install libpq-dev
 sudo apt-get install libyaml-cpp-dev #yaml-cpp
  # Install other dependencies as needed
 # For example, install InfluxDB client library for C++ if using InfluxDB
+#for candle datas
+sudo apt-get install libcurl4-openssl-dev libboost-all-dev libssl-dev libeigen3-dev
 
 echo "Environment setup completed successfully."
 sudo apt-get install libstdc++6

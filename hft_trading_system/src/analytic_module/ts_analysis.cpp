@@ -1,14 +1,16 @@
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <numeric> // for std::accumulate
-#include <algorithm> // for std::sort
-#include <Eigen/Dense> // You can install Eigen for matrix calculations
+#include "ts_analysis.h"
 
-using namespace std;
+// You can install Eigen for matrix calculations
+
+// using namespace std;
+TimeSeriesAnalysis::TimeSeriesAnalysis() {
+ //   a = 0;
+}
+TimeSeriesAnalysis::~TimeSeriesAnalysis() {
+}
 
 // Function to calculate the Hurst Exponent
-double calculateHurstExponent(const vector<double>& data) {
+double TimeSeriesAnalysis::calculateHurstExponent(const vector<double>& data) {
     int N = data.size();
     vector<double> mean_adjusted_data(N);
     double mean = accumulate(data.begin(), data.end(), 0.0) / N;
@@ -33,7 +35,7 @@ double calculateHurstExponent(const vector<double>& data) {
 }
 
 // Function to calculate the variance ratio
-double varianceRatioTest(const vector<double>& data, int lag) {
+double TimeSeriesAnalysis::varianceRatioTest(const vector<double>& data, int lag) {
     int N = data.size();
     double mean = accumulate(data.begin(), data.end(), 0.0) / N;
     double variance = 0.0;
@@ -56,7 +58,7 @@ double varianceRatioTest(const vector<double>& data, int lag) {
 }
 
 // Function to calculate the autocorrelation at lag 'lag'
-double calculateAutocorrelation(const vector<double>& data, int lag) {
+double TimeSeriesAnalysis::calculateAutocorrelation(const vector<double>& data, int lag) {
     int N = data.size();
     double mean = accumulate(data.begin(), data.end(), 0.0) / N;
     double numerator = 0.0;

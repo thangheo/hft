@@ -6,6 +6,7 @@
 #include <memory>
 #include "../../common/order_data.h"
 #include <yaml-cpp/yaml.h>
+
 class IExchangeInterface {
 public:
     virtual ~IExchangeInterface() = default;
