@@ -234,6 +234,7 @@ if __name__ == "__main__":
     #get trend
     trend = model_fit.params[0]
     print(f"Trend: {trend:.4f}")
+    
     # Get the AR(1) coefficient
     ar1 = model_fit.params[1]
     print(f"AR(1) Coefficient: {ar1 :.4f}")

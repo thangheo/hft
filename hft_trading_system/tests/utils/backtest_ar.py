@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from statsmodels.tsa.ar_model import AutoReg
 from scipy.optimize import minimize
- 
+import ccxt
 import numpy as np
 
 def safe_returns(profit):
@@ -36,7 +36,36 @@ def calculate_sharpe_ratio(profit, risk_free_rate=0):
     # Calculate and return the Sharpe ratio
     sharpe_ratio = avg_return / std_return if std_return != 0 else 0
     return sharpe_ratio
-
+#calculate average profit per trade
+def calculate_avg_profit_per_trade(profit):
+    # Calculate the number of trades
+    trades = np.count_nonzero(np.diff(profit))
+    
+    # Calculate the average profit per trade
+    avg_profit_per_trade = profit[-1] / trades if trades > 0 else 0
+    return avg_profit_per_trade
+#calculate the number of trades
+def calculate_number_of_trades(profit):
+    # Calculate the number of trades
+    trades = np.count_nonzero(np.diff(profit))
+    return trades
+#calculate the candles per trade
+def calculate_candles_per_trade(prices, profit):
+    # Calculate the number of trades
+    trades = np.count_nonzero(np.diff(profit))
+    
+    # Calculate the candles per trade
+    candles_per_trade = len(prices) / trades if trades > 0 else 0
+    return candles_per_trade
+#calculate calmar ratio
+def calculate_calmar_ratio(profit):
+    # Calculate the maximum drawdown
+    max_drawdown = np.max(np.maximum.accumulate(profit) - profit)
+    
+    # Calculate the Calmar ratio
+    calmar_ratio = profit[-1] / max_drawdown if max_drawdown > 0 else 0
+    return calmar_ratio
+    
 #test plot 
 def plot_positions(prices, long_position, short_position):
     import matplotlib.pyplot as plt
@@ -53,7 +82,101 @@ def plot_profit(profit):
     plt.plot(profit, label='Profit')
     plt.legend()
     plt.show()
-def backtest_strategy(prices, threshold1, threshold2, initial_capital=10000, position_size=100, transaction_cost=0.001):
+def mix_strategy(current_index,prices, threshold1, threshold2, capital=10000, transaction_cost=0.001,phi=0,drift=0, sigma=0):
+    position = 0  # -1 for short, 1 for long, 0 for no position
+    # Mean reversion strategy if drift is small enough
+    price= prices[current_index]
+    position_size = 0
+    std_price = sigma
+    mean_price = np.mean(prices[current_index - 200:current_index])
+    atr = std_price / mean_price
+    if phi < threshold1: #mean reversion for negative phi
+        #just bypass
+        # continue
+        if price <= mean_price - 1.5*std_price and price < prices[current_index - 1]  and atr < 0.005 :
+            # and price < prices[i - 1]:
+            print(f"Mean reversion: Long position (price below mean) at price {price}")
+            position = 1 
+            position_size = (capital / price) *(1-transaction_cost)
+        elif price >= mean_price + 1.5*std_price and price > prices[current_index - 1]  and atr < 0.005:
+            # continue
+            #and price > prices[i - 1]:
+            print(f"Mean reversion: Short position (price above mean) at price {price}")
+            position = -1 
+            position_size = (capital / price) *(1-transaction_cost)
+        #condition to close the position
+        else:
+            position = 0
+
+    # Momentum strategy for positive phi
+    elif phi > threshold2:
+        pass
+        #just bypass
+        if price > mean_price and price > prices[current_index - 1]:
+            print(f"Momentum: Long position (price rising) at price {price}")
+            position = 1 
+        elif price < mean_price and price < prices[current_index - 1]:
+            print(f"Momentum: Short position (price falling) at price {price}")
+            position = -1  
+        #condition to close the position
+        else:
+            position = 0
+    else:
+        # print(f"No strong signal at price {price}. Maintaining current position.")
+        position = 0  # No position or maintain current one
+    
+    return position, position_size
+
+
+def strategy_2(current_index,prices, threshold1, threshold2, capital=10000, transaction_cost=0.001,phi=0,drift=0, sigma=0):
+    position = 0  # -1 for short, 1 for long, 0 for no position
+    # Mean reversion strategy if drift is small enough
+    price= prices[current_index]
+    position_size = 0
+    std_price = sigma
+    mean_price = np.mean(prices[current_index - 200:current_index])
+    atr = std_price / mean_price
+    if phi < threshold1: #mean reversion for negative phi
+        #just bypass
+        # continue
+        if price < prices[current_index - 1]  and 2*transaction_cost < atr< 0.007 :
+            # and price < prices[i - 1]:
+            print(f"Mean reversion: Long position (price below mean) at price {price}")
+            position = 1 
+            position_size = (capital / price) *(1-transaction_cost)
+        elif price > prices[current_index - 1]  and 2*transaction_cost  < atr < 0.007:
+            # continue
+            #and price > prices[i - 1]:
+            print(f"Mean reversion: Short position (price above mean) at price {price}")
+            position = -1 
+            position_size = (capital / price) *(1-transaction_cost)
+        #condition to close the position
+        else:
+            position = 0
+
+    # Momentum strategy for positive phi
+    elif phi > threshold2:
+        pass
+        #just bypass
+        if price > prices[current_index - 1] and 2*transaction_cost < atr < 0.007 :
+            print(f"Momentum: Long position (price rising) at price {price}")
+            position_size = (capital / price) *(1-transaction_cost)
+            position = 1 
+        elif price < prices[current_index - 1] and 2*transaction_cost < atr < 0.007 :
+            print(f"Momentum: Short position (price falling) at price {price}")
+            position_size = (capital / price) *(1-transaction_cost)
+            position = -1  
+        #condition to close the position
+        else:
+            position = 0
+    else:
+        # print(f"No strong signal at price {price}. Maintaining current position.")
+        position = 0  # No position or maintain current one
+    
+    return position, position_size
+
+
+def backtest_strategy(prices, threshold1, threshold2, initial_capital=10000, position_size_=100, transaction_cost=0.001):
    
     # Initialize variables for tracking positions and profits
     position = 0  # -1 for short, 1 for long, 0 for no position
@@ -62,12 +185,11 @@ def backtest_strategy(prices, threshold1, threshold2, initial_capital=10000, pos
     n = len(prices)
     #an array to store the profit
     profit = np.zeros(n) + initial_capital
-    accumulated_profit = np.zeros(n)
     transition = 0 # 0 for no transition, 1 for transitioning
     #variables to store position to plot later
     long_position = np.zeros(n)
     short_position = np.zeros(n)
-
+    position_size = 0 #calculate position size base on balance
     for i in range(10, n, 1):
         # Skip the first 200 prices, as we need 200 prices to calculate log returns
         if i < 200:
@@ -82,6 +204,7 @@ def backtest_strategy(prices, threshold1, threshold2, initial_capital=10000, pos
         model = AutoReg(returns, lags=1, trend='c').fit()
 
         phi = model.params[1]  # Extract the phi (lag-1 coefficient)
+        drift = model.params[0]
         #calculate rolling mean
         mean_price = np.mean(past_prices)
         #calculate rolling std
@@ -103,47 +226,11 @@ def backtest_strategy(prices, threshold1, threshold2, initial_capital=10000, pos
             #store the profit
             profit[i] = capital
         # Determine strategy based on phi
-        price = prices[i]
-        if phi < threshold1:
-            #just bypass
-            # continue
-            if price <= mean_price - 2*std_price and price < prices[i - 1] and atr > 0.002:
-                # and price < prices[i - 1]:
-                print(f"Mean reversion: Long position (price below mean) at price {price}")
-                position = 1 
-                position_price = price 
-            elif price >= mean_price + 2*std_price and price > prices[i - 1] and atr > 0.002:
-                #and price > prices[i - 1]:
-                print(f"Mean reversion: Short position (price above mean) at price {price}")
-                position = -1 
-                position_price = price
-            #condition to close the position
-            else:
-                position = 0
-
-        # Momentum strategy
-        elif phi > threshold2:
-            #just bypass
-            continue
-            if price > mean_price and price > prices[i - 1]:
-                print(f"Momentum: Long position (price rising) at price {price}")
-                position = 1 
-                position_price = price
-            elif price < mean_price and price < prices[i - 1]:
-                print(f"Momentum: Short position (price falling) at price {price}")
-                position = -1  
-                position_price = price
-            #condition to close the position
-            else:
-                position = 0
-        else:
-            # print(f"No strong signal at price {price}. Maintaining current position.")
-            position = 0  # No position or maintain current one
+        # position,position_size = mix_strategy(i,prices, threshold1, threshold2, capital, transaction_cost,phi,drift,std_price)
+        position,position_size = strategy_2(i,prices, threshold1, threshold2, capital, transaction_cost,phi,drift,std_price)
+        position_price = prices[i]
         #store the profit
         profit[i] = capital
-        #calculate the accumulated profit
-        accumulated_profit[i] += accumulated_profit[i-1] + profit[i] - profit[i-1] 
-
         
         if position == 1:
             long_position[i] = 1
@@ -170,10 +257,24 @@ def backtest_strategy(prices, threshold1, threshold2, initial_capital=10000, pos
     profit_percentage = (final_profit / initial_capital) * 100
     #calculate sharpe ratio
     sharpes_ratio = calculate_sharpe_ratio(profit)
+    #calculate average profit per trade
+    avg_profit_per_trade = calculate_avg_profit_per_trade(profit)
+    #calculate number of trades
+    trades = calculate_number_of_trades(profit)
+    #calculate candles per trade
+    candles_per_trade = calculate_candles_per_trade(prices, profit)
+    #calculate calmar ratio
+    calmar_ratio = calculate_calmar_ratio(profit)
+    print(f"Final profit: {final_profit:.2f}")
+    print(f"Profit percentage: {profit_percentage:.2f}%")
+    print(f"Sharpe ratio: {sharpes_ratio:.4f}")
+    print(f"Average profit per trade: {avg_profit_per_trade:.2f}")
+    print(f"Number of trades: {trades}")
+    print(f"Candles per trade: {candles_per_trade:.2f}")
+    print(f"Calmar ratio: {calmar_ratio:.4f}")
 
     #plot the profit
     plot_profit(profit)
-    plot_profit(accumulated_profit)
     #plot the position
     plot_positions(prices, long_position, short_position)
 
@@ -224,9 +325,9 @@ def manual_optimizer(prices):
 
     sharpe_ratios = []
     profit_percentages = []
-    steps = 10
+    steps = 15
     thresholds1_l = np.linspace(-0.1, -0.01, steps)
-    thresholds2_l = np.linspace(0.001, 0.2, steps)
+    thresholds2_l = np.linspace(0.01, 0.1, steps)
     for threshold1 in thresholds1_l:
         for threshold2 in thresholds2_l:
             profit_percentage, sharpe_ratio = backtest_strategy(prices, threshold1, threshold2)
@@ -250,17 +351,33 @@ def manual_optimizer(prices):
     return profit_percentages_optimal_threshold1, profit_percentages_optimal_threshold2 , sharpe_optimal_threshold1, sharpe_optimal_threshold2
 
 
+
+#function to get 1000 data 1m from binance
+def get_data(symbol,tf='1m'):
+    binance = ccxt.binance()
+    data = binance.fetch_ohlcv(symbol, tf)
+    #convert to pandas dataframe
+    data = pd.DataFrame(data, columns=['Timestamp', 'Open', 'High', 'Low', 'Close', 'Volume'])
+
+    return data
 if __name__ == '__main__':
     # optimize_strategy('AAVEUSDT_1m.csv')
     # exit()
     #run backtest_strategy SOLUSDT_1m
-    data = pd.read_csv('AAVEUSDT_1m.csv')
-    prices = data['Close'].values
-
-    # Randomly select a portion of the data for optimization
-    datalen= 10000
-    index = np.random.randint(0, len(prices) - datalen)
-    selected_prices = prices[index:index + datalen]
+    selected_prices = []
+    BACKTEST = True
+    if BACKTEST :
+        data = pd.read_csv('SOLUSDT_1m.csv')
+        #test on real data
+        prices = data['Close'].values
+        # Randomly select a portion of the data for optimization
+        datalen= 10000
+        index = np.random.randint(0, len(prices) - datalen)
+        selected_prices = prices[index:index + datalen]
+    else:
+        selected_prices = get_data('SOLUSDT', '1m')
+        selected_prices = selected_prices['Close'].values
+        
    # optimize parasm
     # profit_percentages_optimal_threshold1, profit_percentages_optimal_threshold2 , sharpe_optimal_threshold1, sharpe_optimal_threshold2 = manual_optimizer(selected_prices)
 
@@ -270,10 +387,10 @@ if __name__ == '__main__':
 
     # profit_percentage, sharpe_ratio = backtest_strategy(selected_prices, sharpe_optimal_threshold1, sharpe_optimal_threshold2)
     # print(f"Profit percentage: {profit_percentage:.2f}%")
-    # print(f"Sharpe ratio: {sharpe_ratio:.4f}")
+    # # print(f"Sharpe ratio: {sharpe_ratio:.4f}")
 
     #run test on pre value
-    profit_percentage, sharpe_ratio = backtest_strategy(selected_prices, -0.07, 0.2)
+    profit_percentage, sharpe_ratio = backtest_strategy(selected_prices, -0.0678, 0.0486)
     print(f"Profit percentage: {profit_percentage:.2f}%")
     print(f"Sharpe ratio: {sharpe_ratio:.4f}")
     '''
