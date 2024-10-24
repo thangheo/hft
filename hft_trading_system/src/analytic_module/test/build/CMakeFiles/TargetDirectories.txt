@@ -1,0 +1,3 @@
+/home/tng/work/t4/hft_trading_system/src/analytic_module/test/build/CMakeFiles/hft_trading_system.dir
+/home/tng/work/t4/hft_trading_system/src/analytic_module/test/build/CMakeFiles/edit_cache.dir
+/home/tng/work/t4/hft_trading_system/src/analytic_module/test/build/CMakeFiles/rebuild_cache.dir

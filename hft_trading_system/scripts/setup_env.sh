@@ -64,6 +64,8 @@ sudo apt-get install libyaml-cpp-dev #yaml-cpp
 # For example, install InfluxDB client library for C++ if using InfluxDB
 #for candle datas
 sudo apt-get install libcurl4-openssl-dev libboost-all-dev libssl-dev libeigen3-dev
+#hawkes process
+sudo apt-get install libnlopt-dev libnlopt-cxx-dev
 
 echo "Environment setup completed successfully."
 sudo apt-get install libstdc++6
