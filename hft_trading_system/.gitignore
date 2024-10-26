@@ -1,7 +1,0 @@
-*.log
-build/*
-#ignore built files in third_party
-./data/*
-*.csv
-#no __pycache__
-hft_trading_system/src/analytic_module/test/build/*

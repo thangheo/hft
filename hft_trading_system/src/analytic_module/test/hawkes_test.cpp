@@ -97,7 +97,7 @@ int main() {
     double window_duration_seconds = 60 * 60; // 60 minutes
 
     // Set the frequency for updating the Hawkes process model (e.g., every 15 minutes)
-    double update_interval_seconds = 15 * 60; // 15 minutes
+    double update_interval_seconds = 15 * 1; // 15 minutes
 
     // Initialize the Hawkes process with initial parameter guesses
     HawkesProcess hawkes(0.1, 0.5, 1.0);
