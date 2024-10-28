@@ -4,4 +4,4 @@
 *.csv
 #no __pycache__
 **/build/
-.venv
+env/

@@ -13,8 +13,8 @@ export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 #generate protocbuf files
 #conda deactivate
 cd ../
-/usr/local/bin/protoc --cpp_out=src/data_storage/serialization/ proto/order_data.proto
-/usr/local/bin/protoc --cpp_out=src/data_storage/serialization/ proto/market_data.proto 
+protoc --cpp_out=src/data_storage/serialization/ proto/order_data.proto
+protoc --cpp_out=src/data_storage/serialization/ proto/market_data.proto 
 mv src/data_storage/serialization/proto/* src/data_storage/serialization/
 cd scripts
 # cd "$(dirname "$0")"

@@ -11,8 +11,7 @@ echo "Starting environment setup..."
 sudo apt-get update
 
 # Install essential build tools
-sudo apt-get install -y build-essential cmake git
-
+sudo apt-get install -y build-essential cmake git libcurlpp-dev libpq-dev libyaml-cpp-dev
 # Install Boost Libraries
 sudo apt-get install -y libboost-all-dev
 
