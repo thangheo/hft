@@ -6,10 +6,11 @@
 #include <functional>
 #include <mutex>
 #include <unordered_map>
+#include <yaml-cpp/yaml.h>
 #include "../common/order_data.h"
 #include "exchange_interfaces/exchange_interface.h"
 #include "../risk_management/risk_manager.h"
-#include "../configs/config_loader.h"
+#include "../../configs/config_loader.h"
 
 class OMS {
 public:
@@ -23,10 +24,11 @@ public:
     OMS& operator=(const OMS&) = delete;
 
     /**
-     * @brief Initialize the OMS.
+     * @brief Initialize the OMS with a configuration file.
+     * @param config Configuration data for setting up exchange interfaces.
      * @return True if initialization is successful.
      */
-    bool initialize();
+    bool initialize(const YAML::Node& config);
 
     /**
      * @brief Submit a new order.

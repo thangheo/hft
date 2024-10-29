@@ -388,7 +388,7 @@ if __name__ == '__main__':
         index = np.random.randint(0, len(prices) - datalen)
         selected_prices = prices[index:index + datalen]
     else:
-        selected_prices = get_data('SOLUSDT', '1m')
+        selected_prices = get_data('SUIUSDT', '1m')
         selected_prices = selected_prices['Close'].values
         
    # optimize parasm
@@ -403,8 +403,8 @@ if __name__ == '__main__':
     # print(f"Sharpe ratio: {sharpe_ratio:.4f}")
 
     #run test on pre value
-    # profit_percentage, sharpe_ratio = backtest_strategy(selected_prices, -0.01643, 0.02928) #aave
-    profit_percentage, sharpe_ratio = backtest_strategy(selected_prices, -0.0678, 0.0486) #sol
+    profit_percentage, sharpe_ratio = backtest_strategy(selected_prices, -0.01643, 0.02928) #aave
+    # profit_percentage, sharpe_ratio = backtest_strategy(selected_prices, -0.0678, 0.0486) #sol
     print(f"Profit percentage: {profit_percentage:.2f}%")
     print(f"Sharpe ratio: {sharpe_ratio:.4f}")
     '''

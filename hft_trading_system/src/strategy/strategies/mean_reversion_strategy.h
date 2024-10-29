@@ -62,7 +62,7 @@ public:
 private:
     std::string strategy_name_;
     std::vector<std::string> symbols_;
-    int window_size_;
+    // int window_size_;
     double entry_threshold_;
     double exit_threshold_;
     double order_quantity_;
