@@ -5,6 +5,7 @@ add_library(market_data_module    market_data_handler.cpp
 # Add subdirectories for adapters and protocols
 add_subdirectory(adapters)
 add_subdirectory(protocols)
+add_subdirectory(test)
 find_package(prometheus-cpp CONFIG REQUIRED)
 
 # Link necessary libraries to the Market Data module
