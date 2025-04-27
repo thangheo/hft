@@ -1,126 +1,29 @@
-/hft_trading_system/
-├── CMakeLists.txt          # Build configuration
-├── README.md               # Project overview and setup instructions
-├── LICENSE                 # Licensing information
-├── docs/                   # Documentation
-│   ├── architecture/
-│   ├── api/
-│   └── user_guides/
-├── configs/                # Configuration files
-│   ├── exchange_configs/
-│   ├── strategy_configs/
-│   └── risk_configs/
-├── include/                # Header files
-│   ├── common/             # Common utilities and definitions
-│   ├── market_data/
-│   ├── strategy/
-│   ├── oms/
-│   ├── risk_management/
-│   ├── connectivity/
-│   ├── data_storage/
-│   └── monitoring/
-├── src/                    # Source code
-│   ├── main.cpp            # Entry point
-│   ├── common/             # Common utilities and definitions
-│   │   ├── utils.cpp
-│   │   └── utils.h
-│   ├── market_data/        # Market Data Handler
-│   │   ├── market_data_handler.cpp
-│   │   ├── market_data_handler.h
-│   │   ├── adapters/
-│   │   │   ├── binance_adapter.cpp
-│   │   │   ├── coinbase_adapter.cpp
-│   │   │   └── adapters.h
-│   │   └── protocols/
-│   │       ├── websocket_client.cpp
-│   │       ├── rest_client.cpp
-│   │       └── protocols.h
-│   ├── strategy/           # Strategy Engine
-│   │   ├── strategy_engine.cpp
-│   │   ├── strategy_engine.h
-│   │   ├── strategies/
-│   │   │   ├── mean_reversion.cpp
-│   │   │   ├── momentum.cpp
-│   │   │   └── strategies.h
-│   │   └── backtesting/
-│   │       ├── backtester.cpp
-│   │       ├── backtester.h
-│   │       └── test_data/
-│   ├── oms/                # Order Management System
-│   │   ├── oms.cpp
-│   │   ├── oms.h
-│   │   ├── order_execution/
-│   │   │   ├── order_executor.cpp
-│   │   │   └── order_executor.h
-│   │   ├── order_tracking/
-│   │   │   ├── order_tracker.cpp
-│   │   │   └── order_tracker.h
-│   │   └── exchange_interfaces/
-│   │       ├── binance_interface.cpp
-│   │       ├── coinbase_interface.cpp
-│   │       └── exchange_interfaces.h
-│   ├── risk_management/    # Risk Management Module
-│   │   ├── risk_manager.cpp
-│   │   ├── risk_manager.h
-│   │   ├── pre_trade_checks/
-│   │   │   ├── checks.cpp
-│   │   │   └── checks.h
-│   │   ├── position_monitoring/
-│   │   │   ├── position_monitor.cpp
-│   │   │   └── position_monitor.h
-│   │   └── risk_rules/
-│   │       ├── risk_rule_base.cpp
-│   │       └── risk_rule_base.h
-│   ├── connectivity/       # Connectivity Layer
-│   │   ├── network_manager.cpp
-│   │   ├── network_manager.h
-│   │   └── protocols/
-│   │       ├── fix_client.cpp
-│   │       ├── fix_client.h
-│   │       └── protocol_definitions.h
-│   ├── data_storage/       # Data Storage and Retrieval
-│   │   ├── storage_manager.cpp
-│   │   ├── storage_manager.h
-│   │   ├── real_time_data/
-│   │   │   ├── real_time_db.cpp
-│   │   │   └── real_time_db.h
-│   │   ├── historical_data/
-│   │   │   ├── historical_db.cpp
-│   │   │   └── historical_db.h
-│   │   └── serialization/
-│   │       ├── serializer.cpp
-│   │       └── serializer.h
-│   └── monitoring/         # Monitoring and Logging System
-│       ├── monitoring.cpp
-│       ├── monitoring.h
-│       ├── logging/
-│       │   ├── logger.cpp
-│       │   └── logger.h
-│       ├── metrics/
-│       │   ├── metrics_collector.cpp
-│       │   └── metrics_collector.h
-│       └── alerts/
-│           ├── alert_manager.cpp
-│           └── alert_manager.h
-├── tests/                  # Test suites
-│   ├── unit_tests/
-│   │   ├── test_market_data_handler.cpp
-│   │   ├── test_strategy_engine.cpp
-│   │   └── ...
-│   └── integration_tests/
-│       ├── test_end_to_end.cpp
-│       └── ...
-├── scripts/                # Auxiliary scripts
-│   ├── deploy.sh
-│   ├── setup_env.sh
-│   └── utils/
-│       ├── data_cleanup.py
-│       └── log_rotate.sh
-├── third_party/            # Third-party libraries and dependencies
-│   ├── boost/
-│   ├── spdlog/
-│   └── ...
-└── resources/              # Static resources
-    ├── ssl_certificates/
-    └── sample_configs/
-
+  # Create directory structure
+    directories = [
+        "config",
+        "docker",
+        "docker/kubernetes",
+        "docs",
+        "docs/api",
+        "include/common",
+        "include/data_ingestion",
+        "include/strategy",
+        "include/execution",
+        "include/risk",
+        "libs",
+        "libs/external",
+        "python/backtest",
+        "python/research",
+        "python/visualization",
+        "scripts",
+        "src/common",
+        "src/data_ingestion",
+        "src/strategy",
+        "src/execution",
+        "src/risk",
+        "tests/common",
+        "tests/data_ingestion",
+        "tests/strategy",
+        "tests/execution",
+        "tests/risk"
+    ]

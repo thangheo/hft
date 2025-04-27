@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package market_data;
+
+// Timestamp with nanosecond precision
+message Timestamp {
+  int64 seconds = 1;  // Seconds since epoch
+  int32 nanos = 2;    // Nanoseconds component
+}
+
+// Price level in the order book
+message PriceLevel {
+  double price = 1;
+  double quantity = 2;
+  int32 order_count = 3;
+}
+
+// Order book snapshot
+message OrderBook {
+  string instrument = 1;
+  string exchange = 2;
+  Timestamp timestamp = 3;
+  repeated PriceLevel bids = 4;
+  repeated PriceLevel asks = 5;
+}
+
+// Order book delta update
+message OrderBookUpdate {
+  string instrument = 1;
+  string exchange = 2;
+  Timestamp timestamp = 3;
+  repeated PriceLevel bids_added = 4;
+  repeated PriceLevel bids_removed = 5;
+  repeated PriceLevel asks_added = 6;
+  repeated PriceLevel asks_removed = 7;
+}
+
+// Trading signal
+message TradingSignal {
+  string instrument = 1;
+  enum Side {
+    BUY = 0;
+    SELL = 1;
+  }
+  Side side = 2;
+  double confidence = 3;
+  double target_price = 4;
+  double stop_price = 5;
+  Timestamp expiry = 6;
+  Timestamp timestamp = 7;
+}
