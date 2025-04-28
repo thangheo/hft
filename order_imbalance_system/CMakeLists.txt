@@ -33,10 +33,10 @@ include_directories(include)
 # Add subdirectories
 add_subdirectory(src/common)
 # Uncomment as components are implemented
-# add_subdirectory(src/data_ingestion)
-# add_subdirectory(src/strategy)
-# add_subdirectory(src/execution)
-# add_subdirectory(src/risk)
+add_subdirectory(src/data_ingestion)
+add_subdirectory(src/strategy)
+add_subdirectory(src/execution)
+add_subdirectory(src/risk)
 
 # Add tests
 enable_testing()
