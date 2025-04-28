@@ -1,6 +1,15 @@
 version: '3.8'
 
 services:
+  data_ingestion:
+      build:
+        context: ..
+        dockerfile: docker/data_ingestion.Dockerfile
+      ports:
+        - "5555:5555"
+      networks:
+        - trading_network
+      restart: unless-stopped
   core:
     build:
       context: ..
