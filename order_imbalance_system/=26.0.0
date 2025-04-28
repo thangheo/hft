@@ -1,5 +1,0 @@
-Collecting pyzmq
-  Using cached pyzmq-26.4.0-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (6.0 kB)
-Using cached pyzmq-26.4.0-cp312-cp312-manylinux_2_28_x86_64.whl (855 kB)
-Installing collected packages: pyzmq
-Successfully installed pyzmq-26.4.0
