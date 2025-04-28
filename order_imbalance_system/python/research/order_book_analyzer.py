@@ -424,28 +424,84 @@ class OrderBookVisualizer:
         elif self.mode == 'metrics':
             return self._update_metrics_chart()
     
+    # def _update_depth_chart(self):
+    #     """Update order book depth chart"""
+    #     try:
+    #         order_book = self.order_book_data.current_book
+            
+    #         # Convert to numeric values
+    #         bids = [(float(level['price']), float(level['quantity'])) 
+    #                for level in order_book['bids']]
+    #         asks = [(float(level['price']), float(level['quantity'])) 
+    #                for level in order_book['asks']]
+            
+    #         # Sort bids (descending) and asks (ascending)
+    #         bids = sorted(bids, key=lambda x: x[0], reverse=True)
+    #         asks = sorted(asks, key=lambda x: x[0])
+            
+    #         # Calculate cumulative volumes
+    #         bid_prices = [p for p, _ in bids]
+    #         bid_volumes = [q for _, q in bids]
+    #         bid_cum_volumes = np.cumsum(bid_volumes)
+            
+    #         ask_prices = [p for p, _ in asks]
+    #         ask_volumes = [q for _, q in asks]
+    #         ask_cum_volumes = np.cumsum(ask_volumes)
+            
+    #         # Update plot data
+    #         self.bid_line.set_data(bid_prices, bid_cum_volumes)
+    #         self.ask_line.set_data(ask_prices, ask_cum_volumes)
+            
+    #         # Adjust plot limits
+    #         if bid_prices and ask_prices:
+    #             # Calculate price range with padding
+    #             min_price = min(bid_prices[-1] if bid_prices else float('inf'), 
+    #                           ask_prices[0] if ask_prices else float('inf'))
+    #             max_price = max(bid_prices[0] if bid_prices else float('-inf'), 
+    #                           ask_prices[-1] if ask_prices else float('-inf'))
+    #             price_range = max_price - min_price
+                
+    #             self.ax.set_xlim(min_price - price_range * 0.1, max_price + price_range * 0.1)
+    #             max_volume = max(max(bid_cum_volumes) if bid_cum_volumes.size > 0 else 0, 
+    #                            max(ask_cum_volumes) if ask_cum_volumes.size > 0 else 0)
+    #             self.ax.set_ylim(0, max_volume * 1.1)
+            
+    #         return self.bid_line, self.ask_line
+        
+    #     except Exception as e:
+    #         logger.error(f"Error updating depth chart: {e}")
+    #         return ()
+    # This is a focused fix for the visualization issue in the order_book_analyzer.py file
+
     def _update_depth_chart(self):
         """Update order book depth chart"""
         try:
             order_book = self.order_book_data.current_book
             
+            # If no order book data yet, return empty artists
+            if not order_book or 'bids' not in order_book or 'asks' not in order_book:
+                return (self.bid_line, self.ask_line)
+            
             # Convert to numeric values
             bids = [(float(level['price']), float(level['quantity'])) 
-                   for level in order_book['bids']]
+                for level in order_book['bids']]
             asks = [(float(level['price']), float(level['quantity'])) 
-                   for level in order_book['asks']]
+                for level in order_book['asks']]
+            
+            if not bids or not asks:
+                return (self.bid_line, self.ask_line)
             
             # Sort bids (descending) and asks (ascending)
             bids = sorted(bids, key=lambda x: x[0], reverse=True)
             asks = sorted(asks, key=lambda x: x[0])
             
             # Calculate cumulative volumes
-            bid_prices = [p for p, _ in bids]
-            bid_volumes = [q for _, q in bids]
+            bid_prices = np.array([p for p, _ in bids])
+            bid_volumes = np.array([q for _, q in bids])
             bid_cum_volumes = np.cumsum(bid_volumes)
             
-            ask_prices = [p for p, _ in asks]
-            ask_volumes = [q for _, q in asks]
+            ask_prices = np.array([p for p, _ in asks])
+            ask_volumes = np.array([q for _, q in asks])
             ask_cum_volumes = np.cumsum(ask_volumes)
             
             # Update plot data
@@ -453,25 +509,38 @@ class OrderBookVisualizer:
             self.ask_line.set_data(ask_prices, ask_cum_volumes)
             
             # Adjust plot limits
-            if bid_prices and ask_prices:
+            if bid_prices.size > 0 and ask_prices.size > 0:
                 # Calculate price range with padding
-                min_price = min(bid_prices[-1] if bid_prices else float('inf'), 
-                              ask_prices[0] if ask_prices else float('inf'))
-                max_price = max(bid_prices[0] if bid_prices else float('-inf'), 
-                              ask_prices[-1] if ask_prices else float('-inf'))
+                min_price = min(bid_prices[-1] if bid_prices.size > 0 else float('inf'), 
+                            ask_prices[0] if ask_prices.size > 0 else float('inf'))
+                max_price = max(bid_prices[0] if bid_prices.size > 0 else float('-inf'), 
+                            ask_prices[-1] if ask_prices.size > 0 else float('-inf'))
                 price_range = max_price - min_price
                 
                 self.ax.set_xlim(min_price - price_range * 0.1, max_price + price_range * 0.1)
                 max_volume = max(max(bid_cum_volumes) if bid_cum_volumes.size > 0 else 0, 
-                               max(ask_cum_volumes) if ask_cum_volumes.size > 0 else 0)
+                            max(ask_cum_volumes) if ask_cum_volumes.size > 0 else 0)
                 self.ax.set_ylim(0, max_volume * 1.1)
             
-            return self.bid_line, self.ask_line
+            return (self.bid_line, self.ask_line)
         
         except Exception as e:
             logger.error(f"Error updating depth chart: {e}")
-            return ()
-    
+            return (self.bid_line, self.ask_line)
+
+    # Update the FuncAnimation call in the start_animation method
+    def start_animation(self, interval=500):
+        """Start the animation"""
+        self.setup_plot()
+        self.animation = FuncAnimation(
+            self.fig, 
+            self.update_visualization, 
+            blit=True, 
+            interval=interval,
+            save_count=100  # Limit the cache to 100 frames
+        )
+        plt.tight_layout()
+        plt.show()
     def _update_heatmap(self):
         """Update order book heatmap"""
         try:
@@ -691,15 +760,15 @@ class OrderBookVisualizer:
             logger.error(f"Error updating metrics chart: {e}")
             return ()
     
-    def start_animation(self, interval=500):
-        """Start the animation"""
-        self.setup_plot()
-        self.animation = FuncAnimation(
-            self.fig, self.update_visualization, 
-            blit=True, interval=interval
-        )
-        plt.tight_layout()
-        plt.show()
+    # def start_animation(self, interval=500):
+    #     """Start the animation"""
+    #     self.setup_plot()
+    #     self.animation = FuncAnimation(
+    #         self.fig, self.update_visualization, 
+    #         blit=True, interval=interval
+    #     )
+    #     plt.tight_layout()
+    #     plt.show()
     
     def save_snapshot(self, filename=None):
         """Save current visualization to a file"""
