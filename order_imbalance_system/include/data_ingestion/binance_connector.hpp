@@ -7,6 +7,9 @@
 #include <boost/asio/ssl/stream.hpp>
 #include <nlohmann/json.hpp>
 #include <thread>
+#include <atomic>
+#include <mutex>
+#include <vector>
 
 namespace trading {
 namespace data_ingestion {
@@ -32,18 +35,31 @@ public:
     bool isConnected() const override { return connected_; }
     
 private:
-    void runIoService();
-    void onMessage(const std::string& msg);
-    void handleOrderBookUpdate(const json& data, const std::string& symbol);
-    
+    // Configuration
     std::string host_;
     std::string port_;
     
+    // Connection handling
     net::io_context io_context_;
     ssl::context ssl_context_{ssl::context::tlsv12_client};
-    std::unique_ptr<websocket::stream<beast::ssl_stream<tcp::socket>>> ws_;
+    std::unique_ptr<websocket::stream<beast::ssl_stream<tcp::socket>>> websocket_ssl_stream_;
     std::thread io_thread_;
-    std::map<std::string, int32_t> subscribed_pairs_;
+    std::atomic<bool> keep_running_;
+    
+    // Subscription management
+    int subscription_id_counter_ = 1;
+    std::vector<std::string> subscribed_streams_;
+    
+    // Internal methods
+    void runIoService();
+    void onMessage(const std::string& msg);
+    void subscribeToStream(const std::string& stream);
+    
+    // Message handlers
+    void handleOrderBookUpdate(const json& data, const std::string& symbol);
+    void handleTradeUpdate(const json& data, const std::string& symbol);
+    void handleTickerUpdate(const json& data, const std::string& symbol);
+    void handleBookTickerUpdate(const json& data, const std::string& symbol);
 };
 
 } // namespace data_ingestion

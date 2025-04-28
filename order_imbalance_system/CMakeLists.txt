@@ -41,3 +41,51 @@ add_subdirectory(src/risk)
 # Add tests
 enable_testing()
 # add_subdirectory(tests)
+# CMakeLists.txt (continued)
+# Add common library
+add_library(common STATIC
+    src/common/logger.cpp
+    src/common/config.cpp
+    src/common/utils.cpp
+)
+
+# Add data ingestion library
+add_library(data_ingestion STATIC
+    src/data_ingestion/order_book.cpp
+    src/data_ingestion/websocket_client.cpp
+    src/data_ingestion/exchange_connector.cpp
+)
+
+# Link dependencies
+target_link_libraries(data_ingestion
+    common
+    ${ZeroMQ_LIBRARIES}
+    pthread
+)
+
+# Build main executable
+add_executable(order_book_reconstructor
+    src/data_ingestion/main.cpp
+)
+
+target_link_libraries(order_book_reconstructor
+    data_ingestion
+    common
+    ${ZeroMQ_LIBRARIES}
+    pthread
+)
+
+# Build tests
+enable_testing()
+add_executable(test_order_book
+    tests/data_ingestion/test_order_book.cpp
+)
+
+target_link_libraries(test_order_book
+    data_ingestion
+    common
+    ${ZeroMQ_LIBRARIES}
+    pthread
+)
+
+add_test(NAME test_order_book COMMAND test_order_book)
