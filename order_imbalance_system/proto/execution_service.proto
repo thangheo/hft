@@ -1,0 +1,10 @@
+// Defines the gRPC service interface for the execution engine
+// Order Imbalance Strategy - Execution Engine
+// Generated: 2025-04-29
+
+syntax = "proto3";
+
+package execution;
+
+// TODO: Define service and message types for Defines the gRPC service interface for the execution engine
+
