@@ -1,8 +1,0 @@
-strategy_name: "MeanReversionStrategy"
-symbols:
-  - "btcusdt"
-parameters:
-  window_size: 20
-  entry_threshold: 0.01
-  exit_threshold: 0.005
-  order_quantity: 0.1
