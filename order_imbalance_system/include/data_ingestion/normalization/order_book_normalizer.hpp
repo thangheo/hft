@@ -1,3 +1,18 @@
+/**
+ * @file order_book_normalizer.hpp
+ * @brief Normalizer for order book data from different exchanges
+ * 
+ * @details 
+ * Part of the Data Ingestion & Processing Layer for the Crypto Trading System.
+ * 
+ * Created on: April 30, 2025
+ */
+
+ #ifndef NORMALIZER_HPP
+ #define NORMALIZER_HPP
+ 
+ // TODO: Implement Data standardization across different exchanges
+ 
 // include/data_ingestion/order_book_normalizer.hpp
 #pragma once
 
@@ -53,3 +68,5 @@ private:
 
 } // namespace data_ingestion
 } // namespace trading
+
+#endif // NORMALIZER_HPP

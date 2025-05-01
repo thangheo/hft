@@ -202,15 +202,24 @@
 ./python/execution/exchange_simulator.py
 ./python/execution/order_analysis.py
 ./python/research
+./python/research/strategy_simulation.py
 ./python/research/Dockerfile
+./python/research/backtest_ar.py
 ./python/research/data_quality_analysis.py
+./python/research/phi_lut.py
+./python/research/jd_hawkes.py
+./python/research/hawkes_params_learn.py
+./python/research/jdh_learn.py
+./python/research/count_loc.py
 ./python/research/order_book_analyzer.py
+./python/research/signal_analysis.py
 ./python/research/__init__.py
 ./python/research/risk
 ./python/research/risk/drawdown_analysis.py
 ./python/research/risk/exposure_analysis.py
 ./python/research/risk/position_metrics.py
 ./python/research/risk/risk_parameter_optimization.py
+./python/research/hawkes_process.py
 ./python/research/simplified_order_book_analyzer.py
 ./python/common
 ./python/common/zeromq_client.py
@@ -454,16 +463,19 @@
 ./config/system_config.json
 ./docs
 ./docs/exchange_connectivity.md
+./docs/trategy.txt
+./docs/Order Imbalance Strategy_ Software Stack & Component Interactions.md
 ./docs/execution_algorithms.md
+./docs/Semi-HFT Crypto Trading System Architecture.pdf
 ./docs/execution
 ./docs/execution/modules.md
 ./docs/execution/swa.md
+./docs/execution/execution_engine_architecture.md
 ./docs/dev
 ./docs/dev/extending.md
 ./docs/dev/architecture.md
 ./docs/user
 ./docs/user/dashboards.md
-./docs/execution_engine_architecture.md
 ./docs/strategy
 ./docs/strategy/Order Imbalance Strategy Engine - Software Architecture.pdf
 ./docs/admin
@@ -479,6 +491,7 @@
 ./docs/api/monitoring
 ./docs/api/monitoring/metrics_api.md
 ./docs/api/monitoring/health_api.md
+./docs/Order Imbalance Strategy System_ Component Interface Specifications.pdf
 ./docs/architecture.md
 ./docs/data_ingestion
 ./docs/data_ingestion/modules.md
@@ -566,13 +579,21 @@
 ./src/data_ingestion/cache
 ./src/data_ingestion/cache/order_book_cache.cpp
 ./src/data_ingestion/publisher
+./src/data_ingestion/publisher/order_book_publisher.cpp
+./src/data_ingestion/publisher/guide.md
+./src/data_ingestion/publisher/example_publisher.cpp
 ./src/data_ingestion/publisher/zeromq_publisher.cpp
+./src/data_ingestion/publisher/order_book_subscriber_example.cpp
 ./src/data_ingestion/websocket
 ./src/data_ingestion/websocket/client_base.cpp
 ./src/data_ingestion/websocket/exchanges
+./src/data_ingestion/websocket/exchanges/binance_parser.cpp
+./src/data_ingestion/websocket/exchanges/exchange_connector.cpp
 ./src/data_ingestion/websocket/exchanges/binance_client.cpp
 ./src/data_ingestion/websocket/exchanges/ftx_client.cpp
+./src/data_ingestion/websocket/exchanges/exchange_manager.cpp
 ./src/data_ingestion/websocket/exchanges/coinbase_client.cpp
+./src/data_ingestion/websocket/exchanges/binance_connector.cpp
 ./src/data_ingestion/websocket/connection_pool.cpp
 ./src/data_ingestion/data_source_manager.cpp
 ./src/data_ingestion/protocol
@@ -580,6 +601,7 @@
 ./src/data_ingestion/protocol/ftx_adapter.cpp
 ./src/data_ingestion/protocol/coinbase_adapter.cpp
 ./src/data_ingestion/normalization
+./src/data_ingestion/normalization/order_book_normalizer.cpp
 ./src/data_ingestion/normalization/normalizer.cpp
 ./src/data_ingestion/dir.sh.sh
 ./src/data_ingestion/rest
@@ -661,20 +683,15 @@
 ./src/monitoring/strategy_performance.cpp
 ./src/data_ingestion_old
 ./src/data_ingestion_old/modules.md
-./src/data_ingestion_old/order_book_publisher.cpp
 ./src/data_ingestion_old/exchange_connectors
 ./src/data_ingestion_old/exchange_connectors/binance_parser.cpp
 ./src/data_ingestion_old/exchange_connectors/exchange_connector.cpp
 ./src/data_ingestion_old/exchange_connectors/exchange_manager.cpp
 ./src/data_ingestion_old/exchange_connectors/binance_connector.cpp
 ./src/data_ingestion_old/publisher
-./src/data_ingestion_old/publisher/guide.md
-./src/data_ingestion_old/publisher/example_publisher.cpp
-./src/data_ingestion_old/publisher/order_book_subscriber_example.cpp
 ./src/data_ingestion_old/main.cpp
 ./src/data_ingestion_old/websocket_client.cpp
 ./src/data_ingestion_old/normalization
-./src/data_ingestion_old/normalization/order_book_normalizer.cpp
 ./src/data_ingestion_old/order_book
 ./scripts
 ./scripts/compile_protos.sh
