@@ -1,91 +1,101 @@
-cmake_minimum_required(VERSION 3.12)
-project(OrderImbalanceTrading VERSION 0.1.0 LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.14)
+project(OrderImbalanceSystem VERSION 1.0.0 LANGUAGES CXX)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-# Add this near the top of CMakeLists.txt
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/")
-# Build type
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release)
-endif()
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/external
-    # other includes...
-)
-# Compiler flags
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -O0 -DDEBUG")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
-endif()
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Dependencies
+# Set CMake module path to find custom Find*.cmake modules
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
+
+# Build settings
+option(BUILD_TESTS "Build the test suite" ON)
+option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(ENABLE_COVERAGE "Enable code coverage" OFF)
+option(USE_SANITIZERS "Use address and undefined sanitizers in debug builds" OFF)
+
+# Find required packages
+find_package(Threads REQUIRED)
+find_package(ZeroMQ REQUIRED)
 find_package(cppzmq REQUIRED)
-find_package(Boost REQUIRED COMPONENTS system thread)
+find_package(Boost REQUIRED COMPONENTS system program_options filesystem thread)
 
-# Include directories
-include_directories(include)
+# Find Protobuf and gRPC
+find_package(Protobuf)
+if(NOT Protobuf_FOUND)
+    message(STATUS "Using pkg-config to find Protocol Buffers")
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(Protobuf REQUIRED protobuf)
+    # Set variables to make them compatible with standard CMake find_package
+    set(Protobuf_LIBRARIES ${Protobuf_LIBRARIES})
+    set(Protobuf_INCLUDE_DIRS ${Protobuf_INCLUDE_DIRS})
+    set(PROTOBUF_PROTOC_EXECUTABLE "/usr/bin/protoc")
+endif()
 
-# Add subdirectories
+find_package(gRPC)
+if(NOT gRPC_FOUND)
+    message(STATUS "Using pkg-config to find gRPC")
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(gRPC REQUIRED grpc++)
+    # Set variables to make them compatible with standard CMake find_package
+    set(gRPC_LIBRARIES ${gRPC_LIBRARIES})
+    set(gRPC_INCLUDE_DIRS ${gRPC_INCLUDE_DIRS})
+    set(GRPC_CPP_PLUGIN_EXECUTABLE "/usr/bin/grpc_cpp_plugin")
+endif()
+
+# Set compilation flags
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -O0")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+
+# Setup sanitizers if requested
+if(USE_SANITIZERS AND CMAKE_BUILD_TYPE MATCHES Debug)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address,undefined")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address,undefined")
+endif()
+
+# Protobuf and gRPC
+add_subdirectory(proto)
+
+# Add components
 add_subdirectory(src/common)
-# Uncomment as components are implemented
 add_subdirectory(src/data_ingestion)
 add_subdirectory(src/strategy)
 add_subdirectory(src/execution)
 add_subdirectory(src/risk)
+add_subdirectory(src/monitoring)
 
-# Add tests
-enable_testing()
-# add_subdirectory(tests)
-# CMakeLists.txt (continued)
-# Add common library
-add_library(common STATIC
-    src/common/logger.cpp
-    src/common/config.cpp
-    src/common/utils.cpp
+# Main executable
+add_executable(trading_system src/main.cpp)
+target_link_libraries(trading_system
+    PRIVATE
+        common
+        data_ingestion
+        strategy
+        execution
+        risk
+        monitoring
 )
 
-# Add data ingestion library
-add_library(data_ingestion STATIC
-    src/data_ingestion/order_book.cpp
-    src/data_ingestion/websocket_client.cpp
-    src/data_ingestion/exchange_connector.cpp
+# Install rules
+install(TARGETS trading_system
+    RUNTIME DESTINATION bin
 )
 
-# Link dependencies
-target_link_libraries(data_ingestion
-    common
-    ${ZeroMQ_LIBRARIES}
-    pthread
-)
+# Testing
+if(BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
 
-# Build main executable
-add_executable(order_book_reconstructor
-    src/data_ingestion/main.cpp
-)
-
-target_link_libraries(order_book_reconstructor
-    data_ingestion
-    common
-    ${ZeroMQ_LIBRARIES}
-    pthread
-)
-
-# Build tests
-enable_testing()
-add_executable(test_order_book
-    tests/data_ingestion/test_order_book.cpp
-)
-
-target_link_libraries(test_order_book
-    data_ingestion
-    common
-    ${ZeroMQ_LIBRARIES}
-    pthread
-)
-
-add_test(NAME test_order_book COMMAND test_order_book)
+# CPack configuration for binary distribution
+include(InstallRequiredSystemLibraries)
+set(CPACK_PACKAGE_VENDOR "Your Company")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Order Imbalance Trading System")
+set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+# include(CPack)

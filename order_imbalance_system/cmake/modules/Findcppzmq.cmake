@@ -1,31 +1,47 @@
-# Find the ZeroMQ libraries
-find_package(ZeroMQ QUIET)
+# FindCppZMQ.cmake - Find CppZMQ header-only library
+#
+# This module defines the following variables:
+#   cppzmq_FOUND - True if cppzmq is found
+#   cppzmq_INCLUDE_DIRS - cppzmq include directories
+#
+# It also defines the following imported targets:
+#   cppzmq - The cppzmq interface library
 
-# ZeroMQ libraries found
-if(ZeroMQ_FOUND)
-    find_path(CPPZMQ_INCLUDE_DIR
-        NAMES zmq.hpp
-        PATHS ${ZEROMQ_INCLUDE_DIR} ${CMAKE_INCLUDE_PATH}
-    )
-
-    if(CPPZMQ_INCLUDE_DIR)
-        set(CPPZMQ_FOUND ON)
-    endif()
-endif()
-
-# Output variables
-if(CPPZMQ_FOUND)
-    set(CPPZMQ_INCLUDE_DIRS ${CPPZMQ_INCLUDE_DIR})
-    set(CPPZMQ_LIBRARIES ${ZeroMQ_LIBRARIES})
-    if(NOT CPPZMQ_FIND_QUIETLY)
-        message(STATUS "Found CPPZMQ: ${CPPZMQ_INCLUDE_DIRS}")
-    endif()
+# First check if we have the cppzmq files in external directory
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include/external/cppzmq/zmq.hpp")
+    # Found in the project's include/external/cppzmq directory
+    set(cppzmq_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/external/cppzmq")
+    set(cppzmq_FOUND TRUE)
 else()
-    set(CPPZMQ_INCLUDE_DIRS)
-    set(CPPZMQ_LIBRARIES)
-    if(CPPZMQ_FIND_REQUIRED)
-        message(FATAL_ERROR "Could not find CPPZMQ")
-    endif()
+    # Try to find it in the system directories
+    find_path(cppzmq_INCLUDE_DIR
+        NAMES zmq.hpp
+        PATHS
+            /usr/include
+            /usr/local/include
+        DOC "cppzmq include directory"
+    )
 endif()
 
-mark_as_advanced(CPPZMQ_INCLUDE_DIR)
+# Standard handling of the package
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(cppzmq
+    REQUIRED_VARS cppzmq_INCLUDE_DIR
+)
+
+# Set output variables
+if(cppzmq_FOUND)
+    set(cppzmq_INCLUDE_DIRS ${cppzmq_INCLUDE_DIR})
+endif()
+
+# Create imported target
+if(cppzmq_FOUND AND NOT TARGET cppzmq)
+    find_package(ZeroMQ REQUIRED)
+    
+    add_library(cppzmq INTERFACE)
+    target_include_directories(cppzmq INTERFACE ${cppzmq_INCLUDE_DIR})
+    target_link_libraries(cppzmq INTERFACE ZeroMQ::ZeroMQ)
+endif()
+
+# Mark advanced variables
+mark_as_advanced(cppzmq_INCLUDE_DIR)
