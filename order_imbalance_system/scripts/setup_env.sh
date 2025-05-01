@@ -10,10 +10,11 @@ echo "Setting up Order Imbalance System environment..."
 echo "Installing system dependencies..."
 sudo apt-get update
 sudo apt-get install -y build-essential cmake libzmq3-dev libboost-all-dev \
-    git python3.12 python3-venv python3-full libssl-dev python3.12-dev
+    git python3 python3-venv python3-full libssl-dev python3-dev protobuf-compiler libprotobuf-dev \
+    libgrpc++-dev libgrpc-dev protobuf-compiler-grpc libpq-dev
 
 # Check if Python 3.12 is installed correctly
-if ! command -v python3.12 &> /dev/null; then
+if ! command -v python3 &> /dev/null; then
     echo "Error: Python 3.12 not found. Please install it and try again."
     exit 1
 fi
@@ -25,7 +26,7 @@ if [ -d "venv" ]; then
     rm -rf venv
 fi
 
-python3.12 -m venv venv
+python3 -m venv venv
 
 # Activate virtual environment
 source venv/bin/activate
@@ -63,9 +64,9 @@ pip install --only-binary=:all: matplotlib
 pip install --prefer-binary plotly==5.7.0
 pip install --prefer-binary dash==2.3.1
 pip install --prefer-binary pytest==7.1.1
-pip install --prefer-binary pyzmq>=26.0.0
+pip install --prefer-binary pyzmq==26.0.0
 pip install --prefer-binary influxdb-client==1.27.0
-pip install --prefer-binary psycopg2-binary>=2.9.5
+pip install --prefer-binary psycopg2-binary==2.9.5
 
 # Create necessary directory structure if it doesn't exist
 echo "Creating project directory structure..."
@@ -93,34 +94,6 @@ fi
 mkdir -p build
 cd build
 
-# Create a FindZeroMQ.cmake file to help CMake find ZeroMQ
-echo "Creating FindZeroMQ.cmake file..."
-mkdir -p ../cmake
-cat > ../cmake/FindZeroMQ.cmake << 'EOF'
-# FindZeroMQ.cmake - Find ZeroMQ library
-# This module defines
-#  ZeroMQ_INCLUDE_DIRS - where to find zmq.h
-#  ZeroMQ_LIBRARIES - the libraries needed to use ZeroMQ
-#  ZeroMQ_FOUND - If false, do not try to use ZeroMQ
-
-find_path(ZeroMQ_INCLUDE_DIR zmq.h
-    PATHS /usr/include /usr/local/include
-)
-
-find_library(ZeroMQ_LIBRARY NAMES zmq
-    PATHS /usr/lib /usr/local/lib /usr/lib/x86_64-linux-gnu
-)
-
-include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(ZeroMQ DEFAULT_MSG ZeroMQ_LIBRARY ZeroMQ_INCLUDE_DIR)
-
-if(ZeroMQ_FOUND)
-    set(ZeroMQ_LIBRARIES ${ZeroMQ_LIBRARY})
-    set(ZeroMQ_INCLUDE_DIRS ${ZeroMQ_INCLUDE_DIR})
-endif()
-
-mark_as_advanced(ZeroMQ_LIBRARY ZeroMQ_INCLUDE_DIR)
-EOF
 
 # Configure project with CMake
 echo "Configuring project with CMake..."
