@@ -1,28 +1,21 @@
 // src/data_ingestion/order_book_publisher.cpp
 #include "data_ingestion/order_book_publisher.hpp"
-#include "generated/order_book.pb.h"  // Generated Protocol Buffer headers
 #include <iostream>
 #include <iomanip>
 #include <sstream>
 #include <chrono>
 
-// Include compression libraries based on what's actually available
-#ifdef HAS_SNAPPY
-#include <snappy.h>
-#endif
-
+// Include compression libraries based on what's available
 #ifdef HAS_ZSTD
 #include <zstd.h>
-#endif
-
-#ifdef HAS_LZ4
-#include <lz4.h>
 #endif
 
 namespace trading {
 namespace data_ingestion {
 
-OrderBookPublisher::OrderBookPublisher(const PublisherConfig& config)
+// ZeroMQPublisher implementation
+
+ZeroMQPublisher::ZeroMQPublisher(const PublisherConfig& config)
     : config_(config),
       context_(std::make_unique<zmq::context_t>(1)),
       last_rate_check_time_(std::chrono::system_clock::now()) {
@@ -34,22 +27,22 @@ OrderBookPublisher::OrderBookPublisher(const PublisherConfig& config)
     initializeSocket();
 }
 
-OrderBookPublisher::~OrderBookPublisher() {
+ZeroMQPublisher::~ZeroMQPublisher() {
     stop();
 }
 
-bool OrderBookPublisher::start() {
+bool ZeroMQPublisher::start() {
     if (running_) {
         return false;  // Already running
     }
     
     running_ = true;
-    worker_thread_ = std::thread(&OrderBookPublisher::workerFunction, this);
+    worker_thread_ = std::thread(&ZeroMQPublisher::workerFunction, this);
     
     return true;
 }
 
-void OrderBookPublisher::stop() {
+void ZeroMQPublisher::stop() {
     if (!running_) {
         return;  // Already stopped
     }
@@ -72,7 +65,7 @@ void OrderBookPublisher::stop() {
     }
 }
 
-bool OrderBookPublisher::publishOrderBookUpdate(const OrderBookUpdate& update) {
+bool ZeroMQPublisher::publish(const std::string& topic, const std::vector<uint8_t>& data) {
     if (!running_) {
         return false;
     }
@@ -82,29 +75,20 @@ bool OrderBookPublisher::publishOrderBookUpdate(const OrderBookUpdate& update) {
         // Invoke back pressure callback if registered
         std::lock_guard<std::mutex> lock(callback_mutex_);
         if (back_pressure_callback_) {
-            back_pressure_callback_(update);
+            back_pressure_callback_(topic, data);
         }
         
         stats_.messages_dropped++;
         return false;
     }
     
-    // Create topic string
-    std::string topic = createTopic(update);
-    
-    // Serialize to Protocol Buffers
-    std::vector<uint8_t> data = serializeOrderBookUpdate(update);
-    
-    // Update statistics before compression
-    stats_.bytes_before_compression += data.size();
-    
-    // Apply compression if configured
+    // Compress data if configured
+    std::vector<uint8_t> compressed_data = data;
     if (config_.compression != CompressionAlgorithm::NONE) {
-        data = compressData(data);
+        stats_.bytes_before_compression += data.size();
+        compressed_data = compressData(data);
+        stats_.bytes_after_compression += compressed_data.size();
     }
-    
-    // Update statistics after compression
-    stats_.bytes_after_compression += data.size();
     
     // Add to publish queue with back-pressure checks
     {
@@ -115,7 +99,7 @@ bool OrderBookPublisher::publishOrderBookUpdate(const OrderBookUpdate& update) {
             // Apply back pressure - don't queue the message
             std::lock_guard<std::mutex> cb_lock(callback_mutex_);
             if (back_pressure_callback_) {
-                back_pressure_callback_(update);
+                back_pressure_callback_(topic, data);
             }
             
             stats_.messages_dropped++;
@@ -123,7 +107,7 @@ bool OrderBookPublisher::publishOrderBookUpdate(const OrderBookUpdate& update) {
         }
         
         // Queue the message
-        message_queue_.push(std::make_pair(topic, std::move(data)));
+        message_queue_.push(std::make_pair(topic, std::move(compressed_data)));
         stats_.current_queue_size = message_queue_.size();
         
         if (stats_.current_queue_size > stats_.max_queue_size_reached) {
@@ -137,16 +121,17 @@ bool OrderBookPublisher::publishOrderBookUpdate(const OrderBookUpdate& update) {
     return true;
 }
 
-PublisherStats OrderBookPublisher::getStats() const {
+PublisherStats ZeroMQPublisher::getStats() const {
     return stats_;
 }
 
-void OrderBookPublisher::registerBackPressureCallback(std::function<void(const OrderBookUpdate&)> callback) {
+void ZeroMQPublisher::registerBackPressureCallback(
+    std::function<void(const std::string&, const std::vector<uint8_t>&)> callback) {
     std::lock_guard<std::mutex> lock(callback_mutex_);
     back_pressure_callback_ = std::move(callback);
 }
 
-bool OrderBookPublisher::updateConfig(const PublisherConfig& config) {
+bool ZeroMQPublisher::updateConfig(const PublisherConfig& config) {
     // We can't change the ZMQ endpoint while running
     if (running_ && config_.zmq_endpoint != config.zmq_endpoint) {
         return false;
@@ -162,7 +147,7 @@ bool OrderBookPublisher::updateConfig(const PublisherConfig& config) {
     return true;
 }
 
-void OrderBookPublisher::workerFunction() {
+void ZeroMQPublisher::workerFunction() {
     auto last_heartbeat_time = std::chrono::system_clock::now();
     
     while (running_) {
@@ -222,173 +207,32 @@ void OrderBookPublisher::workerFunction() {
             }
             catch (const zmq::error_t& e) {
                 std::cerr << "ZeroMQ error when publishing: " << e.what() << std::endl;
-                // We could add retry logic here if needed
             }
         }
     }
 }
 
-std::vector<uint8_t> OrderBookPublisher::serializeOrderBookUpdate(const OrderBookUpdate& update) {
-    // Convert our internal OrderBookUpdate to protobuf message
-    proto::OrderBookUpdate proto_update;
-    
-    // Fill in the fields
-    proto_update.set_exchange_id(update.exchange_id);
-    proto_update.set_trading_pair(update.trading_pair);
-    proto_update.set_exchange_timestamp(update.exchange_timestamp);
-    proto_update.set_received_timestamp(update.received_timestamp);
-    proto_update.set_sequence_number(update.sequence_number);
-    proto_update.set_is_snapshot(update.is_snapshot);
-    proto_update.set_checksum(update.checksum);
-    
-    // Add bids
-    for (const auto& bid : update.bids) {
-        auto* proto_bid = proto_update.add_bids();
-        proto_bid->set_price(bid.price);
-        proto_bid->set_quantity(bid.quantity);
-        
-        // Add orders if available
-        for (const auto& order : bid.orders) {
-            auto* proto_order = proto_bid->add_orders();
-            proto_order->set_order_id(order.first);
-            proto_order->set_quantity(order.second);
-        }
-    }
-    
-    // Add asks
-    for (const auto& ask : update.asks) {
-        auto* proto_ask = proto_update.add_asks();
-        proto_ask->set_price(ask.price);
-        proto_ask->set_quantity(ask.quantity);
-        
-        // Add orders if available
-        for (const auto& order : ask.orders) {
-            auto* proto_order = proto_ask->add_orders();
-            proto_order->set_order_id(order.first);
-            proto_order->set_quantity(order.second);
-        }
-    }
-    
-    // Serialize to binary
-    std::string serialized;
-    if (!proto_update.SerializeToString(&serialized)) {
-        std::cerr << "Failed to serialize order book update" << std::endl;
-        return {};
-    }
-    
-    return std::vector<uint8_t>(serialized.begin(), serialized.end());
-}
-
-std::vector<uint8_t> OrderBookPublisher::compressData(const std::vector<uint8_t>& data) {
-    switch (config_.compression) {
-        case CompressionAlgorithm::SNAPPY:
-            #ifdef HAS_SNAPPY
-            {
-                std::string compressed;
-                snappy::Compress(reinterpret_cast<const char*>(data.data()), data.size(), &compressed);
-                return std::vector<uint8_t>(compressed.begin(), compressed.end());
-            }
-            #else
-            std::cerr << "Snappy compression requested but not available" << std::endl;
-            #endif
-            break;
-            
-        case CompressionAlgorithm::ZSTD:
-            #ifdef HAS_ZSTD
-            {
-                // Allocate buffer for compressed data (worst case size)
-                size_t compressed_size = ZSTD_compressBound(data.size());
-                std::vector<uint8_t> compressed(compressed_size);
-                
-                // Compress
-                compressed_size = ZSTD_compress(
-                    compressed.data(), compressed.size(),
-                    data.data(), data.size(),
-                    config_.compression_level);
-                
-                if (ZSTD_isError(compressed_size)) {
-                    std::cerr << "ZSTD compression error: " 
-                              << ZSTD_getErrorName(compressed_size) << std::endl;
-                    return data;  // Return uncompressed on error
-                }
-                
-                // Resize to actual compressed size
-                compressed.resize(compressed_size);
-                return compressed;
-            }
-            #else
-            std::cerr << "ZSTD compression requested but not available" << std::endl;
-            #endif
-            break;
-            
-        case CompressionAlgorithm::LZ4:
-            #ifdef HAS_LZ4
-            {
-                // Estimate compressed size
-                int max_compressed_size = LZ4_compressBound(data.size());
-                std::vector<uint8_t> compressed(max_compressed_size);
-                
-                // Compress
-                int compressed_size = LZ4_compress_default(
-                    reinterpret_cast<const char*>(data.data()), 
-                    reinterpret_cast<char*>(compressed.data()),
-                    data.size(), max_compressed_size);
-                
-                if (compressed_size <= 0) {
-                    std::cerr << "LZ4 compression error" << std::endl;
-                    return data;  // Return uncompressed on error
-                }
-                
-                // Resize to actual compressed size
-                compressed.resize(compressed_size);
-                return compressed;
-            }
-            #else
-            std::cerr << "LZ4 compression requested but not available" << std::endl;
-            #endif
-            break;
-            
-        case CompressionAlgorithm::NONE:
-        default:
-            break;
-    }
-    
-    // Default: return uncompressed data
-    return data;
-}
-
-std::string OrderBookPublisher::createTopic(const OrderBookUpdate& update) {
-    // Format: market.orderbook.normalized.<exchange_id>.<trading_pair>
-    std::stringstream ss;
-    ss << "market.orderbook.normalized." 
-       << update.exchange_id << "." 
-       << update.trading_pair;
-    
-    return ss.str();
-}
-
-void OrderBookPublisher::sendHeartbeat() {
+void ZeroMQPublisher::initializeSocket() {
     try {
-        // Topic for heartbeat
-        std::string topic = "system.heartbeat.orderbook_publisher";
-        zmq::message_t topic_msg(topic.data(), topic.size());
-        publisher_->send(topic_msg, zmq::send_flags::sndmore);
+        // Create new socket
+        publisher_ = std::make_unique<zmq::socket_t>(*context_, zmq::socket_type::pub);
         
-        // Create heartbeat message with timestamp
-        auto now = std::chrono::system_clock::now();
-        auto now_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
-            now.time_since_epoch()).count();
+        // Set socket options
+        publisher_->set(zmq::sockopt::linger, config_.zmq_linger_ms);
+        if (config_.zmq_hwm > 0) {
+            publisher_->set(zmq::sockopt::sndhwm, config_.zmq_hwm);
+        }
         
-        std::string msg = "timestamp=" + std::to_string(now_ms);
-        zmq::message_t data_msg(msg.data(), msg.size());
-        publisher_->send(data_msg, zmq::send_flags::none);
+        // Bind to endpoint
+        publisher_->bind(config_.zmq_endpoint);
     }
     catch (const zmq::error_t& e) {
-        std::cerr << "ZeroMQ error when sending heartbeat: " << e.what() << std::endl;
+        std::cerr << "ZeroMQ error when initializing socket: " << e.what() << std::endl;
+        throw;  // Re-throw the exception
     }
 }
 
-bool OrderBookPublisher::shouldThrottlePublishing() {
+bool ZeroMQPublisher::shouldThrottlePublishing() {
     // If no rate limit, never throttle
     if (config_.max_publish_rate <= 0) {
         return false;
@@ -415,24 +259,174 @@ bool OrderBookPublisher::shouldThrottlePublishing() {
     return false;
 }
 
-void OrderBookPublisher::initializeSocket() {
+void ZeroMQPublisher::sendHeartbeat() {
     try {
-        // Create new socket
-        publisher_ = std::make_unique<zmq::socket_t>(*context_, zmq::socket_type::pub);
+        // Topic for heartbeat
+        std::string topic = "system.heartbeat.orderbook_publisher";
+        zmq::message_t topic_msg(topic.data(), topic.size());
+        publisher_->send(topic_msg, zmq::send_flags::sndmore);
         
-        // Set socket options
-        publisher_->set(zmq::sockopt::linger, config_.zmq_linger_ms);
-        if (config_.zmq_hwm > 0) {
-            publisher_->set(zmq::sockopt::sndhwm, config_.zmq_hwm);
-        }
+        // Create heartbeat message with timestamp
+        auto now = std::chrono::system_clock::now();
+        auto now_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+            now.time_since_epoch()).count();
         
-        // Bind to endpoint
-        publisher_->bind(config_.zmq_endpoint);
+        std::string msg = "timestamp=" + std::to_string(now_ms);
+        zmq::message_t data_msg(msg.data(), msg.size());
+        publisher_->send(data_msg, zmq::send_flags::none);
     }
     catch (const zmq::error_t& e) {
-        std::cerr << "ZeroMQ error when initializing socket: " << e.what() << std::endl;
-        throw;  // Re-throw the exception
+        std::cerr << "ZeroMQ error when sending heartbeat: " << e.what() << std::endl;
     }
+}
+
+std::vector<uint8_t> ZeroMQPublisher::compressData(const std::vector<uint8_t>& data) {
+    // If no compression requested, return original data
+    if (config_.compression == CompressionAlgorithm::NONE) {
+        return data;
+    }
+    
+    // Handle ZSTD compression if available
+    #ifdef HAS_ZSTD
+    if (config_.compression == CompressionAlgorithm::ZSTD) {
+        // Allocate buffer for compressed data (worst case size)
+        size_t compressed_size = ZSTD_compressBound(data.size());
+        std::vector<uint8_t> compressed(compressed_size);
+        
+        // Compress
+        compressed_size = ZSTD_compress(
+            compressed.data(), compressed.size(),
+            data.data(), data.size(),
+            config_.compression_level);
+        
+        if (ZSTD_isError(compressed_size)) {
+            std::cerr << "ZSTD compression error: " 
+                      << ZSTD_getErrorName(compressed_size) << std::endl;
+            return data;  // Return uncompressed on error
+        }
+        
+        // Resize to actual compressed size
+        compressed.resize(compressed_size);
+        return compressed;
+    }
+    #endif
+    
+    // If requested compression not available, return original data
+    std::cerr << "Requested compression algorithm not available" << std::endl;
+    return data;
+}
+
+// OrderBookPublisher implementation
+
+OrderBookPublisher::OrderBookPublisher(const PublisherConfig& config)
+    : config_(config) {
+    
+    // Create ZeroMQ publisher
+    publisher_ = std::make_unique<ZeroMQPublisher>(config);
+    
+    // Register back pressure callback
+    publisher_->registerBackPressureCallback(
+        [this](const std::string& topic, const std::vector<uint8_t>& data) {
+            // This is called when ZeroMQ publisher applies back pressure
+            // Translate back to OrderBookUpdate if possible
+            if (back_pressure_callback_) {
+                // In a real implementation, we would deserialize the data
+                // For now, just create a dummy update
+                OrderBookUpdate update;
+                update.exchange_id = "unknown";
+                update.trading_pair = "unknown";
+                update.sequence_number = 0;
+                
+                back_pressure_callback_(update);
+            }
+        });
+}
+
+OrderBookPublisher::~OrderBookPublisher() {
+    stop();
+}
+
+bool OrderBookPublisher::start() {
+    return publisher_->start();
+}
+
+void OrderBookPublisher::stop() {
+    publisher_->stop();
+}
+
+bool OrderBookPublisher::publishOrderBookUpdate(const OrderBookUpdate& update) {
+    // Create topic string
+    std::string topic = createTopic(update);
+    
+    // Serialize the update
+    std::vector<uint8_t> data = serializeOrderBookUpdate(update);
+    
+    // Publish via ZeroMQ
+    return publisher_->publish(topic, data);
+}
+
+PublisherStats OrderBookPublisher::getStats() const {
+    return publisher_->getStats();
+}
+
+void OrderBookPublisher::registerBackPressureCallback(
+    std::function<void(const OrderBookUpdate&)> callback) {
+    back_pressure_callback_ = std::move(callback);
+}
+
+bool OrderBookPublisher::updateConfig(const PublisherConfig& config) {
+    config_ = config;
+    return publisher_->updateConfig(config);
+}
+
+std::string OrderBookPublisher::createTopic(const OrderBookUpdate& update) {
+    // Format: market.orderbook.normalized.<exchange_id>.<trading_pair>
+    std::stringstream ss;
+    ss << "market.orderbook.normalized." 
+       << update.exchange_id << "." 
+       << update.trading_pair;
+    
+    return ss.str();
+}
+
+std::vector<uint8_t> OrderBookPublisher::serializeOrderBookUpdate(const OrderBookUpdate& update) {
+    // In a real implementation, we would use Protocol Buffers or similar
+    // For simplicity, we'll just use a JSON-like format
+    std::stringstream ss;
+    
+    ss << "{";
+    ss << "\"exchange_id\":\"" << update.exchange_id << "\",";
+    ss << "\"trading_pair\":\"" << update.trading_pair << "\",";
+    ss << "\"sequence_number\":" << update.sequence_number << ",";
+    ss << "\"exchange_timestamp\":" << update.exchange_timestamp << ",";
+    ss << "\"received_timestamp\":" << update.received_timestamp << ",";
+    ss << "\"is_snapshot\":" << (update.is_snapshot ? "true" : "false") << ",";
+    
+    // Add bids
+    ss << "\"bids\":[";
+    for (size_t i = 0; i < update.bids.size(); ++i) {
+        if (i > 0) ss << ",";
+        ss << "{\"price\":\"" << update.bids[i].price << "\",";
+        ss << "\"quantity\":\"" << update.bids[i].quantity << "\"}";
+    }
+    ss << "],";
+    
+    // Add asks
+    ss << "\"asks\":[";
+    for (size_t i = 0; i < update.asks.size(); ++i) {
+        if (i > 0) ss << ",";
+        ss << "{\"price\":\"" << update.asks[i].price << "\",";
+        ss << "\"quantity\":\"" << update.asks[i].quantity << "\"}";
+    }
+    ss << "],";
+    
+    // Add checksum
+    ss << "\"checksum\":\"" << update.checksum << "\"";
+    
+    ss << "}";
+    
+    std::string json = ss.str();
+    return std::vector<uint8_t>(json.begin(), json.end());
 }
 
 } // namespace data_ingestion

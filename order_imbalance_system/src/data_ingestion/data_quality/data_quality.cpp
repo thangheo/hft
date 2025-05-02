@@ -1,5 +1,5 @@
-// src/data_ingestion/data_quality.cpp
-#include "data_ingestion/data_quality.hpp"
+// src/data_ingestion/data_quality/data_quality.cpp
+#include "data_ingestion/data_quality/data_quality.hpp"
 #include <iostream>
 #include <sstream>
 
@@ -7,7 +7,6 @@ namespace trading {
 namespace data_ingestion {
 
 // DataQualityControl implementation
-
 DataQualityControl::DataQualityControl() {
     // Set up standard filter chain
     auto checksum_filter = std::make_shared<ChecksumFilter>();
@@ -19,6 +18,12 @@ DataQualityControl::DataQualityControl() {
     checksum_filter->setNext(price_range_filter);
     price_range_filter->setNext(sequence_gap_filter);
     last_filter_ = sequence_gap_filter;
+    
+    // Create anomaly detector
+    anomaly_detector_ = std::make_shared<AnomalyDetector>();
+    
+    // Create validator
+    validator_ = std::make_shared<DataValidator>();
 }
 
 void DataQualityControl::addFilter(std::shared_ptr<DataQualityFilter> filter) {
@@ -30,13 +35,44 @@ void DataQualityControl::addFilter(std::shared_ptr<DataQualityFilter> filter) {
     }
 }
 
+void DataQualityControl::addAnomalyFilter(std::shared_ptr<AnomalyFilter> filter) {
+    anomaly_detector_->addFilter(filter);
+}
+
+void DataQualityControl::addValidationRule(const std::string& name, ValidationRule rule) {
+    validator_->addRule(name, rule);
+}
+
 bool DataQualityControl::validateUpdate(OrderBookUpdate& update) {
-    if (!first_filter_) return true;
-    return first_filter_->process(update);
+    // Step 1: Apply data filters
+    if (!first_filter_ || !first_filter_->process(update)) {
+        return false;
+    }
+    
+    // Step 2: Validate data structure
+    if (!validator_->validate(update, validation_context_)) {
+        std::cerr << "Validation failed for " << update.exchange_id << ":" << update.trading_pair << std::endl;
+        for (const auto& error : validation_context_.errors) {
+            std::cerr << "  - " << error << std::endl;
+        }
+        return false;
+    }
+    
+    // Step 3: Detect anomalies
+    if (!anomaly_detector_->detectAnomalies(update)) {
+        std::cerr << "Anomaly detected for " << update.exchange_id << ":" << update.trading_pair 
+                  << ": " << update.anomaly_type << " - " << update.anomaly_details << std::endl;
+        return false;
+    }
+    
+    return true;
+}
+
+const std::vector<std::string>& DataQualityControl::getValidationErrors() const {
+    return validation_context_.errors;
 }
 
 // ChecksumFilter implementation
-
 bool ChecksumFilter::filter(OrderBookUpdate& update) {
     // Skip if no checksum provided
     if (update.checksum.empty()) return true;
@@ -47,7 +83,6 @@ bool ChecksumFilter::filter(OrderBookUpdate& update) {
 }
 
 // PriceRangeFilter implementation
-
 PriceRangeFilter::PriceRangeFilter(const std::unordered_map<std::string, double>& max_prices) 
     : max_prices_(max_prices) {
 }
@@ -93,7 +128,6 @@ double PriceRangeFilter::getReasonablePriceRange(const std::string& symbol) cons
 }
 
 // SequenceGapFilter implementation
-
 bool SequenceGapFilter::filter(OrderBookUpdate& update) {
     std::string key = update.exchange_id + ":" + update.trading_pair;
     

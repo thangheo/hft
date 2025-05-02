@@ -1,145 +1,118 @@
 // include/data_ingestion/order_book_publisher.hpp
 #pragma once
 
-#include "order_book.hpp"
+#include "data_ingestion/orderbook/order_book_types.hpp"
+// #include "data_ingestion/publisher/publisher_config.hpp"
 #include <zmq.hpp>
 #include <string>
 #include <memory>
-#include <thread>
 #include <queue>
+#include <vector>
+#include <thread>
 #include <mutex>
 #include <atomic>
 #include <condition_variable>
-#include <chrono>
-#include <unordered_map>
 #include <functional>
 
 namespace trading {
 namespace data_ingestion {
 
-// Compression algorithms supported by the publisher
-enum class CompressionAlgorithm {
-    NONE,       // No compression
-    SNAPPY,     // Google's Snappy compression
-    ZSTD,       // Facebook's Zstandard compression
-    LZ4         // LZ4 compression
-};
-
-// Configuration for the publisher
-struct PublisherConfig {
-    // Base ZeroMQ endpoint (e.g., "tcp://*:5555")
-    std::string zmq_endpoint = "tcp://*:5555";
-    
-    // Maximum queue size before applying back pressure
-    size_t max_queue_size = 1000;
-    
-    // Maximum publishing rate in messages per second (0 for unlimited)
-    int max_publish_rate = 0;
-    
-    // Compression algorithm to use
-    CompressionAlgorithm compression = CompressionAlgorithm::NONE;
-    
-    // Compression level (1-9, higher means more compression but slower)
-    int compression_level = 3;
-    
-    // How often to send heartbeat messages (in milliseconds, 0 to disable)
-    int heartbeat_interval_ms = 5000;
-    
-    // High water mark for ZeroMQ socket (0 for unlimited)
-    int zmq_hwm = 1000;
-    
-    // ZeroMQ linger period when closing socket (milliseconds)
-    int zmq_linger_ms = 1000;
-};
-
-// Statistics for monitoring publisher performance
-struct PublisherStats {
-    std::atomic<uint64_t> messages_published{0};
-    std::atomic<uint64_t> messages_dropped{0};
-    std::atomic<uint64_t> current_queue_size{0};
-    std::atomic<uint64_t> max_queue_size_reached{0};
-    std::atomic<uint64_t> bytes_published{0};
-    std::atomic<uint64_t> bytes_before_compression{0};
-    std::atomic<uint64_t> bytes_after_compression{0};
-    std::chrono::system_clock::time_point last_publish_time;
-    std::chrono::system_clock::time_point start_time;
-};
-
-class OrderBookPublisher {
+// Publisher interface
+class Publisher {
 public:
-    // Constructor with configuration
-    explicit OrderBookPublisher(const PublisherConfig& config = PublisherConfig());
+    virtual ~Publisher() = default;
     
-    // Destructor
-    ~OrderBookPublisher();
+    // Start the publisher
+    virtual bool start() = 0;
     
-    // Start the publisher thread
-    bool start();
+    // Stop the publisher
+    virtual void stop() = 0;
     
-    // Stop the publisher thread
-    void stop();
+    // Publish an update
+    virtual bool publish(const std::string& topic, const std::vector<uint8_t>& data) = 0;
     
-    // Publish an order book update
-    // Returns true if the message was queued, false if back pressure was applied
-    bool publishOrderBookUpdate(const OrderBookUpdate& update);
+    // Get statistics
+    virtual PublisherStats getStats() const = 0;
+};
+
+// ZeroMQ-based publisher
+class ZeroMQPublisher : public Publisher {
+public:
+    ZeroMQPublisher(const PublisherConfig& config);
+    ~ZeroMQPublisher() override;
     
-    // Get current publisher statistics
-    PublisherStats getStats() const;
+    bool start() override;
+    void stop() override;
+    bool publish(const std::string& topic, const std::vector<uint8_t>& data) override;
+    PublisherStats getStats() const override;
     
-    // Register a callback for when back pressure is applied
-    void registerBackPressureCallback(std::function<void(const OrderBookUpdate&)> callback);
+    // Register a callback for back pressure notification
+    void registerBackPressureCallback(std::function<void(const std::string&, const std::vector<uint8_t>&)> callback);
     
-    // Update publisher configuration
+    // Update configuration
     bool updateConfig(const PublisherConfig& config);
     
 private:
-    // Configuration
     PublisherConfig config_;
-    
-    // ZeroMQ context and publisher socket
     std::unique_ptr<zmq::context_t> context_;
     std::unique_ptr<zmq::socket_t> publisher_;
     
-    // Worker thread for asynchronous publishing
     std::thread worker_thread_;
-    
-    // Message queue and related synchronization
-    std::queue<std::pair<std::string, std::vector<uint8_t>>> message_queue_;
-    std::mutex queue_mutex_;
-    std::condition_variable queue_condition_;
     std::atomic<bool> running_{false};
     
-    // Back pressure callback
-    std::function<void(const OrderBookUpdate&)> back_pressure_callback_;
+    std::mutex queue_mutex_;
+    std::condition_variable queue_condition_;
+    std::queue<std::pair<std::string, std::vector<uint8_t>>> message_queue_;
+    
     std::mutex callback_mutex_;
+    std::function<void(const std::string&, const std::vector<uint8_t>&)> back_pressure_callback_;
     
-    // Rate limiting
-    std::chrono::system_clock::time_point last_rate_check_time_;
-    int messages_in_current_interval_{0};
-    
-    // Statistics
     PublisherStats stats_;
+    std::atomic<int> messages_in_current_interval_{0};
+    std::chrono::system_clock::time_point last_rate_check_time_;
     
     // Worker thread function
     void workerFunction();
     
-    // Serialize OrderBookUpdate to Protocol Buffers
-    std::vector<uint8_t> serializeOrderBookUpdate(const OrderBookUpdate& update);
-    
-    // Compress data using selected algorithm
-    std::vector<uint8_t> compressData(const std::vector<uint8_t>& data);
-    
-    // Create topic string for an order book update
-    std::string createTopic(const OrderBookUpdate& update);
-    
-    // Send heartbeat message
-    void sendHeartbeat();
-    
-    // Apply rate limiting
-    bool shouldThrottlePublishing();
-    
-    // Initialize ZeroMQ socket
+    // Helper functions
     void initializeSocket();
+    bool shouldThrottlePublishing();
+    void sendHeartbeat();
+    std::vector<uint8_t> compressData(const std::vector<uint8_t>& data);
+};
+
+// Main order book publisher class
+class OrderBookPublisher {
+public:
+    OrderBookPublisher(const PublisherConfig& config);
+    ~OrderBookPublisher();
+    
+    // Start the publisher
+    bool start();
+    
+    // Stop the publisher
+    void stop();
+    
+    // Publish an order book update
+    bool publishOrderBookUpdate(const OrderBookUpdate& update);
+    
+    // Get statistics
+    PublisherStats getStats() const;
+    
+    // Register a callback for back pressure notification
+    void registerBackPressureCallback(std::function<void(const OrderBookUpdate&)> callback);
+    
+    // Update configuration
+    bool updateConfig(const PublisherConfig& config);
+    
+private:
+    PublisherConfig config_;
+    std::unique_ptr<ZeroMQPublisher> publisher_;
+    std::function<void(const OrderBookUpdate&)> back_pressure_callback_;
+    
+    // Helper functions
+    std::string createTopic(const OrderBookUpdate& update);
+    std::vector<uint8_t> serializeOrderBookUpdate(const OrderBookUpdate& update);
 };
 
 } // namespace data_ingestion

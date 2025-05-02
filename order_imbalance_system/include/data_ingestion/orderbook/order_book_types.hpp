@@ -45,6 +45,10 @@ struct OrderBookUpdate {
     std::vector<PriceLevel> bids;
     std::vector<PriceLevel> asks;
     std::string checksum;  // For data integrity validation
+    std::string anomaly_type;  // Type of detected anomaly
+    std::string anomaly_details;  // Details of the detected anomaly
+    bool has_anomaly{false};  // Flag to indicate if an anomaly was detected
+    std::map<std::string, std::string> additional_fields;  // For future extensibility
 };
 
 // Callback types

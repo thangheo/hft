@@ -1,72 +1,85 @@
-/**
- * @file order_book_normalizer.hpp
- * @brief Normalizer for order book data from different exchanges
- * 
- * @details 
- * Part of the Data Ingestion & Processing Layer for the Crypto Trading System.
- * 
- * Created on: April 30, 2025
- */
-
- #ifndef NORMALIZER_HPP
- #define NORMALIZER_HPP
- 
- // TODO: Implement Data standardization across different exchanges
- 
 // include/data_ingestion/order_book_normalizer.hpp
 #pragma once
 
-#include "exchange_connector.hpp"
-#include "order_book.hpp"
-#include <map>
-#include <string>
+#include "data_ingestion/order_book_types.hpp"
+#include "data_ingestion/order_book.hpp"
 #include <memory>
-#include <functional>
+#include <string>
+#include <unordered_map>
 
 namespace trading {
 namespace data_ingestion {
 
-// Callback for normalized order book updates
-using NormalizedOrderBookCallback = std::function<void(const OrderBookUpdate&)>;
+// Forward declarations
+class ExchangeAdapter;
 
+// Normalizes order book data from various exchanges
 class OrderBookNormalizer {
 public:
     OrderBookNormalizer(NormalizedOrderBookCallback callback);
     ~OrderBookNormalizer();
     
-    // Process a raw market data update and convert to normalized order book format
+    // Process market data from any exchange
     void processMarketData(const MarketDataUpdate& update);
     
-    // Get the current normalized order book for a specific exchange and trading pair
+    // Get current state of an order book
     OrderBookUpdate getOrderBook(const std::string& exchange_id, 
-                                const std::string& trading_pair,
-                                int32_t depth = 0) const;
+                               const std::string& trading_pair,
+                               int32_t depth = 10) const;
     
 private:
     NormalizedOrderBookCallback callback_;
     
-    // Map of exchange-specific parsers
-    std::map<std::string, std::shared_ptr<void>> exchange_parsers_;
+    // Exchange-specific adapters
+    std::unordered_map<std::string, std::shared_ptr<ExchangeAdapter>> exchange_adapters_;
     
-    // Map of order books (exchange_id:trading_pair -> OrderBook)
-    std::map<std::string, std::unique_ptr<OrderBook>> order_books_;
+    // Order books
+    std::unordered_map<std::string, std::unique_ptr<OrderBook>> order_books_;
     
-    // Get or create an order book for the specified exchange and trading pair
+    // Initialize exchange adapters
+    void initAdapters();
+    
+    // Get or create an order book
     OrderBook* getOrCreateOrderBook(const std::string& exchange_id, 
-                                   const std::string& trading_pair);
+                                  const std::string& trading_pair);
     
     // Create a key for the order book map
     std::string createOrderBookKey(const std::string& exchange_id, 
-                                  const std::string& trading_pair) const;
+                                 const std::string& trading_pair) const;
     
-    // Process Binance-specific market data
-    void processBinanceData(const MarketDataUpdate& update);
+    // Process exchange-specific data
+    void processExchangeData(const MarketDataUpdate& update, 
+                           const std::string& exchange_id);
+};
+
+// Interface for exchange-specific adapters
+class ExchangeAdapter {
+public:
+    virtual ~ExchangeAdapter() = default;
     
-    // Initialize exchange-specific parsers
-    void initParsers();
+    // Check if this adapter can handle the data
+    virtual bool canHandle(const MarketDataUpdate& update) const = 0;
+    
+    // Normalize exchange-specific format to standard format
+    virtual OrderBookUpdate normalize(const MarketDataUpdate& update) const = 0;
+    
+    // Standardize trading pair format
+    virtual std::string standardizeTradingPair(const std::string& pair) const = 0;
+};
+
+// Concrete adapter for Binance
+class BinanceAdapter : public ExchangeAdapter {
+public:
+    bool canHandle(const MarketDataUpdate& update) const override;
+    OrderBookUpdate normalize(const MarketDataUpdate& update) const override;
+    std::string standardizeTradingPair(const std::string& pair) const override;
+};
+
+// Factory for creating adapters
+class AdapterFactory {
+public:
+    static std::shared_ptr<ExchangeAdapter> createAdapter(const std::string& exchange_id);
 };
 
 } // namespace data_ingestion
 } // namespace trading
-
-#endif // NORMALIZER_HPP

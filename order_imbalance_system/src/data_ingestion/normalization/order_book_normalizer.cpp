@@ -1,41 +1,66 @@
 // src/data_ingestion/order_book_normalizer.cpp
 #include "data_ingestion/order_book_normalizer.hpp"
-#include "data_ingestion/binance_parser.hpp"
 #include <iostream>
 #include <sstream>
+#include <nlohmann/json.hpp>
 
 namespace trading {
 namespace data_ingestion {
 
+// OrderBookNormalizer implementation
+
 OrderBookNormalizer::OrderBookNormalizer(NormalizedOrderBookCallback callback)
     : callback_(std::move(callback)) {
-    initParsers();
+    initAdapters();
 }
 
-OrderBookNormalizer::~OrderBookNormalizer() {
-    // Clear parsers and order books
-    exchange_parsers_.clear();
-    order_books_.clear();
-}
+OrderBookNormalizer::~OrderBookNormalizer() = default;
 
-void OrderBookNormalizer::initParsers() {
-    // Initialize exchange-specific parsers
-    exchange_parsers_["binance"] = std::make_shared<BinanceParser>();
+void OrderBookNormalizer::initAdapters() {
+    // Add exchange-specific adapters
+    exchange_adapters_["binance"] = std::make_shared<BinanceAdapter>();
+    // Add other exchanges as needed
 }
 
 void OrderBookNormalizer::processMarketData(const MarketDataUpdate& update) {
-    // Process based on exchange
-    if (update.exchange_id == "binance") {
-        processBinanceData(update);
+    // Find adapter for this exchange
+    auto it = exchange_adapters_.find(update.exchange_id);
+    if (it == exchange_adapters_.end()) {
+        std::cerr << "No adapter found for exchange: " << update.exchange_id << std::endl;
+        return;
     }
-    else {
-        std::cerr << "Unsupported exchange: " << update.exchange_id << std::endl;
+    
+    auto adapter = it->second;
+    
+    // Check if adapter can handle this update
+    if (!adapter->canHandle(update)) {
+        std::cerr << "Adapter cannot handle update type for exchange: " 
+                  << update.exchange_id << std::endl;
+        return;
+    }
+    
+    try {
+        // Normalize the update
+        OrderBookUpdate normalized = adapter->normalize(update);
+        
+        // Standardize trading pair
+        std::string standardized_pair = adapter->standardizeTradingPair(update.trading_pair);
+        normalized.trading_pair = standardized_pair;
+        
+        // Get or create order book
+        OrderBook* order_book = getOrCreateOrderBook(update.exchange_id, standardized_pair);
+        
+        // Forward the normalized update to subscribers
+        callback_(normalized);
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Error processing market data: " << e.what() << std::endl;
     }
 }
 
 OrderBookUpdate OrderBookNormalizer::getOrderBook(const std::string& exchange_id, 
-                                                const std::string& trading_pair,
-                                                int32_t depth) const {
+                                               const std::string& trading_pair,
+                                               int32_t depth) const {
     // Find the order book
     std::string key = createOrderBookKey(exchange_id, trading_pair);
     auto it = order_books_.find(key);
@@ -53,7 +78,7 @@ OrderBookUpdate OrderBookNormalizer::getOrderBook(const std::string& exchange_id
 }
 
 OrderBook* OrderBookNormalizer::getOrCreateOrderBook(const std::string& exchange_id, 
-                                                   const std::string& trading_pair) {
+                                                  const std::string& trading_pair) {
     // Create a key for the map
     std::string key = createOrderBookKey(exchange_id, trading_pair);
     
@@ -65,6 +90,7 @@ OrderBook* OrderBookNormalizer::getOrCreateOrderBook(const std::string& exchange
     
     // Create a new order book
     std::cout << "Creating new order book for " << exchange_id << ":" << trading_pair << std::endl;
+    
     auto order_book = std::make_unique<OrderBook>(
         exchange_id, trading_pair, 
         [this](const OrderBookUpdate& update) {
@@ -79,44 +105,125 @@ OrderBook* OrderBookNormalizer::getOrCreateOrderBook(const std::string& exchange
 }
 
 std::string OrderBookNormalizer::createOrderBookKey(const std::string& exchange_id, 
-                                                  const std::string& trading_pair) const {
+                                                 const std::string& trading_pair) const {
     return exchange_id + ":" + trading_pair;
 }
 
-void OrderBookNormalizer::processBinanceData(const MarketDataUpdate& update) {
+void OrderBookNormalizer::processExchangeData(const MarketDataUpdate& update, 
+                                            const std::string& exchange_id) {
+    // Implementation will be exchange-specific
+    // This method would handle parsing/processing for each exchange
+}
+
+// BinanceAdapter implementation
+
+bool BinanceAdapter::canHandle(const MarketDataUpdate& update) const {
+    if (update.exchange_id != "binance") return false;
+    
+    return update.update_type == "orderbook" || 
+           update.update_type == "orderbook_snapshot";
+}
+
+OrderBookUpdate BinanceAdapter::normalize(const MarketDataUpdate& update) const {
+    using json = nlohmann::json;
+    OrderBookUpdate result;
+    
     try {
-        // Get the Binance parser
-        auto parser_ptr = std::static_pointer_cast<BinanceParser>(exchange_parsers_["binance"]);
+        // Convert binary data to string
+        std::string json_str(update.data.begin(), update.data.end());
         
-        // Normalize the trading pair
-        std::string normalized_pair = parser_ptr->standardizeTradingPair(update.trading_pair);
+        // Parse JSON
+        json data = json::parse(json_str);
         
-        // Get or create the order book
-        OrderBook* order_book = getOrCreateOrderBook(update.exchange_id, normalized_pair);
+        // Fill basic fields
+        result.exchange_id = "binance";
+        result.trading_pair = update.trading_pair;
+        result.exchange_timestamp = update.exchange_timestamp;
+        result.received_timestamp = update.received_timestamp;
         
-        // Process the update based on type
-        if (update.update_type == "orderbook") {
-            // Parse the update into a standard format
-            std::vector<uint8_t> data = update.data;
-            std::string json_str(data.begin(), data.end());
-            
-            // Create a MarketDataUpdate with the normalized data
-            MarketDataUpdate normalized_update;
-            normalized_update.exchange_id = update.exchange_id;
-            normalized_update.trading_pair = normalized_pair;
-            normalized_update.update_type = update.update_type;
-            normalized_update.exchange_timestamp = update.exchange_timestamp;
-            normalized_update.received_timestamp = update.received_timestamp;
-            normalized_update.data = data;
-            
-            // Process the update in the order book
-            order_book->processUpdate(normalized_update);
+        // Determine if snapshot
+        result.is_snapshot = data.contains("lastUpdateId");
+        
+        // Set sequence number
+        if (result.is_snapshot) {
+            result.sequence_number = data["lastUpdateId"].get<int64_t>();
+        } else {
+            result.sequence_number = data["u"].get<int64_t>();
         }
-        // Other update types can be handled similarly
+        
+        // Parse bids
+        if (data.contains("b") || data.contains("bids")) {
+            auto& bids_json = data.contains("b") ? data["b"] : data["bids"];
+            for (const auto& bid : bids_json) {
+                PriceLevel level;
+                level.price = bid[0].get<std::string>();
+                level.quantity = bid[1].get<std::string>();
+                result.bids.push_back(level);
+            }
+        }
+        
+        // Parse asks
+        if (data.contains("a") || data.contains("asks")) {
+            auto& asks_json = data.contains("a") ? data["a"] : data["asks"];
+            for (const auto& ask : asks_json) {
+                PriceLevel level;
+                level.price = ask[0].get<std::string>();
+                level.quantity = ask[1].get<std::string>();
+                result.asks.push_back(level);
+            }
+        }
+        
+        // Set checksum if available
+        if (data.contains("checksum")) {
+            result.checksum = data["checksum"].get<std::string>();
+        }
     }
     catch (const std::exception& e) {
-        std::cerr << "Error processing Binance data: " << e.what() << std::endl;
+        std::cerr << "Error parsing Binance data: " << e.what() << std::endl;
+        throw;
     }
+    
+    return result;
+}
+
+std::string BinanceAdapter::standardizeTradingPair(const std::string& pair) const {
+    // For Binance, convert BTCUSDT to BTC/USDT
+    // This is simplified - real implementation would be more robust
+    
+    // Look for common quote currencies
+    const std::vector<std::string> quote_currencies = {
+        "USDT", "BTC", "ETH", "BNB", "BUSD", "USDC", "EUR", "USD"
+    };
+    
+    for (const auto& quote : quote_currencies) {
+        if (pair.length() > quote.length() && 
+            pair.substr(pair.length() - quote.length()) == quote) {
+            
+            std::string base = pair.substr(0, pair.length() - quote.length());
+            return base + "/" + quote;
+        }
+    }
+    
+    // If no match, return original with slash in middle (approximate)
+    if (pair.length() >= 6) {
+        size_t splitPos = pair.length() / 2;
+        return pair.substr(0, splitPos) + "/" + pair.substr(splitPos);
+    }
+    
+    // Fallback
+    return pair;
+}
+
+// AdapterFactory implementation
+
+std::shared_ptr<ExchangeAdapter> AdapterFactory::createAdapter(const std::string& exchange_id) {
+    if (exchange_id == "binance") {
+        return std::make_shared<BinanceAdapter>();
+    }
+    
+    // Add other exchanges as needed
+    
+    throw std::runtime_error("No adapter available for exchange: " + exchange_id);
 }
 
 } // namespace data_ingestion

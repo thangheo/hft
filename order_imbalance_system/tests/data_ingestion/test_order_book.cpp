@@ -1,5 +1,6 @@
 // tests/data_ingestion/test_order_book.cpp
-#include "data_ingestion/order_book.h"
+#include "data_ingestion/orderbook/order_book.hpp"
+#include "data_ingestion/orderbook/order_book_types.hpp"
 #include <iostream>
 #include <cassert>
 #include <vector>
@@ -175,7 +176,7 @@ void testOrderBookMetrics() {
 
 // Test manager functionality
 void testOrderBookManager() {
-    OrderBookReconstructorManager manager;
+    OrderBookManager manager;
     
     // Create order books
     auto book1 = manager.getOrCreateOrderBook("binance", "btcusdt");

@@ -1,52 +1,35 @@
-// src/data_ingestion/order_book.cpp
-#include "data_ingestion/order_book.hpp"
+/**
+ * @file order_book.cpp
+ * @brief Implementation of order book and related classes
+ * 
+ * @details 
+ * Part of the Data Ingestion & Processing Layer for the Crypto Trading System.
+ * 
+ * Created on: April 30, 2025
+ */
+#include "data_ingestion/orderbook/order_book.hpp"
+#include <iostream>
 #include <sstream>
 #include <iomanip>
-#include <iostream>
 #include <algorithm>
+#include <cmath>
 
-namespace trading {
 namespace data_ingestion {
+namespace orderbook {
 
-OrderBook::OrderBook(const std::string& exchange_id, 
-                   const std::string& trading_pair,
-                   OrderBookCallback callback)
-    : exchange_id_(exchange_id),
-      trading_pair_(trading_pair),
+OrderBook::OrderBook(ExchangeId exchange, const Symbol& symbol, OrderBookCallback callback)
+    : exchange_id_(exchange),
+      symbol_(symbol),
       callback_(std::move(callback)) {
 }
 
-void OrderBook::processUpdate(const MarketDataUpdate& update) {
-    // Parse the update based on exchange-specific format
-    // In a real implementation, this would use exchange-specific adapters
-    // For simplicity, we'll assume the data is already parsed into bids and asks
-    
-    // Example parsing (placeholder)
-    std::vector<PriceLevel> bids;
-    std::vector<PriceLevel> asks;
-    int64_t sequence_number = 0;
-    bool is_snapshot = update.update_type == "orderbook_snapshot";
-    
-    // In a real implementation, parse update.data according to exchange format
-    // For now, we'll just log
-    std::cout << "Processing update from " << update.exchange_id 
-              << " for " << update.trading_pair 
-              << " (type: " << update.update_type << ")" << std::endl;
-    
-    // Process based on update type
-    if (is_snapshot) {
-        processSnapshot(bids, asks, sequence_number);
-    } else {
-        processDelta(bids, asks, sequence_number);
-    }
-}
-
-void OrderBook::processSnapshot(const std::vector<PriceLevel>& bids, 
-                              const std::vector<PriceLevel>& asks,
-                              int64_t sequence_number) {
+bool OrderBook::applySnapshot(const std::vector<PriceLevel>& bids, 
+                            const std::vector<PriceLevel>& asks,
+                            uint64_t sequence_number,
+                            Timestamp timestamp) {
     // Skip older snapshots
-    if (sequence_number <= last_sequence_number_) {
-        return;
+    if (sequence_number <= sequence_number_) {
+        return false;
     }
     
     std::lock_guard<std::mutex> lock(mutex_);
@@ -66,29 +49,35 @@ void OrderBook::processSnapshot(const std::vector<PriceLevel>& bids,
     }
     
     // Update metadata
-    last_sequence_number_ = sequence_number;
+    sequence_number_ = sequence_number;
+    timestamp_ = timestamp;
     is_valid_ = true;
     
     // Notify subscribers
-    notifyUpdate(true);
+    notifyCallback();
+    
+    return true;
 }
 
-void OrderBook::processDelta(const std::vector<PriceLevel>& bids, 
-                           const std::vector<PriceLevel>& asks,
-                           int64_t sequence_number) {
+bool OrderBook::applyUpdate(const std::vector<PriceLevel>& bids, 
+                          const std::vector<PriceLevel>& asks,
+                          uint64_t sequence_number,
+                          Timestamp timestamp) {
     // Skip out-of-sequence updates
-    if (sequence_number <= last_sequence_number_) {
-        return;
+    if (sequence_number <= sequence_number_) {
+        return false;
     }
     
     // Detect sequence gaps
-    if (sequence_number > last_sequence_number_ + 1) {
+    if (is_valid_ && sequence_number > sequence_number_ + 1) {
         // We missed some updates, invalidate the book
         is_valid_ = false;
-        std::cerr << "Sequence gap detected for " << exchange_id_ << ":" 
-                  << trading_pair_ << " (" << last_sequence_number_ 
+        std::cerr << "Sequence gap detected for " 
+                  << static_cast<int>(exchange_id_) << ":" 
+                  << symbol_.base << "/" << symbol_.quote
+                  << " (" << sequence_number_ 
                   << " -> " << sequence_number << ")" << std::endl;
-        return;
+        return false;
     }
     
     std::lock_guard<std::mutex> lock(mutex_);
@@ -103,190 +92,238 @@ void OrderBook::processDelta(const std::vector<PriceLevel>& bids,
         updateAskLevel(ask);
     }
     
-    // Update sequence number
-    last_sequence_number_ = sequence_number;
+    // Update metadata
+    sequence_number_ = sequence_number;
+    timestamp_ = timestamp;
     
     // Notify subscribers
-    notifyUpdate(false);
+    notifyCallback();
+    
+    return true;
 }
 
 void OrderBook::updateBidLevel(const PriceLevel& level) {
-    // Remove level if quantity is zero
-    if (level.quantity == "0" || level.quantity.empty()) {
-        bids_.erase(level.price);
+    double price = level.getPrice();
+    
+    if (level.getQuantity() <= 0.0) {
+        // Remove level if quantity is zero
+        bids_.erase(price);
     } else {
         // Update or add level
-        bids_[level.price] = level;
+        bids_[price] = level;
     }
 }
 
 void OrderBook::updateAskLevel(const PriceLevel& level) {
-    // Remove level if quantity is zero
-    if (level.quantity == "0" || level.quantity.empty()) {
-        asks_.erase(level.price);
+    double price = level.getPrice();
+    
+    if (level.getQuantity() <= 0.0) {
+        // Remove level if quantity is zero
+        asks_.erase(price);
     } else {
         // Update or add level
-        asks_[level.price] = level;
+        asks_[price] = level;
     }
 }
 
-OrderBookUpdate OrderBook::getSnapshot(int32_t depth) const {
+std::vector<PriceLevel> OrderBook::getBids(int depth) const {
     std::lock_guard<std::mutex> lock(mutex_);
     
-    OrderBookUpdate update;
-    update.exchange_id = exchange_id_;
-    update.trading_pair = trading_pair_;
-    update.sequence_number = last_sequence_number_;
-    update.exchange_timestamp = last_timestamp_;
-    update.received_timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(
-        std::chrono::system_clock::now().time_since_epoch()).count();
-    update.is_snapshot = true;
+    std::vector<PriceLevel> result;
     
-    // Copy bid levels
     int count = 0;
     for (const auto& [price, level] : bids_) {
+        result.push_back(level);
+        count++;
         if (depth > 0 && count >= depth) break;
-        update.bids.push_back(level);
-        count++;
-    }
-    
-    // Copy ask levels
-    count = 0;
-    for (const auto& [price, level] : asks_) {
-        if (depth > 0 && count >= depth) break;
-        update.asks.push_back(level);
-        count++;
-    }
-    
-    // Calculate checksum
-    update.checksum = calculateChecksum();
-    
-    return update;
-}
-
-std::string OrderBook::calculateChecksum() const {
-    // Simple checksum implementation
-    // In production, use CRC32 or similar
-    std::stringstream ss;
-    
-    // Include first 10 levels from each side
-    int count = 0;
-    for (const auto& [price, level] : bids_) {
-        if (count >= 10) break;
-        ss << price << ":" << level.quantity << ":";
-        count++;
-    }
-    
-    count = 0;
-    for (const auto& [price, level] : asks_) {
-        if (count >= 10) break;
-        ss << price << ":" << level.quantity << ":";
-        count++;
-    }
-    
-    std::string data = ss.str();
-    if (!data.empty()) {
-        data.pop_back(); // Remove trailing colon
-    }
-    
-    // In production, compute actual CRC32
-    return "checksum:" + std::to_string(last_sequence_number_);
-}
-
-void OrderBook::notifyUpdate(bool is_snapshot) {
-    if (!callback_) return;
-    
-    // Create update for subscribers
-    OrderBookUpdate update;
-    update.exchange_id = exchange_id_;
-    update.trading_pair = trading_pair_;
-    update.sequence_number = last_sequence_number_;
-    update.is_snapshot = is_snapshot;
-    
-    // Include top levels (limited for performance)
-    int top_levels = 10; // Could make configurable
-    
-    int count = 0;
-    for (const auto& [price, level] : bids_) {
-        if (count >= top_levels) break;
-        update.bids.push_back(level);
-        count++;
-    }
-    
-    count = 0;
-    for (const auto& [price, level] : asks_) {
-        if (count >= top_levels) break;
-        update.asks.push_back(level);
-        count++;
-    }
-    
-    // Set timestamps
-    update.exchange_timestamp = last_timestamp_;
-    update.received_timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(
-        std::chrono::system_clock::now().time_since_epoch()).count();
-    
-    // Set checksum
-    update.checksum = calculateChecksum();
-    
-    // Invoke callback
-    callback_(update);
-}
-
-// OrderBookManager implementation
-
-OrderBookManager::OrderBookManager() {
-}
-
-std::shared_ptr<OrderBook> OrderBookManager::getOrCreateOrderBook(
-    const std::string& exchange_id,
-    const std::string& trading_pair) {
-    
-    std::string key = createKey(exchange_id, trading_pair);
-    
-    // First try without locking for performance
-    auto it = order_books_.find(key);
-    if (it != order_books_.end()) {
-        return it->second;
-    }
-    
-    // If not found, lock and check again
-    std::lock_guard<std::mutex> lock(mutex_);
-    
-    it = order_books_.find(key);
-    if (it != order_books_.end()) {
-        return it->second;
-    }
-    
-    // Create new order book with default callback
-    auto callback = [](const OrderBookUpdate&) {};
-    auto book = std::make_shared<OrderBook>(exchange_id, trading_pair, callback);
-    order_books_[key] = book;
-    
-    return book;
-}
-
-std::vector<std::shared_ptr<OrderBook>> OrderBookManager::getAllOrderBooks() const {
-    std::lock_guard<std::mutex> lock(mutex_);
-    
-    std::vector<std::shared_ptr<OrderBook>> result;
-    result.reserve(order_books_.size());
-    
-    for (const auto& [key, book] : order_books_) {
-        result.push_back(book);
     }
     
     return result;
 }
 
-void OrderBookManager::processUpdate(const MarketDataUpdate& update) {
-    auto book = getOrCreateOrderBook(update.exchange_id, update.trading_pair);
-    book->processUpdate(update);
+std::vector<PriceLevel> OrderBook::getAsks(int depth) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    std::vector<PriceLevel> result;
+    
+    int count = 0;
+    for (const auto& [price, level] : asks_) {
+        result.push_back(level);
+        count++;
+        if (depth > 0 && count >= depth) break;
+    }
+    
+    return result;
 }
 
-std::string OrderBookManager::createKey(const std::string& exchange_id, 
-                                      const std::string& trading_pair) const {
-    return exchange_id + ":" + trading_pair;
+PriceLevel OrderBook::getBestBid() const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    if (bids_.empty()) {
+        return PriceLevel();
+    }
+    
+    return bids_.begin()->second;
 }
 
+PriceLevel OrderBook::getBestAsk() const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    if (asks_.empty()) {
+        return PriceLevel();
+    }
+    
+    return asks_.begin()->second;
+}
+
+double OrderBook::getMidPrice() const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    if (bids_.empty() || asks_.empty()) {
+        return 0.0;
+    }
+    
+    double best_bid = bids_.begin()->first;
+    double best_ask = asks_.begin()->first;
+    
+    return (best_bid + best_ask) / 2.0;
+}
+
+double OrderBook::getSpread() const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    if (bids_.empty() || asks_.empty()) {
+        return -1.0;
+    }
+    
+    double best_bid = bids_.begin()->first;
+    double best_ask = asks_.begin()->first;
+    
+    return best_ask - best_bid;
+}
+
+double OrderBook::getSpreadPercent() const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    if (bids_.empty() || asks_.empty()) {
+        return -1.0;
+    }
+    
+    double best_bid = bids_.begin()->first;
+    double best_ask = asks_.begin()->first;
+    
+    double mid_price = (best_bid + best_ask) / 2.0;
+    if (mid_price <= 0.0) {
+        return -1.0;
+    }
+    
+    return (best_ask - best_bid) / mid_price * 100.0;
+}
+
+double OrderBook::getBidVolume(int depth) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    double volume = 0.0;
+    int count = 0;
+    
+    for (const auto& [price, level] : bids_) {
+        volume += level.getQuantity();
+        count++;
+        if (depth > 0 && count >= depth) break;
+    }
+    
+    return volume;
+}
+
+double OrderBook::getAskVolume(int depth) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    double volume = 0.0;
+    int count = 0;
+    
+    for (const auto& [price, level] : asks_) {
+        volume += level.getQuantity();
+        count++;
+        if (depth > 0 && count >= depth) break;
+    }
+    
+    return volume;
+}
+
+double OrderBook::getVolumeImbalance(int depth) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    double bid_volume = getBidVolume(depth);
+    double ask_volume = getAskVolume(depth);
+    
+    double total_volume = bid_volume + ask_volume;
+    if (total_volume <= 0.0) {
+        return 0.0;
+    }
+    
+    return (bid_volume - ask_volume) / total_volume;
+}
+
+std::string OrderBook::calculateChecksum() const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Simple CRC-like checksum implementation
+    uint32_t checksum = 0;
+    
+    // Include first 10 levels from each side
+    int count = 0;
+    for (const auto& [price, level] : bids_) {
+        if (count >= 10) break;
+        
+        // Convert price and quantity to integers (scaled by 10^8)
+        uint64_t price_int = static_cast<uint64_t>(price * 100000000);
+        uint64_t qty_int = static_cast<uint64_t>(level.getQuantity() * 100000000);
+        
+        // Update checksum with price
+        checksum = (checksum * 31) + (price_int & 0xFFFFFFFF);
+        checksum = (checksum * 31) + ((price_int >> 32) & 0xFFFFFFFF);
+        
+        // Update checksum with quantity
+        checksum = (checksum * 31) + (qty_int & 0xFFFFFFFF);
+        checksum = (checksum * 31) + ((qty_int >> 32) & 0xFFFFFFFF);
+        
+        count++;
+    }
+    
+    count = 0;
+    for (const auto& [price, level] : asks_) {
+        if (count >= 10) break;
+        
+        // Convert price and quantity to integers (scaled by 10^8)
+        uint64_t price_int = static_cast<uint64_t>(price * 100000000);
+        uint64_t qty_int = static_cast<uint64_t>(level.getQuantity() * 100000000);
+        
+        // Update checksum with price
+        checksum = (checksum * 37) + (price_int & 0xFFFFFFFF);
+        checksum = (checksum * 37) + ((price_int >> 32) & 0xFFFFFFFF);
+        
+        // Update checksum with quantity
+        checksum = (checksum * 37) + (qty_int & 0xFFFFFFFF);
+        checksum = (checksum * 37) + ((qty_int >> 32) & 0xFFFFFFFF);
+        
+        count++;
+    }
+    
+    // Format as hexadecimal string
+    std::stringstream ss;
+    ss << std::hex << std::setfill('0') << std::setw(8) << checksum;
+    
+    return ss.str();
+}
+
+void OrderBook::notifyCallback() {
+    if (!callback_) {
+        return;
+    }
+    
+    // Invoke callback with reference to this order book
+    callback_(*this);
+}
+
+} // namespace orderbook
 } // namespace data_ingestion
-} // namespace trading
