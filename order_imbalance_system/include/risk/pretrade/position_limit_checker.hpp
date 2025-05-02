@@ -4,7 +4,93 @@
  * File: position_limit_checker.hpp
  * Created: 2025-04-29
  */
-
 #pragma once
 
+#include "../risk_types.hpp"
+#include "../risk_config.hpp"
+#include "../portfolio/position_tracker.hpp"
 
+#include <map>
+#include <string>
+#include <mutex>
+#include <memory>
+
+namespace risk {
+
+/**
+ * PositionLimitChecker enforces maximum position sizes per asset, strategy, and exchange.
+ * It prevents excessive concentration in any single position.
+ */
+class PositionLimitChecker {
+public:
+    /**
+     * Constructor
+     * @param config Risk configuration containing position limits
+     * @param positionTracker Reference to the position tracker to get current positions
+     */
+    PositionLimitChecker(const RiskConfig& config, std::shared_ptr<PositionTracker> positionTracker);
+    
+    /**
+     * Initialize the checker
+     * @return true if initialization was successful, false otherwise
+     */
+    bool initialize();
+    
+    /**
+     * Check if adding a new position would exceed position limits
+     * @param signal The trading signal to check
+     * @param violations Vector to fill with any violations
+     * @return true if within limits, false otherwise
+     */
+    bool checkPositionLimit(const TradingSignal& signal, std::vector<RiskViolation>& violations);
+    
+    /**
+     * Check if adding a new position would exceed position limits
+     * @param orderRequest The order request to check
+     * @param violations Vector to fill with any violations
+     * @return true if within limits, false otherwise
+     */
+    bool checkPositionLimit(const OrderRequest& orderRequest, std::vector<RiskViolation>& violations);
+    
+    /**
+     * Update position limits
+     * @param assetId The asset identifier
+     * @param strategyId The strategy identifier
+     * @param newLimit The new position limit
+     * @return true if update was successful, false otherwise
+     */
+    bool updatePositionLimit(const std::string& assetId, const std::string& strategyId, double newLimit);
+    
+    /**
+     * Get the current position limit for an asset and strategy
+     * @param assetId The asset identifier
+     * @param strategyId The strategy identifier
+     * @return The current position limit
+     */
+    double getPositionLimit(const std::string& assetId, const std::string& strategyId) const;
+    
+    /**
+     * Calculate the new position size if the signal/order was executed
+     * @param tradingPair The trading pair
+     * @param direction The trading direction
+     * @param quantity The order quantity
+     * @return The new theoretical position size
+     */
+    double calculateNewPosition(const TradingPair& tradingPair, Direction direction, double quantity) const;
+
+private:
+    std::shared_ptr<PositionTracker> m_positionTracker;
+    RiskConfig m_config;
+    PositionLimitConfig m_positionLimits;
+    mutable std::mutex m_limitsLock;
+    
+    // Internal limits cache for faster access
+    std::map<std::string, double> m_assetLimits;
+    std::map<std::string, double> m_strategyLimits;
+    std::map<std::string, double> m_exchangeLimits;
+    double m_defaultLimit;
+    
+    void loadLimitsFromConfig();
+};
+
+} // namespace risk
