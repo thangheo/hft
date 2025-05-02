@@ -1,0 +1,79 @@
+# kubernetes/order-book-normalizer-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-book-normalizer
+  namespace: trading-system
+  labels:
+    app: order-book-normalizer
+    component: data-ingestion
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: order-book-normalizer
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: order-book-normalizer
+        component: data-ingestion
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8081"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: order-book-normalizer
+        image: order-imbalance-trading/order-book-normalizer:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5555
+          name: zeromq
+        - containerPort: 8080
+          name: http
+        - containerPort: 8081
+          name: metrics
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config
+        env:
+        - name: CONFIG_PATH
+          value: /app/config/data_ingestion/normalization.yaml
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /readiness
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+      volumes:
+      - name: config-volume
+        configMap:
+          name: order-book-normalizer-config

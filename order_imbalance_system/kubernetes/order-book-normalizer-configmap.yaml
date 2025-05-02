@@ -1,0 +1,62 @@
+# kubernetes/order-book-normalizer-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: order-book-normalizer-config
+  namespace: trading-system
+data:
+  normalization.yaml: |
+    order_book_normalization:
+      adapters:
+        binance:
+          enabled: true
+          validate_checksums: true
+        coinbase:
+          enabled: true
+          validate_checksums: false
+        ftx:
+          enabled: true
+          validate_checksums: false
+      
+      order_book:
+        max_depth: 100
+        cache_size_per_symbol: 1000
+        snapshot_interval: 1000
+      
+      data_quality:
+        filters:
+          checksum:
+            enabled: true
+          price_range:
+            enabled: true
+            deviation_threshold: 0.2
+          sequence_gap:
+            enabled: true
+            max_acceptable_gap: 5
+      
+      timestamp:
+        sync_interval_ms: 60000
+        max_clock_drift_ms: 100
+      
+      publisher:
+        zeromq:
+          enabled: true
+          endpoint: "tcp://*:5555"
+          topics_format: "orderbook.{message_type}.{exchange_id}.{symbol}"
+          high_water_mark: 1000
+        
+        rest_api:
+          enabled: true
+          host: "0.0.0.0"
+          port: 8080
+          rate_limit: 100
+          cache_duration_ms: 500
+      
+      logging:
+        level: "info"
+        metrics_interval_ms: 5000
+      
+      performance:
+        thread_pool_size: 4
+        lock_free_queue_size: 10000
+        batch_size: 10

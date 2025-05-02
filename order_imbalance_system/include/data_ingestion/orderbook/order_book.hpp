@@ -1,50 +1,36 @@
 // include/data_ingestion/order_book.hpp
 #pragma once
 
-#include <string>
-#include <map>
-#include <vector>
+#include "data_ingestion/order_book_types.hpp"
 #include <mutex>
+#include <map>
 #include <memory>
-#include <functional>
-#include <chrono>
+#include <string>
+#include <vector>
+#include <unordered_map>
 
 namespace trading {
 namespace data_ingestion {
 
-struct PriceLevel {
-    std::string price;  // As string to preserve precision
-    std::string quantity;  // As string to preserve precision
-    std::vector<std::pair<std::string, std::string>> orders;  // order_id, quantity pairs
-};
-
-struct OrderBookUpdate {
-    std::string exchange_id;
-    std::string trading_pair;
-    int64_t exchange_timestamp;
-    int64_t received_timestamp;
-    int64_t sequence_number;
-    bool is_snapshot;
-    std::vector<PriceLevel> bids;
-    std::vector<PriceLevel> asks;
-    std::string checksum;  // For data integrity validation
-};
-
-using OrderBookCallback = std::function<void(const OrderBookUpdate&)>;
-
+// Single order book for a specific exchange and trading pair
 class OrderBook {
 public:
     OrderBook(const std::string& exchange_id, 
               const std::string& trading_pair,
               OrderBookCallback callback);
     
-    // Process a market data update to reconstruct the order book
+    // Process a market data update
     void processUpdate(const MarketDataUpdate& update);
     
     // Get current state of the order book
     OrderBookUpdate getSnapshot(int32_t depth = 0) const;
     
-    // Calculate checksum to verify order book integrity
+    // Get exchange and pair info
+    std::string getExchangeId() const { return exchange_id_; }
+    std::string getTradingPair() const { return trading_pair_; }
+    int64_t getLastSequenceNumber() const { return last_sequence_number_; }
+    
+    // Calculate checksum for validation
     std::string calculateChecksum() const;
     
 private:
@@ -52,15 +38,58 @@ private:
     std::string trading_pair_;
     OrderBookCallback callback_;
     
-    mutable std::mutex mutex_;
-    std::map<std::string, PriceLevel> bids_;  // price -> PriceLevel
-    std::map<std::string, PriceLevel> asks_;  // price -> PriceLevel
-    int64_t last_update_id_;
-    int64_t last_timestamp_;
+    // Using maps for sorted price levels
+    // Bids stored in descending order (higher prices first)
+    std::map<std::string, PriceLevel, std::greater<std::string>> bids_;
+    // Asks stored in ascending order (lower prices first)
+    std::map<std::string, PriceLevel, std::less<std::string>> asks_;
     
-    void applySnapshot(const MarketDataUpdate& update);
-    void applyDelta(const MarketDataUpdate& update);
+    std::atomic<int64_t> last_sequence_number_{0};
+    std::atomic<int64_t> last_timestamp_{0};
+    std::atomic<bool> is_valid_{false};
+    
+    // Mutex for thread safety
+    mutable std::mutex mutex_;
+    
+    // Process different types of updates
+    void processSnapshot(const std::vector<PriceLevel>& bids, 
+                         const std::vector<PriceLevel>& asks,
+                         int64_t sequence_number);
+    void processDelta(const std::vector<PriceLevel>& bids, 
+                      const std::vector<PriceLevel>& asks,
+                      int64_t sequence_number);
+    
+    // Update price levels
+    void updateBidLevel(const PriceLevel& level);
+    void updateAskLevel(const PriceLevel& level);
+    
+    // Notify subscribers about updates
     void notifyUpdate(bool is_snapshot);
+};
+
+// Manager for multiple order books
+class OrderBookManager {
+public:
+    OrderBookManager();
+    
+    // Get or create an order book
+    std::shared_ptr<OrderBook> getOrCreateOrderBook(
+        const std::string& exchange_id,
+        const std::string& trading_pair);
+    
+    // Get all order books
+    std::vector<std::shared_ptr<OrderBook>> getAllOrderBooks() const;
+    
+    // Process update for a specific order book
+    void processUpdate(const MarketDataUpdate& update);
+    
+private:
+    std::unordered_map<std::string, std::shared_ptr<OrderBook>> order_books_;
+    mutable std::mutex mutex_;
+    
+    // Generate a unique key for an order book
+    std::string createKey(const std::string& exchange_id, 
+                         const std::string& trading_pair) const;
 };
 
 } // namespace data_ingestion

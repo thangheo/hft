@@ -1,0 +1,23 @@
+# kubernetes/order-book-normalizer-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-book-normalizer
+  namespace: trading-system
+  labels:
+    app: order-book-normalizer
+    component: data-ingestion
+spec:
+  selector:
+    app: order-book-normalizer
+  ports:
+  - port: 5555
+    targetPort: 5555
+    name: zeromq
+  - port: 8080
+    targetPort: 8080
+    name: http
+  - port: 8081
+    targetPort: 8081
+    name: metrics
+  type: ClusterIP
