@@ -49,7 +49,11 @@ public:
      * @brief Destructor that ensures proper cleanup of connections
      */
     ~ExchangeManager();
-    
+     // AddExchange: Adds a new exchange connector
+    bool addExchange(const std::string& exchange_id, 
+    std::unique_ptr<ExchangeConnector> connector);
+        
+ 
     /**
      * @brief Registers a new exchange with the manager
      * @param exchange_id Unique identifier for the exchange
@@ -88,11 +92,15 @@ public:
      * @param depth Depth of order book to request
      * @return true if subscription successful, false otherwise
      */
-    bool subscribe(const std::string& exchange_id, 
-                  const std::vector<std::string>& trading_pairs,
-                  const std::vector<DataType>& data_types,
-                  int32_t depth = 10);
-    
+    // bool subscribe(const std::string& exchange_id, 
+    //               const std::vector<std::string>& trading_pairs,
+    //               const std::vector<DataType>& data_types,
+    //               int32_t depth = 10);
+     // Subscribe: Subscribes to data from a specific exchange
+     bool subscribe(const std::string& exchange_id, 
+        const std::vector<std::string>& trading_pairs, 
+        const std::vector<DataType>& data_types, 
+        int32_t depth);
     /**
      * @brief Subscribes to the same market data across all exchanges
      * @param trading_pairs List of trading pairs to subscribe to
@@ -121,16 +129,9 @@ public:
                                int32_t depth = 0) const;
     
 private:
-    /** 
-     * @brief Structure to store subscription request details
-     */
-    struct SubscriptionRequest {
-        std::string exchange_id;
-        std::vector<std::string> trading_pairs;
-        std::vector<DataType> data_types;
-        int32_t depth;
-    };
-    
+   
+     // Map of exchange IDs to their connectors
+     std::map<std::string, std::unique_ptr<ExchangeConnector>> connectors_;
     /**
      * @brief Structure to store exchange connection information
      */

@@ -114,13 +114,9 @@ namespace data_ingestion {
       * @param symbol Trading symbol
       * @return std::shared_ptr<OrderBook> 
       */
-    //  std::shared_ptr<OrderBook> getOrderBook(
-    //      ExchangeId exchange, const Symbol& symbol) const;
-    // std::shared_ptr<trading::data_ingestion::OrderBook> getOrderBook(
-    //     trading::data_ingestion::ExchangeId exchange, 
-    //     const trading::data_ingestion::Symbol& symbol) const;
-        // In headers, use qualified types
-    std::shared_ptr<trading::data_ingestion::OrderBook> getOrderBook(...);
+        std::shared_ptr<OrderBook> getOrderBook(
+            ExchangeId exchange, const Symbol& symbol) const;
+
      /**
       * @brief Get all order books
       * 

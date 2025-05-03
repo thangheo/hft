@@ -200,6 +200,8 @@ bool ExchangeManager::subscribe(const std::string& exchange_id,
         if (success) {
             // Store the subscription request
             SubscriptionRequest request;
+            
+
             request.exchange_id = exchange_id;
             request.trading_pairs = trading_pairs;
             request.data_types = data_types;

@@ -14,8 +14,12 @@
 #include <string>
 #include <memory>
 #include <nlohmann/json.hpp>
-#include "order_book_update.hpp"
-#include "exchange_data.hpp"
+#include "data_ingestion/types.hpp"
+#include "data_ingestion/orderbook/order_book_types.hpp"
+
+using json = nlohmann::json;
+using namespace trading::data_ingestion;
+
 // TODO: Implement Abstract interface for protocol adapter implementations
 // Interface for all protocol adapters
 class AdapterInterface {
@@ -33,18 +37,18 @@ class AdapterInterface {
     };
     
     // Specific implementations for each exchange
-    class BinanceAdapter : public AdapterInterface {
-    public:
-        OrderBookUpdate convertToStandardFormat(const ExchangeData& data) override;
-        bool canHandle(const ExchangeData& data) override;
-        std::string getName() const override { return "Binance"; }
-    private:
-        // Exchange-specific parsing logic
-        BidAskPair parsePriceLevel(const json& level);
-        Timestamp parseTimestamp(const json& data);
-    };
+    // class BinanceAdapter : public AdapterInterface {
+    // public:
+    //     OrderBookUpdate convertToStandardFormat(const ExchangeData& data) override;
+    //     bool canHandle(const ExchangeData& data) override;
+    //     std::string getName() const override { return "Binance"; }
+    // private:
+    //     // Exchange-specific parsing logic
+    //     BidAskPair parsePriceLevel(const json& level);
+    //     Timestamp parseTimestamp(const json& data);
+    // };
     
     // Similar adapters for other exchanges
-    class CoinbaseAdapter : public AdapterInterface;
-    class FTXAdapter : public AdapterInterface;
+    // class CoinbaseAdapter : public AdapterInterface;
+    // class FTXAdapter : public AdapterInterface;
 #endif // ADAPTER_INTERFACE_HPP

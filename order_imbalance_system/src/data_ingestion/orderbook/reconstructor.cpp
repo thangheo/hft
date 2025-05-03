@@ -231,22 +231,31 @@
      return true;
  }
  
- void OrderBookReconstructor::publishOrderBook(const std::shared_ptr<OrderBook>& order_book) {
+void OrderBookReconstructor::publishOrderBook(const std::shared_ptr<OrderBook>& order_book) {
      if (!publisher_ || !order_book) {
          return;
      }
      
      // Create message for publishing
      // In a real implementation, this would serialize the order book
-     std::stringstream ss;
-     ss << "orderbook:"
-        << static_cast<int>(order_book->getExchangeId()) << ":"
-        << order_book->getSymbol().base << "/"
-        << order_book->getSymbol().quote << ":"
-        << order_book->getSequenceNumber();
-     
-     // Publish message
-     publisher_->publish("orderbook", ss.str());
+     // Create message for publishing
+    // In a real implementation, this would serialize the order book
+    std::stringstream ss;
+    ss << "orderbook:"
+    << static_cast<int>(order_book->getExchangeId()) << ":"
+    << order_book->getSymbol().base << "/"
+    << order_book->getSymbol().quote << ":"
+    << order_book->getSequenceNumber();
+
+    // Convert string to binary payload (vector of unsigned char)
+    std::string payload = ss.str();
+    std::vector<unsigned char> binary_payload(payload.begin(), payload.end());
+
+    // Publish message
+    publisher_->publish("orderbook", binary_payload);
+
+
+
  }
  
  } // namespace data_ingestion

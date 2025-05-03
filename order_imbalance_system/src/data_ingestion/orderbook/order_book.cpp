@@ -13,6 +13,8 @@
 #include <iomanip>
 #include <algorithm>
 #include <cmath>
+#include <boost/crc.hpp> // for crc_32_type
+#include <boost/functional/hash.hpp>
 namespace trading {
 namespace data_ingestion {
 // namespace orderbook {
@@ -106,26 +108,31 @@ void OrderBook::updateBidLevel(const PriceLevel& level) {
     double price = level.getPrice();
     
     if (level.getQuantity() <= 0.0) {
-        // Remove level if quantity is zero
+        // Remove the level if quantity is zero or negative
         bids_.erase(price);
     } else {
-        // Update or add level
+        // Update or add the level
         bids_[price] = level;
     }
+    
+    // Update timestamp
+    last_update_time_ = std::chrono::system_clock::now();
 }
 
 void OrderBook::updateAskLevel(const PriceLevel& level) {
     double price = level.getPrice();
     
     if (level.getQuantity() <= 0.0) {
-        // Remove level if quantity is zero
+        // Remove the level if quantity is zero or negative
         asks_.erase(price);
     } else {
-        // Update or add level
+        // Update or add the level
         asks_[price] = level;
     }
+    
+    // Update timestamp
+    last_update_time_ = std::chrono::system_clock::now();
 }
-
 std::vector<PriceLevel> OrderBook::getBids(int depth) const {
     std::lock_guard<std::mutex> lock(mutex_);
     
@@ -220,31 +227,27 @@ double OrderBook::getSpreadPercent() const {
     return (best_ask - best_bid) / mid_price * 100.0;
 }
 
-double OrderBook::getBidVolume(int depth) const {
-    std::lock_guard<std::mutex> lock(mutex_);
-    
+double OrderBook::getBidVolume(int levels) const {
     double volume = 0.0;
     int count = 0;
     
-    for (const auto& [price, level] : bids_) {
+    for (auto it = bids_.begin(); it != bids_.end() && (levels == 0 || count < levels); ++it, ++count) {
+        const auto& level = it->second;
         volume += level.getQuantity();
-        count++;
-        if (depth > 0 && count >= depth) break;
     }
     
     return volume;
 }
 
-double OrderBook::getAskVolume(int depth) const {
-    std::lock_guard<std::mutex> lock(mutex_);
-    
+
+
+double OrderBook::getAskVolume(int levels) const {
     double volume = 0.0;
     int count = 0;
     
-    for (const auto& [price, level] : asks_) {
+    for (auto it = asks_.begin(); it != asks_.end() && (levels == 0 || count < levels); ++it, ++count) {
+        const auto& level = it->second;
         volume += level.getQuantity();
-        count++;
-        if (depth > 0 && count >= depth) break;
     }
     
     return volume;
@@ -263,59 +266,53 @@ double OrderBook::getVolumeImbalance(int depth) const {
     
     return (bid_volume - ask_volume) / total_volume;
 }
-
 std::string OrderBook::calculateChecksum() const {
-    std::lock_guard<std::mutex> lock(mutex_);
-    
-    // Simple CRC-like checksum implementation
-    uint32_t checksum = 0;
-    
-    // Include first 10 levels from each side
-    int count = 0;
-    for (const auto& [price, level] : bids_) {
-        if (count >= 10) break;
-        
-        // Convert price and quantity to integers (scaled by 10^8)
-        uint64_t price_int = static_cast<uint64_t>(price * 100000000);
-        uint64_t qty_int = static_cast<uint64_t>(level.getQuantity() * 100000000);
-        
-        // Update checksum with price
-        checksum = (checksum * 31) + (price_int & 0xFFFFFFFF);
-        checksum = (checksum * 31) + ((price_int >> 32) & 0xFFFFFFFF);
-        
-        // Update checksum with quantity
-        checksum = (checksum * 31) + (qty_int & 0xFFFFFFFF);
-        checksum = (checksum * 31) + ((qty_int >> 32) & 0xFFFFFFFF);
-        
-        count++;
-    }
-    
-    count = 0;
-    for (const auto& [price, level] : asks_) {
-        if (count >= 10) break;
-        
-        // Convert price and quantity to integers (scaled by 10^8)
-        uint64_t price_int = static_cast<uint64_t>(price * 100000000);
-        uint64_t qty_int = static_cast<uint64_t>(level.getQuantity() * 100000000);
-        
-        // Update checksum with price
-        checksum = (checksum * 37) + (price_int & 0xFFFFFFFF);
-        checksum = (checksum * 37) + ((price_int >> 32) & 0xFFFFFFFF);
-        
-        // Update checksum with quantity
-        checksum = (checksum * 37) + (qty_int & 0xFFFFFFFF);
-        checksum = (checksum * 37) + ((qty_int >> 32) & 0xFFFFFFFF);
-        
-        count++;
-    }
-    
-    // Format as hexadecimal string
     std::stringstream ss;
-    ss << std::hex << std::setfill('0') << std::setw(8) << checksum;
     
-    return ss.str();
+    // Add top N levels of bids and asks to the checksum
+    const int levels_to_include = 10;
+    int bid_count = 0;
+    int ask_count = 0;
+    
+    // Include bids
+    for (auto it = bids_.begin(); it != bids_.end() && bid_count < levels_to_include; ++it, ++bid_count) {
+        const auto& level = it->second;
+        
+        // Convert price to 8 decimal places and remove decimal point
+        uint64_t price_int = static_cast<uint64_t>(level.getPrice() * 100000000);
+        
+        // Convert quantity to 8 decimal places and remove decimal point
+        uint64_t qty_int = static_cast<uint64_t>(level.getQuantity() * 100000000);
+        
+        // Add to checksum
+        ss << "B:" << price_int << ":" << qty_int << "|";
+    }
+    
+    // Include asks
+    for (auto it = asks_.begin(); it != asks_.end() && ask_count < levels_to_include; ++it, ++ask_count) {
+        const auto& level = it->second;
+        
+        // Convert price to 8 decimal places and remove decimal point
+        uint64_t price_int = static_cast<uint64_t>(level.getPrice() * 100000000);
+        
+        // Convert quantity to 8 decimal places and remove decimal point
+        uint64_t qty_int = static_cast<uint64_t>(level.getQuantity() * 100000000);
+        
+        // Add to checksum
+        ss << "A:" << price_int << ":" << qty_int << "|";
+    }
+    
+    // Calculate CRC32 of the string
+    boost::crc_32_type crc;
+    std::string data = ss.str();
+    crc.process_bytes(data.data(), data.size());
+    
+    // Format as hexadecimal
+    std::stringstream checksum;
+    checksum << std::hex << std::setw(8) << std::setfill('0') << crc.checksum();
+    
+    return checksum.str();
 }
-
 void OrderBook::notifyCallback() {
     if (!callback_) {
         return;

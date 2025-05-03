@@ -18,14 +18,8 @@ enum class OrderType {
     MARKET,
     LIMIT
 };
-
-struct PriceLevel {
-    double price;
-    double quantity;
-    int order_count;
-};
-
-using OrderBook = std::unordered_map<double, PriceLevel>;
+ 
+// using OrderBook = std::unordered_map<double, PriceLevel>;
 
 struct ImbalanceMetrics {
     double bid_ask_ratio;

@@ -9,13 +9,14 @@
 #include <atomic>
 #include <unordered_map>
 #include "data_ingestion/types.hpp"
-
+#include "data_ingestion/orderbook/price_level.hpp"
 namespace trading {
 namespace data_ingestion {
 
 // Forward declarations
 class OrderBook;
 
+using BidAskPair = std::pair<PriceLevel, PriceLevel>;
 // Define OrderBookKey as a pair of exchange ID and symbol
 struct OrderBookKey {
     ExchangeId exchange;
@@ -37,24 +38,16 @@ struct OrderBookKeyHash {
         
         return h1 ^ (h2 << 1);
     }
-};
-// Represents a price level in the order book
+}; 
 // struct PriceLevel {
-//     std::string price;       // Using string to preserve precision
-//     std::string quantity;    // Using string to preserve precision
-//     std::vector<std::pair<std::string, std::string>> orders;  // order_id -> quantity pairs
+//     double price;
+//     double quantity;
+//     std::unordered_map<std::string, double> orders; // order_id -> quantity
     
-//     PriceLevel(const std::string& p = "", const std::string& q = "")
+//     PriceLevel(double p = 0.0, double q = 0.0)
 //         : price(p), quantity(q) {}
 // };
-struct PriceLevel {
-    std::string price;
-    std::string quantity;
-    std::unordered_map<std::string, std::string> orders;  // order_id -> quantity
-    
-    PriceLevel(const std::string& p = "", const std::string& q = "")
-        : price(p), quantity(q) {}
-};
+
 // Raw market data from an exchange
 struct MarketDataUpdate {
     std::string exchange_id;
@@ -83,7 +76,7 @@ struct OrderBookUpdate {
 };
 
 // Callback types
-using OrderBookCallback = std::function<void(const OrderBookUpdate&)>;
+// using OrderBookCallback = std::function<void(const OrderBookUpdate&)>;
 using NormalizedOrderBookCallback = std::function<void(const OrderBookUpdate&)>;
 
 // Statistics for publishers

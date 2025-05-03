@@ -5,6 +5,7 @@
 #include <boost/lockfree/spsc_queue.hpp>
 #include <tbb/concurrent_queue.h>
 
+
 // Lock-free queue between pipeline stages
 template<typename T>
 class PipelineQueue {

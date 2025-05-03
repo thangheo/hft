@@ -10,6 +10,7 @@
 #pragma once
 
 #include "data_ingestion/types.hpp"
+#include "data_ingestion/orderbook/order_book_types.hpp"
 #include <map>
 #include <vector>
 #include <memory>
@@ -73,7 +74,8 @@ private:
     ExchangeId exchange_id_;
     Symbol symbol_;
     OrderBookCallback callback_;
-    
+    //last_update_time_
+    Timestamp last_update_time_;
     // Order book state
     std::map<double, PriceLevel, std::greater<double>> bids_;  // Descending order for bids
     std::map<double, PriceLevel, std::less<double>> asks_;     // Ascending order for asks
