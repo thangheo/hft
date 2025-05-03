@@ -9,6 +9,7 @@
 #include <atomic>
 #include <unordered_map>
 #include "data_ingestion/types.hpp"
+
 namespace trading {
 namespace data_ingestion {
 

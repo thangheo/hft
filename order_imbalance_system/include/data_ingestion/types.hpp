@@ -10,6 +10,7 @@
 #include <memory>
 #include <functional>
 #include <unordered_map>
+
 namespace trading {
 namespace data_ingestion {
 

@@ -1,7 +1,9 @@
 // include/data_ingestion/normalizer.hpp
 #pragma once
 
-#include "order_book.hpp"
+#include "data_ingestion/orderbook/order_book_types.hpp"
+#include "data_ingestion/orderbook/order_book.hpp"
+#include "data_ingestion/types.hpp"
 #include <memory>
 #include <map>
 #include <string>

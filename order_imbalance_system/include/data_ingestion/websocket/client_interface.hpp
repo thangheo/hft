@@ -7,8 +7,7 @@
  * 
  * Created on: April 30, 2025
  */
-#ifndef DATA_INGESTION_WEBSOCKET_CLIENT_INTERFACE_HPP
-#define DATA_INGESTION_WEBSOCKET_CLIENT_INTERFACE_HPP
+#pragma once
 
 #include <string>
 #include <functional>
@@ -59,5 +58,5 @@ public:
 
 } // namespace websocket
 } // namespace data_ingestion
-}
-#endif // DATA_INGESTION_WEBSOCKET_CLIENT_INTERFACE_HPP
+} // namespace trading
+// End of file

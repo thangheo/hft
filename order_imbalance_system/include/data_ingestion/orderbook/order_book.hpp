@@ -10,7 +10,6 @@
 #pragma once
 
 #include "data_ingestion/types.hpp"
-#include "data_ingestion/orderbook/level.hpp"
 #include <map>
 #include <vector>
 #include <memory>

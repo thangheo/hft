@@ -22,7 +22,7 @@ set(REST_SOURCES
 
 set(ORDERBOOK_SOURCES
     # orderbook/book.cpp
-    orderbook/level.cpp
+    # orderbook/level.cpp
     orderbook/order_book.cpp
     orderbook/reconstructor.cpp
 )

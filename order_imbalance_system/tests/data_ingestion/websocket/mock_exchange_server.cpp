@@ -581,3 +581,7 @@ int64_t MockExchangeServer::getCurrentTimestampMs() {
     return std::chrono::duration_cast<std::chrono::milliseconds>(
         now.time_since_epoch()).count();
 }
+
+}  // namespace testing
+}  // namespace trading
+// End of file
