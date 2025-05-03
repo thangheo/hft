@@ -4,21 +4,34 @@ set(PROTO_FILES
     execution_service.proto
 )
 
-# Check if we have the required executables for Protobuf and gRPC
+# Set explicit paths for required executables
 if(NOT PROTOBUF_PROTOC_EXECUTABLE)
-    # Try to find it in standard locations
-    find_program(PROTOBUF_PROTOC_EXECUTABLE protoc)
-    if(NOT PROTOBUF_PROTOC_EXECUTABLE)
-        message(FATAL_ERROR "protoc executable not found. Please install Protocol Buffers or specify PROTOBUF_PROTOC_EXECUTABLE.")
-    endif()
+    find_program(PROTOBUF_PROTOC_EXECUTABLE protoc REQUIRED)
+    message(STATUS "Found protoc: ${PROTOBUF_PROTOC_EXECUTABLE}")
 endif()
 
 if(NOT GRPC_CPP_PLUGIN_EXECUTABLE)
-    # Try to find it in standard locations
-    find_program(GRPC_CPP_PLUGIN_EXECUTABLE grpc_cpp_plugin)
-    if(NOT GRPC_CPP_PLUGIN_EXECUTABLE)
-        message(FATAL_ERROR "grpc_cpp_plugin executable not found. Please install gRPC or specify GRPC_CPP_PLUGIN_EXECUTABLE.")
+    # First, try using the system path without quotes
+    set(GRPC_CPP_PLUGIN_EXECUTABLE /usr/bin/grpc_cpp_plugin)
+    
+    if(NOT EXISTS ${GRPC_CPP_PLUGIN_EXECUTABLE})
+        # Fall back to find_program if explicit path doesn't work
+        find_program(GRPC_CPP_PLUGIN_EXECUTABLE grpc_cpp_plugin REQUIRED)
     endif()
+    
+    message(STATUS "Using gRPC plugin: ${GRPC_CPP_PLUGIN_EXECUTABLE}")
+    
+    # Verify the plugin is executable
+    # execute_process(
+    #     COMMAND ${GRPC_CPP_PLUGIN_EXECUTABLE} --help
+    #     RESULT_VARIABLE GRPC_PLUGIN_TEST
+    #     ERROR_QUIET
+    #     OUTPUT_QUIET
+    # )
+    
+    # if(NOT GRPC_PLUGIN_TEST EQUAL 0)
+    #     message(FATAL_ERROR "gRPC plugin at ${GRPC_CPP_PLUGIN_EXECUTABLE} exists but is not executable or is invalid")
+    # endif()
 endif()
 
 # Generate protobuf and gRPC C++ files
@@ -27,39 +40,52 @@ set(PROTO_HDRS)
 set(GRPC_SRCS)
 set(GRPC_HDRS)
 
+# Create output directory if it doesn't exist
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
 foreach(proto ${PROTO_FILES})
     get_filename_component(proto_name ${proto} NAME_WE)
     
-    # Protobuf outputs
-    list(APPEND PROTO_SRCS "${CMAKE_CURRENT_BINARY_DIR}/${proto_name}.pb.cc")
-    list(APPEND PROTO_HDRS "${CMAKE_CURRENT_BINARY_DIR}/${proto_name}.pb.h")
+    # Define output files
+    set(PROTO_SRC "${CMAKE_CURRENT_BINARY_DIR}/${proto_name}.pb.cc")
+    set(PROTO_HDR "${CMAKE_CURRENT_BINARY_DIR}/${proto_name}.pb.h")
+    set(GRPC_SRC "${CMAKE_CURRENT_BINARY_DIR}/${proto_name}.grpc.pb.cc")
+    set(GRPC_HDR "${CMAKE_CURRENT_BINARY_DIR}/${proto_name}.grpc.pb.h")
     
-    # gRPC outputs
-    list(APPEND GRPC_SRCS "${CMAKE_CURRENT_BINARY_DIR}/${proto_name}.grpc.pb.cc")
-    list(APPEND GRPC_HDRS "${CMAKE_CURRENT_BINARY_DIR}/${proto_name}.grpc.pb.h")
+    # Add to lists
+    list(APPEND PROTO_SRCS ${PROTO_SRC})
+    list(APPEND PROTO_HDRS ${PROTO_HDR})
+    list(APPEND GRPC_SRCS ${GRPC_SRC})
+    list(APPEND GRPC_HDRS ${GRPC_HDR})
     
-    # Generate C++ files
+    # First generate the protobuf files without gRPC
     add_custom_command(
-        OUTPUT
-            "${CMAKE_CURRENT_BINARY_DIR}/${proto_name}.pb.cc"
-            "${CMAKE_CURRENT_BINARY_DIR}/${proto_name}.pb.h"
-            "${CMAKE_CURRENT_BINARY_DIR}/${proto_name}.grpc.pb.cc"
-            "${CMAKE_CURRENT_BINARY_DIR}/${proto_name}.grpc.pb.h"
+        OUTPUT ${PROTO_SRC} ${PROTO_HDR}
         COMMAND ${PROTOBUF_PROTOC_EXECUTABLE}
-        ARGS 
-            --grpc_out="${CMAKE_CURRENT_BINARY_DIR}"
-            --cpp_out="${CMAKE_CURRENT_BINARY_DIR}"
-            -I "${CMAKE_CURRENT_SOURCE_DIR}"
-            --plugin=protoc-gen-grpc="${GRPC_CPP_PLUGIN_EXECUTABLE}"
-            "${CMAKE_CURRENT_SOURCE_DIR}/${proto}"
-        DEPENDS ${proto}
-        COMMENT "Running protoc on ${proto}"
+        ARGS --cpp_out=${CMAKE_CURRENT_BINARY_DIR}
+             -I ${CMAKE_CURRENT_SOURCE_DIR}
+             ${CMAKE_CURRENT_SOURCE_DIR}/${proto}
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${proto}
+        COMMENT "Generating protobuf files for ${proto}"
+        VERBATIM
+    )
+    
+    # Then generate the gRPC files
+    add_custom_command(
+        OUTPUT ${GRPC_SRC} ${GRPC_HDR}
+        COMMAND ${PROTOBUF_PROTOC_EXECUTABLE}
+        ARGS --grpc_out=${CMAKE_CURRENT_BINARY_DIR}
+             --plugin=protoc-gen-grpc=${GRPC_CPP_PLUGIN_EXECUTABLE}
+             -I ${CMAKE_CURRENT_SOURCE_DIR}
+             ${CMAKE_CURRENT_SOURCE_DIR}/${proto}
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${proto} ${PROTO_SRC} ${PROTO_HDR}
+        COMMENT "Generating gRPC files for ${proto}"
         VERBATIM
     )
 endforeach()
 
 # Create a library from the generated files
-add_library(proto_lib ${PROTO_SRCS} ${PROTO_HDRS} ${GRPC_SRCS} ${GRPC_HDRS})
+add_library(proto_lib ${PROTO_SRCS} ${GRPC_SRCS} ${PROTO_HDRS} ${GRPC_HDRS})
 target_link_libraries(proto_lib PUBLIC protobuf::libprotobuf gRPC::grpc++)
 target_include_directories(proto_lib PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 
