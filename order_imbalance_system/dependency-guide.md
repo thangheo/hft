@@ -167,3 +167,20 @@ pkg-config --modversion grpc++
 python3 --version
 pip3 --version
 ```
+# Install prerequisites
+sudo apt-get install -y build-essential autoconf libtool pkg-config cmake
+
+# Clone the gRPC repo
+git clone -b v1.50.0 https://github.com/grpc/grpc
+cd grpc
+git submodule update --init
+
+# Build and install
+mkdir -p cmake/build
+cd cmake/build
+cmake -DgRPC_INSTALL=ON \
+      -DgRPC_BUILD_TESTS=OFF \
+      -DCMAKE_INSTALL_PREFIX=/usr \
+      ../..
+make -j$(nproc)
+sudo make install

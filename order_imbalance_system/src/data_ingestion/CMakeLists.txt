@@ -1,26 +1,27 @@
 # Organize sources into groups
 set(WEBSOCKET_SOURCES
-    websocket/client_base.cpp
+    websocket/websocket_client_base.cpp
     websocket/connection_pool.cpp
-    websocket/exchanges/binance_client.cpp
-    websocket/exchanges/binance_connector.cpp
+    websocket/exchanges/binance_websocket_client.cpp
     websocket/exchanges/binance_parser.cpp
-    websocket/exchanges/coinbase_client.cpp
+    websocket/exchanges/binance_client_factory.cpp
+    websocket/exchanges/binance_parser.cpp
+    # websocket/exchanges/coinbase_client.cpp
     websocket/exchanges/exchange_connector.cpp
     websocket/exchanges/exchange_manager.cpp
-    websocket/exchanges/ftx_client.cpp
+    # websocket/exchanges/ftx_client.cpp
 )
 
 set(REST_SOURCES
     rest/client_base.cpp
     rest/client_interface.cpp
     rest/exchanges/binance_client.cpp
-    rest/exchanges/coinbase_client.cpp
-    rest/exchanges/ftx_client.cpp
+    # rest/exchanges/coinbase_client.cpp
+    # rest/exchanges/ftx_client.cpp
 )
 
 set(ORDERBOOK_SOURCES
-    orderbook/book.cpp
+    # orderbook/book.cpp
     orderbook/level.cpp
     orderbook/order_book.cpp
     orderbook/reconstructor.cpp
@@ -33,7 +34,7 @@ set(PROTOCOL_SOURCES
 )
 
 set(NORMALIZATION_SOURCES
-    normalization/normalizer.cpp
+    # normalization/normalizer.cpp
     normalization/order_book_normalizer.cpp
 )
 
@@ -75,7 +76,7 @@ set(STORAGE_SOURCES
 )
 
 set(MISC_SOURCES
-    connection_monitor.cpp
+    # connection_pool.cpp
     data_source_manager.cpp
     logging.cpp
 )
@@ -119,7 +120,8 @@ target_include_directories(data_ingestion
 )
 
 # Order book reconstructor standalone executable
-add_executable(order_book_reconstructor orderbook/order_book_reconstructor_main.cpp)
+add_executable(order_book_reconstructor examples/exchange_manager_example.cpp)
+#  orderbook/order_book_reconstructor_main.cpp)
 target_link_libraries(order_book_reconstructor
     PRIVATE
         data_ingestion
