@@ -100,8 +100,6 @@
 ./include/data_ingestion/logging.hpp
 ./include/data_ingestion/publisher
 ./include/data_ingestion/publisher/zeromq_publisher.hpp
-./include/data_ingestion/publisher/publisher.hpp
-./include/data_ingestion/publisher/order_book_publisher.hpp
 ./include/data_ingestion/websocket
 ./include/data_ingestion/websocket/exchanges
 ./include/data_ingestion/websocket/exchanges/binance_client.hpp

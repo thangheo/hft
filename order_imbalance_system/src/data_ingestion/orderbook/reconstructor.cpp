@@ -8,14 +8,15 @@
  * Created on: April 30, 2025
  */
 
- #include "data_ingestion/orderbook/reconstructor.hpp"
- #include <iostream>
- #include <algorithm>
- #include <sstream>
- 
+#include "data_ingestion/orderbook/reconstructor.hpp"
+#include <iostream>
+#include <algorithm>
+#include <sstream>
+#include <iomanip>
+#include <cmath>
+ namespace trading{
  namespace data_ingestion {
- namespace orderbook {
- 
+
  // Singleton instance
  OrderBookReconstructor& OrderBookReconstructor::getInstance() {
      static OrderBookReconstructor instance;
@@ -30,7 +31,7 @@
      shutdown();
  }
  
- bool OrderBookReconstructor::initialize(std::shared_ptr<publisher::Publisher> publisher) {
+ bool OrderBookReconstructor::initialize(std::shared_ptr<trading::data_ingestion::ZeroMQPublisher> publisher) {
      std::lock_guard<std::mutex> lock(mutex_);
      
      if (initialized_) {
@@ -248,5 +249,5 @@
      publisher_->publish("orderbook", ss.str());
  }
  
- } // namespace orderbook
  } // namespace data_ingestion
+} // namespace trading

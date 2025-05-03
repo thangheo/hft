@@ -15,6 +15,7 @@
 #include <vector>
 #include "data_ingestion/types.hpp"
 
+namespace trading {
 namespace data_ingestion {
 namespace websocket {
 
@@ -58,5 +59,5 @@ public:
 
 } // namespace websocket
 } // namespace data_ingestion
-
+}
 #endif // DATA_INGESTION_WEBSOCKET_CLIENT_INTERFACE_HPP

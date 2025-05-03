@@ -13,10 +13,8 @@
  * 
  * Created on: April 30, 2025
  */
-
- #ifndef ZEROMQ_PUBLISHER_HPP
- #define ZEROMQ_PUBLISHER_HPP
- 
+#pragma once
+    
  #include <zmq.hpp>
  #include <string>
  #include <memory>
@@ -27,16 +25,17 @@
  #include <atomic>
  #include <condition_variable>
  #include <functional>
+ #include <data_ingestion/orderbook/order_book_types.hpp>
  
- namespace trading {
- namespace data_ingestion {
- 
+namespace trading {
+namespace data_ingestion {
+    
  // Compression algorithm options
- enum class CompressionAlgorithm {
-     NONE,
-     ZSTD,  // Zstandard compression
-     // Add other compression algorithms as needed
- };
+//  enum class CompressionAlgorithm {
+//      NONE,
+//      ZSTD,  // Zstandard compression
+//      // Add other compression algorithms as needed
+//  };
  
  // Publisher configuration
  struct PublisherConfig {
@@ -148,5 +147,4 @@
  
  } // namespace data_ingestion
  } // namespace trading
- 
- #endif // ZEROMQ_PUBLISHER_HPP
+  

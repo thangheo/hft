@@ -37,6 +37,7 @@ public:
     
     // Message sending
     virtual void send(const std::string& message);
+    //got_pong
     
     // Configuration
     void setPingInterval(int interval_ms);
@@ -63,6 +64,7 @@ private:
     void handlePong();
     void handleError(const std::string& error);
     void handleReconnection();
+    // void got_pong();
     
     // Boost.Asio components
     net::io_context io_context_;

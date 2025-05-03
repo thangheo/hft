@@ -8,7 +8,7 @@
 #include <mutex>
 #include <chrono>
 #include <thread>
-
+#include <data_ingestion/orderbook/order_book_types.hpp>
 namespace trading {
 namespace data_ingestion {
 
@@ -25,14 +25,14 @@ struct SubscriptionRequest {
     int32_t depth;  // For order book subscriptions
 };
 
-struct MarketDataUpdate {
-    std::string exchange_id;
-    std::string trading_pair;
-    std::string update_type;
-    int64_t exchange_timestamp;
-    int64_t received_timestamp;
-    std::vector<uint8_t> data;  // Exchange-specific data format
-};
+// struct MarketDataUpdate {
+//     std::string exchange_id;
+//     std::string trading_pair;
+//     std::string update_type;
+//     int64_t exchange_timestamp;
+//     int64_t received_timestamp;
+//     std::vector<uint8_t> data;  // Exchange-specific data format
+// };
 
 // Callback type for market data updates
 using MarketDataCallback = std::function<void(const MarketDataUpdate&)>;

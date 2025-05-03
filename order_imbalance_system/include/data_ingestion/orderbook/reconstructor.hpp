@@ -1,104 +1,203 @@
 /**
  * @file reconstructor.hpp
- * @brief Core order book reconstruction logic
+ * @brief Header for order book reconstruction logic
  * 
  * @details 
  * Part of the Data Ingestion & Processing Layer for the Crypto Trading System.
  * 
  * Created on: April 30, 2025
  */
-#ifndef DATA_INGESTION_ORDERBOOK_RECONSTRUCTOR_HPP
-#define DATA_INGESTION_ORDERBOOK_RECONSTRUCTOR_HPP
+
+#pragma once
 
 #include <memory>
-#include <map>
-#include <vector>
 #include <mutex>
-#include <string>
+#include <unordered_map>
+#include <vector>
+#include <cstdint>
 
 #include "data_ingestion/types.hpp"
 #include "data_ingestion/orderbook/order_book.hpp"
-#include "data_ingestion/publisher/publisher.hpp"
+#include "data_ingestion/publisher/zeromq_publisher.hpp"
+#include "data_ingestion/orderbook/order_book_types.hpp"
+#include "data_ingestion/orderbook/level.hpp"
 
+namespace trading {
 namespace data_ingestion {
-namespace orderbook {
 
-// Class for reconstructing and managing order books
-class OrderBookReconstructor {
-public:
-    static OrderBookReconstructor& getInstance();
-    
-    // Initialization
-    bool initialize(std::shared_ptr<publisher::Publisher> publisher);
-    void shutdown();
-    bool isInitialized() const { return initialized_; }
-    bool isShutdown() const { return !initialized_; }
-    void setPublisher(std::shared_ptr<publisher::Publisher> publisher) { publisher_ = publisher; }
-    std::shared_ptr<publisher::Publisher> getPublisher() const { return publisher_; }
-    std::string getPublisherAddress() const {
-        return publisher_ ? publisher_->getAddress() : "";
-    }
-    
-    // Order book updates
-    bool processSnapshot(ExchangeId exchange, 
-                        const Symbol& symbol,
-                        const std::vector<PriceLevel>& bids,
-                        const std::vector<PriceLevel>& asks,
-                        uint64_t sequence_number,
-                        Timestamp timestamp);
-    
-    bool processUpdate(ExchangeId exchange,
-                      const Symbol& symbol,
-                      const std::vector<PriceLevel>& bids,
-                      const std::vector<PriceLevel>& asks,
-                      uint64_t sequence_number,
-                      Timestamp timestamp);
-    
-    // Order book access
-    std::shared_ptr<OrderBook> getOrderBook(ExchangeId exchange, const Symbol& symbol) const;
-    std::vector<std::shared_ptr<OrderBook>> getAllOrderBooks() const;
-    std::vector<std::shared_ptr<OrderBook>> getOrderBooks(ExchangeId exchange) const;
-    
-    // State management
-    bool hasOrderBook(ExchangeId exchange, const Symbol& symbol) const;
-    void removeOrderBook(ExchangeId exchange, const Symbol& symbol);
-    void clearOrderBooks();
-    
-    // Order book validation/recovery
-    bool validateOrderBook(ExchangeId exchange, const Symbol& symbol);
-    bool requestSnapshot(ExchangeId exchange, const Symbol& symbol);
-    
-private:
-    OrderBookReconstructor();
-    ~OrderBookReconstructor();
-    OrderBookReconstructor(const OrderBookReconstructor&) = delete;
-    OrderBookReconstructor& operator=(const OrderBookReconstructor&) = delete;
-    
-    // Key type for looking up order books
-    struct OrderBookKey {
-        ExchangeId exchange;
-        Symbol symbol;
-        
-        bool operator<(const OrderBookKey& other) const {
-            if (exchange != other.exchange) return exchange < other.exchange;
-            return symbol < other.symbol;
-        }
-    };
-    
-    // Order book storage
-    std::map<OrderBookKey, std::shared_ptr<OrderBook>> order_books_;
-    
-    // Publishing
-    std::shared_ptr<publisher::Publisher> publisher_;
-    
-    // Thread safety
-    mutable std::mutex mutex_;
-    
-    // Publish order book updates
-    void publishOrderBook(const std::shared_ptr<OrderBook>& order_book);
-};
+ /**
+  * @brief Singleton class for reconstructing order books from market data
+  */
+ class OrderBookReconstructor {
+ public:
+     /**
+      * @brief Get the singleton instance
+      * 
+      * @return OrderBookReconstructor& 
+      */
+     static OrderBookReconstructor& getInstance();
+     
+     // Delete copy and move constructors/assignments
+     OrderBookReconstructor(const OrderBookReconstructor&) = delete;
+     OrderBookReconstructor& operator=(const OrderBookReconstructor&) = delete;
+     OrderBookReconstructor(OrderBookReconstructor&&) = delete;
+     OrderBookReconstructor& operator=(OrderBookReconstructor&&) = delete;
+     
+     /**
+      * @brief Destroy the Order Book Reconstructor object
+      */
+     ~OrderBookReconstructor();
+     
+     /**
+      * @brief Initialize the reconstructor with a publisher
+      * 
+      * @param publisher Shared pointer to a publisher
+      * @return true if successful, false otherwise
+      */
+    //  bool initialize(std::shared_ptr<publisher::Publisher> publisher);
+    // bool initialize(std::shared_ptr<trading::data_ingestion::Publisher> publisher);
+    bool initialize(std::shared_ptr<trading::data_ingestion::ZeroMQPublisher> publisher);
+     
+     /**
+      * @brief Check if the reconstructor is initialized
+      * 
+      * @return true if initialized, false otherwise
+      */
+     bool isInitialized() const { return initialized_; }
+    /**
+      * @brief Shutdown the reconstructor
+      */
+     void shutdown();
+     
+     /**
+      * @brief Process a market data snapshot
+      * 
+      * @param exchange Exchange identifier
+      * @param symbol Trading symbol
+      * @param bids Vector of bid price levels
+      * @param asks Vector of ask price levels
+      * @param sequence_number Sequence number of the snapshot
+      * @param timestamp Timestamp of the snapshot
+      * @return true if successful, false otherwise
+      */
+     bool processSnapshot(
+         ExchangeId exchange,
+         const Symbol& symbol,
+         const std::vector<PriceLevel>& bids,
+         const std::vector<PriceLevel>& asks,
+         uint64_t sequence_number,
+         Timestamp timestamp);
+     
+     /**
+      * @brief Process a market data update
+      * 
+      * @param exchange Exchange identifier
+      * @param symbol Trading symbol
+      * @param bids Vector of bid price levels to update
+      * @param asks Vector of ask price levels to update
+      * @param sequence_number Sequence number of the update
+      * @param timestamp Timestamp of the update
+      * @return true if successful, false otherwise
+      */
+     bool processUpdate(
+         ExchangeId exchange,
+         const Symbol& symbol,
+         const std::vector<PriceLevel>& bids,
+         const std::vector<PriceLevel>& asks,
+         uint64_t sequence_number,
+         Timestamp timestamp);
+     
+     /**
+      * @brief Get an order book
+      * 
+      * @param exchange Exchange identifier
+      * @param symbol Trading symbol
+      * @return std::shared_ptr<OrderBook> 
+      */
+    //  std::shared_ptr<OrderBook> getOrderBook(
+    //      ExchangeId exchange, const Symbol& symbol) const;
+    // std::shared_ptr<trading::data_ingestion::OrderBook> getOrderBook(
+    //     trading::data_ingestion::ExchangeId exchange, 
+    //     const trading::data_ingestion::Symbol& symbol) const;
+        // In headers, use qualified types
+    std::shared_ptr<trading::data_ingestion::OrderBook> getOrderBook(...);
+     /**
+      * @brief Get all order books
+      * 
+      * @return std::vector<std::shared_ptr<OrderBook>> 
+      */
+     std::vector<std::shared_ptr<OrderBook>> getAllOrderBooks() const;
+     
+     /**
+      * @brief Get all order books for a specific exchange
+      * 
+      * @param exchange Exchange identifier
+      * @return std::vector<std::shared_ptr<OrderBook>> 
+      */
+     std::vector<std::shared_ptr<OrderBook>> getOrderBooks(
+         ExchangeId exchange) const;
+     
+     /**
+      * @brief Check if an order book exists
+      * 
+      * @param exchange Exchange identifier
+      * @param symbol Trading symbol
+      * @return true if exists, false otherwise
+      */
+     bool hasOrderBook(ExchangeId exchange, const Symbol& symbol) const;
+     
+     /**
+      * @brief Remove an order book
+      * 
+      * @param exchange Exchange identifier
+      * @param symbol Trading symbol
+      */
+     void removeOrderBook(ExchangeId exchange, const Symbol& symbol);
+     
+     /**
+      * @brief Clear all order books
+      */
+     void clearOrderBooks();
+     
+     /**
+      * @brief Validate an order book
+      * 
+      * @param exchange Exchange identifier
+      * @param symbol Trading symbol
+      * @return true if valid, false otherwise
+      */
+     bool validateOrderBook(ExchangeId exchange, const Symbol& symbol);
+     
+     /**
+      * @brief Request a snapshot from an exchange
+      * 
+      * @param exchange Exchange identifier
+      * @param symbol Trading symbol
+      * @return true if request sent, false otherwise
+      */
+     bool requestSnapshot(ExchangeId exchange, const Symbol& symbol);
+ 
+ private:
+     /**
+      * @brief Construct a new Order Book Reconstructor object (private for singleton)
+      */
+     OrderBookReconstructor();
+     
+     /**
+      * @brief Publish an order book update
+      * 
+      * @param order_book Order book to publish
+      */
+     void publishOrderBook(const std::shared_ptr<OrderBook>& order_book);
+     
+     // Member variables
+     bool initialized_;
+    //  std::shared_ptr<publisher::Publisher> publisher_;
+    std::shared_ptr<trading::data_ingestion::ZeroMQPublisher> publisher_;
 
-} // namespace orderbook
-} // namespace data_ingestion
-
-#endif // DATA_INGESTION_ORDERBOOK_RECONSTRUCTOR_HPP
+     std::unordered_map<OrderBookKey, std::shared_ptr<OrderBook>, OrderBookKeyHash> order_books_;
+     mutable std::mutex mutex_;
+ };
+ 
+}  // namespace data_ingestion
+}  // namespace trading

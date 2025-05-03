@@ -3,9 +3,9 @@ set(WEBSOCKET_SOURCES
     websocket/websocket_client_base.cpp
     websocket/connection_pool.cpp
     websocket/exchanges/binance_websocket_client.cpp
-    websocket/exchanges/binance_parser.cpp
+    # websocket/exchanges/binance_parser.cpp
     websocket/exchanges/binance_client_factory.cpp
-    websocket/exchanges/binance_parser.cpp
+    # websocket/exchanges/binance_parser.cpp
     # websocket/exchanges/coinbase_client.cpp
     websocket/exchanges/exchange_connector.cpp
     websocket/exchanges/exchange_manager.cpp
@@ -39,7 +39,7 @@ set(NORMALIZATION_SOURCES
 )
 
 set(PUBLISHER_SOURCES
-    publisher/order_book_publisher.cpp
+    # publisher/order_book_publisher.cpp
     publisher/zeromq_publisher.cpp
 )
 

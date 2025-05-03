@@ -69,26 +69,30 @@ foreach(proto ${PROTO_FILES})
         COMMENT "Generating protobuf files for ${proto}"
         VERBATIM
     )
-    
-    # Then generate the gRPC files
     add_custom_command(
-        OUTPUT ${GRPC_SRC} ${GRPC_HDR}
-        COMMAND ${PROTOBUF_PROTOC_EXECUTABLE}
-        ARGS --grpc_out=${CMAKE_CURRENT_BINARY_DIR}
-             --plugin=protoc-gen-grpc=${GRPC_CPP_PLUGIN_EXECUTABLE}
-             -I ${CMAKE_CURRENT_SOURCE_DIR}
-             ${CMAKE_CURRENT_SOURCE_DIR}/${proto}
-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${proto} ${PROTO_SRC} ${PROTO_HDR}
-        COMMENT "Generating gRPC files for ${proto}"
-        VERBATIM
-    )
+    OUTPUT ${GRPC_SRC} ${GRPC_HDR}
+    COMMAND ${PROTOBUF_PROTOC_EXECUTABLE}
+    # ARGS --grpc_out=generate_mock_code=true:${CMAKE_CURRENT_BINARY_DIR}
+    ARGS --grpc_out=${CMAKE_CURRENT_BINARY_DIR}
+            --plugin=protoc-gen-grpc=${GRPC_CPP_PLUGIN_EXECUTABLE}
+            -I ${CMAKE_CURRENT_SOURCE_DIR}
+            ${CMAKE_CURRENT_SOURCE_DIR}/${proto}
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${proto} ${PROTO_SRC} ${PROTO_HDR}
+    COMMENT "Generating gRPC files for ${proto}"
+    VERBATIM
+)
 endforeach()
 
 # Create a library from the generated files
 add_library(proto_lib ${PROTO_SRCS} ${GRPC_SRCS} ${PROTO_HDRS} ${GRPC_HDRS})
 target_link_libraries(proto_lib PUBLIC protobuf::libprotobuf gRPC::grpc++)
 target_include_directories(proto_lib PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
-
+# target_compile_definitions(proto_lib PUBLIC GRPC_USE_PROTO_LITE)
+target_compile_definitions(proto_lib PUBLIC 
+    GRPC_USE_PROTO_LITE
+    GOOGLE_PROTOBUF_NO_RTTI
+    GPR_FORBID_UNREACHABLE_CODE
+)
 # Make sure other targets can find the generated headers
 set_target_properties(proto_lib PROPERTIES
     PUBLIC_HEADER "${PROTO_HDRS};${GRPC_HDRS}"

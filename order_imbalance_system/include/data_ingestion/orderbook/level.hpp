@@ -13,8 +13,9 @@
 #include <string>
 #include <map>
 
+namespace trading {
 namespace data_ingestion {
-namespace orderbook {
+// namespace orderbook {
 
 // Represents a price level in an order book
 class PriceLevel {
@@ -48,8 +49,7 @@ private:
     // Recalculate total quantity from individual orders
     void recalculateTotalQuantity();
 };
-
-} // namespace orderbook
+ 
 } // namespace data_ingestion
-
+}   // namespace trading
 #endif // DATA_INGESTION_ORDERBOOK_LEVEL_HPP

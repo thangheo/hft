@@ -6,7 +6,7 @@
 #include <vector>
 #include <string>
 
-using namespace trading::data;
+using namespace trading::data_ingestion::orderbook;
 
 // Helper function to create price levels
 std::vector<PriceLevel> createPriceLevels(const std::vector<std::pair<std::string, std::string>>& prices_quantities) {

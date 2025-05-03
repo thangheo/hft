@@ -15,7 +15,7 @@
 #include <vector>
 #include <memory>
 #include "data_ingestion/types.hpp"
-
+namespace trading {
 namespace data_ingestion {
 
 // Configuration for exchange connections
@@ -95,5 +95,5 @@ private:
 };
 
 } // namespace data_ingestion
-
+} // namespace trading
 #endif // DATA_INGESTION_CONFIG_HPP

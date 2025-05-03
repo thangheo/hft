@@ -13,8 +13,8 @@
  #include <iomanip>
  #include <algorithm>
  
+ namespace trading {
  namespace data_ingestion {
- namespace orderbook {
  
  PriceLevel::PriceLevel(double price, double quantity)
      : price_(price), quantity_(quantity) {
@@ -81,6 +81,6 @@
          quantity_ += qty;
      }
  }
- 
- } // namespace orderbook
+  
  } // namespace data_ingestion
+}

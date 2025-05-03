@@ -2,7 +2,7 @@
 #pragma once
 
 #include "data_ingestion/websocket/client_base.hpp"
-#include "data_ingestion/exchange_connector.hpp"
+#include "data_ingestion/websocket/exchanges/exchange_connector.hpp"
 #include <nlohmann/json.hpp>
 #include <string>
 #include <vector>

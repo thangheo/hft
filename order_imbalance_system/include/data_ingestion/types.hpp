@@ -8,7 +8,9 @@
 #include <optional>
 #include <cstdint>
 #include <memory>
-
+#include <functional>
+#include <unordered_map>
+namespace trading {
 namespace data_ingestion {
 
 using Timestamp = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
@@ -38,22 +40,8 @@ struct Symbol {
         if (base != other.base) return base < other.base;
         return quote < other.quote;
     }
-};
+}; 
 
-// Price level in order book
-struct PriceLevel {
-    double price;
-    double quantity;
-    std::vector<std::pair<std::string, double>> orders; // Optional order IDs and quantities
-    
-    bool operator==(const PriceLevel& other) const {
-        return price == other.price;
-    }
-    
-    bool operator<(const PriceLevel& other) const {
-        return price < other.price;
-    }
-};
 
 // Update type for order book
 enum class UpdateType {
@@ -73,5 +61,5 @@ enum class ConnectionStatus {
 };
 
 } // namespace data_ingestion
-
+} // namespace trading
 #endif // DATA_INGESTION_TYPES_HPP

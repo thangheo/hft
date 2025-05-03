@@ -7,8 +7,7 @@
  * 
  * Created on: April 30, 2025
  */
-#ifndef DATA_INGESTION_ORDERBOOK_ORDER_BOOK_HPP
-#define DATA_INGESTION_ORDERBOOK_ORDER_BOOK_HPP
+#pragma once
 
 #include "data_ingestion/types.hpp"
 #include "data_ingestion/orderbook/level.hpp"
@@ -19,8 +18,8 @@
 #include <atomic>
 #include <functional>
 
+namespace trading {
 namespace data_ingestion {
-namespace orderbook {
 
 // Forward declarations
 class OrderBook;
@@ -95,8 +94,6 @@ private:
     // Notify subscribers about updates
     void notifyCallback();
 };
-
-} // namespace orderbook
+ 
 } // namespace data_ingestion
-
-#endif // DATA_INGESTION_ORDERBOOK_ORDER_BOOK_HPP
+} // namespace trading

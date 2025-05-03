@@ -13,6 +13,7 @@
 #include <stdexcept>
 #include <string>
 
+namespace trading {
 namespace data_ingestion {
 
 // Base class for all data ingestion exceptions
@@ -72,5 +73,5 @@ public:
 };
 
 } // namespace data_ingestion
-
+} // namespace trading
 #endif // DATA_INGESTION_EXCEPTIONS_HPP

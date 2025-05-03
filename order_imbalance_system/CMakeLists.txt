@@ -21,7 +21,8 @@ find_package(Threads REQUIRED)
 find_package(ZeroMQ REQUIRED)
 find_package(cppzmq REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system program_options filesystem thread)
-
+#json
+find_package(nlohmann_json REQUIRED)
 # Find Protobuf and gRPC
 find_package(Protobuf)
 if(NOT Protobuf_FOUND)

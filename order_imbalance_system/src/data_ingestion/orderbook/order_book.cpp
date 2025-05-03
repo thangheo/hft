@@ -13,9 +13,9 @@
 #include <iomanip>
 #include <algorithm>
 #include <cmath>
-
+namespace trading {
 namespace data_ingestion {
-namespace orderbook {
+// namespace orderbook {
 
 OrderBook::OrderBook(ExchangeId exchange, const Symbol& symbol, OrderBookCallback callback)
     : exchange_id_(exchange),
@@ -325,5 +325,6 @@ void OrderBook::notifyCallback() {
     callback_(*this);
 }
 
-} // namespace orderbook
+// } // namespace orderbook
 } // namespace data_ingestion
+} // namespace trading
