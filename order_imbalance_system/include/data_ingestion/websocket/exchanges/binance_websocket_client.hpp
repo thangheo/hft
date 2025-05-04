@@ -28,7 +28,8 @@ public:
     
     // Implementation of WebSocketClientBase
     bool isConnected() const override;
-
+    // BinanceWebSocketClient::getSubscribedStreams();
+    std::vector<std::string> getSubscribedStreams() const;
 private:
     // WebSocketClientBase implementation
     void onOpen() override;
@@ -53,6 +54,7 @@ private:
     
     // Subscription tracking
     std::mutex subscription_mutex_;
+    // mutable std::mutex subscription_mutex_;
     std::vector<std::string> subscribed_streams_;
     int subscription_id_counter_ = 1;
     

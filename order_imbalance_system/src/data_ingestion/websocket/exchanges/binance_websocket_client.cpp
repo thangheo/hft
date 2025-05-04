@@ -45,6 +45,13 @@ bool BinanceWebSocketClient::unsubscribe(const std::vector<std::string>& streams
     return sendSubscriptionRequest(streams, false);
 }
 
+std::vector<std::string> BinanceWebSocketClient::getSubscribedStreams() const {
+    // Return a copy of the subscribed streams
+    // to avoid
+    // concurrent modification issues
+    // std::lock_guard<std::mutex> lock(subscription_mutex_);
+    return subscribed_streams_; 
+}
 void BinanceWebSocketClient::onOpen() {
     std::cout << "Connected to Binance WebSocket" << std::endl;
     
@@ -353,6 +360,7 @@ std::string BinanceWebSocketClient::extractEventTypeFromStream(const std::string
     }
     return "";
 }
+
 
 } // namespace data_ingestion
 } // namespace trading

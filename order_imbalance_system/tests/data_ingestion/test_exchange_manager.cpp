@@ -50,7 +50,7 @@ public:
     MOCK_METHOD1(releaseConnection, void(std::shared_ptr<WebSocketClientBase>));
     
     // Override health check method
-    bool isHealthy() const override {
+    bool isHealthy() const {
         return healthy_;
     }
     
@@ -121,9 +121,10 @@ protected:
                 market_data_callbacks_[exchange_id] = callback;
                 
                 // Return a unique_ptr to the mock pool (but keep a shared_ptr for test access)
-                return std::unique_ptr<ConnectionPool>(
-                    reinterpret_cast<ConnectionPool*>(new NiceMock<MockConnectionPool>(*mock_pool))
-                );
+                // return std::unique_ptr<ConnectionPool>(
+                //     reinterpret_cast<ConnectionPool*>(new NiceMock<MockConnectionPool>(*mock_pool))
+                // );
+                return std::unique_ptr<ConnectionPool>(new NiceMock<MockConnectionPool>(exchange_id));
             };
         
         // Store the factory for later reference

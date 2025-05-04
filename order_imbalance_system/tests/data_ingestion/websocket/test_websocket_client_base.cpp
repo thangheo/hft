@@ -40,14 +40,14 @@ public:
     bool waitForMessage(int timeout_ms = 1000) {
         std::unique_lock<std::mutex> lock(mutex_);
         return message_cv_.wait_for(lock, std::chrono::milliseconds(timeout_ms),
-            [this] { return message_received_; });
+            [this]() -> bool { return this->message_received_.load(); });
     }
     
     // Wait for open with timeout
     bool waitForOpen(int timeout_ms = 1000) {
         std::unique_lock<std::mutex> lock(mutex_);
         return open_cv_.wait_for(lock, std::chrono::milliseconds(timeout_ms),
-            [this] { return open_called_; });
+            [this]() -> bool { return this->open_called_.load(); });
     }
     
     // Mock message injection
@@ -123,14 +123,13 @@ private:
 };
 
 } // anonymous namespace
-
-// Test fixture
+ 
+// Test fixture - keep this outside the anonymous namespace
 class WebSocketClientBaseTest : public ::testing::Test {
 protected:
     void SetUp() override {
         // Create a client pointed at a dummy endpoint
         client_ = std::make_unique<MockWebSocketClient>("localhost", "8080");
-        // Set shorter ping interval for testing
         client_->setPingInterval(100);
     }
     
@@ -143,14 +142,13 @@ protected:
     std::unique_ptr<MockWebSocketClient> client_;
 };
 
-// Test connection/open event
+// Test cases - must be outside any namespace
 TEST_F(WebSocketClientBaseTest, ConnectionOpenEvent) {
     ASSERT_TRUE(client_->connect());
     EXPECT_TRUE(client_->waitForOpen(500));
     EXPECT_TRUE(client_->wasOpenCalled());
     EXPECT_TRUE(client_->isConnected());
 }
-
 // Test message handling
 TEST_F(WebSocketClientBaseTest, MessageHandling) {
     ASSERT_TRUE(client_->connect());
