@@ -11,8 +11,20 @@ echo "Installing system dependencies..."
 sudo apt-get update
 sudo apt-get install -y build-essential cmake libzmq3-dev libboost-all-dev \
     git python3 python3-venv python3-full libssl-dev python3-dev protobuf-compiler libprotobuf-dev \
-    libgrpc++-dev libgrpc-dev protobuf-compiler-grpc libpq-dev
+    libgrpc++-dev libgrpc-dev protobuf-compiler-grpc libpq-dev libgtest-dev libgmock-dev 
 
+# Build Google Test
+cd /usr/src/gtest
+sudo cmake .
+sudo make
+sudo cp lib/*.a /usr/lib
+
+# Build Google Mock
+cd /usr/src/gmock
+sudo cmake .
+sudo make
+sudo cp lib/*.a /usr/lib
+# Install Python 3.12 if not already installed
 # Check if Python 3.12 is installed correctly
 if ! command -v python3 &> /dev/null; then
     echo "Error: Python 3.12 not found. Please install it and try again."
