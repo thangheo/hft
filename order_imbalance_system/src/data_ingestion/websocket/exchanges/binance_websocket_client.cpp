@@ -23,6 +23,25 @@ BinanceWebSocketClient::~BinanceWebSocketClient() {
     disconnect();
 }
 
+void WebSocketClientBase::onOpen() {
+    // Default empty implementation
+
+}
+
+void WebSocketClientBase::onMessage(const std::string& message) {
+    // Default empty implementation
+}
+
+void WebSocketClientBase::onClose(int code, const std::string& reason) {
+    // Default empty implementation
+}
+void WebSocketClientBase::onError(const std::string& error) {
+    // Default empty implementation
+}
+void WebSocketClientBase::onReconnect() {
+    // Default empty implementation
+}
+
 bool BinanceWebSocketClient::isConnected() const {
     return WebSocketClientBase::isConnected();
 }

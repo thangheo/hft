@@ -11,7 +11,7 @@ add_subdirectory(data_ingestion)
 # Data Ingestion Tests
 set(DATA_INGESTION_TEST_SOURCES
     data_ingestion/test_order_book.cpp
-    data_ingestion/order_book_reconstructor_tests.cpp
+    data_ingestion/test_order_book_reconstructor.cpp
     data_ingestion/websocket_client_tests.cpp
     data_ingestion/mock_exchange_server.cpp
 )

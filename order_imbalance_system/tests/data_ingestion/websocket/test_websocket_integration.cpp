@@ -1,4 +1,4 @@
-i// tests/data_ingestion/websocket/test_websocket_integration.cpp
+// tests/data_ingestion/websocket/test_websocket_integration.cpp
 #include "data_ingestion/websocket/exchanges/binance_websocket_client.hpp"
 #include "data_ingestion/websocket/connection_pool.hpp"
 #include "mock_exchange_server.hpp"
@@ -59,6 +59,13 @@ public:
         std::unique_lock<std::mutex> lock(mutex_);
         return update_cv_.wait_for(lock, std::chrono::milliseconds(timeout_ms),
             [this] { return getUpdateCount() > 0; });
+    }
+    
+    // Wait for a specific number of total updates
+    bool waitForUpdateCount(int count, int timeout_ms = 5000) {
+        std::unique_lock<std::mutex> lock(mutex_);
+        return update_cv_.wait_for(lock, std::chrono::milliseconds(timeout_ms),
+            [this, count] { return getUpdateCount() >= count; });
     }
     
     // Wait for a specific number of order book updates
