@@ -103,6 +103,39 @@ bool OrderBook::applyUpdate(const std::vector<PriceLevel>& bids,
     
     return true;
 }
+//getSnapshot
+OrderBookUpdate OrderBook::getSnapshot(int depth) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    OrderBookUpdate update;
+    update.exchange_id = exchangeIdToString(exchange_id_);
+    update.trading_pair = symbol_.toString();
+    update.exchange_timestamp = timestamp_.time_since_epoch().count();
+    update.received_timestamp = last_update_time_.time_since_epoch().count();
+    update.sequence_number = sequence_number_;
+    update.is_snapshot = true;
+    
+    // Add bid levels
+    int bid_count = 0;
+    for (const auto& [price, level] : bids_) {
+        update.bids.push_back(level);
+        bid_count++;
+        if (depth > 0 && bid_count >= depth) break;
+    }
+    
+    // Add ask levels
+    int ask_count = 0;
+    for (const auto& [price, level] : asks_) {
+        update.asks.push_back(level);
+        ask_count++;
+        if (depth > 0 && ask_count >= depth) break;
+    }
+    
+    // Calculate checksum for validation
+    update.checksum = calculateChecksum();
+    
+    return update;
+}
 
 void OrderBook::updateBidLevel(const PriceLevel& level) {
     double price = level.getPrice();

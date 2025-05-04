@@ -31,6 +31,10 @@ using OrderBookCallback = std::function<void(const OrderBook&)>;
 class OrderBook {
 public:
     OrderBook(ExchangeId exchange, const Symbol& symbol, OrderBookCallback callback = nullptr);
+        
+    // Constructor taking string representations (convenience constructor)
+    OrderBook(const std::string& exchange_id, const std::string& trading_pair, OrderBookCallback callback = nullptr);
+
     ~OrderBook() = default;
     
     // Update methods
@@ -43,7 +47,12 @@ public:
                     const std::vector<PriceLevel>& asks,
                     uint64_t sequence_number,
                     Timestamp timestamp);
-    
+    //getSnapshot
+    OrderBookUpdate getSnapshot(int depth = 0) const;
+    std::string exchangeIdToString(ExchangeId id) const {
+        // Implementation depends on your ExchangeId type
+        return std::to_string(static_cast<int>(id));
+    }
     // Query methods
     std::vector<PriceLevel> getBids(int depth = 0) const;
     std::vector<PriceLevel> getAsks(int depth = 0) const;

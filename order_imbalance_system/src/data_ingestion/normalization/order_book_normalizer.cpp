@@ -1,10 +1,11 @@
 // src/data_ingestion/order_book_normalizer.cpp
 #include "data_ingestion/normalization/order_book_normalizer.hpp"
 #include "data_ingestion/protocol/adapter_interface.hpp"
+#include "data_ingestion/types.hpp"
 #include <iostream>
 #include <sstream>
 #include <nlohmann/json.hpp>
-
+#include <unordered_map>
 namespace trading {
 namespace data_ingestion {
 
@@ -49,7 +50,24 @@ void OrderBookNormalizer::processMarketData(const MarketDataUpdate& update) {
         normalized.trading_pair = standardized_pair;
         
         // Get or create order book
-        OrderBook* order_book = getOrCreateOrderBook(update.exchange_id, standardized_pair);
+        std::shared_ptr<OrderBook> order_book = getOrCreateOrderBook(update.exchange_id, standardized_pair);
+        
+        // Update the order book based on the normalized data
+        if (normalized.is_snapshot) {
+            order_book->applySnapshot(
+                normalized.bids, 
+                normalized.asks, 
+                normalized.sequence_number, 
+                std::chrono::system_clock::time_point(std::chrono::nanoseconds(normalized.exchange_timestamp))
+            );
+        } else {
+            order_book->applyUpdate(
+                normalized.bids, 
+                normalized.asks, 
+                normalized.sequence_number, 
+                std::chrono::system_clock::time_point(std::chrono::nanoseconds(normalized.exchange_timestamp))
+            );
+        }
         
         // Forward the normalized update to subscribers
         callback_(normalized);
@@ -59,56 +77,58 @@ void OrderBookNormalizer::processMarketData(const MarketDataUpdate& update) {
     }
 }
 
-OrderBookUpdate OrderBookNormalizer::getOrderBook(const std::string& exchange_id, 
-                                               const std::string& trading_pair,
-                                               int32_t depth) const {
-    // Find the order book
-    std::string key = createOrderBookKey(exchange_id, trading_pair);
-    auto it = order_books_.find(key);
-    
-    if (it != order_books_.end()) {
-        return it->second->getSnapshot(depth);
-    }
-    
-    // Return an empty order book if not found
-    OrderBookUpdate empty;
-    empty.exchange_id = exchange_id;
-    empty.trading_pair = trading_pair;
-    empty.is_snapshot = true;
-    return empty;
+std::shared_ptr<OrderBook> OrderBookNormalizer::getOrCreateOrderBook(const std::string& exchange_id, 
+    const std::string& trading_pair) {
+// Create a key for the map
+std::string key = createOrderBookKey(exchange_id, trading_pair);
+
+// Check if the order book exists
+auto it = order_books_.find(key);
+if (it != order_books_.end()) {
+return it->second;
 }
 
-OrderBook* OrderBookNormalizer::getOrCreateOrderBook(const std::string& exchange_id, 
-                                                  const std::string& trading_pair) {
-    // Create a key for the map
-    std::string key = createOrderBookKey(exchange_id, trading_pair);
-    
-    // Check if the order book exists
-    auto it = order_books_.find(key);
-    if (it != order_books_.end()) {
-        return it->second.get();
-    }
-    
-    // Create a new order book
-    std::cout << "Creating new order book for " << exchange_id << ":" << trading_pair << std::endl;
-    
-    auto order_book = std::make_unique<OrderBook>(
-        exchange_id, trading_pair, 
-        [this](const OrderBookUpdate& update) {
-            // Forward the update to the callback
-            callback_(update);
-        }
-    );
-    
-    OrderBook* result = order_book.get();
-    order_books_[key] = std::move(order_book);
-    return result;
+// Create a new order book
+std::cout << "Creating new order book for " << exchange_id << ":" << trading_pair << std::endl;
+
+// Parse trading pair into base/quote (assuming format like "BTC/USDT")
+Symbol symbol;
+size_t slash_pos = trading_pair.find('/');
+if (slash_pos != std::string::npos) {
+symbol.base = trading_pair.substr(0, slash_pos);
+symbol.quote = trading_pair.substr(slash_pos + 1);
+} else {
+// Handle case where there's no slash
+symbol.base = trading_pair;
+symbol.quote = "";
+}
+
+// Convert exchange_id string to ExchangeId enum
+ExchangeId exchange_enum = ExchangeId::UNKNOWN;
+if (exchange_id == "binance") exchange_enum = ExchangeId::BINANCE;
+else if (exchange_id == "ftx") exchange_enum = ExchangeId::FTX;
+else if (exchange_id == "coinbase") exchange_enum = ExchangeId::COINBASE;
+
+// Create OrderBook with proper callback that forwards updated order book data
+auto order_book = std::make_shared<OrderBook>(
+exchange_enum, 
+symbol,
+[this](const OrderBook& book) {
+// Get snapshot from the updated order book and forward to callback
+OrderBookUpdate update = book.getSnapshot();
+callback_(update);
+}
+);
+
+order_books_[key] = order_book;
+return order_book;
 }
 
 std::string OrderBookNormalizer::createOrderBookKey(const std::string& exchange_id, 
-                                                 const std::string& trading_pair) const {
-    return exchange_id + ":" + trading_pair;
+  const std::string& trading_pair) const {
+return exchange_id + ":" + trading_pair;
 }
+
 
 void OrderBookNormalizer::processExchangeData(const MarketDataUpdate& update, 
                                             const std::string& exchange_id) {
@@ -156,9 +176,11 @@ OrderBookUpdate BinanceAdapter::normalize(const MarketDataUpdate& update) const 
         if (data.contains("b") || data.contains("bids")) {
             auto& bids_json = data.contains("b") ? data["b"] : data["bids"];
             for (const auto& bid : bids_json) {
-                PriceLevel level;
-                level.price = bid[0].get<std::string>();
-                level.quantity = bid[1].get<std::string>();
+                // Create PriceLevel using the constructor with price and quantity
+                double price = std::stod(bid[0].get<std::string>());
+                double quantity = std::stod(bid[1].get<std::string>());
+                PriceLevel level(price, quantity);                
+                // Add to result
                 result.bids.push_back(level);
             }
         }
@@ -167,9 +189,11 @@ OrderBookUpdate BinanceAdapter::normalize(const MarketDataUpdate& update) const 
         if (data.contains("a") || data.contains("asks")) {
             auto& asks_json = data.contains("a") ? data["a"] : data["asks"];
             for (const auto& ask : asks_json) {
-                PriceLevel level;
-                level.price = ask[0].get<std::string>();
-                level.quantity = ask[1].get<std::string>();
+                // Create PriceLevel using the constructor with price and quantity
+                double price = std::stod(ask[0].get<std::string>());
+                double quantity = std::stod(ask[1].get<std::string>());
+                PriceLevel level(price, quantity);
+                // Add to result
                 result.asks.push_back(level);
             }
         }

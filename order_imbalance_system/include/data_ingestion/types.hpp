@@ -75,6 +75,17 @@ enum class ConnectionStatus {
     ERROR
 };
 
+// Order book update
+// class simple_PriceLevel {
+//     public:
+//         double price;     // Add this member
+//         double quantity;  // Add this member
+        
+//         // Constructor
+//         simple_PriceLevel(double p = 0.0, double q = 0.0) : price(p), quantity(q) {}
+//     };
+    
+
 } // namespace data_ingestion
 } // namespace trading
 #endif // DATA_INGESTION_TYPES_HPP

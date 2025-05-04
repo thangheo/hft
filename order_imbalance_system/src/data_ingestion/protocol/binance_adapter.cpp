@@ -58,7 +58,6 @@ bool BinanceAdapter::canHandle(const ExchangeData& data) {
     
 //     return update;
 // }
-
 OrderBookUpdate BinanceAdapter::convertToStandardFormat(const ExchangeData& data) {
     OrderBookUpdate update;
     const auto& jsonData = json::parse(data.data);
@@ -78,14 +77,11 @@ OrderBookUpdate BinanceAdapter::convertToStandardFormat(const ExchangeData& data
                 std::string price_str = bid[0].get<std::string>();
                 std::string qty_str = bid[1].get<std::string>();
                 
+                // Create PriceLevel directly with the constructor
                 PriceLevel level(std::stod(price_str), std::stod(qty_str));
                 
-                // If individual order info is available (not typical for Binance)
-                if (bid.size() > 2 && bid[2].is_string()) {
-                    std::string order_id = bid[2].get<std::string>();
-                    level.addOrder(order_id, level.getQuantity());
-                }
-                
+                // No need for order tracking functionality since we're using the simplified class
+                // Just add the level to the update
                 update.bids.push_back(level);
             } catch (const std::exception& e) {
                 // Store anomaly information
@@ -103,14 +99,11 @@ OrderBookUpdate BinanceAdapter::convertToStandardFormat(const ExchangeData& data
                 std::string price_str = ask[0].get<std::string>();
                 std::string qty_str = ask[1].get<std::string>();
                 
+                // Create PriceLevel directly with the constructor
                 PriceLevel level(std::stod(price_str), std::stod(qty_str));
                 
-                // If individual order info is available (not typical for Binance)
-                if (ask.size() > 2 && ask[2].is_string()) {
-                    std::string order_id = ask[2].get<std::string>();
-                    level.addOrder(order_id, level.getQuantity());
-                }
-                
+                // No need for order tracking functionality since we're using the simplified class
+                // Just add the level to the update
                 update.asks.push_back(level);
             } catch (const std::exception& e) {
                 update.has_anomaly = true;
@@ -129,9 +122,8 @@ OrderBookUpdate BinanceAdapter::convertToStandardFormat(const ExchangeData& data
     for (auto it = jsonData.begin(); it != jsonData.end(); ++it) {
         const std::string& key = it.key();
         // Skip fields we've already processed
-        if (key != "s" && key != "E" && key != "u" && key != "b" && 
+        if (key != "s" && key != "E" && key != "u" && key != "b" &&
             key != "a" && key != "lastUpdateId" && key != "checksum") {
-            
             // Store as string value
             update.additional_fields[key] = it.value().dump();
         }
@@ -139,3 +131,83 @@ OrderBookUpdate BinanceAdapter::convertToStandardFormat(const ExchangeData& data
     
     return update;
 }
+// OrderBookUpdate BinanceAdapter::convertToStandardFormat(const ExchangeData& data) {
+//     OrderBookUpdate update;
+//     const auto& jsonData = json::parse(data.data);
+    
+//     // Set basic fields
+//     update.exchange_id = "binance";
+//     update.trading_pair = jsonData["s"];
+//     update.exchange_timestamp = jsonData["E"];
+//     update.received_timestamp = data.receivedTime;
+//     update.sequence_number = jsonData["u"];
+//     update.is_snapshot = jsonData.contains("lastUpdateId");
+    
+//     // Parse bids
+//     if (jsonData.contains("b")) {
+//         for (const auto& bid : jsonData["b"]) {
+//             try {
+//                 std::string price_str = bid[0].get<std::string>();
+//                 std::string qty_str = bid[1].get<std::string>();
+                
+//                 PriceLevel level(std::stod(price_str), std::stod(qty_str));
+                
+//                 // If individual order info is available (not typical for Binance)
+//                 if (bid.size() > 2 && bid[2].is_string()) {
+//                     std::string order_id = bid[2].get<std::string>();
+//                     level.addOrder(order_id, level.getQuantity());
+//                 }
+                
+//                 update.bids.push_back(level);
+//             } catch (const std::exception& e) {
+//                 // Store anomaly information
+//                 update.has_anomaly = true;
+//                 update.anomaly_type = "parsing_error";
+//                 update.anomaly_details = std::string("Error parsing bid: ") + e.what();
+//             }
+//         }
+//     }
+    
+//     // Parse asks
+//     if (jsonData.contains("a")) {
+//         for (const auto& ask : jsonData["a"]) {
+//             try {
+//                 std::string price_str = ask[0].get<std::string>();
+//                 std::string qty_str = ask[1].get<std::string>();
+                
+//                 PriceLevel level(std::stod(price_str), std::stod(qty_str));
+                
+//                 // If individual order info is available (not typical for Binance)
+//                 if (ask.size() > 2 && ask[2].is_string()) {
+//                     std::string order_id = ask[2].get<std::string>();
+//                     level.addOrder(order_id, level.getQuantity());
+//                 }
+                
+//                 update.asks.push_back(level);
+//             } catch (const std::exception& e) {
+//                 update.has_anomaly = true;
+//                 update.anomaly_type = "parsing_error";
+//                 update.anomaly_details = std::string("Error parsing ask: ") + e.what();
+//             }
+//         }
+//     }
+    
+//     // Handle checksum if available
+//     if (jsonData.contains("checksum")) {
+//         update.checksum = jsonData["checksum"].get<std::string>();
+//     }
+    
+//     // Store any additional fields for future extensibility
+//     for (auto it = jsonData.begin(); it != jsonData.end(); ++it) {
+//         const std::string& key = it.key();
+//         // Skip fields we've already processed
+//         if (key != "s" && key != "E" && key != "u" && key != "b" && 
+//             key != "a" && key != "lastUpdateId" && key != "checksum") {
+            
+//             // Store as string value
+//             update.additional_fields[key] = it.value().dump();
+//         }
+//     }
+    
+//     return update;
+// }

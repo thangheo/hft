@@ -48,8 +48,14 @@ double PriceJumpFilter::calculateMidPrice(const OrderBookUpdate& update) const {
     }
     
     // Get best bid and ask
-    double best_bid = std::stod(update.bids[0].price);
-    double best_ask = std::stod(update.asks[0].price);
+    double best_bid = update.bids[0].getPrice();
+    if (best_bid <= 0.0) {
+        return 0.0; // Avoid division by zero
+    }
+    double best_ask = update.asks[0].getPrice();
+    if (best_ask <= 0.0) {
+        return 0.0; // Avoid division by zero
+    }
     
     return (best_bid + best_ask) / 2.0;
 }
@@ -79,16 +85,40 @@ bool SpreadFilter::detectAnomaly(OrderBookUpdate& update) {
 }
 
 double SpreadFilter::calculateSpread(const OrderBookUpdate& update) const {
-    double best_bid = std::stod(update.bids[0].price);
-    double best_ask = std::stod(update.asks[0].price);
-    
+    if (update.bids.empty() || update.asks.empty()) {
+        return 0.0;
+    }
+    // Get best bid and ask
+    double best_bid =  update.bids[0].getPrice();
+    if (best_bid <= 0.0) {
+        return 0.0; // Avoid division by zero
+    }
+    double best_ask = update.asks[0].getPrice();
+    if (best_ask <= 0.0) {
+        return 0.0; // Avoid division by zero
+    }
+    // Calculate spread
+    // Spread = Best Ask - Best Bid
+    // Note: This is a simple spread calculation, you may want to consider other factors
+    // depending on your requirements.
+    // For example, you might want to consider the average of the best bid and ask prices
+    // or use a more complex formula.
+    // Here we just return the difference
+    // between the best ask and best bid prices.
     return best_ask - best_bid;
 }
 
 double SpreadFilter::calculateSpreadPercent(const OrderBookUpdate& update) const {
-    double best_bid = std::stod(update.bids[0].price);
-    double best_ask = std::stod(update.asks[0].price);
-    
+    if (update.bids.empty() || update.asks.empty()) {
+        return 0.0;
+    }
+    // Get best bid and ask
+    double best_bid = update.bids[0].getPrice();
+  
+    double best_ask = update.asks[0].getPrice();
+    if (best_ask <= 0.0) {
+        return 0.0; // Avoid division by zero
+    }
     if (best_bid <= 0.0) {
         return 100.0; // Avoid division by zero
     }
@@ -136,12 +166,12 @@ double VolumeFilter::calculateTotalVolume(const OrderBookUpdate& update) const {
     
     // Sum up bid volumes
     for (const auto& level : update.bids) {
-        total_volume += std::stod(level.quantity);
+        total_volume += level.getQuantity();
     }
     
     // Sum up ask volumes
     for (const auto& level : update.asks) {
-        total_volume += std::stod(level.quantity);
+        total_volume += level.getQuantity();
     }
     
     return total_volume;

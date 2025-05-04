@@ -236,20 +236,15 @@ void OrderBookReconstructor::publishOrderBook(const std::shared_ptr<OrderBook>& 
          return;
      }
      
-     // Create message for publishing
-     // In a real implementation, this would serialize the order book
-     // Create message for publishing
-    // In a real implementation, this would serialize the order book
-    std::stringstream ss;
-    ss << "orderbook:"
-    << static_cast<int>(order_book->getExchangeId()) << ":"
-    << order_book->getSymbol().base << "/"
-    << order_book->getSymbol().quote << ":"
-    << order_book->getSequenceNumber();
 
-    // Convert string to binary payload (vector of unsigned char)
-    std::string payload = ss.str();
+    OrderBookUpdate update = order_book->getSnapshot();
+    std::string payload = update.exchange_id + ":" + update.trading_pair + ":" +
+        std::to_string(update.sequence_number) + ":" +
+        std::to_string(update.exchange_timestamp) + ":" +
+        std::to_string(update.received_timestamp);
     std::vector<unsigned char> binary_payload(payload.begin(), payload.end());
+    // Serialize the order book data
+    // This is a placeholder for actual serialization logic
 
     // Publish message
     publisher_->publish("orderbook", binary_payload);

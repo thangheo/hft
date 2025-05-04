@@ -34,14 +34,14 @@ private:
     std::unordered_map<std::string, std::shared_ptr<ExchangeAdapter>> exchange_adapters_;
     
     // Order books
-    std::unordered_map<std::string, std::unique_ptr<OrderBook>> order_books_;
+    std::unordered_map<std::string, std::shared_ptr<OrderBook>> order_books_;
     
     // Initialize exchange adapters
     void initAdapters();
     
     // Get or create an order book
-    OrderBook* getOrCreateOrderBook(const std::string& exchange_id, 
-                                  const std::string& trading_pair);
+    std::shared_ptr<OrderBook> getOrCreateOrderBook(const std::string& exchange_id, 
+                                                const std::string& trading_pair);
     
     // Create a key for the order book map
     std::string createOrderBookKey(const std::string& exchange_id, 

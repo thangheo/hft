@@ -3,16 +3,18 @@
 #include <vector>
 #include <signal.h>
 
-#include "common/config.hpp"
-#include "common/logging.hpp"
-#include "data_ingestion/websocket_client.hpp"
-#include "data_ingestion/order_book.hpp"
-#include "strategy/analyzer.hpp"
-#include "strategy/imbalance_detector.hpp"
-#include "strategy/signal_generator.hpp"
-#include "execution/signal_processor.hpp"
-#include "execution/order_service.hpp"
-#include "risk/pre_trade_filter.hpp"
+// #include "common/config.hpp"
+#include "common/logger.hpp"
+#include "common/types.hpp"
+#include "data_ingestion/config.hpp"
+// #include "data_ingestion/websocket_client.hpp"
+// #include "data_ingestion/order_book.hpp"
+// #include "strategy/analyzer.hpp"
+// #include "strategy/imbalance_detector.hpp"
+// #include "strategy/signal_generator.hpp"
+// #include "execution/signal_processor.hpp"
+// #include "execution/order_service.hpp"
+// #include "risk/pre_trade_filter.hpp"
 
 // Global flag for graceful shutdown
 volatile bool running = true;
