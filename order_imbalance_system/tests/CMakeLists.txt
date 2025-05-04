@@ -1,11 +1,12 @@
 # Find Google Test
 find_package(GTest REQUIRED)
-
+# find_package(GMock REQUIRED)
 # Include directories for tests
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
     ${GTEST_INCLUDE_DIRS}
 )
+add_subdirectory(data_ingestion)
 
 # Data Ingestion Tests
 set(DATA_INGESTION_TEST_SOURCES

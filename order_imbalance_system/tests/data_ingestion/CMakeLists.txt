@@ -4,18 +4,27 @@
 find_package(GTest REQUIRED)
 find_package(GMock REQUIRED)
 
+# Find OpenSSL
+find_package(OpenSSL REQUIRED)
+find_package(Boost REQUIRED COMPONENTS system thread)
+# Include directories for tests
+include_directories(
+    ${CMAKE_SOURCE_DIR}/include
+    ${GTEST_INCLUDE_DIRS}
+)
+
 # WebSocket unit tests
 set(WEBSOCKET_TEST_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/data_ingestion/websocket/test_websocket_client_base.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/data_ingestion/websocket/test_connection_pool.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/data_ingestion/websocket/exchanges/test_binance_websocket_client.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/data_ingestion/test_exchange_manager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/websocket/test_websocket_client_base.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/websocket/test_connection_pool.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/websocket/exchanges/test_binance_websocket_client.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_exchange_manager.cpp
 )
 
 # WebSocket integration tests
 set(WEBSOCKET_INTEGRATION_TEST_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/data_ingestion/websocket/mock_exchange_server.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/data_ingestion/websocket/test_websocket_integration.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/websocket/mock_exchange_server.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/websocket/test_websocket_integration.cpp
 )
 # # orderbook sources
 # set(ORDERBOOK_TEST_SOURCES
@@ -26,7 +35,7 @@ set(WEBSOCKET_INTEGRATION_TEST_SOURCES
 # )
 set(ORDERBOOK_TEST_SOURCES
     ${CMAKE_SOURCE_DIR}/src/data_ingestion/orderbook/order_book.cpp  # Add this line
-    ${CMAKE_CURRENT_SOURCE_DIR}/data_ingestion/test_order_book.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_order_book.cpp
 )
 # Add the WebSocket unit tests executable
 add_executable(websocket_unit_tests ${WEBSOCKET_TEST_SOURCES} ${ORDERBOOK_TEST_SOURCES})
