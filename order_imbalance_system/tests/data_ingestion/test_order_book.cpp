@@ -1,216 +1,244 @@
 // tests/data_ingestion/test_order_book.cpp
 #include "data_ingestion/orderbook/order_book.hpp"
 #include "data_ingestion/orderbook/order_book_types.hpp"
+#include "data_ingestion/orderbook/price_level.hpp"
 #include <iostream>
 #include <cassert>
 #include <vector>
 #include <string>
+#include <map>
+#include <unordered_map>
+#include <chrono>
 
-using namespace trading::data_ingestion::orderbook;
+using namespace trading::data_ingestion;
 
 // Helper function to create price levels
-std::vector<PriceLevel> createPriceLevels(const std::vector<std::pair<std::string, std::string>>& prices_quantities) {
+// std::vector<PriceLevel> createPriceLevels(const std::vector<std::pair<std::string, std::string>>& prices_quantities) {
+//     std::vector<PriceLevel> levels;
+//     for (const auto& [price, quantity] : prices_quantities) {
+//         PriceLevel level;
+//         level.setPrice(std::stod(price));
+//         level.setQuantity(std::stod(quantity));
+//         levels.push_back(level);
+//     }
+//     return levels;
+// }
+
+// Helper function to create price levels
+std::vector<PriceLevel> createPriceLevels(const std::vector<std::pair<double, double>>& prices_quantities) {
     std::vector<PriceLevel> levels;
     for (const auto& [price, quantity] : prices_quantities) {
         PriceLevel level;
-        level.price = price;
-        level.quantity = quantity;
+        level.setPrice(price);
+        level.setQuantity(quantity);
         levels.push_back(level);
     }
     return levels;
 }
 
+// Helper function to get current timestamp
+Timestamp getCurrentTimestamp() {
+    return std::chrono::system_clock::now();
+}
+
 // Test basic order book functionality
 void testOrderBookBasic() {
-    OrderBookInstance order_book("binance", "btcusdt");
+    // Create OrderBook with string constructor
+    OrderBook order_book("binance", "btcusdt");
     
     // Create initial snapshot
     auto bids = createPriceLevels({
-        {"10100.00", "1.5"},
-        {"10099.00", "2.3"},
-        {"10098.00", "3.1"}
+        {10100.00, 1.5},
+        {10099.00, 2.3},
+        {10098.00, 3.1}
     });
     
     auto asks = createPriceLevels({
-        {"10101.00", "1.2"},
-        {"10102.00", "2.4"},
-        {"10103.00", "3.0"}
+        {10101.00, 1.2},
+        {10102.00, 2.4},
+        {10103.00, 3.0}
     });
     
-    // Process snapshot
-    bool result = order_book.processSnapshot(1, 1000, bids, asks);
+    // Apply snapshot
+    Timestamp timestamp = getCurrentTimestamp();
+    bool result = order_book.applySnapshot(bids, asks, 1, timestamp);
     assert(result == true);
     assert(order_book.isValid() == true);
     
-    // Get order book
-    std::vector<PriceLevel> bids_result, asks_result;
-    result = order_book.getOrderBook(10, bids_result, asks_result);
+    // Get order book snapshot
+    OrderBookUpdate snapshot = order_book.getSnapshot();
     
-    assert(result == true);
+    // Check values
+    std::vector<PriceLevel> bids_result = snapshot.bids;
+    std::vector<PriceLevel> asks_result = snapshot.asks;
+    
     assert(bids_result.size() == 3);
     assert(asks_result.size() == 3);
     
-    // Check values
-    assert(bids_result[0].price == "10100.00");
-    assert(bids_result[0].quantity == "1.5");
-    assert(asks_result[0].price == "10101.00");
-    assert(asks_result[0].quantity == "1.2");
+    assert(bids_result[0].getPrice() == 10100.00);
+    assert(bids_result[0].getQuantity() == 1.5);
+    assert(asks_result[0].getPrice() == 10101.00);
+    assert(asks_result[0].getQuantity() == 1.2);
     
     std::cout << "Basic order book test passed" << std::endl;
 }
 
 // Test incremental updates
 void testOrderBookUpdates() {
-    OrderBookInstance order_book("binance", "btcusdt");
+    OrderBook order_book("binance", "btcusdt");
     
     // Create initial snapshot
     auto bids = createPriceLevels({
-        {"10100.00", "1.5"},
-        {"10099.00", "2.3"},
-        {"10098.00", "3.1"}
+        {10100.00, 1.5},
+        {10099.00, 2.3},
+        {10098.00, 3.1}
     });
     
     auto asks = createPriceLevels({
-        {"10101.00", "1.2"},
-        {"10102.00", "2.4"},
-        {"10103.00", "3.0"}
+        {10101.00, 1.2},
+        {10102.00, 2.4},
+        {10103.00, 3.0}
     });
     
-    // Process snapshot
-    bool result = order_book.processSnapshot(1, 1000, bids, asks);
+    // Apply snapshot
+    Timestamp timestamp = getCurrentTimestamp();
+    bool result = order_book.applySnapshot(bids, asks, 1, timestamp);
     assert(result == true);
     
-    // Process an update - add new level and update existing
+    // Process an update - add new level, update existing, and remove by setting quantity to 0
     auto bids_update = createPriceLevels({
-        {"10100.00", "2.0"},  // Update existing level
-        {"10101.00", "0.5"}   // Add new level at top
+        {10100.00, 2.0},  // Update existing level
+        {10101.00, 0.5},  // Add new level at top
+        {10098.00, 0.0}   // Remove level by setting quantity to 0
     });
     
     auto asks_update = createPriceLevels({
-        {"10101.00", "0.5"},  // Update existing level
-        {"10100.50", "1.0"}   // Add new level at top
+        {10101.00, 0.5},  // Update existing level
+        {10100.50, 1.0},  // Add new level at top
+        {10103.00, 0.0}   // Remove level by setting quantity to 0
     });
     
-    std::vector<std::string> bids_remove = {"10098.00"};  // Remove lowest bid
-    std::vector<std::string> asks_remove = {"10103.00"};  // Remove highest ask
-    
-    // Process update
-    result = order_book.processUpdate(2, 2000, bids_update, asks_update, bids_remove, asks_remove);
+    // Apply update
+    timestamp = getCurrentTimestamp();
+    result = order_book.applyUpdate(bids_update, asks_update, 2, timestamp);
     assert(result == true);
     
     // Get updated order book
-    std::vector<PriceLevel> bids_result, asks_result;
-    result = order_book.getOrderBook(10, bids_result, asks_result);
+    OrderBookUpdate snapshot = order_book.getSnapshot();
+    std::vector<PriceLevel> bids_result = snapshot.bids;
+    std::vector<PriceLevel> asks_result = snapshot.asks;
     
-    // Should have 3 levels for each side
-    assert(bids_result.size() == 3);
-    assert(asks_result.size() == 3);
+    // Should have appropriate number of levels for each side (after removing one level)
+    assert(bids_result.size() == 3); // 2 from before + 1 new - 1 removed = 2
+    assert(asks_result.size() == 3); // 2 from before + 1 new - 1 removed = 2
     
-    // Check updated values
-    assert(bids_result[0].price == "10101.00");  // New top bid
-    assert(bids_result[0].quantity == "0.5");
-    assert(bids_result[1].price == "10100.00");  // Updated bid
-    assert(bids_result[1].quantity == "2.0");
-    assert(bids_result[2].price == "10099.00");  // Unchanged bid
+    // Check best bid/ask
+    PriceLevel best_bid = order_book.getBestBid();
+    PriceLevel best_ask = order_book.getBestAsk();
     
-    assert(asks_result[0].price == "10100.50");  // New top ask
-    assert(asks_result[0].quantity == "1.0");
-    assert(asks_result[1].price == "10101.00");  // Updated ask
-    assert(asks_result[1].quantity == "0.5");
-    assert(asks_result[2].price == "10102.00");  // Unchanged ask
+    assert(best_bid.getPrice() == 10101.00);
+    assert(best_bid.getQuantity() == 0.5);
+    assert(best_ask.getPrice() == 10100.50);
+    assert(best_ask.getQuantity() == 1.0);
     
     std::cout << "Order book updates test passed" << std::endl;
 }
 
+
+
 // Test order book metrics
 void testOrderBookMetrics() {
-    OrderBookInstance order_book("binance", "btcusdt");
+    OrderBook order_book("binance", "btcusdt");
     
     // Create initial snapshot
     auto bids = createPriceLevels({
-        {"10100.00", "1.5"},
-        {"10099.00", "2.3"},
-        {"10098.00", "3.1"}
+        {10100.00, 1.5},
+        {10099.00, 2.3},
+        {10098.00, 3.1}
     });
     
     auto asks = createPriceLevels({
-        {"10101.00", "1.2"},
-        {"10102.00", "2.4"},
-        {"10103.00", "3.0"}
+        {10101.00, 1.2},
+        {10102.00, 2.4},
+        {10103.00, 3.0}
     });
     
-    // Process snapshot
-    bool result = order_book.processSnapshot(1, 1000, bids, asks);
+    // Apply snapshot
+    Timestamp timestamp = getCurrentTimestamp();
+    bool result = order_book.applySnapshot(bids, asks, 1, timestamp);
     assert(result == true);
     
     // Get metrics
-    std::unordered_map<std::string, double> metrics;
-    result = order_book.getMetrics(metrics);
-    assert(result == true);
-    
-    // Check metrics
-    assert(metrics.count("bid_volume") > 0);
-    assert(metrics.count("ask_volume") > 0);
-    assert(metrics.count("bid_ask_ratio") > 0);
-    assert(metrics.count("mid_price") > 0);
-    
-    double bid_volume = metrics["bid_volume"];
-    double ask_volume = metrics["ask_volume"];
-    double bid_ask_ratio = metrics["bid_ask_ratio"];
-    double mid_price = metrics["mid_price"];
+    double bid_volume = order_book.getBidVolume();
+    double ask_volume = order_book.getAskVolume();
+    double mid_price = order_book.getMidPrice();
+    double spread = order_book.getSpread();
+    double spread_percent = order_book.getSpreadPercent();
+    double volume_imbalance = order_book.getVolumeImbalance();
     
     // Expected values
     double expected_bid_volume = 1.5 + 2.3 + 3.1;
     double expected_ask_volume = 1.2 + 2.4 + 3.0;
-    double expected_ratio = expected_bid_volume / expected_ask_volume;
     double expected_mid_price = (10100.0 + 10101.0) / 2.0;
+    double expected_spread = 10101.0 - 10100.0;
+    double expected_spread_percent = expected_spread / expected_mid_price * 100.0;
     
     // Check with some tolerance for floating point comparison
     assert(std::abs(bid_volume - expected_bid_volume) < 0.001);
     assert(std::abs(ask_volume - expected_ask_volume) < 0.001);
-    assert(std::abs(bid_ask_ratio - expected_ratio) < 0.001);
     assert(std::abs(mid_price - expected_mid_price) < 0.001);
+    assert(std::abs(spread - expected_spread) < 0.001);
+    assert(std::abs(spread_percent - expected_spread_percent) < 0.001);
     
     std::cout << "Order book metrics test passed" << std::endl;
 }
 
-// Test manager functionality
-void testOrderBookManager() {
-    OrderBookManager manager;
+// Test callback functionality
+void testOrderBookCallback() {
+    bool callback_called = false;
     
-    // Create order books
-    auto book1 = manager.getOrCreateOrderBook("binance", "btcusdt");
-    auto book2 = manager.getOrCreateOrderBook("binance", "ethusdt");
+    // Create a callback that sets the flag when called
+    OrderBookCallback callback = [&callback_called](const OrderBook& book) {
+        callback_called = true;
+        // Verify the book is valid
+        assert(book.isValid());
+        // Check some property to make sure we got the right book
+        assert(book.getSymbol() == Symbol{"BTC/USDT"});
+        assert(book.getExchangeId() == ExchangeId::BINANCE);
+        assert(book.getSequenceNumber() == 1);
+    };
     
-    // Verify books were created
-    assert(book1 != nullptr);
-    assert(book2 != nullptr);
+    // Create order book with callback
+    OrderBook order_book("binance", "btcusdt", callback);
     
-    // Try to get existing book
-    auto book1_again = manager.getOrCreateOrderBook("binance", "btcusdt");
-    assert(book1 == book1_again);  // Should be the same instance
+    // Create initial snapshot
+    auto bids = createPriceLevels({
+        {10100.00, 1.5},
+        {10099.00, 2.3}
+    });
     
-    // Get all books
-    auto all_books = manager.getAllOrderBooks();
-    assert(all_books.size() == 2);
+    auto asks = createPriceLevels({
+        {10101.00, 1.2},
+        {10102.00, 2.4}
+    });
     
-    // Remove a book
-    bool result = manager.removeOrderBook("binance", "btcusdt");
+    // Apply snapshot - should trigger callback
+    Timestamp timestamp = getCurrentTimestamp();
+    bool result = order_book.applySnapshot(bids, asks, 1, timestamp);
     assert(result == true);
     
-    // Book should be gone
-    all_books = manager.getAllOrderBooks();
-    assert(all_books.size() == 1);
+    // Verify callback was called
+    assert(callback_called);
     
-    std::cout << "Order book manager test passed" << std::endl;
+    std::cout << "Order book callback test passed" << std::endl;
 }
-
 int main() {
-    // Run all tests
-    testOrderBookBasic();
-    testOrderBookUpdates();
-    testOrderBookMetrics();
-    testOrderBookManager();
+     // Run all tests
+     testOrderBookBasic();
+     testOrderBookUpdates();
+     testOrderBookMetrics();
+     testOrderBookCallback();
+     
     
     std::cout << "All tests passed!" << std::endl;
     return 0;

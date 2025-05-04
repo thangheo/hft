@@ -66,7 +66,8 @@ public:
                         ConnectionPoolFactory factory,
                         int min_connections = 1,
                         int max_connections = 10);
-    
+   
+    // std::lock_guard<std::mutex> lock(mutex_);
     /**
      * @brief Removes an exchange from the manager
      * @param exchange_id Identifier of the exchange to remove

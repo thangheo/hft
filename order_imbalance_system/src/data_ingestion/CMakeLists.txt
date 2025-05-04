@@ -8,7 +8,7 @@ set(WEBSOCKET_SOURCES
     # websocket/exchanges/binance_parser.cpp
     # websocket/exchanges/coinbase_client.cpp
     websocket/exchanges/exchange_connector.cpp
-    websocket/exchanges/exchange_manager.cpp
+    websocket/exchange_manager.cpp
     # websocket/exchanges/ftx_client.cpp
 )
 
@@ -102,6 +102,9 @@ set(DATA_INGESTION_SOURCES
 # Create the library
 add_library(data_ingestion ${DATA_INGESTION_SOURCES})
 
+# Find OpenSSL
+find_package(OpenSSL REQUIRED)
+
 target_link_libraries(data_ingestion
     PUBLIC
         common
@@ -112,6 +115,7 @@ target_link_libraries(data_ingestion
         ZeroMQ::ZeroMQ
         cppzmq
         Threads::Threads
+        OpenSSL::SSL OpenSSL::Crypto
 )
 
 target_include_directories(data_ingestion

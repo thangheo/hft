@@ -24,7 +24,32 @@ OrderBook::OrderBook(ExchangeId exchange, const Symbol& symbol, OrderBookCallbac
       symbol_(symbol),
       callback_(std::move(callback)) {
 }
-
+OrderBook::OrderBook(const std::string& exchange_id, const std::string& trading_pair, OrderBookCallback callback)
+    : callback_(std::move(callback)),
+        sequence_number_(0),
+      is_valid_(false) {
+    
+    // Convert exchange_id string to enum
+    if (exchange_id == "binance") {
+        exchange_id_ = ExchangeId::BINANCE;
+    } else if (exchange_id == "coinbase") {
+        exchange_id_ = ExchangeId::COINBASE;
+    } else if (exchange_id == "ftx") {
+        exchange_id_ = ExchangeId::FTX;
+    } else {
+        exchange_id_ = ExchangeId::UNKNOWN;
+    }
+    
+    // Parse trading pair
+    size_t separator = trading_pair.find('/');
+    if (separator != std::string::npos) {
+        symbol_.base = trading_pair.substr(0, separator);
+        symbol_.quote = trading_pair.substr(separator + 1);
+    } else {
+        symbol_.base = trading_pair;
+        symbol_.quote = "";
+    }
+}
 bool OrderBook::applySnapshot(const std::vector<PriceLevel>& bids, 
                             const std::vector<PriceLevel>& asks,
                             uint64_t sequence_number,

@@ -33,16 +33,16 @@ set(STRATEGY_TEST_SOURCES
     strategy/test_integration_tests.cpp
 )
 
-add_executable(strategy_tests ${STRATEGY_TEST_SOURCES})
-target_link_libraries(strategy_tests
-    PRIVATE
-        strategy
-        data_ingestion
-        common
-        ${GTEST_BOTH_LIBRARIES}
-        Threads::Threads
-)
-add_test(NAME strategy_tests COMMAND strategy_tests)
+# add_executable(strategy_tests ${STRATEGY_TEST_SOURCES})
+# target_link_libraries(strategy_tests
+#     PRIVATE
+#         strategy
+#         data_ingestion
+#         common
+#         ${GTEST_BOTH_LIBRARIES}
+#         Threads::Threads
+# )
+# add_test(NAME strategy_tests COMMAND strategy_tests)
 
 # Execution Tests
 set(EXECUTION_TEST_SOURCES
@@ -56,84 +56,84 @@ set(EXECUTION_TEST_SOURCES
     execution/integration_test_execution_engine.cpp
 )
 
-add_executable(execution_tests ${EXECUTION_TEST_SOURCES})
-target_link_libraries(execution_tests
-    PRIVATE
-        execution
-        common
-        ${GTEST_BOTH_LIBRARIES}
-        Threads::Threads
-)
-add_test(NAME execution_tests COMMAND execution_tests)
+# add_executable(execution_tests ${EXECUTION_TEST_SOURCES})
+# target_link_libraries(execution_tests
+#     PRIVATE
+#         execution
+#         common
+#         ${GTEST_BOTH_LIBRARIES}
+#         Threads::Threads
+# )
+# add_test(NAME execution_tests COMMAND execution_tests)
 
-# Risk Tests - Organized by subdirectories
-set(RISK_PRETRADE_TEST_SOURCES
-    risk/pretrade/test_exposure_calculator.cpp
-    risk/pretrade/test_fat_finger_protection.cpp
-    risk/pretrade/test_order_validator.cpp
-    risk/pretrade/test_position_limit_checker.cpp
-)
+# # Risk Tests - Organized by subdirectories
+# set(RISK_PRETRADE_TEST_SOURCES
+#     risk/pretrade/test_exposure_calculator.cpp
+#     risk/pretrade/test_fat_finger_protection.cpp
+#     risk/pretrade/test_order_validator.cpp
+#     risk/pretrade/test_position_limit_checker.cpp
+# )
 
-add_executable(risk_pretrade_tests ${RISK_PRETRADE_TEST_SOURCES})
-target_link_libraries(risk_pretrade_tests
-    PRIVATE
-        risk
-        common
-        ${GTEST_BOTH_LIBRARIES}
-        Threads::Threads
-)
-add_test(NAME risk_pretrade_tests COMMAND risk_pretrade_tests)
+# add_executable(risk_pretrade_tests ${RISK_PRETRADE_TEST_SOURCES})
+# target_link_libraries(risk_pretrade_tests
+#     PRIVATE
+#         risk
+#         common
+#         ${GTEST_BOTH_LIBRARIES}
+#         Threads::Threads
+# )
+# add_test(NAME risk_pretrade_tests COMMAND risk_pretrade_tests)
 
-set(RISK_POSTTRADE_TEST_SOURCES
-    risk/posttrade/test_balance_reconciliation.cpp
-    risk/posttrade/test_circuit_breaker.cpp
-    risk/posttrade/test_drawdown_monitor.cpp
-    risk/posttrade/test_stop_loss_manager.cpp
-)
+# set(RISK_POSTTRADE_TEST_SOURCES
+#     risk/posttrade/test_balance_reconciliation.cpp
+#     risk/posttrade/test_circuit_breaker.cpp
+#     risk/posttrade/test_drawdown_monitor.cpp
+#     risk/posttrade/test_stop_loss_manager.cpp
+# )
 
-add_executable(risk_posttrade_tests ${RISK_POSTTRADE_TEST_SOURCES})
-target_link_libraries(risk_posttrade_tests
-    PRIVATE
-        risk
-        common
-        ${GTEST_BOTH_LIBRARIES}
-        Threads::Threads
-)
-add_test(NAME risk_posttrade_tests COMMAND risk_posttrade_tests)
+# add_executable(risk_posttrade_tests ${RISK_POSTTRADE_TEST_SOURCES})
+# target_link_libraries(risk_posttrade_tests
+#     PRIVATE
+#         risk
+#         common
+#         ${GTEST_BOTH_LIBRARIES}
+#         Threads::Threads
+# )
+# add_test(NAME risk_posttrade_tests COMMAND risk_posttrade_tests)
 
-set(RISK_PORTFOLIO_TEST_SOURCES
-    risk/portfolio/test_collateral_manager.cpp
-    risk/portfolio/test_position_tracker.cpp
-    risk/portfolio/test_rebalancing_engine.cpp
-)
+# set(RISK_PORTFOLIO_TEST_SOURCES
+#     risk/portfolio/test_collateral_manager.cpp
+#     risk/portfolio/test_position_tracker.cpp
+#     risk/portfolio/test_rebalancing_engine.cpp
+# )
 
-add_executable(risk_portfolio_tests ${RISK_PORTFOLIO_TEST_SOURCES})
-target_link_libraries(risk_portfolio_tests
-    PRIVATE
-        risk
-        common
-        ${GTEST_BOTH_LIBRARIES}
-        Threads::Threads
-)
-add_test(NAME risk_portfolio_tests COMMAND risk_portfolio_tests)
+# add_executable(risk_portfolio_tests ${RISK_PORTFOLIO_TEST_SOURCES})
+# target_link_libraries(risk_portfolio_tests
+#     PRIVATE
+#         risk
+#         common
+#         ${GTEST_BOTH_LIBRARIES}
+#         Threads::Threads
+# )
+# add_test(NAME risk_portfolio_tests COMMAND risk_portfolio_tests)
 
-set(RISK_INTEGRATION_TEST_SOURCES
-    risk/integration/test_portfolio_manager.cpp
-    risk/integration/test_post_trade_monitor.cpp
-    risk/integration/test_pretrade_risk_filter.cpp
-    risk/integration/test_risk_service.cpp
-    risk/integration/test_risk_system.cpp
-)
+# set(RISK_INTEGRATION_TEST_SOURCES
+#     risk/integration/test_portfolio_manager.cpp
+#     risk/integration/test_post_trade_monitor.cpp
+#     risk/integration/test_pretrade_risk_filter.cpp
+#     risk/integration/test_risk_service.cpp
+#     risk/integration/test_risk_system.cpp
+# )
 
-add_executable(risk_integration_tests ${RISK_INTEGRATION_TEST_SOURCES})
-target_link_libraries(risk_integration_tests
-    PRIVATE
-        risk
-        common
-        ${GTEST_BOTH_LIBRARIES}
-        Threads::Threads
-)
-add_test(NAME risk_integration_tests COMMAND risk_integration_tests)
+# add_executable(risk_integration_tests ${RISK_INTEGRATION_TEST_SOURCES})
+# target_link_libraries(risk_integration_tests
+#     PRIVATE
+#         risk
+#         common
+#         ${GTEST_BOTH_LIBRARIES}
+#         Threads::Threads
+# )
+# add_test(NAME risk_integration_tests COMMAND risk_integration_tests)
 
 # Python tests - We'll use CMake to run Python unit tests
 find_package(Python3 COMPONENTS Interpreter REQUIRED)

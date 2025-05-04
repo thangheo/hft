@@ -17,9 +17,19 @@ set(WEBSOCKET_INTEGRATION_TEST_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/data_ingestion/websocket/mock_exchange_server.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/data_ingestion/websocket/test_websocket_integration.cpp
 )
-
+# # orderbook sources
+# set(ORDERBOOK_TEST_SOURCES
+#     ${CMAKE_CURRENT_SOURCE_DIR}/data_ingestion/orderbook/order_book.cpp
+#     # ${CMAKE_CURRENT_SOURCE_DIR}/data_ingestion/orderbook/level.cpp
+#     # ${CMAKE_CURRENT_SOURCE_DIR}/data_ingestion/orderbook/book.cpp
+#     ${CMAKE_CURRENT_SOURCE_DIR}/data_ingestion/orderbook/reconstructor.cpp
+# )
+set(ORDERBOOK_TEST_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/data_ingestion/orderbook/order_book.cpp  # Add this line
+    ${CMAKE_CURRENT_SOURCE_DIR}/data_ingestion/test_order_book.cpp
+)
 # Add the WebSocket unit tests executable
-add_executable(websocket_unit_tests ${WEBSOCKET_TEST_SOURCES})
+add_executable(websocket_unit_tests ${WEBSOCKET_TEST_SOURCES} ${ORDERBOOK_TEST_SOURCES})
 target_link_libraries(websocket_unit_tests
     PRIVATE
         data_ingestion_lib

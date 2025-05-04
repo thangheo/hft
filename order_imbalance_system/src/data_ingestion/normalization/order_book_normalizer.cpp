@@ -6,6 +6,8 @@
 #include <sstream>
 #include <nlohmann/json.hpp>
 #include <unordered_map>
+//mutex
+// #include <mutex>
 namespace trading {
 namespace data_ingestion {
 
@@ -23,7 +25,31 @@ void OrderBookNormalizer::initAdapters() {
     exchange_adapters_["binance"] = std::make_shared<BinanceAdapter>();
     // Add other exchanges as needed
 }
+// Add to order_book_normalizer.cpp 
 
+OrderBookUpdate OrderBookNormalizer::getOrderBook(
+    const std::string& exchange_id,
+    const std::string& trading_pair,
+    int depth) const {
+    
+    std::string key = createOrderBookKey(exchange_id, trading_pair);
+    
+    // Thread-safe access to order books
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    auto it = order_books_.find(key);
+    if (it != order_books_.end()) {
+        return it->second->getSnapshot(depth);
+    }
+    
+    // Return empty update if not found
+    OrderBookUpdate empty_update;
+    empty_update.exchange_id = exchange_id;
+    empty_update.trading_pair = trading_pair;
+    empty_update.is_snapshot = true;
+    
+    return empty_update;
+}
 void OrderBookNormalizer::processMarketData(const MarketDataUpdate& update) {
     // Find adapter for this exchange
     auto it = exchange_adapters_.find(update.exchange_id);

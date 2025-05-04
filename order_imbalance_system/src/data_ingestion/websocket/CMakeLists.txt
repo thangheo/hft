@@ -4,6 +4,7 @@ set(WEBSOCKET_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/websocket/connection_pool.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/websocket/exchanges/binance_websocket_client.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/websocket/exchanges/binance_client_factory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/websocket/exchange_manager.cpp
 )
 
 set(WEBSOCKET_HEADERS
@@ -12,7 +13,6 @@ set(WEBSOCKET_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../include/data_ingestion/websocket/exchanges/binance_websocket_client.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../include/data_ingestion/websocket/exchanges/binance_client_factory.hpp
 )
-
 # Add the WebSocket sources to the data ingestion library
 target_sources(data_ingestion_lib
     PRIVATE

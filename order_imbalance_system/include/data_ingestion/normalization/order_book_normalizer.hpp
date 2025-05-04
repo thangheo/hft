@@ -29,6 +29,8 @@ public:
     
 private:
     NormalizedOrderBookCallback callback_;
+    // Mutex for thread safety
+    mutable std::mutex mutex_;
     
     // Exchange-specific adapters
     std::unordered_map<std::string, std::shared_ptr<ExchangeAdapter>> exchange_adapters_;
