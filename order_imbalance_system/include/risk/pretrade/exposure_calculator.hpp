@@ -17,6 +17,7 @@
 #include <mutex>
 #include <memory>
 
+namespace trading {
 namespace risk {
 
 /**
@@ -131,4 +132,4 @@ private:
 };
 
 } // namespace risk
-
+}

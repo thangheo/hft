@@ -7,7 +7,13 @@
 
 namespace trading {
 namespace common {
-
+// Add these to logger.hpp
+#define LOG_TRACE(...) trading::common::Logger::getLogger()->trace(__VA_ARGS__)
+#define LOG_DEBUG(...) trading::common::Logger::getLogger()->debug(__VA_ARGS__)
+#define LOG_INFO(...) trading::common::Logger::getLogger()->info(__VA_ARGS__)
+#define LOG_WARN(...) trading::common::Logger::getLogger()->warn(__VA_ARGS__)
+#define LOG_ERROR(...) trading::common::Logger::getLogger()->error(__VA_ARGS__)
+#define LOG_CRITICAL(...) trading::common::Logger::getLogger()->critical(__VA_ARGS__)
 // Log levels
 enum class LogLevel {
     TRACE,

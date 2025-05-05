@@ -15,6 +15,7 @@
 #include <mutex>
 #include <functional>
 
+namespace trading {
 namespace risk {
 
 // Forward declarations
@@ -113,3 +114,5 @@ private:
 };
 
 } // namespace risk
+} // namespace trading
+// End of file

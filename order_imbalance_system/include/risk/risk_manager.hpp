@@ -25,6 +25,7 @@
 #include <vector>
 #include <unordered_map>
 
+namespace trading   {
 namespace risk {
 
 /**
@@ -153,4 +154,4 @@ private:
 };
 
 } // namespace risk
-
+}

@@ -337,5 +337,5 @@
  };
  
  } // namespace risk
-    } // namespace trading
+} // namespace trading
 

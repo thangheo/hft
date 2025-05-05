@@ -9,10 +9,10 @@
 
  #include "../risk_types.hpp"
  #include "../risk_config.hpp"
- #include "position_limit_checker.hpp"
- #include "exposure_calculator.hpp"
- #include "order_validator.hpp"
- #include "fat_finger_protection.hpp"
+ #include "risk/pretrade/position_limit_checker.hpp"
+ #include "risk/pretrade/exposure_calculator.hpp"
+ #include "risk/pretrade/order_validator.hpp"
+ #include "risk/pretrade/fat_finger_protection.hpp"
  
  #include <memory>
  #include <vector>

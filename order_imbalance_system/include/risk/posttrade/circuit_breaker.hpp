@@ -19,6 +19,7 @@
 #include <chrono>
 #include <atomic>
 
+namespace trading {
 namespace risk {
 
 /**
@@ -146,3 +147,4 @@ private:
 };
 
 } // namespace risk
+}

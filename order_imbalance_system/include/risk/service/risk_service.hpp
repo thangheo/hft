@@ -19,6 +19,7 @@
 #include <atomic>
 #include <functional>
 
+namespace trading {
 namespace risk {
 
 /**
@@ -150,4 +151,4 @@ private:
 };
 
 } // namespace risk
-
+} // namespace trading
