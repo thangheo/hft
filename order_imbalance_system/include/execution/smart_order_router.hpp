@@ -1,0 +1,105 @@
+#pragma once
+
+#include "models/order.hpp"
+#include <memory>
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <functional>
+
+namespace trading { 
+namespace execution {
+
+/**
+ * Exchange information used for routing decisions
+ */
+struct ExchangeInfo {
+    std::string exchange_id;
+    double trading_fee;
+    double liquidity_score;
+    double latency_ms;
+    double success_rate;
+    bool supports_order_type(models::OrderType type) const;
+    bool supports_trading_pair(const std::string& trading_pair) const;
+};
+
+/**
+ * Routing factors to consider when selecting an exchange
+ */
+struct RoutingFactors {
+    double fee_weight = 0.3;
+    double liquidity_weight = 0.3;
+    double latency_weight = 0.2;
+    double success_rate_weight = 0.2;
+};
+
+/**
+ * Result of the routing decision
+ */
+struct RoutingResult {
+    std::string exchange_id;
+    double score;
+    std::string reason;
+};
+
+/**
+ * Smart Order Router selects the optimal exchange for order execution
+ */
+class SmartOrderRouter {
+public:
+    // Constructor
+    SmartOrderRouter();
+    
+    // Initialize with exchange information
+    void initialize(const std::vector<ExchangeInfo>& exchanges);
+    
+    // Update exchange information
+    void updateExchangeInfo(const ExchangeInfo& exchange_info);
+    
+    // Route an order to the best exchange
+    RoutingResult routeOrder(const models::OrderPtr& order) const;
+    
+    // Route an order to a specific exchange
+    bool routeToExchange(models::OrderPtr& order, const std::string& exchange_id) const;
+    
+    // Get available exchanges for a trading pair
+    std::vector<std::string> getAvailableExchanges(const std::string& trading_pair) const;
+    
+    // Set custom routing strategy
+    void setRoutingStrategy(
+        const std::function<RoutingResult(const models::OrderPtr&, 
+                                          const std::vector<ExchangeInfo>&,
+                                          const RoutingFactors&)>& strategy);
+    
+    // Configure routing factors
+    void setRoutingFactors(const RoutingFactors& factors);
+    
+    // Get current routing factors
+    RoutingFactors getRoutingFactors() const;
+    
+private:
+    // Exchange information
+    std::unordered_map<std::string, ExchangeInfo> exchanges_;
+    
+    // Routing configuration
+    RoutingFactors routing_factors_;
+    
+    // Custom routing strategy
+    std::function<RoutingResult(const models::OrderPtr&, 
+                               const std::vector<ExchangeInfo>&,
+                               const RoutingFactors&)> routing_strategy_;
+    
+    // Mutex for thread safety
+    mutable std::mutex mutex_;
+    
+    // Internal helper methods
+    double calculateExchangeScore(const ExchangeInfo& exchange, 
+                                 const models::OrderPtr& order) const;
+    
+    RoutingResult defaultRoutingStrategy(const models::OrderPtr& order,
+                                        const std::vector<ExchangeInfo>& exchanges,
+                                        const RoutingFactors& factors) const;
+};
+
+} // namespace execution
+} // namespace trading
