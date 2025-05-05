@@ -18,6 +18,7 @@
 #include <vector>
 #include <functional>
 
+namespace trading {
 namespace risk {
 
 /**
@@ -139,3 +140,4 @@ private:
 };
 
 } // namespace risk
+}

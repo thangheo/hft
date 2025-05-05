@@ -13,6 +13,7 @@
 #include <memory>
 #include <functional>
 
+namespace trading {
 namespace risk {
 
 /**
@@ -102,3 +103,4 @@ public:
 };
 
 } // namespace risk
+}

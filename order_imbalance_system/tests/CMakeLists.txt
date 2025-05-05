@@ -7,7 +7,7 @@ include_directories(
     ${GTEST_INCLUDE_DIRS}
 )
 add_subdirectory(data_ingestion)
-
+add_subdirectory(risk)
 # Data Ingestion Tests
 set(DATA_INGESTION_TEST_SOURCES
     data_ingestion/test_order_book.cpp

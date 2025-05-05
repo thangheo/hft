@@ -17,7 +17,8 @@
  #include <memory>
  #include <vector>
  #include <string>
- 
+
+ namespace trading{
  namespace risk {
  
  /**
@@ -101,4 +102,4 @@
  };
  
  } // namespace risk
-
+    } // namespace trading

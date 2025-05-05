@@ -11,7 +11,8 @@
  #include <functional>
  #include <string>
  #include <variant>
- 
+
+ namespace trading{  
  namespace risk {
  
  /**
@@ -232,4 +233,5 @@
  using RiskEventCallback = std::function<void(const RiskEvent&)>;
  
  } // namespace risk
+}
 

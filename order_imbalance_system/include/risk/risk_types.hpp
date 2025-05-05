@@ -16,6 +16,7 @@
 #include <stdexcept>
 #include <cstdint>
 
+namespace trading {
 namespace risk {
 
 // Forward declarations
@@ -171,4 +172,4 @@ public:
 };
 
 } // namespace risk
-
+}

@@ -21,6 +21,7 @@
 #include <functional>
 #include <chrono>
 
+namespace trading {
 namespace risk {
 
 /**
@@ -145,7 +146,10 @@ private:
     std::shared_ptr<DataInterface> m_dataInterface;
     RiskConfig m_config;
     RebalancingConfig m_rebalancingConfig;
-    
+    //exchangeTransferFees
+    std::unordered_map<ExchangeId, double> m_exchangeTransferFees;
+    double m_minimumRebalancingValue;
+    double m_maximumRebalancingValue;
     // Rebalancing state
     mutable std::mutex m_stateMutex;
     RebalancingResult m_lastRebalancing;
@@ -173,3 +177,4 @@ private:
 };
     
 } // namespace risk
+}

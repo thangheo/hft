@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <chrono>
 
+namespace trading {
 namespace common {
 
 using Timestamp = std::chrono::time_point<std::chrono::system_clock>;
@@ -51,3 +52,4 @@ struct Order {
 };
 
 } // namespace common
+}

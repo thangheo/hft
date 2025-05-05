@@ -16,6 +16,7 @@
  #include <chrono>
  #include <optional>
  
+ namespace trading{
  namespace risk {
  
  /**
@@ -113,13 +114,20 @@
   * Configuration structure for rebalancing
   */
  struct RebalancingConfig {
-     double rebalanceThreshold;
-     std::chrono::hours checkFrequency;
-     bool autoRebalance;
-     bool preferLowFeeExchanges;
-     std::chrono::seconds minimumTimeBetweenRebalances;
- };
- 
+    bool autoRebalancingEnabled = false;
+    bool autoExecuteRebalancing = false;
+    bool parallelExecution = false;
+    int rebalancingIntervalMinutes = 60;
+    double allocationDeviationThreshold = 0.05; // 5%
+    double minimumOrderSize = 0.0;
+    double minimumRebalancingValue = 0.0;
+    double defaultTransferFeeRate = 0.001; // 0.1% default fee
+    std::unordered_map<std::string, double> targetAllocations;
+    std::unordered_map<std::string, double> fixedPrices;
+    std::unordered_map<std::string, double> assetTransferFees;
+    std::unordered_map<std::string, double> exchangeTransferFees;
+    std::vector<std::string> preferredExchanges;
+};
  /**
   * Configuration structure for collateral management
   */
@@ -158,7 +166,8 @@
       * Default constructor
       */
      RiskConfig();
-     
+     CollateralConfig collateralConfig; // Add this member to hold collateral configuration
+
      /**
       * Load configuration from file
       * @param configFilePath Path to the configuration file
@@ -328,4 +337,5 @@
  };
  
  } // namespace risk
+    } // namespace trading
 
