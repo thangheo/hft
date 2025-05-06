@@ -1,9 +1,158 @@
-/**
- * @file smart_order_router.cpp
- * @brief Implements exchange selection algorithms for balancing liquidity, fees, and latency
- * @date 2025-04-29
- * 
- * Order Imbalance Strategy - Execution Engine
- */
+#include "execution/smart_order_router.hpp"
+#include <algorithm>
+#include <numeric>
+#include <vector>
 
-// TODO: Implement Implements exchange selection algorithms for balancing liquidity, fees, and latency
+namespace trading {
+namespace execution {
+
+SmartOrderRouter::SmartOrderRouter() {
+    // Set default routing strategy
+    routing_strategy_ = [this](const OrderPtr& order, 
+                              const std::vector<ExchangeInfo>& exchanges, 
+                              const RoutingFactors& factors) {
+        return this->defaultRoutingStrategy(order, exchanges, factors);
+    };
+}
+
+void SmartOrderRouter::initialize(const std::vector<ExchangeInfo>& exchanges) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    exchanges_.clear();
+    for (const auto& exchange : exchanges) {
+        exchanges_[exchange.exchange_id] = exchange;
+    }
+}
+
+void SmartOrderRouter::updateExchangeInfo(const ExchangeInfo& exchange_info) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    exchanges_[exchange_info.exchange_id] = exchange_info;
+}
+
+RoutingResult SmartOrderRouter::routeOrder(const OrderPtr& order) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Get all available exchanges for this trading pair
+    std::vector<ExchangeInfo> available_exchanges;
+    for (const auto& [id, info] : exchanges_) {
+        if (info.supports_trading_pair(order->getTradingPair()) && 
+            info.supports_order_type(order->getType())) {
+            available_exchanges.push_back(info);
+        }
+    }
+    
+    // If no available exchanges, return empty result
+    if (available_exchanges.empty()) {
+        return RoutingResult{
+            "", 0.0, "No available exchanges for this trading pair and order type"
+        };
+    }
+    
+    // Use the current routing strategy
+    return routing_strategy_(order, available_exchanges, routing_factors_);
+}
+
+bool SmartOrderRouter::routeToExchange(OrderPtr& order, const std::string& exchange_id) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Check if exchange exists and supports this trading pair and order type
+    auto it = exchanges_.find(exchange_id);
+    if (it == exchanges_.end()) {
+        return false;
+    }
+    
+    const auto& exchange = it->second;
+    if (!exchange.supports_trading_pair(order->getTradingPair()) || 
+        !exchange.supports_order_type(order->getType())) {
+        return false;
+    }
+    
+    // Set the exchange ID on the order
+    order->setExchangeId(exchange_id);
+    return true;
+}
+
+std::vector<std::string> SmartOrderRouter::getAvailableExchanges(const std::string& trading_pair) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    std::vector<std::string> available;
+    for (const auto& [id, info] : exchanges_) {
+        if (info.supports_trading_pair(trading_pair)) {
+            available.push_back(id);
+        }
+    }
+    
+    return available;
+}
+
+void SmartOrderRouter::setRoutingStrategy(
+    const std::function<RoutingResult(const OrderPtr&, 
+                                     const std::vector<ExchangeInfo>&,
+                                     const RoutingFactors&)>& strategy) {
+    routing_strategy_ = strategy;
+}
+
+void SmartOrderRouter::setRoutingFactors(const RoutingFactors& factors) {
+    routing_factors_ = factors;
+}
+
+RoutingFactors SmartOrderRouter::getRoutingFactors() const {
+    return routing_factors_;
+}
+
+RoutingResult SmartOrderRouter::defaultRoutingStrategy(
+    const OrderPtr& order,
+    const std::vector<ExchangeInfo>& exchanges,
+    const RoutingFactors& factors) const {
+    
+    // Calculate scores for each exchange
+    std::vector<std::pair<std::string, double>> exchange_scores;
+    for (const auto& exchange : exchanges) {
+        double score = calculateExchangeScore(exchange, order);
+        exchange_scores.emplace_back(exchange.exchange_id, score);
+    }
+    
+    // Find exchange with highest score
+    auto best_exchange = std::max_element(
+        exchange_scores.begin(), 
+        exchange_scores.end(),
+        [](const auto& a, const auto& b) { return a.second < b.second; }
+    );
+    
+    // Build routing result
+    RoutingResult result;
+    if (best_exchange != exchange_scores.end()) {
+        result.exchange_id = best_exchange->first;
+        result.score = best_exchange->second;
+        result.reason = "Selected based on optimal routing score";
+    } else {
+        result.exchange_id = "";
+        result.score = 0.0;
+        result.reason = "No suitable exchange found";
+    }
+    
+    return result;
+}
+
+double SmartOrderRouter::calculateExchangeScore(
+    const ExchangeInfo& exchange,
+    const OrderPtr& order) const {
+    
+    // Normalize scores to 0-1 range
+    double fee_score = 1.0 - std::min(exchange.trading_fee / 0.01, 1.0); // Assume 1% is max fee
+    double liquidity_score = exchange.liquidity_score; // Already 0-1
+    double latency_score = 1.0 - std::min(exchange.latency_ms / 500.0, 1.0); // Assume 500ms is worst
+    double reliability_score = exchange.success_rate; // Already 0-1
+    
+    // Weight each factor
+    double weighted_score = 
+        fee_score * routing_factors_.fee_weight +
+        liquidity_score * routing_factors_.liquidity_weight +
+        latency_score * routing_factors_.latency_weight +
+        reliability_score * routing_factors_.success_rate_weight;
+    
+    return weighted_score;
+}
+
+} // namespace execution
+} // namespace trading

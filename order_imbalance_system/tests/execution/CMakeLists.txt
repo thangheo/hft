@@ -94,3 +94,24 @@ add_custom_target(run_tests
     COMMAND ${CMAKE_CTEST_COMMAND} --verbose
     DEPENDS test_order test_execution_report test_exchange_api_client
 )
+# Find GTest package
+find_package(GTest REQUIRED)
+include_directories(${GTEST_INCLUDE_DIRS})
+
+# Add test executables
+add_executable(test_order_generator test_order_generator.cpp)
+add_executable(test_order_type_selector test_order_type_selector.cpp)
+add_executable(test_smart_order_router test_smart_order_router.cpp)
+add_executable(integration_test_order_pipeline integration_test_order_pipeline.cpp)
+
+# Link dependencies
+target_link_libraries(test_order_generator execution_lib ${GTEST_LIBRARIES} pthread)
+target_link_libraries(test_order_type_selector execution_lib ${GTEST_LIBRARIES} pthread)
+target_link_libraries(test_smart_order_router execution_lib ${GTEST_LIBRARIES} pthread)
+target_link_libraries(integration_test_order_pipeline execution_lib ${GTEST_LIBRARIES} pthread)
+
+# Add tests to test runner
+add_test(NAME OrderGeneratorTest COMMAND test_order_generator)
+add_test(NAME OrderTypeSelectorTest COMMAND test_order_type_selector)
+add_test(NAME SmartOrderRouterTest COMMAND test_smart_order_router)
+add_test(NAME OrderPipelineIntegrationTest COMMAND integration_test_order_pipeline)
