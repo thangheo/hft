@@ -56,7 +56,21 @@ struct Symbol {
         return quote < other.quote;
     }
 }; 
-
+//simple PriceLevel with price and quantity
+struct PriceLevel {
+    double price;     // Price level
+    double quantity;  // Quantity at this price level
+    
+    PriceLevel(double p = 0.0, double q = 0.0) : price(p), quantity(q) {}
+    
+    bool operator==(const PriceLevel& other) const {
+        return price == other.price && quantity == other.quantity;
+    }
+    
+    bool operator<(const PriceLevel& other) const {
+        return price < other.price;
+    }
+};
 
 // Update type for order book
 enum class UpdateType {
