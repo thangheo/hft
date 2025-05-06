@@ -4,12 +4,54 @@ project(OrderImbalanceTrading VERSION 1.0)
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+Define test executables
+set(TEST_EXECUTABLES
+    test_twap_algorithm
+    test_vwap_algorithm
+    test_iceberg_algorithm
+    test_execution_algorithm_factory
+)
 
+# Build each test executable
+foreach(test_exec ${TEST_EXECUTABLES})
+    add_executable(${test_exec} ${test_exec}.cpp)
+    target_link_libraries(${test_exec}
+        PRIVATE
+        execution
+        GTest::GTest
+        GTest::Main
+        GMock::GMock
+        Threads::Threads
+        UUID::UUID
+    )
+    target_include_directories(${test_exec}
+        PRIVATE
+        ${CMAKE_SOURCE_DIR}/include
+    )
+    add_test(NAME ${test_exec} COMMAND ${test_exec})
+endforeach()
 # Find dependencies
 find_package(GTest REQUIRED)
 find_package(Threads REQUIRED)
 find_package(uuid REQUIRED)
+# Find Google Test
+find_package(GTest REQUIRED)
+include_directories(${GTEST_INCLUDE_DIRS})
 
+# Add test executables
+add_executable(test_authentication_service test/test_authentication_service.cpp src/execution/authentication_service.cpp)
+add_executable(test_rate_limit_controller test/test_rate_limit_controller.cpp src/execution/rate_limit_controller.cpp)
+add_executable(test_request_prioritizer test/test_request_prioritizer.cpp src/execution/request_prioritizer.cpp)
+
+# Link against Google Test and OpenSSL for authentication service
+target_link_libraries(test_authentication_service ${GTEST_LIBRARIES} pthread ssl crypto)
+target_link_libraries(test_rate_limit_controller ${GTEST_LIBRARIES} pthread)
+target_link_libraries(test_request_prioritizer ${GTEST_LIBRARIES} pthread)
+
+# Add tests to CTest
+add_test(NAME AuthenticationServiceTest COMMAND test_authentication_service)
+add_test(NAME RateLimitControllerTest COMMAND test_rate_limit_controller)
+add_test(NAME RequestPrioritizerTest COMMAND test_request_prioritizer)
 # Include directories
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
