@@ -71,9 +71,25 @@
      PRICE_LEVEL_CONCENTRATION,     // Concentration of volume at specific price levels
      BID_ASK_SPREAD_CHANGE,         // Significant change in the bid-ask spread
      MARKET_DEPTH_CHANGE,           // Significant change in market depth
+     LIQUIDITY_FLOW_IMBALANCE,      // Imbalance in liquidity flow
+     ABNORMAL_SPREAD,               // Abnormal spread between bid and ask prices
+     LIQUIDITY_IMBALANCE,        // General liquidity imbalance
+     TREND_CONTINUATION,            // Continuation of a price trend
+     TREND_REVERSAL,                // Reversal of a price trend
      CUSTOM                         // Custom imbalance type defined by strategy
  };
  
+ /**
+  * ImbalanceThreshold structure to define thresholds for different imbalance types
+  */
+    struct ImbalanceThreshold {
+        double min_threshold;          // Minimum threshold for detection
+        double max_threshold;          // Maximum threshold for detection
+        double activation_threshold;   // Threshold to activate the signal  
+
+        ImbalanceThreshold(double min = 0.0, double max = 1.0, double activation = 0.5)
+            : min_threshold(min), max_threshold(max), activation_threshold(activation) {}
+    };
  /**
   * String conversion for ImbalanceType enum
   */
@@ -102,7 +118,26 @@
      HIGH,
      VERY_HIGH
  };
+/*
+*StrategyConfig structure to hold configuration parameters
+*/
+ struct StrategyConfig {
+     std::string strategy_id;                // Unique identifier for the strategy
+     std::string version;                    // Version of the strategy
+     std::map<std::string, ImbalanceThreshold> thresholds; // Thresholds for different imbalance types
+     std::map<std::string, double> parameters; // General parameters for the strategy
+     std::map<std::string, std::string> string_parameters; // String parameters for the strategy
+     std::map<std::string, bool> bool_parameters; // Boolean parameters for the strategy
+ };
  
+ /**
+  * Represents a trading signal generated from imbalance detection
+  */
+ struct SignalCallback {
+     using CallbackFunction = std::function<void(const TradingSignal&)>;
+     CallbackFunction callback;  // Function to call when a signal is generated
+ };
+
  /**
   * Represents a price target for a trading signal
   */
@@ -111,7 +146,16 @@
      double probability;           // Probability of reaching this target
      Duration expected_time;       // Expected time to reach target
  };
- 
+ /**
+  * VolatilityLevel enum for categorizing market volatility
+  */
+    enum class VolatilityLevel {
+        VERY_LOW,
+        LOW,
+        NORMAL,
+        HIGH,
+        VERY_HIGH
+    };
  /**
   * Represents an imbalance event detected in the order book
   */
@@ -220,7 +264,9 @@
   */
  struct ThresholdSet {
      std::map<std::string, double> thresholds;     // Map of threshold name to value
-     
+    double globalSensitivity;                    // Global sensitivity for all thresholds
+    // typeThresholds
+    std::map<ImbalanceType, ImbalanceThreshold> typeThresholds; // Type-specific thresholds
      // Common threshold getters
      double getVolumeImbalanceThreshold() const {
          return getThreshold("volume_imbalance");

@@ -24,7 +24,7 @@
 #include "strategy/strategy_types.hpp"
 #include "data_ingestion/orderbook/order_book.hpp"
 #include "common/logger.hpp"
-
+#include "strategy/signal/logistic_regression_signal_generator.hpp"
 #include <string>
 #include <memory>
 #include <vector>
@@ -52,7 +52,9 @@ public:
      * @param strategyId Unique identifier for this strategy instance
      */
     explicit StrategyEngine(const std::string& strategyId);
-    
+    // Add method to register your signal generator
+    void registerLogisticRegressionSignalGenerator(
+        std::shared_ptr<LogisticRegressionSignalGenerator> generator);
     /**
      * @brief Destructor
      */
@@ -202,6 +204,8 @@ private:
     // Performance tracking
     void updatePerformanceMetrics(const SignalExecutionResult& result);
     void recordSignalPerformance(const std::string& signalId, const SignalExecutionResult& result);
+    //
+    std::shared_ptr<LogisticRegressionSignalGenerator> logistic_regression_signal_generator_;
 };
 
 // Type aliases
