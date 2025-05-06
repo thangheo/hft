@@ -14,7 +14,7 @@ namespace execution {
 struct OrderGenerationParams {
     std::string trading_pair;
     models::OrderSide side;
-    models::OrderType type = models::OrderType::MARKET;
+    OrderType type = OrderType::MARKET;
     double quantity = 0.0;
     double price = 0.0;
     models::TimeInForce time_in_force = models::TimeInForce::GTC;

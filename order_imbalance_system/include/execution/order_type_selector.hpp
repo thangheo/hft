@@ -4,6 +4,8 @@
 #include <memory>
 #include <string>
 #include <functional>
+#include <mutex>
+#include <unordered_map>
 
 namespace trading {
 namespace execution {
@@ -25,9 +27,9 @@ struct MarketCondition {
  * Order type selection result
  */
 struct OrderTypeSelection {
-    models::OrderType type;
+    OrderType type;
     double price;
-    models::TimeInForce time_in_force;
+    TimeInForce time_in_force;
     std::string reason;
 };
 
@@ -41,7 +43,7 @@ public:
     
     // Select optimal order type
     OrderTypeSelection selectOrderType(
-        const models::OrderPtr& order,
+        const OrderPtr& order,
         const MarketCondition& market_condition) const;
     
     // Update market condition
@@ -55,7 +57,7 @@ public:
     // Set custom selection strategy
     void setSelectionStrategy(
         const std::function<OrderTypeSelection(
-            const models::OrderPtr&,
+            const OrderPtr&,
             const MarketCondition&)>& strategy);
     
     // Configure selection thresholds
@@ -74,7 +76,7 @@ private:
     
     // Custom selection strategy
     std::function<OrderTypeSelection(
-        const models::OrderPtr&,
+        const OrderPtr&,
         const MarketCondition&)> selection_strategy_;
     
     // Mutex for thread safety
@@ -82,7 +84,7 @@ private:
     
     // Default selection strategy
     OrderTypeSelection defaultSelectionStrategy(
-        const models::OrderPtr& order,
+        const OrderPtr& order,
         const MarketCondition& condition) const;
 };
 
