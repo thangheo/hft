@@ -1,0 +1,66 @@
+python/monitoring
+├── alerts
+│   ├── alert_manager.py
+│   ├── escalation_policy.py
+│   ├── incident_manager.py
+│   └── oncall_manager.py
+├── analysis
+│   ├── alert_analyzer.py
+│   ├── execution_analyzer.py
+│   ├── health_metrics_analyzer.py
+│   ├── incident_analyzer.py
+│   ├── latency_analyzer.py
+│   ├── log_analyzer.py
+│   ├── pnl_analyzer.py
+│   ├── resource_analyzer.py
+│   ├── risk_analyzer.py
+│   └── strategy_analyzer.py
+├── api
+│   ├── alerts_endpoints.py
+│   ├── app.py
+│   ├── health_endpoints.py
+│   ├── metrics_endpoints.py
+│   └── trading_endpoints.py
+├── config
+│   ├── alerts.py
+│   ├── escalation.py
+│   ├── settings.py
+│   ├── system_monitoring.py
+│   └── trading_metrics.py
+├── database
+│   ├── models.py
+│   ├── operational_db.py
+│   └── timeseries_db.py
+├── integrations
+│   ├── elk.py
+│   ├── exchanges.py
+│   ├── grafana.py
+│   └── prometheus.py
+├── system
+│   ├── health_monitor.py
+│   ├── latency_tracker.py
+│   ├── log_collector.py
+│   ├── metrics_processor.py
+│   └── resource_monitor.py
+├── tasks
+│   ├── processor.py
+│   └── scheduler.py
+├── trading
+│   ├── execution_analyzer.py
+│   ├── pnl_calculator.py
+│   ├── risk_metrics.py
+│   └── strategy_performance.py
+├── utils
+│   ├── math_utils.py
+│   ├── notification.py
+│   ├── security.py
+│   └── time_utils.py
+└── web
+    ├── components
+    │   ├── alerts_dashboard.py
+    │   ├── health_dashboard.py
+    │   ├── performance_dashboard.py
+    │   └── resource_dashboard.py
+    └── dashboard_app.py
+
+13 directories, 51 files

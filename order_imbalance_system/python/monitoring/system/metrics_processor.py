@@ -1,246 +1,190 @@
-"""
-Metrics Processor Module
+import asyncio
+import logging
+from datetime import datetime
+from typing import Dict, List, Any, Optional, Union, Callable
 
-This module processes various system metrics, performs time series analysis,
-and manages historical data storage.
-
-Classes:
-    MetricsProcessor: Main class for metrics processing
-"""
-
-import time
-import json
-import numpy as np
-from datetime import datetime, timedelta
-from collections import defaultdict, deque
-
+logger = logging.getLogger(__name__)
 
 class MetricsProcessor:
     """
-    Processes system metrics and performs time series analysis.
-    
-    Attributes:
-        metrics_store (dict): In-memory store for recent metrics
-        retention_period (int): Retention period in seconds
-        database_connector: Connector to external time-series database
+    Central component for processing, transforming, and routing metrics
+    from various collectors to storage and visualization systems.
     """
     
-    def __init__(self, retention_period=86400, database_connector=None):
+    def __init__(self, config=None):
         """
         Initialize the metrics processor.
         
         Args:
-            retention_period (int): Retention period in seconds (default: 24 hours)
-            database_connector: Optional connector to external time-series database
+            config: Configuration dictionary for the metrics processor
         """
-        self.metrics_store = defaultdict(lambda: deque(maxlen=10000))
-        self.retention_period = retention_period
-        self.database_connector = database_connector
-    
-    def store_metric(self, metric_name, value, tags=None, timestamp=None):
+        self.config = config or {}
+        self.collectors = {}
+        self.storage_backends = {}
+        self.processing_rules = {}
+        self.running = False
+        self.processing_interval = self.config.get('processing_interval', 5)  # seconds
+        self._processing_task = None
+        
+    def register_collector(self, name: str, collector) -> None:
         """
-        Store a metric in memory and optionally in the database.
+        Register a metrics collector with the processor.
         
         Args:
-            metric_name (str): Name of the metric
-            value (float): Value of the metric
-            tags (dict): Optional tags/dimensions for the metric
-            timestamp (float): Optional timestamp (defaults to current time)
-        
-        Returns:
-            bool: True if stored successfully, False otherwise
+            name: Unique name for the collector
+            collector: Collector instance that provides metrics
         """
-        timestamp = timestamp or time.time()
-        tags = tags or {}
+        if name in self.collectors:
+            logger.warning(f"Collector '{name}' already registered. Replacing.")
         
-        # Create a metric point
-        point = {
-            'timestamp': timestamp,
-            'value': value,
-            'tags': tags
+        self.collectors[name] = collector
+        logger.info(f"Registered collector: {name}")
+        
+    def register_storage_backend(self, name: str, backend) -> None:
+        """
+        Register a storage backend for processed metrics.
+        
+        Args:
+            name: Unique name for the storage backend
+            backend: Backend instance with store_metrics method
+        """
+        if not hasattr(backend, 'store_metrics'):
+            raise ValueError("Storage backend must implement 'store_metrics' method")
+        
+        self.storage_backends[name] = backend
+        logger.info(f"Registered storage backend: {name}")
+    
+    def add_processing_rule(self, rule_name: str, source_collector: str, 
+                           processor_func: Callable, target_backends: List[str]) -> None:
+        """
+        Add a rule for processing metrics from a specific collector.
+        
+        Args:
+            rule_name: Unique name for the rule
+            source_collector: Name of the source collector
+            processor_func: Function to process the metrics
+            target_backends: List of storage backend names to receive processed metrics
+        """
+        if source_collector not in self.collectors:
+            raise ValueError(f"Unknown collector: {source_collector}")
+        
+        for backend in target_backends:
+            if backend not in self.storage_backends:
+                raise ValueError(f"Unknown storage backend: {backend}")
+        
+        self.processing_rules[rule_name] = {
+            'source': source_collector,
+            'processor': processor_func,
+            'targets': target_backends
         }
-        
-        # Store in memory
-        self.metrics_store[metric_name].append(point)
-        
-        # Store in database if connector is available
-        if self.database_connector:
-            try:
-                self.database_connector.write_point(metric_name, value, tags, timestamp)
-            except Exception as e:
-                print(f"Error writing to database: {e}")
-                return False
-        
-        return True
+        logger.info(f"Added processing rule: {rule_name}")
     
-    def store_metrics_batch(self, metrics):
+    async def start(self) -> None:
+        """Start the metrics processing loop."""
+        if self.running:
+            logger.warning("Metrics processor already running")
+            return
+        
+        self.running = True
+        self._processing_task = asyncio.create_task(self._processing_loop())
+        logger.info("Metrics processor started")
+    
+    async def stop(self) -> None:
+        """Stop the metrics processing loop."""
+        if not self.running:
+            logger.warning("Metrics processor not running")
+            return
+        
+        self.running = False
+        if self._processing_task:
+            await self._processing_task
+            self._processing_task = None
+        logger.info("Metrics processor stopped")
+    
+    async def _processing_loop(self) -> None:
+        """Main processing loop that runs at regular intervals."""
+        while self.running:
+            try:
+                await self._process_all_metrics()
+                await asyncio.sleep(self.processing_interval)
+            except Exception as e:
+                logger.error(f"Error in metrics processing loop: {str(e)}", exc_info=True)
+                await asyncio.sleep(1)  # Short delay before retrying after error
+    
+    async def _process_all_metrics(self) -> None:
+        """Process metrics according to all defined rules."""
+        for rule_name, rule in self.processing_rules.items():
+            try:
+                collector = self.collectors[rule['source']]
+                raw_metrics = await self._collect_metrics(collector)
+                
+                if not raw_metrics:
+                    continue
+                
+                processed_metrics = rule['processor'](raw_metrics)
+                
+                for backend_name in rule['targets']:
+                    backend = self.storage_backends[backend_name]
+                    await self._store_metrics(backend, processed_metrics)
+                
+            except Exception as e:
+                logger.error(f"Error processing rule '{rule_name}': {str(e)}", exc_info=True)
+    
+    async def _collect_metrics(self, collector) -> Dict[str, Any]:
+        """Collect metrics from a collector, handling both sync and async collectors."""
+        try:
+            if hasattr(collector, 'collect_metrics_async'):
+                return await collector.collect_metrics_async()
+            else:
+                # For synchronous collectors, run in a thread pool
+                loop = asyncio.get_running_loop()
+                return await loop.run_in_executor(None, collector.collect_metrics)
+        except Exception as e:
+            logger.error(f"Error collecting metrics from {collector}: {str(e)}", exc_info=True)
+            return {}
+    
+    async def _store_metrics(self, backend, metrics: Dict[str, Any]) -> None:
+        """Store metrics in a backend, handling both sync and async backends."""
+        try:
+            if hasattr(backend, 'store_metrics_async'):
+                await backend.store_metrics_async(metrics)
+            else:
+                # For synchronous backends, run in a thread pool
+                loop = asyncio.get_running_loop()
+                await loop.run_in_executor(None, backend.store_metrics, metrics)
+        except Exception as e:
+            logger.error(f"Error storing metrics to {backend}: {str(e)}", exc_info=True)
+    
+    def get_collector(self, name: str):
+        """Get a registered collector by name."""
+        return self.collectors.get(name)
+    
+    def process_metrics_now(self, collector_name: str = None) -> None:
         """
-        Store multiple metrics at once.
+        Trigger immediate metrics processing for testing or manual execution.
         
         Args:
-            metrics (list): List of metric dictionaries with keys:
-                           metric_name, value, tags (optional), timestamp (optional)
-        
-        Returns:
-            int: Number of metrics stored successfully
+            collector_name: Optional name of specific collector to process
         """
-        success_count = 0
+        if collector_name and collector_name not in self.collectors:
+            raise ValueError(f"Unknown collector: {collector_name}")
         
-        for metric in metrics:
-            if self.store_metric(
-                metric['metric_name'],
-                metric['value'],
-                metric.get('tags'),
-                metric.get('timestamp')
-            ):
-                success_count += 1
-        
-        return success_count
+        # Create a task to run the processing
+        asyncio.create_task(self._process_metrics_now(collector_name))
     
-    def get_metric_range(self, metric_name, start_time, end_time=None, tags=None):
-        """
-        Get metrics within a time range.
-        
-        Args:
-            metric_name (str): Name of the metric
-            start_time (float): Start timestamp
-            end_time (float): End timestamp (defaults to current time)
-            tags (dict): Optional filter by tags
-        
-        Returns:
-            list: Metrics within the specified range
-        """
-        end_time = end_time or time.time()
-        
-        # Try to get from database first if available
-        if self.database_connector:
-            try:
-                return self.database_connector.query_range(
-                    metric_name, start_time, end_time, tags)
-            except Exception as e:
-                print(f"Error querying database: {e}")
-        
-        # Fall back to in-memory store
-        if metric_name not in self.metrics_store:
-            return []
-        
-        result = []
-        for point in self.metrics_store[metric_name]:
-            if start_time <= point['timestamp'] <= end_time:
-                # Check tags if provided
-                if tags:
-                    match = True
-                    for tag_key, tag_value in tags.items():
-                        if point['tags'].get(tag_key) != tag_value:
-                            match = False
-                            break
+    async def _process_metrics_now(self, collector_name: str = None) -> None:
+        """Internal method to process metrics immediately."""
+        if collector_name:
+            # Process only rules for the specified collector
+            for rule_name, rule in self.processing_rules.items():
+                if rule['source'] == collector_name:
+                    collector = self.collectors[collector_name]
+                    raw_metrics = await self._collect_metrics(collector)
+                    processed_metrics = rule['processor'](raw_metrics)
                     
-                    if not match:
-                        continue
-                
-                result.append(point)
-        
-        return result
-    
-    def calculate_statistics(self, metric_name, start_time, end_time=None, tags=None):
-        """
-        Calculate statistics for a metric within a time range.
-        
-        Args:
-            metric_name (str): Name of the metric
-            start_time (float): Start timestamp
-            end_time (float): End timestamp (defaults to current time)
-            tags (dict): Optional filter by tags
-        
-        Returns:
-            dict: Statistics including min, max, avg, median, etc.
-        """
-        metrics = self.get_metric_range(metric_name, start_time, end_time, tags)
-        
-        if not metrics:
-            return {
-                'count': 0,
-                'min': None,
-                'max': None,
-                'avg': None,
-                'median': None,
-                'sum': None,
-                'stddev': None
-            }
-        
-        values = [m['value'] for m in metrics]
-        
-        return {
-            'count': len(values),
-            'min': min(values),
-            'max': max(values),
-            'avg': sum(values) / len(values),
-            'median': np.median(values),
-            'sum': sum(values),
-            'stddev': np.std(values) if len(values) > 1 else 0
-        }
-    
-    def detect_anomalies(self, metric_name, window_size=3600, threshold=2.0, tags=None):
-        """
-        Detect anomalies in a metric using a simple Z-score method.
-        
-        Args:
-            metric_name (str): Name of the metric
-            window_size (int): Size of the window in seconds for baseline
-            threshold (float): Z-score threshold for anomaly detection
-            tags (dict): Optional filter by tags
-        
-        Returns:
-            list: Detected anomalies
-        """
-        end_time = time.time()
-        start_time = end_time - window_size
-        
-        metrics = self.get_metric_range(metric_name, start_time, end_time, tags)
-        
-        if len(metrics) < 10:  # Need enough data points for meaningful detection
-            return []
-        
-        values = [m['value'] for m in metrics]
-        timestamps = [m['timestamp'] for m in metrics]
-        
-        mean = np.mean(values)
-        std = np.std(values)
-        
-        anomalies = []
-        
-        if std > 0:  # Avoid division by zero
-            for i, value in enumerate(values):
-                z_score = abs(value - mean) / std
-                
-                if z_score > threshold:
-                    anomalies.append({
-                        'timestamp': timestamps[i],
-                        'value': value,
-                        'z_score': z_score,
-                        'mean': mean,
-                        'std': std
-                    })
-        
-        return anomalies
-    
-    def cleanup_old_metrics(self):
-        """
-        Clean up metrics older than the retention period.
-        
-        Returns:
-            int: Number of metrics removed
-        """
-        cutoff_time = time.time() - self.retention_period
-        removed_count = 0
-        
-        for metric_name in self.metrics_store:
-            original_length = len(self.metrics_store[metric_name])
-            
-            # Remove old metrics
-            while (self.metrics_store[metric_name] and 
-                   self.metrics_store[metric_name][0]['timestamp'] < cutoff_time):
-                self.metrics_store[metric_name].popleft()
-                removed_count += 1
-        
-        return removed_count
+                    for backend_name in rule['targets']:
+                        backend = self.storage_backends[backend_name]
+                        await self._store_metrics(backend, processed_metrics)
+        else:
+            # Process all rules
+            await self._process_all_metrics()
