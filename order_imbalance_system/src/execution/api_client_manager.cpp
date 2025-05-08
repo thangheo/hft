@@ -109,7 +109,7 @@ RateLimitStatus ApiClientManager::getRateLimitStatus(const std::string& exchange
         throw std::runtime_error("No rate limit controller found for exchange: " + exchangeId);
     }
     
-    return it->second->getStatus(requestType);
+    return it->second->getRateLimitStatus(requestType);
 }
 
 std::shared_ptr<ExchangeApiClient> ApiClientManager::createClient(const std::string& exchangeId) {

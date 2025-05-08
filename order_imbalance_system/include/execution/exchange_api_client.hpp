@@ -1,12 +1,12 @@
 // exchange_api_client.hpp
 #pragma once
-
+#include <map>
 #include <string>
 #include <memory>
 #include <vector>
 #include <future>
-#include "../models/order.hpp"
-#include "../models/execution_report.hpp"
+#include "execution/models/order.hpp"
+#include "execution/models/execution_report.hpp"
 
 namespace trading {
 namespace execution {
@@ -31,10 +31,10 @@ public:
     virtual ~ExchangeApiClient() = default;
     
     // Order operations
-    virtual std::future<ExecutionReport> placeOrder(const Order& order) = 0;
-    virtual std::future<ExecutionReport> cancelOrder(const std::string& orderId, const std::string& symbol) = 0;
-    virtual std::future<ExecutionReport> getOrderStatus(const std::string& orderId, const std::string& symbol) = 0;
-    
+    virtual std::future<models::ExecutionReport> placeOrder(const models::Order& order) = 0;
+    virtual std::future<models::ExecutionReport> cancelOrder(const std::string& orderId, const std::string& symbol) = 0;
+    virtual std::future<models::ExecutionReport> getOrderStatus(const std::string& orderId, const std::string& symbol) = 0;
+    // virtual std::future<models::ExecutionReport> getOrderStatus(const std::string& orderId) = 0;
     // Account operations
     virtual std::future<std::map<std::string, double>> getAccountBalances() = 0;
     
@@ -53,6 +53,13 @@ public:
     // Rate limit information
     virtual int getRemainingRequests(ExchangeRequestType requestType) const = 0;
     virtual std::chrono::milliseconds getResetTimeForRequestType(ExchangeRequestType requestType) const = 0;
+
+    
+    // virtual OrderResponse submitOrder(const Order& order) = 0;
+    // virtual OrderCancelResponse cancelOrder(const OrderCancelRequest& request) = 0;
+    // virtual OrderStatusResponse getOrderStatus(const OrderStatusRequest& request) = 0;
+    // virtual AccountBalanceResponse getAccountBalance() = 0;
+    virtual bool checkConnection() = 0;
 };
 
 } // namespace execution

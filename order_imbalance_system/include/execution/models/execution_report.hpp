@@ -11,7 +11,7 @@
 
 namespace trading {
 namespace execution {
-
+namespace models {
 /**
  * Represents the source of an execution report
  */
@@ -19,20 +19,6 @@ enum class ExecutionReportSource {
     EXCHANGE,       // Direct from exchange
     INTERNAL,       // Generated internally
     RECONCILIATION  // Generated during reconciliation
-};
-
-/**
- * Represents a single fill for an order
- */
-struct Fill {
-    std::string fillId;
-    std::string orderId;
-    std::string exchangeOrderId;
-    double quantity;
-    double price;
-    double fee;
-    std::string feeCurrency;
-    std::chrono::system_clock::time_point timestamp;
 };
 
 /**
@@ -152,3 +138,4 @@ using ExecutionReportConstPtr = std::shared_ptr<const ExecutionReport>;
 
 } // namespace execution
 } // namespace trading
+} // namespace models

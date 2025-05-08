@@ -135,7 +135,7 @@ TEST_F(OrderTest, StateTransitionsHappyPath) {
     // Create a fill
     Fill fill;
     fill.fill_id = "fill-123";
-    fill.order_id = order->getOrderId();
+    fill.orderId = order->getOrderId();
     fill.quantity = 0.5;
     fill.price = 50000.0;
     fill.fee = 0.005;
@@ -172,7 +172,7 @@ TEST_F(OrderTest, CancelOrder) {
     // Try to fill a canceled order
     Fill fill;
     fill.fill_id = "fill-123";
-    fill.order_id = order->getOrderId();
+    fill.orderId = order->getOrderId();
     fill.quantity = 0.5;
     fill.price = 50000.0;
     
@@ -196,7 +196,7 @@ TEST_F(OrderTest, RejectOrder) {
     // Try to fill a rejected order
     Fill fill;
     fill.fill_id = "fill-123";
-    fill.order_id = order->getOrderId();
+    fill.orderId = order->getOrderId();
     fill.quantity = 0.5;
     fill.price = 50000.0;
     
@@ -216,7 +216,7 @@ TEST_F(OrderTest, ExpireOrder) {
     // Try to fill an expired order
     Fill fill;
     fill.fill_id = "fill-123";
-    fill.order_id = order->getOrderId();
+    fill.orderId = order->getOrderId();
     fill.quantity = 0.5;
     fill.price = 40000.0;
     
@@ -242,7 +242,7 @@ TEST_F(OrderTest, UtilityMethods) {
     // Partial fill
     Fill fill;
     fill.fill_id = "fill-123";
-    fill.order_id = order->getOrderId();
+    fill.orderId = order->getOrderId();
     fill.quantity = 0.5;
     fill.price = 40000.0;
     order->fill(fill);
@@ -287,7 +287,7 @@ TEST_F(OrderTest, ThreadSafety) {
         futures.push_back(std::async(std::launch::async, [order, i]() {
             Fill fill;
             fill.fill_id = "fill-" + std::to_string(i);
-            fill.order_id = order->getOrderId();
+            fill.orderId = order->getOrderId();
             fill.quantity = 0.2;
             fill.price = 50000.0 + i;  // Slightly different price for each fill
             fill.timestamp = std::chrono::system_clock::now();
@@ -332,7 +332,7 @@ TEST_F(OrderTest, InvalidStateTransitions) {
     // Fill fully
     Fill fill;
     fill.fill_id = "fill-123";
-    fill.order_id = order->getOrderId();
+    fill.orderId = order->getOrderId();
     fill.quantity = 1.0;
     fill.price = 50000.0;
     fill.timestamp = std::chrono::system_clock::now();
@@ -361,7 +361,7 @@ TEST_F(OrderTest, OverfillOrder) {
     // Fill with more than the order quantity
     Fill fill;
     fill.fill_id = "fill-123";
-    fill.order_id = order->getOrderId();
+    fill.orderId = order->getOrderId();
     fill.quantity = 1.5;  // Order quantity is 1.0
     fill.price = 50000.0;
     fill.timestamp = std::chrono::system_clock::now();

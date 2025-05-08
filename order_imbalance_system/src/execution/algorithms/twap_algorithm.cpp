@@ -5,6 +5,7 @@
 #include <chrono>
 #include <thread>
 #include <random>
+#include <algorithm>
 
 namespace trading {
 namespace execution {

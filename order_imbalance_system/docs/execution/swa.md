@@ -271,12 +271,12 @@ struct ExecutionReport {
 **Fill**:
 ```cpp
 struct Fill {
-    std::string fillId;
+    std::string fill_id;
     std::string orderId;
     double quantity;
     double price;
     double fee;
-    std::string feeCurrency;
+    std::string fee_currency;
     std::chrono::system_clock::time_point timestamp;
 };
 ```

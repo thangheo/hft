@@ -42,13 +42,13 @@ std::shared_ptr<ExecutionReport> ExecutionReport::createFromOrder(const std::sha
     // Add fills
     for (const auto& fill : order->getFills()) {
         Fill newFill;
-        newFill.fillId = fill.fill_id;
-        newFill.orderId = fill.order_id;
+        newFill.fill_id = fill.fill_id;
+        newFill.orderId = fill.orderId;
         newFill.exchangeOrderId = order->getExchangeOrderId();
         newFill.quantity = fill.quantity;
         newFill.price = fill.price;
         newFill.fee = fill.fee;
-        newFill.feeCurrency = fill.fee_currency;
+        newFill.fee_currency = fill.fee_currency;
         newFill.timestamp = fill.timestamp;
         
         report->addFill(newFill);
@@ -107,7 +107,7 @@ bool ExecutionReport::applyToOrder(std::shared_ptr<Order>& order) const {
                 // Check if this fill is already recorded
                 bool fillExists = false;
                 for (const auto& orderFill : order->getFills()) {
-                    if (orderFill.fill_id == reportFill.fillId) {
+                    if (orderFill.fill_id == reportFill.fill_id) {
                         fillExists = true;
                         break;
                     }
@@ -116,12 +116,12 @@ bool ExecutionReport::applyToOrder(std::shared_ptr<Order>& order) const {
                 // If the fill doesn't exist, add it
                 if (!fillExists) {
                     Fill newFill;
-                    newFill.fill_id = reportFill.fillId;
-                    newFill.order_id = order->getOrderId();
+                    newFill.fill_id = reportFill.fill_id;
+                    newFill.orderId = order->getOrderId();
                     newFill.quantity = reportFill.quantity;
                     newFill.price = reportFill.price;
                     newFill.fee = reportFill.fee;
-                    newFill.fee_currency = reportFill.feeCurrency;
+                    newFill.fee_currency = reportFill.fee_currency;
                     newFill.timestamp = reportFill.timestamp;
                     
                     order->fill(newFill);
@@ -134,7 +134,7 @@ bool ExecutionReport::applyToOrder(std::shared_ptr<Order>& order) const {
             for (const auto& reportFill : fills_) {
                 bool fillExists = false;
                 for (const auto& orderFill : order->getFills()) {
-                    if (orderFill.fill_id == reportFill.fillId) {
+                    if (orderFill.fill_id == reportFill.fill_id) {
                         fillExists = true;
                         break;
                     }
@@ -142,12 +142,12 @@ bool ExecutionReport::applyToOrder(std::shared_ptr<Order>& order) const {
                 
                 if (!fillExists) {
                     Fill newFill;
-                    newFill.fill_id = reportFill.fillId;
-                    newFill.order_id = order->getOrderId();
+                    newFill.fill_id = reportFill.fill_id;
+                    newFill.orderId = order->getOrderId();
                     newFill.quantity = reportFill.quantity;
                     newFill.price = reportFill.price;
                     newFill.fee = reportFill.fee;
-                    newFill.fee_currency = reportFill.feeCurrency;
+                    newFill.fee_currency = reportFill.fee_currency;
                     newFill.timestamp = reportFill.timestamp;
                     
                     order->fill(newFill);

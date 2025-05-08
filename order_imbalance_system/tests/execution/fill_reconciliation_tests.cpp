@@ -24,13 +24,13 @@
      Fill createTestFill(const std::string& fill_id, const std::string& order_id, 
                          const std::string& exchange_order_id, double qty, double price) {
          Fill fill;
-         fill.fillId = fill_id;
+         fill.fill_id = fill_id;
          fill.orderId = order_id;
          fill.exchangeOrderId = exchange_order_id;
          fill.quantity = qty;
          fill.price = price;
          fill.fee = 0.0;  // Not testing fees here
-         fill.feeCurrency = "USDT";
+         fill.fee_currency = "USDT";
          fill.timestamp = std::chrono::system_clock::now();
          return fill;
      }
@@ -277,7 +277,7 @@
  TEST_F(FillReconciliationTest, DiscrepancyToString) {
      // Create a discrepancy
      FillDiscrepancy discrepancy;
-     discrepancy.order_id = "order-123";
+     discrepancy.orderId = "order-123";
      discrepancy.exchange_id = "exchange-123";
      discrepancy.trading_pair = "BTC-USDT";
      discrepancy.expected_quantity = 0.1;

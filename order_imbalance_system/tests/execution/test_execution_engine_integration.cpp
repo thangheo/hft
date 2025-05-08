@@ -194,7 +194,7 @@
      // Add a fill to the result
      Fill fill;
      fill.fill_id = "fill_1";
-     fill.order_id = "test_order_1";
+     fill.orderId = "test_order_1";
      fill.quantity = 1.0;
      fill.price = 50000.0;
      fill.timestamp = std::chrono::system_clock::now();

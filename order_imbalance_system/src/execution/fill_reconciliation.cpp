@@ -99,7 +99,7 @@
      // If no match was found, check for discrepancies
      if (!reconciled) {
          FillDiscrepancy discrepancy;
-         discrepancy.order_id = order_id;
+         discrepancy.orderId = order_id;
          discrepancy.exchange_id = actual_fill.exchange_order_id;
          discrepancy.trading_pair = "";  // We don't have this info in the Fill struct
          discrepancy.actual_quantity = actual_fill.quantity;
@@ -167,7 +167,7 @@
              if (elapsed > timeout_ms) {
                  // Create a discrepancy
                  FillDiscrepancy discrepancy;
-                 discrepancy.order_id = order_id;
+                 discrepancy.orderId = order_id;
                  discrepancy.exchange_id = exp_record.fill.exchangeOrderId;
                  discrepancy.trading_pair = "";  // We don't have this info
                  discrepancy.expected_quantity = exp_record.fill.quantity;
@@ -205,7 +205,7 @@
              
              // Create a discrepancy
              FillDiscrepancy discrepancy;
-             discrepancy.order_id = order_id;
+             discrepancy.orderId = order_id;
              discrepancy.exchange_id = act_record.fill.exchangeOrderId;
              discrepancy.trading_pair = "";  // We don't have this info
              discrepancy.expected_quantity = 0.0;
@@ -345,8 +345,8 @@
  bool FillReconciliation::matchFills(const Fill& expected, const Fill& actual, 
                                   double price_tolerance, double quantity_tolerance) {
      // Check for exact match on fill ID if available
-     if (!expected.fillId.empty() && !actual.fillId.empty() && 
-         expected.fillId == actual.fillId) {
+     if (!expected.fill_id.empty() && !actual.fill_id.empty() && 
+         expected.fill_id == actual.fill_id) {
          return true;
      }
      

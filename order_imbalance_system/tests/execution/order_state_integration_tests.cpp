@@ -54,13 +54,13 @@
      Fill createTestFill(const std::string& fill_id, const std::string& order_id,
                          const std::string& exchange_order_id, double qty, double price) {
          Fill fill;
-         fill.fillId = fill_id;
+         fill.fill_id = fill_id;
          fill.orderId = order_id;
          fill.exchangeOrderId = exchange_order_id;
          fill.quantity = qty;
          fill.price = price;
          fill.fee = qty * price * 0.001; // 0.1% fee for testing
-         fill.feeCurrency = "USDT";
+         fill.fee_currency = "USDT";
          fill.timestamp = std::chrono::system_clock::now();
          return fill;
      }

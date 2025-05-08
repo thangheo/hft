@@ -12,7 +12,7 @@
 
 namespace trading {
 namespace execution {
-
+namespace models {
 /**
  * Represents the side of an order (buy or sell)
  */
@@ -64,14 +64,16 @@ enum class OrderState {
 /**
  * Represents a fill (execution) of an order
  */
+
 struct Fill {
-    std::string fill_id;               // Unique fill identifier
-    std::string order_id;              // ID of the filled order
-    double quantity;                   // Fill quantity
-    double price;                      // Fill price
-    double fee;                        // Fee amount
-    std::string fee_currency;          // Currency of the fee
-    std::chrono::system_clock::time_point timestamp;  // Fill time
+    std::string fill_id;
+    std::string orderId;
+    std::string exchangeOrderId;
+    double quantity;
+    double price;
+    double fee;
+    std::string fee_currency;
+    std::chrono::system_clock::time_point timestamp;
 };
 
 /**
@@ -197,3 +199,4 @@ using OrderWeakPtr = std::weak_ptr<Order>;
 
 } // namespace execution
 } // namespace trading
+} // namespace models

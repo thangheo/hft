@@ -436,11 +436,11 @@
      // Set fills
      for (const auto& fill : internal_order.getFills()) {
          auto* proto_fill = proto_order.add_fills();
-         proto_fill->set_fill_id(fill.fillId);
+         proto_fill->set_fill_id(fill.fill_id);
          proto_fill->set_quantity(fill.quantity);
          proto_fill->set_price(fill.price);
          proto_fill->set_fee(fill.fee);
-         proto_fill->set_fee_currency(fill.feeCurrency);
+         proto_fill->set_fee_currency(fill.fee_currency);
          proto_fill->set_timestamp(
              std::chrono::duration_cast<std::chrono::milliseconds>(
                  fill.timestamp.time_since_epoch()

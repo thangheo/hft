@@ -11,7 +11,8 @@ echo "Installing system dependencies..."
 sudo apt-get update
 sudo apt-get install -y build-essential cmake libzmq3-dev libboost-all-dev \
     git python3 python3-venv python3-full libssl-dev python3-dev protobuf-compiler libprotobuf-dev \
-    libgrpc++-dev libgrpc-dev protobuf-compiler-grpc libpq-dev libgtest-dev libgmock-dev libwebsocketpp-dev
+    libgrpc++-dev libgrpc-dev protobuf-compiler-grpc libpq-dev libgtest-dev libgmock-dev libwebsocketpp-dev \
+    install uuid-dev
 
 # Build Google Test
 cd /usr/src/gtest

@@ -517,12 +517,12 @@ ExecutionReport BinanceApiClient::parseOrderResponse(const std::string& response
         const Json::Value& fills = root["fills"];
         for (const auto& fill : fills) {
             Fill f;
-            f.fillId = fill["tradeId"].asString();
+            f.fill_id = fill["tradeId"].asString();
             f.orderId = root["orderId"].asString();
             f.quantity = std::stod(fill["qty"].asString());
             f.price = std::stod(fill["price"].asString());
             f.fee = std::stod(fill["commission"].asString());
-            f.feeCurrency = fill["commissionAsset"].asString();
+            f.fee_currency = fill["commissionAsset"].asString();
             
             // Parse timestamp
             auto ms = std::chrono::milliseconds(std::stoll(fill["time"].asString()));

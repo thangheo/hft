@@ -138,12 +138,12 @@ TEST_F(ExecutionReportTest, AddFills) {
     
     // Add a fill
     Fill fill;
-    fill.fillId = "test-fill-1";
+    fill.fill_id = "test-fill-1";
     fill.orderId = "test-order-id";
     fill.quantity = 0.5;
     fill.price = 45000.0;
     fill.fee = 0.0025;
-    fill.feeCurrency = "BTC";
+    fill.fee_currency = "BTC";
     fill.timestamp = std::chrono::system_clock::now();
     
     report.addFill(fill);
@@ -152,7 +152,7 @@ TEST_F(ExecutionReportTest, AddFills) {
     EXPECT_EQ(report.filledQuantity(), 0.5);
     
     // Add another fill
-    fill.fillId = "test-fill-2";
+    fill.fill_id = "test-fill-2";
     fill.quantity = 0.3;
     fill.price = 45100.0;
     
@@ -178,13 +178,13 @@ TEST_F(ExecutionReportTest, ApplyToOrderSuccess) {
     report.setExchangeOrderId("test-exchange-order-id");
     
     Fill fill;
-    fill.fillId = "test-fill-1";
+    fill.fill_id = "test-fill-1";
     fill.orderId = order->getOrderId();
     fill.exchangeOrderId = "test-exchange-order-id";
     fill.quantity = 0.5;
     fill.price = 45000.0;
     fill.fee = 0.0025;
-    fill.feeCurrency = "BTC";
+    fill.fee_currency = "BTC";
     fill.timestamp = std::chrono::system_clock::now();
     
     report.addFill(fill);
@@ -204,13 +204,13 @@ TEST_F(ExecutionReportTest, ApplyToOrderSuccess) {
     report2.setStatus(OrderState::FILLED);
     
     Fill fill2;
-    fill2.fillId = "test-fill-2";
+    fill2.fill_id = "test-fill-2";
     fill2.orderId = order->getOrderId();
     fill2.exchangeOrderId = "test-exchange-order-id";
     fill2.quantity = 0.5;
     fill2.price = 45100.0;
     fill2.fee = 0.0025;
-    fill2.feeCurrency = "BTC";
+    fill2.fee_currency = "BTC";
     fill2.timestamp = std::chrono::system_clock::now();
     
     report2.addFill(fill2);

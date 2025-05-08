@@ -71,7 +71,7 @@
                      report.averageFillPrice = json["average_fill_price"];
                      report.timestamp = json["timestamp"];
                      report.fee = json["fee"];
-                     report.feeCurrency = json["fee_currency"];
+                     report.fee_currency = json["fee_currency"];
                      
                      // Call the callback if registered
                      if (executionReportCallback_) {

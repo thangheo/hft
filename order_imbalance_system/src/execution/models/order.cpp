@@ -7,7 +7,7 @@
 
 namespace trading {
 namespace execution {
-
+namespace models {
 // Helper function to generate UUID
 std::string generateUuid() {
     uuid_t uuid;
@@ -467,3 +467,4 @@ std::string Order::toString() const {
 
 } // namespace execution
 } // namespace trading
+} // namespace models

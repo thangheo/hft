@@ -112,7 +112,7 @@
      // Create a fill
      Fill fill;
      fill.fill_id = "fill-789";
-     fill.order_id = "client-123";
+     fill.orderId = "client-123";
      fill.quantity = 0.1;
      fill.price = 50000.0;
      fill.timestamp = std::chrono::system_clock::now();
@@ -138,7 +138,7 @@
      // Create first fill (50%)
      Fill fill1;
      fill1.fill_id = "fill-789";
-     fill1.order_id = "client-123";
+     fill1.orderId = "client-123";
      fill1.quantity = 0.1;
      fill1.price = 50000.0;
      fill1.timestamp = std::chrono::system_clock::now();
@@ -157,7 +157,7 @@
      // Create second fill (remaining 50%)
      Fill fill2;
      fill2.fill_id = "fill-790";
-     fill2.order_id = "client-123";
+     fill2.orderId = "client-123";
      fill2.quantity = 0.1;
      fill2.price = 50010.0;  // Different price
      fill2.timestamp = std::chrono::system_clock::now();
