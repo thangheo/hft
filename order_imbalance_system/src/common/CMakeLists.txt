@@ -1,36 +1,24 @@
-set(COMMON_SOURCES
-    zeromq_client.cpp
+# src/common/CMakeLists.txt
+
+# Define library
+add_library(common
     logger.cpp
+    zeromq_client.cpp
 )
 
-add_library(common ${COMMON_SOURCES})
-
-target_link_libraries(common
-    PUBLIC
-        ZeroMQ::ZeroMQ
-        cppzmq
-        Boost::system
-        Boost::filesystem
-        Threads::Threads
-)
-
+# Include directories
 target_include_directories(common
     PUBLIC
         ${CMAKE_SOURCE_DIR}/include
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/include/common
 )
 
-# Install headers
-install(
-    DIRECTORY ${CMAKE_SOURCE_DIR}/include/common/
-    DESTINATION include/common
-    FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
-)
-
-# Install the library
-install(TARGETS common
-    EXPORT CommonTargets
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-    RUNTIME DESTINATION bin
-    INCLUDES DESTINATION include
+# Link libraries
+target_link_libraries(common
+    PUBLIC
+        Threads::Threads
+        cppzmq
+        ZeroMQ::ZeroMQ
+        nlohmann_json::nlohmann_json
 )

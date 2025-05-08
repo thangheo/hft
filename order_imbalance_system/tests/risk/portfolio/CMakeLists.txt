@@ -1,38 +1,32 @@
-cmake_minimum_required(VERSION 3.14)
-project(risk_portfolio_tests)
+# tests/risk/portfolio/CMakeLists.txt
 
-# Set C++ standard
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-# Find Google Test
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS})
-
-# Include project headers
-include_directories(${CMAKE_SOURCE_DIR}/include)
-
-# Add test source files
-set(TEST_SOURCES
-    test_main.cpp
-    test_position_tracker.cpp
-    test_portfolio_manager.cpp
+# Source files for portfolio risk tests
+set(RISK_PORTFOLIO_TEST_SOURCES
     test_collateral_manager.cpp
+    test_portfolio_manager.cpp
+    test_position_tracker.cpp
     test_rebalancing_engine.cpp
-    test_portfolio_integration.cpp
+    test_main.cpp
 )
 
-# Create test executable
-add_executable(run_tests ${TEST_SOURCES})
-
-# Link against Google Test and your project libraries
-target_link_libraries(run_tests 
-    ${GTEST_LIBRARIES}
-    pthread
-    risk_common
-    risk_portfolio
+# Portfolio risk test executable
+add_executable(risk_portfolio_tests ${RISK_PORTFOLIO_TEST_SOURCES})
+target_link_libraries(risk_portfolio_tests
+    PRIVATE
+        risk
+        common
+        GTest::GTest
+        GTest::Main
+        GMock::GMock
+        Threads::Threads
+)
+target_include_directories(risk_portfolio_tests
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/..
+        ${CMAKE_CURRENT_SOURCE_DIR}/../mocks
 )
 
-# Add test
-enable_testing()
-add_test(NAME portfolio_tests COMMAND run_tests)
+# Register tests with CTest
+include(GoogleTest)
+gtest_discover_tests(risk_portfolio_tests)

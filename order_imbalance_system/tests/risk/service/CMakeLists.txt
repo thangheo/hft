@@ -1,52 +1,29 @@
-# Tests for Risk Management System
-# Add to CMakeLists.txt
+# tests/risk/service/CMakeLists.txt
 
-# Google Test dependency
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS})
+# Source files for risk service tests
+set(RISK_SERVICE_TEST_SOURCES
+    test_risk_service.cpp
+    test_risk_validation_service.cpp
+)
 
-# Google Mock dependency
-find_package(GMock REQUIRED)
-include_directories(${GMOCK_INCLUDE_DIRS})
+# Risk service test executable
+add_executable(risk_service_tests ${RISK_SERVICE_TEST_SOURCES})
+target_link_libraries(risk_service_tests
+    PRIVATE
+        risk
+        common
+        GTest::GTest
+        GTest::Main
+        GMock::GMock
+        Threads::Threads
+)
+target_include_directories(risk_service_tests
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/..
+        ${CMAKE_CURRENT_SOURCE_DIR}/../mocks
+)
 
-# JSON for Modern C++ (for testing JSON processing)
-find_package(nlohmann_json REQUIRED)
-
-# Test executables
-add_executable(test_risk_validation_service 
-    tests/risk/service/test_risk_validation_service.cpp)
-target_link_libraries(test_risk_validation_service
-    ${PROJECT_NAME}_risk
-    ${GTEST_LIBRARIES}
-    ${GMOCK_LIBRARIES}
-    pthread)
-
-add_executable(test_risk_service 
-    tests/risk/service/test_risk_service.cpp)
-target_link_libraries(test_risk_service
-    ${PROJECT_NAME}_risk
-    ${GTEST_LIBRARIES}
-    ${GMOCK_LIBRARIES}
-    nlohmann_json::nlohmann_json
-    pthread)
-
-add_executable(test_risk_manager 
-    tests/risk/test_risk_manager.cpp)
-target_link_libraries(test_risk_manager
-    ${PROJECT_NAME}_risk
-    ${GTEST_LIBRARIES}
-    ${GMOCK_LIBRARIES}
-    pthread)
-
-add_executable(test_risk_system_integration 
-    tests/risk/integration/test_risk_system_integration.cpp)
-target_link_libraries(test_risk_system_integration
-    ${PROJECT_NAME}_risk
-    ${GTEST_LIBRARIES}
-    pthread)
-
-# Add tests to CTest
-add_test(NAME RiskValidationServiceTest COMMAND test_risk_validation_service)
-add_test(NAME RiskServiceTest COMMAND test_risk_service)
-add_test(NAME RiskManagerTest COMMAND test_risk_manager)
-add_test(NAME RiskSystemIntegrationTest COMMAND test_risk_system_integration)
+# Register tests with CTest
+include(GoogleTest)
+gtest_discover_tests(risk_service_tests)

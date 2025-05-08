@@ -1,55 +1,30 @@
-# CMakeLists.txt for Risk Interface Tests
+# tests/risk/interfaces/CMakeLists.txt
 
-# Find Google Test
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS})
-
-# Add test executables
-add_executable(strategy_interface_test 
-    strategy_interface_test.cpp
-    ${PROJECT_SOURCE_DIR}/src/risk/interfaces/strategy_interface.cpp
-)
-
-add_executable(execution_interface_test 
-    execution_interface_test.cpp
-    ${PROJECT_SOURCE_DIR}/src/risk/interfaces/execution_interface.cpp
-)
-
-add_executable(data_interface_test 
+# Source files for risk interfaces tests
+set(RISK_INTERFACES_TEST_SOURCES
     data_interface_test.cpp
-    ${PROJECT_SOURCE_DIR}/src/risk/interfaces/data_interface.cpp
+    execution_interface_test.cpp
+    strategy_interface_test.cpp
 )
 
-# Link libraries
-target_link_libraries(strategy_interface_test 
-    ${GTEST_LIBRARIES} 
-    ${GTEST_MAIN_LIBRARIES}
-    pthread
-    risk_common
-    zmq
+# Risk interfaces test executable
+add_executable(risk_interfaces_tests ${RISK_INTERFACES_TEST_SOURCES})
+target_link_libraries(risk_interfaces_tests
+    PRIVATE
+        risk
+        common
+        GTest::GTest
+        GTest::Main
+        GMock::GMock
+        Threads::Threads
 )
-target_link_libraries(execution_interface_test 
-    ${GTEST_LIBRARIES} 
-    ${GTEST_MAIN_LIBRARIES}
-    pthread
-    risk_common
-    zmq
-)
-
-target_link_libraries(data_interface_test 
-    ${GTEST_LIBRARIES} 
-    ${GTEST_MAIN_LIBRARIES}
-    pthread
-    risk_common
-    zmq
+target_include_directories(risk_interfaces_tests
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/..
+        ${CMAKE_CURRENT_SOURCE_DIR}/../mocks
 )
 
-# Add tests to CTest
-add_test(NAME StrategyInterfaceTest COMMAND strategy_interface_test)
-add_test(NAME ExecutionInterfaceTest COMMAND execution_interface_test)
-add_test(NAME DataInterfaceTest COMMAND data_interface_test)
-
-# Set test properties
-set_tests_properties(StrategyInterfaceTest PROPERTIES TIMEOUT 10)
-set_tests_properties(ExecutionInterfaceTest PROPERTIES TIMEOUT 10)
-set_tests_properties(DataInterfaceTest PROPERTIES TIMEOUT 10)
+# Register tests with CTest
+include(GoogleTest)
+gtest_discover_tests(risk_interfaces_tests)

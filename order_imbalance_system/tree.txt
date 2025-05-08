@@ -1,0 +1,812 @@
+.
+├── cmake
+│   └── modules
+│       ├── Findcppzmq.cmake
+│       ├── FindGMock.cmake
+│       ├── FindGTest.cmake
+│       └── FindZeroMQ.cmake
+├── CMakeLists.txt
+├── config
+│   ├── data_ingestion
+│   │   ├── data_sources.yaml
+│   │   ├── exchanges.yaml
+│   │   └── normalization.yaml
+│   ├── deployment
+│   │   └── pipeline_config.yaml
+│   ├── dr
+│   │   ├── backup_config.yaml
+│   │   └── failover_config.yaml
+│   ├── environments
+│   │   ├── dev.yaml
+│   │   ├── production.yaml
+│   │   └── staging.yaml
+│   ├── exchanges.json
+│   ├── execution_engine.yaml
+│   ├── grafana
+│   │   └── provisioning
+│   │       └── datasources
+│   │           └── default.yml
+│   ├── influxdb
+│   │   ├── config.yml
+│   │   └── influx-configs
+│   ├── infrastructure
+│   │   └── compute_resources.yaml
+│   ├── monitoring
+│   │   ├── alerts.yaml
+│   │   ├── default_setting.yaml
+│   │   ├── escalation.yaml
+│   │   ├── system_monitoring.yaml
+│   │   └── trading_metrics.yaml
+│   ├── order_book_reconstructor.json
+│   ├── postgres
+│   │   └── init
+│   │       └── 01-schema.sql
+│   ├── prometheus
+│   │   └── prometheus.yml
+│   ├── risk
+│   │   ├── circuit_breaker_rules.json
+│   │   ├── collateral_requirements.json
+│   │   ├── drawdown_thresholds.json
+│   │   ├── exposure_limits.json
+│   │   ├── fat_finger_thresholds.json
+│   │   ├── order_validation_rules.json
+│   │   ├── position_limits.json
+│   │   ├── rebalancing_rules.json
+│   │   └── stop_loss_config.json
+│   ├── risk_limits.json
+│   ├── security
+│   │   ├── auth_providers.yaml
+│   │   └── rbac_policies.yaml
+│   ├── strategy
+│   │   ├── default_parameters.json
+│   │   └── exchange_specific_parameters.json
+│   ├── strategy_params.json
+│   └── system_config.json
+├── dependency-guide.md
+├── docker
+│   ├── admin
+│   │   └── backup_service.Dockerfile
+│   ├── build.sh
+│   ├── data_ingestion
+│   │   ├── Dockerfile
+│   │   └── normalization
+│   │       ├── docker-compose.yml
+│   │       └── Dockerfile
+│   ├── data_ingestion.Dockerfile
+│   ├── docker-compose.yml
+│   ├── Dockerfile
+│   ├── Dockerfile.core
+│   ├── Dockerfile.python
+│   ├── kubernetes
+│   │   ├── admin_components.yaml
+│   │   ├── data_ingestion
+│   │   │   └── deployment.yaml
+│   │   ├── deployment.yaml
+│   │   ├── risk-config.yaml
+│   │   ├── risk-deployment.yaml
+│   │   ├── risk-service.yaml
+│   │   └── service.yaml
+│   ├── order_book_reconstructor.dockerfile
+│   ├── risk
+│   │   └── Dockerfile
+│   └── zeromq
+│       ├── Dockerfile
+│       └── zmq_proxy.py
+├── docker-compose.yml
+├── docs
+│   ├── admin
+│   │   └── dr
+│   │       └── recovery_runbooks
+│   │           ├── complete_system_recovery.md
+│   │           ├── database_failure.md
+│   │           └── exchange_connectivity_loss.md
+│   ├── api
+│   │   ├── execution_service_api.md
+│   │   ├── monitoring
+│   │   │   ├── health_api.md
+│   │   │   └── metrics_api.md
+│   │   ├── monitoring_api.md
+│   │   └── risk_service_api.md
+│   ├── architecture.md
+│   ├── Building the Order Imbalance Trading System.pdf
+│   ├── components_todo.md
+│   ├── data_ingestion
+│   │   ├── dataflow.md
+│   │   ├── modules.md
+│   │   └── swa.md
+│   ├── dev
+│   │   ├── architecture.md
+│   │   └── extending.md
+│   ├── dirs.md
+│   ├── execution
+│   │   ├── execution_engine_architecture.md
+│   │   ├── modules.md
+│   │   └── swa.md
+│   ├── Inside the Microsecond Battlefield_ High-Frequency Crypto Trading Strategies.pdf
+│   ├── monitoring
+│   │   ├── modules.md
+│   │   └── swa.md
+│   ├── Order Imbalance Strategy_ Software Stack & Component Interactions.md
+│   ├── Order Imbalance Strategy System_ Component Interface Specifications.pdf
+│   ├── risk
+│   │   ├── configuration_guide.md
+│   │   ├── modules.md
+│   │   ├── portfolio_management.md
+│   │   ├── posttrade_risk_controls.md
+│   │   ├── pretrade_risk_controls.md
+│   │   ├── risk_architecture.md
+│   │   ├── Risk Management System Architecture.pdf
+│   │   └── risk_metrics.md
+│   ├── Semi-HFT Crypto Trading System Architecture.pdf
+│   ├── strategy
+│   │   └── Order Imbalance Strategy Engine - Software Architecture.pdf
+│   ├── trategy.txt
+│   └── user
+│       └── dashboards.md
+├── include
+│   ├── common
+│   │   ├── logger.hpp
+│   │   ├── types.hpp
+│   │   └── zeromq_client.hpp
+│   ├── data_ingestion
+│   │   ├── blockchain
+│   │   │   ├── data_collector.hpp
+│   │   │   └── transaction_monitor.hpp
+│   │   ├── cache
+│   │   │   └── order_book_cache.hpp
+│   │   ├── config.hpp
+│   │   ├── connection_monitor.hpp
+│   │   ├── data_quality
+│   │   │   ├── data_quality.hpp
+│   │   │   ├── filter.hpp
+│   │   │   └── validator.hpp
+│   │   ├── data_source_manager.hpp
+│   │   ├── exceptions.hpp
+│   │   ├── exchange_manager.hpp
+│   │   ├── logging.hpp
+│   │   ├── monitoring
+│   │   │   └── pipeline_metrics.hpp
+│   │   ├── news
+│   │   │   ├── api_client.hpp
+│   │   │   └── processor.hpp
+│   │   ├── normalization
+│   │   │   ├── monitoring.hpp
+│   │   │   ├── normalizer.hpp
+│   │   │   ├── order_book_normalizer.hpp
+│   │   │   └── pipeline.hpp
+│   │   ├── orderbook
+│   │   │   ├── order_book.hpp
+│   │   │   ├── order_book_types.hpp
+│   │   │   ├── price_level.hpp
+│   │   │   └── reconstructor.hpp
+│   │   ├── pipeline
+│   │   │   └── normalization_pipeline.hpp
+│   │   ├── protocol
+│   │   │   ├── adapter_interface.hpp
+│   │   │   ├── binance_adapter.hpp
+│   │   │   ├── coinbase_adapter.hpp
+│   │   │   └── ftx_adapter.hpp
+│   │   ├── publisher
+│   │   │   └── zeromq_publisher.hpp
+│   │   ├── rest
+│   │   │   ├── client_base.hpp
+│   │   │   ├── client_interface.hpp
+│   │   │   └── exchanges
+│   │   │       ├── binance_client.hpp
+│   │   │       ├── coinbase_client.hpp
+│   │   │       └── ftx_client.hpp
+│   │   ├── sentiment
+│   │   │   ├── analyzer.hpp
+│   │   │   └── collector.hpp
+│   │   ├── storage
+│   │   │   └── influxdb_writer.hpp
+│   │   ├── time
+│   │   │   └── synchronizer.hpp
+│   │   ├── types.hpp
+│   │   └── websocket
+│   │       ├── client_base.hpp
+│   │       ├── client_interface.hpp
+│   │       ├── connection_pool.hpp
+│   │       ├── exchanges
+│   │       │   ├── binance_client_factory.hpp
+│   │       │   ├── binance_parser.hpp
+│   │       │   ├── binance_websocket_client.hpp
+│   │       │   ├── coinbase_client.hpp
+│   │       │   ├── exchange_connector.hpp
+│   │       │   └── ftx_connector.hpp
+│   │       └── websocket_client.h
+│   ├── execution
+│   │   ├── algorithms
+│   │   │   ├── iceberg_algorithm.hpp
+│   │   │   ├── twap_algorithm.hpp
+│   │   │   └── vwap_algorithm.hpp
+│   │   ├── api_client_manager.hpp
+│   │   ├── authentication_service.hpp
+│   │   ├── exchange_api_client.hpp
+│   │   ├── exchanges
+│   │   │   ├── binance_api_client.hpp
+│   │   │   └── ftx_api_client.hpp
+│   │   ├── execution_algorithm_factory.hpp
+│   │   ├── execution_service.hpp
+│   │   ├── fill_reconciliation.hpp
+│   │   ├── grpc
+│   │   │   └── execution_service_impl.hpp
+│   │   ├── implement_order.md
+│   │   ├── models
+│   │   │   ├── execution_report.hpp
+│   │   │   └── order.hpp
+│   │   ├── order_generator.hpp
+│   │   ├── order_lifecycle_tracker.hpp
+│   │   ├── order_type_selector.hpp
+│   │   ├── rate_limit_controller.hpp
+│   │   ├── request_prioritizer.hpp
+│   │   └── smart_order_router.hpp
+│   ├── external
+│   │   └── cppzmq
+│   │       ├── zmq_addon.hpp
+│   │       └── zmq.hpp
+│   ├── monitoring
+│   │   ├── alert_manager.h
+│   │   ├── escalation_policy.h
+│   │   ├── execution_analyzer.h
+│   │   ├── health_monitor.h
+│   │   ├── incident_manager.h
+│   │   ├── latency_tracker.h
+│   │   ├── log_collector.h
+│   │   ├── oncall_manager.h
+│   │   ├── pnl_calculator.h
+│   │   ├── resource_monitor.h
+│   │   ├── risk_metrics.h
+│   │   └── strategy_performance.h
+│   ├── risk
+│   │   ├── interfaces
+│   │   │   ├── data_interface.hpp
+│   │   │   ├── execution_interface.hpp
+│   │   │   └── strategy_interface.hpp
+│   │   ├── portfolio
+│   │   │   ├── collateral_manager.hpp
+│   │   │   ├── portfolio_manager.hpp
+│   │   │   ├── position_tracker.hpp
+│   │   │   └── rebalancing_engine.hpp
+│   │   ├── posttrade
+│   │   │   ├── balance_reconciliation.hpp
+│   │   │   ├── circuit_breaker.hpp
+│   │   │   ├── drawdown_monitor.hpp
+│   │   │   ├── post_trade_monitor.hpp
+│   │   │   └── stop_loss_manager.hpp
+│   │   ├── pretrade
+│   │   │   ├── exposure_calculator.hpp
+│   │   │   ├── fat_finger_protection.hpp
+│   │   │   ├── order_validator.hpp
+│   │   │   ├── position_limit_checker.hpp
+│   │   │   └── pre_trade_risk_filter.hpp
+│   │   ├── risk_config.hpp
+│   │   ├── risk_events.hpp
+│   │   ├── risk_manager.hpp
+│   │   ├── risk_system_summary.md
+│   │   ├── risk_types.hpp
+│   │   ├── service
+│   │   │   ├── risk_service.hpp
+│   │   │   └── risk_validation_service.hpp
+│   │   └── utils
+│   │       ├── limit_manager.hpp
+│   │       ├── risk_logger.hpp
+│   │       └── risk_metrics.hpp
+│   └── strategy
+│       ├── core_analysis
+│       │   ├── liquidity_flow_monitor.hpp
+│       │   ├── order_book_analyzer.hpp
+│       │   ├── strategy_metrics.hpp
+│       │   └── volume_profile_analyzer.hpp
+│       ├── engine
+│       │   └── strategy_engine.hpp
+│       ├── implement_group.md
+│       ├── optimization
+│       │   ├── ab_testing_framework.hpp
+│       │   ├── adaptive_mechanism.hpp
+│       │   ├── exchange_calibration.hpp
+│       │   └── imbalance_parameter_tuner.hpp
+│       ├── pattern
+│       │   ├── analyzer.hpp
+│       │   ├── hawkes_enhanced_detection_engine.hpp
+│       │   ├── hawkes_markov_detector.hpp
+│       │   └── imbalance_detection_engine.hpp
+│       ├── signal
+│       │   ├── imbalance_signal_generator.hpp
+│       │   ├── logistic_regression_signal_generator.hpp
+│       │   ├── momentum_correlation.hpp
+│       │   ├── signal_decay_model.hpp
+│       │   └── threshold_manager.hpp
+│       └── strategy_types.hpp
+├── kubernetes
+│   ├── configmap.yaml
+│   ├── deployment.yaml
+│   ├── order-book-normalizer-configmap.yaml
+│   ├── order-book-normalizer-deployment.yaml
+│   └── order-book-normalizer-service.yaml
+├── libs
+│   └── CMakeLists.txt
+├── monitoring.txt
+├── proto
+│   ├── CMakeLists.txt
+│   ├── execution_service.proto
+│   ├── market_data.proto
+│   └── order_book.proto
+├── python
+│   ├── admin
+│   │   ├── config
+│   │   │   ├── config_migration.py
+│   │   │   ├── config_validation.py
+│   │   │   ├── environment_manager.py
+│   │   │   ├── feature_flags.py
+│   │   │   ├── __init__.py
+│   │   │   └── parameter_store.py
+│   │   ├── deployment
+│   │   │   ├── ci_cd_pipeline.py
+│   │   │   └── __init__.py
+│   │   ├── dir.sh
+│   │   ├── dr
+│   │   │   ├── backup_system.py
+│   │   │   ├── dr_test_framework.py
+│   │   │   ├── failover_mechanism.py
+│   │   │   ├── __init__.py
+│   │   │   ├── recovery_validator.py
+│   │   │   └── state_replication.py
+│   │   ├── infrastructure
+│   │   │   ├── cost_monitor.py
+│   │   │   ├── __init__.py
+│   │   │   └── resource_provisioner.py
+│   │   ├── modules.md
+│   │   └── security
+│   │       ├── api_security.py
+│   │       ├── audit_logger.py
+│   │       ├── authentication_service.py
+│   │       ├── authorization_system.py
+│   │       ├── __init__.py
+│   │       └── secret_manager.py
+│   ├── backtest
+│   │   ├── __init__.py
+│   │   └── risk
+│   │       ├── circuit_breaker_analysis.py
+│   │       ├── risk_backtest_engine.py
+│   │       └── stop_loss_optimizer.py
+│   ├── CMakeLists.txt
+│   ├── common
+│   │   └── zeromq_client.py
+│   ├── data_ingestion
+│   │   └── order_book_client.py
+│   ├── execution
+│   │   ├── exchange_simulator.py
+│   │   └── order_analysis.py
+│   ├── monitoring
+│   │   ├── alerts
+│   │   │   ├── alert_manager.py
+│   │   │   ├── escalation_policy.py
+│   │   │   ├── incident_manager.py
+│   │   │   └── oncall_manager.py
+│   │   ├── analysis
+│   │   │   ├── analyzer_base.py
+│   │   │   ├── latency_analyzer.py
+│   │   │   ├── log_analyzer.py
+│   │   │   ├── pnl_analyzer.py
+│   │   │   └── strategy_analyzer.py
+│   │   ├── api
+│   │   │   ├── alerts_endpoints.py
+│   │   │   ├── app.py
+│   │   │   ├── health_endpoints.py
+│   │   │   ├── metrics_endpoints.py
+│   │   │   └── trading_endpoints.py
+│   │   ├── config
+│   │   │   ├── alerts.py
+│   │   │   ├── escalation.py
+│   │   │   ├── settings.py
+│   │   │   ├── system_monitoring.py
+│   │   │   └── trading_metrics.py
+│   │   ├── database
+│   │   │   ├── models.py
+│   │   │   ├── operational_db.py
+│   │   │   └── timeseries_db.py
+│   │   ├── Data Collection & Processing.md
+│   │   ├── frontend
+│   │   │   └── implementation_plan.md
+│   │   ├── implementation_plan.nd
+│   │   ├── integrations
+│   │   │   ├── elk.py
+│   │   │   ├── exchanges.py
+│   │   │   ├── grafana.py
+│   │   │   ├── init.py
+│   │   │   └── prometheus.py
+│   │   ├── Monitoring high level arc.md
+│   │   ├── system
+│   │   │   ├── health_monitor.py
+│   │   │   ├── latency_tracker.py
+│   │   │   ├── log_collector.py
+│   │   │   ├── metrics_processor.py
+│   │   │   └── resource_monitor.py
+│   │   ├── tasks
+│   │   │   ├── processor.py
+│   │   │   └── scheduler.py
+│   │   ├── trading
+│   │   │   ├── execution_analyzer.py
+│   │   │   ├── pnl_calculator.py
+│   │   │   ├── risk_metrics.py
+│   │   │   └── strategy_performance.py
+│   │   ├── utils
+│   │   │   ├── math_utils.py
+│   │   │   ├── notification.py
+│   │   │   ├── security.py
+│   │   │   └── time_utils.py
+│   │   └── web
+│   │       ├── components
+│   │       │   ├── alerts_dashboard.py
+│   │       │   ├── health_dashboard.py
+│   │       │   ├── performance_dashboard.py
+│   │       │   └── resource_dashboard.py
+│   │       └── dashboard_app.py
+│   ├── requirements.txt
+│   ├── research
+│   │   ├── backtest_ar.py
+│   │   ├── count_loc.py
+│   │   ├── data_quality_analysis.py
+│   │   ├── Dockerfile
+│   │   ├── hawkes_params_learn.py
+│   │   ├── hawkes_process.py
+│   │   ├── __init__.py
+│   │   ├── jd_hawkes.py
+│   │   ├── jdh_learn.py
+│   │   ├── order_book_analyzer.py
+│   │   ├── phi_lut.py
+│   │   ├── risk
+│   │   │   ├── drawdown_analysis.py
+│   │   │   ├── exposure_analysis.py
+│   │   │   ├── position_metrics.py
+│   │   │   └── risk_parameter_optimization.py
+│   │   ├── signal_analysis.py
+│   │   ├── simplified_order_book_analyzer.py
+│   │   └── strategy_simulation.py
+│   ├── strategy
+│   │   ├── backtest
+│   │   │   └── imbalance_strategy_backtest.py
+│   │   ├── imbalance_detector.py
+│   │   ├── MarkovHawkes.py
+│   │   ├── order_book_analyzer.py
+│   │   ├── parameter_optimizer.py
+│   │   └── visualization
+│   │       └── order_book_visualizer.py
+│   └── visualization
+│       ├── __init__.py
+│       ├── order_book_client.py
+│       ├── order_book_viewer.py
+│       └── risk
+│           ├── balance_reports.py
+│           ├── drawdown_charts.py
+│           ├── exposure_visualizer.py
+│           └── risk_dashboard.py
+├── README.md
+├── run_websocket_tests.sh
+├── scripts
+│   ├── admin
+│   │   └── infrastructure_health_check.sh
+│   ├── compile_protos.sh
+│   ├── monitoring
+│   │   └── data_ingestion_dashboard.json
+│   ├── rename_h.sh
+│   ├── setup_env.sh
+│   └── setup.sh
+├── src
+│   ├── CMakeLists.txt
+│   ├── common
+│   │   ├── CMakeLists.txt
+│   │   ├── logger.cpp
+│   │   └── zeromq_client.cpp
+│   ├── data_ingestion
+│   │   ├── blockchain
+│   │   │   ├── data_collector.cpp
+│   │   │   └── transaction_monitor.cpp
+│   │   ├── cache
+│   │   │   └── order_book_cache.cpp
+│   │   ├── CMakeLists.txt
+│   │   ├── data_quality
+│   │   │   ├── data_quality.cpp
+│   │   │   ├── filter.cpp
+│   │   │   └── validator.cpp
+│   │   ├── data_source_manager.cpp
+│   │   ├── dir.sh.sh
+│   │   ├── examples
+│   │   │   └── exchange_manager_example.cpp
+│   │   ├── logging.cpp
+│   │   ├── news
+│   │   │   ├── api_client.cpp
+│   │   │   └── processor.cpp
+│   │   ├── normalization
+│   │   │   └── order_book_normalizer.cpp
+│   │   ├── orderbook
+│   │   │   ├── order_book.cpp
+│   │   │   └── reconstructor.cpp
+│   │   ├── pipeline
+│   │   │   ├── example.cpp
+│   │   │   └── normalization_pipeline.cpp
+│   │   ├── protocol
+│   │   │   ├── binance_adapter.cpp
+│   │   │   ├── coinbase_adapter.cpp
+│   │   │   └── ftx_adapter.cpp
+│   │   ├── publisher
+│   │   │   ├── example_publisher.cpp
+│   │   │   ├── guide.md
+│   │   │   ├── order_book_publisher.cpp
+│   │   │   ├── order_book_subscriber_example.cpp
+│   │   │   └── zeromq_publisher.cpp
+│   │   ├── README.md
+│   │   ├── rest
+│   │   │   ├── client_base.cpp
+│   │   │   ├── client_interface.cpp
+│   │   │   └── exchanges
+│   │   │       ├── binance_client.cpp
+│   │   │       ├── coinbase_client.cpp
+│   │   │       └── ftx_client.cpp
+│   │   ├── sentiment
+│   │   │   ├── analyzer.cpp
+│   │   │   └── collector.cpp
+│   │   ├── storage
+│   │   │   └── influxdb_writer.cpp
+│   │   ├── time
+│   │   │   └── synchronizer.cpp
+│   │   └── websocket
+│   │       ├── CMakeLists.txt
+│   │       ├── connection_pool.cpp
+│   │       ├── examples_websocket.cpp
+│   │       ├── exchange_manager.cpp
+│   │       ├── exchanges
+│   │       │   ├── binance_client_factory.cpp
+│   │       │   ├── binance_parser.cpp
+│   │       │   ├── binance_websocket_client.cpp
+│   │       │   ├── coinbase_client.cpp
+│   │       │   ├── exchange_connector.cpp
+│   │       │   └── ftx_connector.cpp
+│   │       └── websocket_client_base.cpp
+│   ├── execution
+│   │   ├── algorithms
+│   │   │   ├── iceberg_algorithm.cpp
+│   │   │   ├── twap_algorithm.cpp
+│   │   │   └── vwap_algorithm.cpp
+│   │   ├── api_client_manager.cpp
+│   │   ├── authentication_service.cpp
+│   │   ├── CMakeLists.txt
+│   │   ├── dir.sh
+│   │   ├── exchange_api_client.cpp
+│   │   ├── exchanges
+│   │   │   ├── binance_api_client.cpp
+│   │   │   └── ftx_api_client.cpp
+│   │   ├── execution_algorithm_factory.cpp
+│   │   ├── execution_service.cpp
+│   │   ├── fill_reconciliation.cpp
+│   │   ├── grpc
+│   │   │   └── execution_service_impl.cpp
+│   │   ├── implement_plan.md
+│   │   ├── models
+│   │   │   ├── execution_report.cpp
+│   │   │   └── order.cpp
+│   │   ├── order_generator.cpp
+│   │   ├── order_lifecycle_tracker.cpp
+│   │   ├── order_type_selector.cpp
+│   │   ├── rate_limit_controller.cpp
+│   │   ├── request_prioritizer.cpp
+│   │   ├── smart_oder_example.cpp
+│   │   └── smart_order_router.cpp
+│   ├── main.cpp
+│   ├── monitoring
+│   │   ├── alert_manager.cpp
+│   │   ├── CMakeLists.txt
+│   │   ├── dir.sh
+│   │   ├── escalation_policy.cpp
+│   │   ├── execution_analyzer.cpp
+│   │   ├── frontend
+│   │   │   └── components
+│   │   │       ├── AlertDashboard.vue
+│   │   │       ├── EscalationPolicyEditor.vue
+│   │   │       ├── ExecutionQualityDashboard.vue
+│   │   │       ├── HealthDashboard.vue
+│   │   │       ├── IncidentDashboard.vue
+│   │   │       ├── LatencyDashboard.vue
+│   │   │       ├── LogExplorer.vue
+│   │   │       ├── OnCallScheduler.vue
+│   │   │       ├── PnLDashboard.vue
+│   │   │       ├── ResourceMonitorDashboard.vue
+│   │   │       ├── RiskMetricsDashboard.vue
+│   │   │       └── StrategyPerformanceDashboard.vue
+│   │   ├── health_monitor.cpp
+│   │   ├── incident_manager.cpp
+│   │   ├── latency_tracker.cpp
+│   │   ├── log_collector.cpp
+│   │   ├── modules.md
+│   │   ├── oncall_manager.cpp
+│   │   ├── pnl_calculator.cpp
+│   │   ├── resource_monitor.cpp
+│   │   ├── risk_metrics.cpp
+│   │   └── strategy_performance.cpp
+│   ├── risk
+│   │   ├── CMakeLists.txt
+│   │   ├── dir.sh
+│   │   ├── implement.md
+│   │   ├── interfaces
+│   │   │   ├── data_interface.cpp
+│   │   │   ├── execution_interface.cpp
+│   │   │   └── strategy_interface.cpp
+│   │   ├── portfolio
+│   │   │   ├── collateral_manager.cpp
+│   │   │   ├── portfolio_manager.cpp
+│   │   │   ├── position_tracker.cpp
+│   │   │   └── rebalancing_engine.cpp
+│   │   ├── posttrade
+│   │   │   ├── balance_reconciliation.cpp
+│   │   │   ├── circuit_breaker.cpp
+│   │   │   ├── drawdown_monitor.cpp
+│   │   │   ├── examples.cpp
+│   │   │   ├── post_trade_monitor.cpp
+│   │   │   └── stop_loss_manager.cpp
+│   │   ├── pretrade
+│   │   │   ├── exposure_calculator.cpp
+│   │   │   ├── fat_finger_protection.cpp
+│   │   │   ├── order_validator.cpp
+│   │   │   ├── position_limit_checker.cpp
+│   │   │   └── pre_trade_risk_filter.cpp
+│   │   ├── risk_config.cpp
+│   │   ├── risk_config_example.cpp
+│   │   ├── risk_manager.cpp
+│   │   ├── service
+│   │   │   ├── risk_service.cpp
+│   │   │   └── risk_validation_service.cpp
+│   │   └── utils
+│   │       ├── limit_manager.cpp
+│   │       ├── risk_logger.cpp
+│   │       └── risk_metrics.cpp
+│   └── strategy
+│       ├── CMakeLists.txt
+│       ├── core_analysis
+│       │   ├── liquidity_flow_monitor.cpp
+│       │   ├── order_book_analyzer.cpp
+│       │   ├── strategy_metrics.cpp
+│       │   └── volume_profile_analyzer.cpp
+│       ├── dir.sh
+│       ├── engine
+│       │   └── strategy_engine.cpp
+│       ├── implementation_plan.md
+│       ├── modules.md
+│       ├── optimization
+│       │   ├── ab_testing_framework.cpp
+│       │   ├── adaptive_mechanism.cpp
+│       │   ├── exchange_calibration.cpp
+│       │   └── imbalance_parameter_tuner.cpp
+│       ├── pattern
+│       │   ├── analyzer.cpp
+│       │   ├── hawkes_enhanced_detection_engine.cpp
+│       │   ├── hawkes_markov_detector.cpp
+│       │   ├── imbalance_detection_engine.cpp
+│       │   └── usage_example.cpp
+│       ├── signal
+│       │   ├── imbalance_signal_generator.cpp
+│       │   ├── logistic_regression_signal_generator.cpp
+│       │   ├── momentum_correlation.cpp
+│       │   ├── signal_decay_model.cpp
+│       │   └── threshold_manager.cpp
+│       └── strategy_config_loader.cpp
+├── tests
+│   ├── alerts
+│   │   └── test_alert_manager.py
+│   ├── api
+│   │   └── test_api_endpoints.py
+│   ├── CMakeLists.txt
+│   ├── data_ingestion
+│   │   ├── CMakeLists.txt
+│   │   ├── mock_exchange_server.cpp
+│   │   ├── mock_exchange_server.hpp
+│   │   ├── test_exchange_manager.cpp
+│   │   ├── test_order_book.cpp
+│   │   ├── test_order_book_reconstructor.cpp
+│   │   ├── websocket
+│   │   │   ├── exchanges
+│   │   │   │   └── test_binance_websocket_client.cpp
+│   │   │   ├── mock_exchange_server.cpp
+│   │   │   ├── mock_exchange_server.hpp
+│   │   │   ├── test_connection_pool.cpp
+│   │   │   ├── test_websocket_client_base.cpp
+│   │   │   └── test_websocket_integration.cpp
+│   │   └── websocket_client_tests.cpp
+│   ├── execution
+│   │   ├── CMakeLists.txt
+│   │   ├── fill_reconciliation_tests.cpp
+│   │   ├── integration_test_order_pipeline.cpp
+│   │   ├── mock_api_client_manager.hpp
+│   │   ├── mock_order_generator.hpp
+│   │   ├── mock_smart_order_router.hpp
+│   │   ├── order_lifecycle_tracker_tests.cpp
+│   │   ├── order_state_integration_tests.cpp
+│   │   ├── test_api_client_manager.cpp
+│   │   ├── test_authentication_service.cpp
+│   │   ├── test_binance_api_client.cpp
+│   │   ├── test_exchange_api_client.cpp
+│   │   ├── test_execution_algorithm_factory.cpp
+│   │   ├── test_execution_algorithms.cpp
+│   │   ├── test_execution_engine_integration.cpp
+│   │   ├── test_execution_report.cpp
+│   │   ├── test_execution_service.cpp
+│   │   ├── test_execution_service_impl.cpp
+│   │   ├── test_ftx_api_client.cpp
+│   │   ├── test_iceberg_algorithm.cpp
+│   │   ├── test_order_generator.cpp
+│   │   ├── test_order_lifecycle.cpp
+│   │   ├── test_orders.cpp
+│   │   ├── test_order_type_selector.cpp
+│   │   ├── test_rate_limit_controller.cpp
+│   │   ├── test_request_prioritizer.cpp
+│   │   ├── test_smart_order_router.cpp
+│   │   ├── test_twap_algorithm.cpp
+│   │   └── test_vwap_algorithm.cpp
+│   ├── risk
+│   │   ├── CMakeLists.txt
+│   │   ├── integration
+│   │   │   ├── risk_interfaces_integration_test.cpp
+│   │   │   ├── test_portfolio_integration.cpp
+│   │   │   ├── test_portfolio_manager.cpp
+│   │   │   ├── test_post_trade_monitor.cpp
+│   │   │   ├── test_pretrade_risk_filter.cpp
+│   │   │   ├── test_risk_service.cpp
+│   │   │   ├── test_risk_system.cpp
+│   │   │   └── test_risk_system_integration.cpp
+│   │   ├── interfaces
+│   │   │   ├── CMakeLists.txt
+│   │   │   ├── data_interface_test.cpp
+│   │   │   ├── execution_interface_test.cpp
+│   │   │   ├── run_interface_tests.sh
+│   │   │   └── strategy_interface_test.cpp
+│   │   ├── mocks
+│   │   │   ├── data_interface_mock.hpp
+│   │   │   ├── execution_interface_mock.hpp
+│   │   │   └── position_tracker_mock.hpp
+│   │   ├── portfolio
+│   │   │   ├── CMakeLists.txt
+│   │   │   ├── test_collateral_manager.cpp
+│   │   │   ├── test_main.cpp
+│   │   │   ├── test_portfolio_manager.cpp
+│   │   │   ├── test_position_tracker.cpp
+│   │   │   └── test_rebalancing_engine.cpp
+│   │   ├── posttrade
+│   │   │   ├── CMakeLists.txt
+│   │   │   ├── runtest.sh
+│   │   │   ├── test_balance_reconciliation.cpp
+│   │   │   ├── test_circuit_breaker.cpp
+│   │   │   ├── test_drawdown_monitor.cpp
+│   │   │   ├── test_post_trade_monitor.cpp
+│   │   │   └── test_stop_loss_manager.cpp
+│   │   ├── pretrade
+│   │   │   ├── integration_test_pretrade_risk_filter.cpp
+│   │   │   ├── test_exposure_calculator.cpp
+│   │   │   ├── test_fat_finger_protection.cpp
+│   │   │   ├── test_order_validator.cpp
+│   │   │   ├── test_position_limit_checker.cpp
+│   │   │   └── test_pretrade_risk_filter.cpp
+│   │   ├── service
+│   │   │   ├── CMakeLists.txt
+│   │   │   ├── runtest.sh
+│   │   │   ├── test_risk_service.cpp
+│   │   │   └── test_risk_validation_service.cpp
+│   │   ├── test_risk_manager.cpp
+│   │   └── utils
+│   │       ├── test_limit_manager.cpp
+│   │       ├── test_risk_logger.cpp
+│   │       └── test_risk_metrics.cpp
+│   ├── strategy
+│   │   ├── mock_imbalance_detection.cpp
+│   │   ├── test_imbalance_detection.cpp
+│   │   ├── test_imbalance_detection_integration.cpp
+│   │   ├── test_integration_tests.cpp
+│   │   ├── test_order_book_analyzer.cpp
+│   │   └── test_signal_generation.cpp
+│   ├── system
+│   │   ├── test_health_monitor.py
+│   │   └── test_latency_tracker.py
+│   └── trading
+│       └── test_pnl_calculator.py
+└── tree.txt
+
+181 directories, 629 files

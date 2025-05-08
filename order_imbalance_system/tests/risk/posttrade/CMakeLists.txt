@@ -1,36 +1,32 @@
-# Enable testing
-enable_testing()
+# tests/risk/posttrade/CMakeLists.txt
 
-# Find GoogleTest
-find_package(GTest REQUIRED)
-find_package(GMock REQUIRED)
-
-# Define the test executables
-set(RISK_TEST_SOURCES
-    test_stop_loss_manager.cpp
-    test_drawdown_monitor.cpp
-    test_circuit_breaker.cpp
+# Source files for posttrade risk tests
+set(RISK_POSTTRADE_TEST_SOURCES
     test_balance_reconciliation.cpp
+    test_circuit_breaker.cpp
+    test_drawdown_monitor.cpp
     test_post_trade_monitor.cpp
+    test_stop_loss_manager.cpp
 )
 
-# Create test executable
-add_executable(risk_posttrade_tests ${RISK_TEST_SOURCES})
-
-# Link dependencies
+# Posttrade risk test executable
+add_executable(risk_posttrade_tests ${RISK_POSTTRADE_TEST_SOURCES})
 target_link_libraries(risk_posttrade_tests
     PRIVATE
-    risk_posttrade
-    GTest::GTest
-    GTest::Main
-    GMock::GMock
+        risk
+        common
+        GTest::GTest
+        GTest::Main
+        GMock::GMock
+        Threads::Threads
 )
-
-# Include directories
 target_include_directories(risk_posttrade_tests
     PRIVATE
-    ${PROJECT_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/..
+        ${CMAKE_CURRENT_SOURCE_DIR}/../mocks
 )
 
-# Add tests to CTest
+# Register tests with CTest
+include(GoogleTest)
 gtest_discover_tests(risk_posttrade_tests)

@@ -1,3 +1,4 @@
+# Root CMakeLists.txt
 cmake_minimum_required(VERSION 3.14)
 project(OrderImbalanceSystem VERSION 1.0.0 LANGUAGES CXX)
 
@@ -21,15 +22,15 @@ find_package(Threads REQUIRED)
 find_package(ZeroMQ REQUIRED)
 find_package(cppzmq REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system program_options filesystem thread)
-#json
 find_package(nlohmann_json REQUIRED)
+find_package(OpenSSL REQUIRED)
+
 # Find Protobuf and gRPC
 find_package(Protobuf)
 if(NOT Protobuf_FOUND)
     message(STATUS "Using pkg-config to find Protocol Buffers")
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(Protobuf REQUIRED protobuf)
-    # Set variables to make them compatible with standard CMake find_package
     set(Protobuf_LIBRARIES ${Protobuf_LIBRARIES})
     set(Protobuf_INCLUDE_DIRS ${Protobuf_INCLUDE_DIRS})
     set(PROTOBUF_PROTOC_EXECUTABLE "/usr/bin/protoc")
@@ -40,7 +41,6 @@ if(NOT gRPC_FOUND)
     message(STATUS "Using pkg-config to find gRPC")
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(gRPC REQUIRED grpc++)
-    # Set variables to make them compatible with standard CMake find_package
     set(gRPC_LIBRARIES ${gRPC_LIBRARIES})
     set(gRPC_INCLUDE_DIRS ${gRPC_INCLUDE_DIRS})
     set(GRPC_CPP_PLUGIN_EXECUTABLE "/usr/bin/grpc_cpp_plugin")
@@ -57,39 +57,20 @@ if(USE_SANITIZERS AND CMAKE_BUILD_TYPE MATCHES Debug)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address,undefined")
 endif()
 
-# Protobuf and gRPC
-add_subdirectory(proto)
-
 # Add components
-add_subdirectory(src/common)
-add_subdirectory(src/data_ingestion)
-add_subdirectory(src/strategy)
-add_subdirectory(src/execution)
-add_subdirectory(src/risk)
-add_subdirectory(src/monitoring)
-
-# Main executable
-add_executable(trading_system src/main.cpp)
-target_link_libraries(trading_system
-    PRIVATE
-        common
-        data_ingestion
-        strategy
-        execution
-        risk
-        monitoring
-)
-
-# Install rules
-install(TARGETS trading_system
-    RUNTIME DESTINATION bin
-)
+add_subdirectory(proto)
+add_subdirectory(src)
 
 # Testing
 if(BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)
 endif()
+
+# Install rules
+install(TARGETS trading_system
+    RUNTIME DESTINATION bin
+)
 
 # CPack configuration for binary distribution
 include(InstallRequiredSystemLibraries)
@@ -99,4 +80,4 @@ set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-# include(CPack)
+include(CPack)
