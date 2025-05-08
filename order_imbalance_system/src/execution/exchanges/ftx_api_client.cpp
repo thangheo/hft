@@ -3,7 +3,7 @@
 #include "execution/models/order.hpp"
 #include "execution/models/execution_report.hpp"
 #include <curl/curl.h>
-#include <json/json.h>
+#include <jsoncpp/json/json.h>
 #include <sstream>
 #include <iomanip>
 #include <openssl/hmac.h>
@@ -11,9 +11,11 @@
 #include <thread>
 #include <future>
 #include <stdexcept>
-
+#include <iostream>
+#include <map>
 namespace trading {
 namespace execution {
+
 
 // Private implementation class
 struct FtxApiClient::FtxImpl {
@@ -29,10 +31,10 @@ struct FtxApiClient::FtxImpl {
         : apiKey(credentials.apiKey), 
           apiSecret(credentials.apiSecret),
           curl(curl_easy_init(), curl_easy_cleanup) {
-        // Check for subaccount in extra credentials
-        auto it = credentials.extraParams.find("subaccount");
-        if (it != credentials.extraParams.end()) {
-            subaccount = it->second;
+        
+        // If credentials.passphrase contains subaccount info, use it
+        if (!credentials.passphrase.empty()) {
+            subaccount = credentials.passphrase;
         }
         
         if (!curl) {
@@ -46,6 +48,7 @@ struct FtxApiClient::FtxImpl {
         return size * nmemb;
     }
 };
+
 
 FtxApiClient::FtxApiClient(const ExchangeCredentials& credentials, 
                          std::shared_ptr<RateLimitController> rateLimitController)
@@ -87,6 +90,34 @@ void FtxApiClient::disconnect() {
     pImpl_->connected = false;
 }
 
+bool FtxApiClient::checkConnection() const {
+    if (!pImpl_->connected) {
+        return false;
+    }
+    
+    // Actually test the connection by making a lightweight API call
+    try {
+        std::map<std::string, std::string> params;
+        std::string response = makeApiRequest("/api/markets", "GET", params, false);
+        
+        // Parse response to verify it's valid
+        Json::Value root;
+        Json::Reader reader;
+        if (!reader.parse(response, root)) {
+            throw std::runtime_error("Failed to parse FTX markets info");
+        }
+        
+        return root["success"].asBool();
+    } catch (const std::exception& e) {
+        // Log the error but don't throw it
+        std::cerr << "Connection check failed: " << e.what() << std::endl;
+        
+        // Connection test failed, so we're not connected
+        pImpl_->connected = false;
+        return false;
+    }
+}
+
 bool FtxApiClient::isConnected() const {
     return pImpl_->connected;
 }
@@ -125,46 +156,66 @@ std::vector<std::string> FtxApiClient::getSupportedSymbols() const {
     return symbols;
 }
 
-std::future<ExecutionReport> FtxApiClient::placeOrder(const Order& order) {
-    return std::async(std::launch::async, [this, order]() {
+std::future<trading::execution::models::ExecutionReport> FtxApiClient::placeOrder(const trading::execution::models::Order& order) {
+    // Extract necessary data from the order to avoid capturing the entire object
+    std::string tradingPair = order.getTradingPair();
+    trading::execution::models::OrderSide side = order.getSide();
+    trading::execution::models::OrderType type = order.getType();
+    double quantity = order.getQuantity();
+    double price = order.getPrice();
+    trading::execution::models::TimeInForce timeInForce = order.getTimeInForce();
+    std::string clientOrderId = order.getClientOrderId();
+    
+    // Create a copy of the extra parameters
+    std::unordered_map<std::string, std::string> extraParams = order.getExtraParams();
+    
+    return std::async(std::launch::async, [this, 
+                                          tradingPair, 
+                                          side, 
+                                          type, 
+                                          quantity, 
+                                          price, 
+                                          timeInForce, 
+                                          clientOrderId, 
+                                          extraParams]() {
         if (!isConnected()) {
             connect();
         }
         
         // Wait for rate limit
-        rateLimitController_->waitForPermission(ExchangeRequestType::ORDER_PLACEMENT);
+        rateLimitController_->waitForPermission(ExchangeRequestType::PlaceOrder);
         
         // Prepare parameters
         std::map<std::string, std::string> params;
-        params["market"] = order.getTradingPair();
-        params["side"] = translateOrderSide(order.getSide());
-        params["type"] = translateOrderType(order.getType());
-        params["size"] = std::to_string(order.getQuantity());
+        params["market"] = tradingPair;
+        params["side"] = translateOrderSide(side);
+        params["type"] = translateOrderType(type);
+        params["size"] = std::to_string(quantity);
         
-        if (order.getType() != OrderType::MARKET) {
-            params["price"] = std::to_string(order.getPrice());
+        if (type != trading::execution::models::OrderType::MARKET) {
+            params["price"] = std::to_string(price);
         }
         
         // FTX supports client order IDs via the clientId field
-        if (!order.getClientOrderId().empty()) {
-            params["clientId"] = order.getClientOrderId();
+        if (!clientOrderId.empty()) {
+            params["clientId"] = clientOrderId;
         }
         
         // Check for IOC/FOK
-        if (order.getTimeInForce() == TimeInForce::IOC) {
+        if (timeInForce == trading::execution::models::TimeInForce::IOC) {
             params["ioc"] = "true";
-        } else if (order.getTimeInForce() == TimeInForce::FOK) {
+        } else if (timeInForce == trading::execution::models::TimeInForce::FOK) {
             // FTX doesn't support FOK directly, we use IOC as closest option
             params["ioc"] = "true";
         }
         
         // Check for post-only
-        if (order.getType() == OrderType::POST_ONLY) {
+        if (type == trading::execution::models::OrderType::POST_ONLY) {
             params["postOnly"] = "true";
         }
         
         // Add extra parameters if present
-        for (const auto& [key, value] : order.getExtraParams()) {
+        for (const auto& [key, value] : extraParams) {
             params[key] = value;
         }
         
@@ -176,14 +227,15 @@ std::future<ExecutionReport> FtxApiClient::placeOrder(const Order& order) {
     });
 }
 
-std::future<ExecutionReport> FtxApiClient::cancelOrder(const std::string& orderId, const std::string& symbol) {
+std::future<trading::execution::models::ExecutionReport> FtxApiClient::cancelOrder(const std::string& orderId, const std::string& symbol) {
+    // Already using value types, so no need to extract anything
     return std::async(std::launch::async, [this, orderId]() {
         if (!isConnected()) {
             connect();
         }
         
         // Wait for rate limit
-        rateLimitController_->waitForPermission(ExchangeRequestType::ORDER_CANCELLATION);
+        rateLimitController_->waitForPermission(ExchangeRequestType::CancelOrder);
         
         // Check if orderId is a client order ID or exchange order ID
         std::string endpoint;
@@ -215,14 +267,15 @@ std::future<ExecutionReport> FtxApiClient::cancelOrder(const std::string& orderI
     });
 }
 
-std::future<ExecutionReport> FtxApiClient::getOrderStatus(const std::string& orderId, const std::string& symbol) {
+std::future<trading::execution::models::ExecutionReport> FtxApiClient::getOrderStatus(const std::string& orderId, const std::string& symbol) {
+    // Already using value types, so no need to extract anything
     return std::async(std::launch::async, [this, orderId]() {
         if (!isConnected()) {
             connect();
         }
         
         // Wait for rate limit
-        rateLimitController_->waitForPermission(ExchangeRequestType::ORDER_STATUS);
+        rateLimitController_->waitForPermission(ExchangeRequestType::GetOrderStatus);
         
         // Check if orderId is a client order ID or exchange order ID
         std::string endpoint;
@@ -250,7 +303,7 @@ std::future<std::map<std::string, double>> FtxApiClient::getAccountBalances() {
         }
         
         // Wait for rate limit
-        rateLimitController_->waitForPermission(ExchangeRequestType::ACCOUNT_INFO);
+        rateLimitController_->waitForPermission(ExchangeRequestType::GetAccountBalance);
         
         // Send request
         std::map<std::string, std::string> params;
@@ -287,7 +340,7 @@ std::future<double> FtxApiClient::getCurrentPrice(const std::string& symbol) {
         }
         
         // Wait for rate limit
-        rateLimitController_->waitForPermission(ExchangeRequestType::MARKET_DATA);
+        rateLimitController_->waitForPermission(ExchangeRequestType::GetMarketData);
         
         // Send request
         std::map<std::string, std::string> params;
@@ -317,7 +370,7 @@ std::chrono::milliseconds FtxApiClient::getResetTimeForRequestType(ExchangeReque
 }
 
 std::string FtxApiClient::makeApiRequest(const std::string& endpoint, const std::string& method, 
-                                       const std::map<std::string, std::string>& params, bool isPrivate) {
+                                       const std::map<std::string, std::string>& params, bool isPrivate) const {
     std::string url = pImpl_->baseUrl + endpoint;
     std::string queryString;
     std::string bodyString;
@@ -458,32 +511,32 @@ std::string FtxApiClient::generateSignature(const std::string& endpoint, const s
     return ss.str();
 }
 
-std::string FtxApiClient::translateOrderType(OrderType type) const {
+std::string FtxApiClient::translateOrderType(trading::execution::models::OrderType type) const {
     switch (type) {
-        case OrderType::MARKET: return "market";
-        case OrderType::LIMIT: return "limit";
+        case trading::execution::models::OrderType::MARKET: return "market";
+        case trading::execution::models::OrderType::LIMIT: return "limit";
         // FTX doesn't directly support these order types, map to closest equivalent
-        case OrderType::STOP: 
-        case OrderType::STOP_LIMIT:
-        case OrderType::TRAILING_STOP:
-        case OrderType::FILL_OR_KILL:
-        case OrderType::IMMEDIATE_OR_CANCEL:
-        case OrderType::POST_ONLY:
-        case OrderType::ICEBERG:
+        case trading::execution::models::OrderType::STOP: 
+        case trading::execution::models::OrderType::STOP_LIMIT:
+        case trading::execution::models::OrderType::TRAILING_STOP:
+        case trading::execution::models::OrderType::FILL_OR_KILL:
+        case trading::execution::models::OrderType::IMMEDIATE_OR_CANCEL:
+        case trading::execution::models::OrderType::POST_ONLY:
+        case trading::execution::models::OrderType::ICEBERG:
             return "limit";  // Additional parameters set separately
         default: throw std::invalid_argument("Unsupported order type for FTX");
     }
 }
 
-std::string FtxApiClient::translateOrderSide(OrderSide side) const {
+std::string FtxApiClient::translateOrderSide(trading::execution::models::OrderSide side) const {
     switch (side) {
-        case OrderSide::BUY: return "buy";
-        case OrderSide::SELL: return "sell";
+        case trading::execution::models::OrderSide::BUY: return "buy";
+        case trading::execution::models::OrderSide::SELL: return "sell";
         default: throw std::invalid_argument("Invalid order side");
     }
 }
 
-ExecutionReport FtxApiClient::parseOrderResponse(const std::string& response) const {
+trading::execution::models::ExecutionReport FtxApiClient::parseOrderResponse(const std::string& response) const {
     Json::Value root;
     Json::Reader reader;
     if (!reader.parse(response, root)) {
@@ -491,14 +544,14 @@ ExecutionReport FtxApiClient::parseOrderResponse(const std::string& response) co
     }
     
     if (!root["success"].asBool()) {
-        ExecutionReport report;
-        report.setStatus(OrderState::REJECTED);
+        trading::execution::models::ExecutionReport report;
+        report.setStatus(trading::execution::models::OrderState::REJECTED);
         report.setRejectReason(root["error"].asString());
         return report;
     }
     
     const Json::Value& result = root["result"];
-    ExecutionReport report;
+    trading::execution::models::ExecutionReport report;
     
     // Set exchange info
     report.setExchangeId("FTX");
@@ -514,11 +567,11 @@ ExecutionReport FtxApiClient::parseOrderResponse(const std::string& response) co
     
     // Set side
     std::string side = result["side"].asString();
-    report.setSide(side == "buy" ? OrderSide::BUY : OrderSide::SELL);
+    report.setSide(side == "buy" ? trading::execution::models::OrderSide::BUY : trading::execution::models::OrderSide::SELL);
     
     // Set type
     std::string type = result["type"].asString();
-    report.setType(type == "market" ? OrderType::MARKET : OrderType::LIMIT);
+    report.setType(type == "market" ? trading::execution::models::OrderType::MARKET : trading::execution::models::OrderType::LIMIT);
     
     // Set price if present
     if (result.isMember("price") && !result["price"].isNull()) {
@@ -533,16 +586,16 @@ ExecutionReport FtxApiClient::parseOrderResponse(const std::string& response) co
     // Set status
     std::string status = result["status"].asString();
     if (status == "new") {
-        report.setStatus(OrderState::OPEN);
+        report.setStatus(trading::execution::models::OrderState::OPEN);
     } else if (status == "open") {
         double remainingSize = result["remainingSize"].asDouble();
-        report.setStatus(remainingSize < result["size"].asDouble() ? OrderState::PARTIALLY_FILLED : OrderState::OPEN);
+        report.setStatus(remainingSize < result["size"].asDouble() ? trading::execution::models::OrderState::PARTIALLY_FILLED : trading::execution::models::OrderState::OPEN);
     } else if (status == "closed") {
         // Check if it was filled or canceled
         if (report.filledQuantity() >= report.quantity() * 0.99) {  // Allow for tiny rounding differences
-            report.setStatus(OrderState::FILLED);
+            report.setStatus(trading::execution::models::OrderState::FILLED);
         } else {
-            report.setStatus(OrderState::CANCELED);
+            report.setStatus(trading::execution::models::OrderState::CANCELED);
         }
     }
     

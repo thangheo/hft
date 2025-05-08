@@ -112,19 +112,22 @@ RateLimitStatus ApiClientManager::getRateLimitStatus(const std::string& exchange
     return it->second->getRateLimitStatus(requestType);
 }
 
+// In api_client_manager.cpp
 std::shared_ptr<ExchangeApiClient> ApiClientManager::createClient(const std::string& exchangeId) {
     // Get credentials from the authentication service
     auto credentials = authService_->getCredentials(exchangeId);
     
+    // Get the rate limit controller for this exchange
+    auto rateLimitController = rateLimitControllers_[exchangeId];
+    
     // Create the appropriate client based on the exchange ID
     if (exchangeId == "binance") {
-        return std::make_shared<BinanceApiClient>(credentials);
+        return std::make_shared<BinanceApiClient>(credentials.value(), rateLimitController);
     } else if (exchangeId == "ftx") {
-        return std::make_shared<FtxApiClient>(credentials);
+        return std::make_shared<FtxApiClient>(credentials.value(), rateLimitController);
     } else {
         throw std::runtime_error("Unsupported exchange: " + exchangeId);
     }
 }
-
 } // namespace execution
 } // namespace trading

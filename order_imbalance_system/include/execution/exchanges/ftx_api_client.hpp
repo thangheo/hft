@@ -29,7 +29,10 @@ public:
     std::vector<std::string> getSupportedSymbols() const override;
     int getRemainingRequests(ExchangeRequestType requestType) const override;
     std::chrono::milliseconds getResetTimeForRequestType(ExchangeRequestType requestType) const override;
-
+    bool checkConnection() const override;
+    // std::unordered_map<std::string, bool> checkConnections() const override;
+    std::string makeApiRequest(const std::string& endpoint, const std::string& method, 
+        const std::map<std::string, std::string>& params, bool isPrivate) const ;
 private:
     struct FtxImpl;
     std::unique_ptr<FtxImpl> pImpl_;
@@ -38,8 +41,8 @@ private:
     // FTX-specific methods
     std::string generateSignature(const std::string& endpoint, const std::string& method, 
                                  const std::string& timestamp, const std::string& body = "") const;
-    std::string makeApiRequest(const std::string& endpoint, const std::string& method, 
-                               const std::map<std::string, std::string>& params, bool isPrivate);
+    // std::string makeApiRequest(const std::string& endpoint, const std::string& method, 
+    //                            const std::map<std::string, std::string>& params, bool isPrivate);
     
     // Helper methods for converting between internal and FTX-specific formats
     std::string translateOrderType(models::OrderType type) const;

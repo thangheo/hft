@@ -21,7 +21,7 @@ enum class ExchangeRequestType {
 
 struct ExchangeCredentials {
     std::string apiKey;
-    std::string secretKey;
+    std::string apiSecret;
     std::string passphrase;  // Some exchanges require this
     // Additional authentication data
 };
@@ -53,13 +53,7 @@ public:
     // Rate limit information
     virtual int getRemainingRequests(ExchangeRequestType requestType) const = 0;
     virtual std::chrono::milliseconds getResetTimeForRequestType(ExchangeRequestType requestType) const = 0;
-
-    
-    // virtual OrderResponse submitOrder(const Order& order) = 0;
-    // virtual OrderCancelResponse cancelOrder(const OrderCancelRequest& request) = 0;
-    // virtual OrderStatusResponse getOrderStatus(const OrderStatusRequest& request) = 0;
-    // virtual AccountBalanceResponse getAccountBalance() = 0;
-    virtual bool checkConnection() = 0;
+    virtual bool checkConnection() const = 0; 
 };
 
 } // namespace execution

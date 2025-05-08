@@ -103,6 +103,79 @@ RateLimitStatus RateLimitController::getRateLimitStatus(ExchangeRequestType requ
         false  // isLimited
     };
 }
+bool RateLimitController::waitForPermission(ExchangeRequestType requestType) {
+    std::unique_lock<std::mutex> lock(mutex_);
+    
+    // Check if we're shutting down
+    if (!running_) {
+        return false;
+    }
+    
+    // Wait until we're not rate limited for this request type
+    cv_.wait(lock, [this, requestType] {
+        // If we're shutting down, stop waiting
+        if (!running_) {
+            return true;
+        }
+        
+        // Check if we have rate limit status for this request type
+        auto statusIt = status_.find(requestType);
+        if (statusIt == status_.end()) {
+            // If no status exists, we're not rate limited
+            return true;
+        }
+        
+        // Check if we're currently rate limited or have no requests remaining
+        return !statusIt->second.isLimited && statusIt->second.remainingRequests > 0;
+    });
+    
+    // If we're shutting down, return false
+    if (!running_) {
+        return false;
+    }
+    
+    // Decrement the remaining requests count
+    auto statusIt = status_.find(requestType);
+    if (statusIt != status_.end()) {
+        statusIt->second.remainingRequests = std::max(0, statusIt->second.remainingRequests - 1);
+        if (statusIt->second.remainingRequests == 0) {
+            statusIt->second.isLimited = true;
+        }
+    }
+    
+    return true;
+}
+int RateLimitController::getRemainingRequests(ExchangeRequestType requestType) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    auto it = status_.find(requestType);
+    if (it != status_.end()) {
+        return it->second.remainingRequests;
+    }
+    
+    // If we don't have status for this request type, 
+    // check if we have a rule for it
+    auto ruleIt = rules_.find(requestType);
+    if (ruleIt != rules_.end()) {
+        // Return the max requests from the rule
+        return ruleIt->second.maxRequests;
+    }
+    
+    // If no rule or status exists, return a default value
+    return 0;
+}
+
+std::chrono::milliseconds RateLimitController::getResetTime(ExchangeRequestType requestType) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    auto it = status_.find(requestType);
+    if (it != status_.end()) {
+        return it->second.resetTime;
+    }
+    
+    // If we don't have status for this request type, return zero
+    return std::chrono::milliseconds(0);
+}
 
 void RateLimitController::processQueue() {
     while (true) {

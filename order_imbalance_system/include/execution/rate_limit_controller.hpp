@@ -37,7 +37,31 @@ public:
     
     // Check if a request would be rate limited
     bool wouldBeRateLimited(ExchangeRequestType requestType) const;
-    
+    /**
+     * Waits until it's allowed to make a request of the specified type.
+     * This method blocks the calling thread until permission is granted.
+     * 
+     * @param requestType The type of request to wait for permission for
+     * @return true if permission is granted, false if the controller is shutting down
+     */
+    bool waitForPermission(ExchangeRequestType requestType);
+    // Add these to execution/rate_limit_controller.hpp in the public section of the RateLimitController class
+
+    /**
+     * Gets the number of remaining requests for the specified request type.
+     * 
+     * @param requestType The type of request to check
+     * @return The number of remaining requests allowed before being rate limited
+     */
+    int getRemainingRequests(ExchangeRequestType requestType) const;
+
+    /**
+     * Gets the time until the rate limit resets for the specified request type.
+     * 
+     * @param requestType The type of request to check
+     * @return The time until the rate limit resets
+     */
+    std::chrono::milliseconds getResetTime(ExchangeRequestType requestType) const;
     // Get current rate limit status
     RateLimitStatus getRateLimitStatus(ExchangeRequestType requestType) const;
     

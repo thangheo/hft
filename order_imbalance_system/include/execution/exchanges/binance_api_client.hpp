@@ -32,6 +32,7 @@ public:
     std::vector<std::string> getSupportedSymbols() const override;
     int getRemainingRequests(ExchangeRequestType requestType) const override;
     std::chrono::milliseconds getResetTimeForRequestType(ExchangeRequestType requestType) const override;
+    bool checkConnection() const override;
 
 private:
     struct BinanceImpl;
@@ -40,8 +41,11 @@ private:
     
     // Binance-specific methods
     std::string generateSignature(const std::string& queryString) const;
-    std::string makeApiRequest(const std::string& endpoint, const std::string& method, 
-                               const std::map<std::string, std::string>& params, bool isPrivate);
+    // std::string makeApiRequest(const std::string& endpoint, const std::string& method, 
+    //                            const std::map<std::string, std::string>& params, bool isPrivate);
+    std::string makeApiRequest(std::string endpoint, std::string method,
+    const std::map<std::string, std::string>& params, bool isPrivate) const ;
+                        
     
     // Helper methods for converting between internal and Binance-specific formats
     std::string translateOrderType(models::OrderType type) const;

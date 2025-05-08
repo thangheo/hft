@@ -8,7 +8,8 @@
 #include "exchange_api_client.hpp"
 #include "authentication_service.hpp"
 #include "rate_limit_controller.hpp"
-
+#include "exchanges/binance_api_client.hpp"
+#include "exchanges/ftx_api_client.hpp"
 namespace trading {
 namespace execution {
 

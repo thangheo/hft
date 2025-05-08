@@ -3,7 +3,7 @@
 #include "execution/models/order.hpp"
 #include "execution/models/execution_report.hpp"
 #include <curl/curl.h>
-#include <json/json.h>
+#include <jsoncpp/json/json.h>
 #include <sstream>
 #include <iomanip>
 #include <openssl/hmac.h>
@@ -11,6 +11,7 @@
 #include <thread>
 #include <future>
 #include <stdexcept>
+#include <iostream>
 
 namespace trading {
 namespace execution {
@@ -71,6 +72,26 @@ void BinanceApiClient::connect() {
         throw std::runtime_error(std::string("Failed to connect to Binance: ") + e.what());
     }
 }
+bool BinanceApiClient::checkConnection() const {
+    if (!pImpl_->connected) {
+        return false;
+    }
+    
+    // Actually test the connection by making a lightweight API call
+    try {
+        std::map<std::string, std::string> params;
+        std::string response = makeApiRequest("/api/v3/ping", "GET", params, false);
+        // If the call succeeded, the connection is still valid
+        return true;
+    } catch (const std::exception& e) {
+        // Log the error but don't throw it
+        std::cerr << "Connection check failed: " << e.what() << std::endl;
+        
+        // Connection test failed, so we're not connected
+        pImpl_->connected = false;
+        return false;
+    }
+}
 
 void BinanceApiClient::disconnect() {
     pImpl_->connected = false;
@@ -109,34 +130,54 @@ std::vector<std::string> BinanceApiClient::getSupportedSymbols() const {
     
     return symbols;
 }
-
-std::future<ExecutionReport> BinanceApiClient::placeOrder(const Order& order) {
-    return std::async(std::launch::async, [this, order]() {
+//placeOrder
+std::future<trading::execution::models::ExecutionReport> BinanceApiClient::placeOrder(const trading::execution::models::Order& order) {
+    // Extract all the necessary data from the order before the async call
+    std::string tradingPair = order.getTradingPair();
+    auto side = order.getSide();
+    auto type = order.getType();
+    double quantity = order.getQuantity();
+    double price = order.getPrice();
+    auto timeInForce = order.getTimeInForce();
+    std::string clientOrderId = order.getClientOrderId();
+    
+    // Copy the extra parameters map
+    std::unordered_map<std::string, std::string> extraParams = order.getExtraParams();
+    
+    return std::async(std::launch::async, [this, 
+                                          tradingPair, 
+                                          side, 
+                                          type, 
+                                          quantity, 
+                                          price, 
+                                          timeInForce, 
+                                          clientOrderId, 
+                                          extraParams]() {
         if (!isConnected()) {
             connect();
         }
         
         // Wait for rate limit
-        rateLimitController_->waitForPermission(ExchangeRequestType::ORDER_PLACEMENT);
+        rateLimitController_->waitForPermission(ExchangeRequestType::PlaceOrder);
         
         // Prepare parameters
         std::map<std::string, std::string> params;
-        params["symbol"] = order.getTradingPair();
-        params["side"] = translateOrderSide(order.getSide());
-        params["type"] = translateOrderType(order.getType());
-        params["quantity"] = std::to_string(order.getQuantity());
+        params["symbol"] = tradingPair;
+        params["side"] = translateOrderSide(side);
+        params["type"] = translateOrderType(type);
+        params["quantity"] = std::to_string(quantity);
         
-        if (order.getType() != OrderType::MARKET) {
-            params["price"] = std::to_string(order.getPrice());
-            params["timeInForce"] = translateTimeInForce(order.getTimeInForce());
+        if (type != trading::execution::models::OrderType::MARKET) {
+            params["price"] = std::to_string(price);
+            params["timeInForce"] = translateTimeInForce(timeInForce);
         }
         
-        if (!order.getClientOrderId().empty()) {
-            params["newClientOrderId"] = order.getClientOrderId();
+        if (!clientOrderId.empty()) {
+            params["newClientOrderId"] = clientOrderId;
         }
         
         // Add extra parameters if present
-        for (const auto& [key, value] : order.getExtraParams()) {
+        for (const auto& [key, value] : extraParams) {
             params[key] = value;
         }
         
@@ -154,15 +195,15 @@ std::future<ExecutionReport> BinanceApiClient::placeOrder(const Order& order) {
         return parseOrderResponse(response);
     });
 }
-
-std::future<ExecutionReport> BinanceApiClient::cancelOrder(const std::string& orderId, const std::string& symbol) {
+std::future<trading::execution::models::ExecutionReport> BinanceApiClient::cancelOrder(const std::string& orderId, const std::string& symbol) {
+    // Capture the parameters by value since they're already simple types
     return std::async(std::launch::async, [this, orderId, symbol]() {
         if (!isConnected()) {
             connect();
         }
         
         // Wait for rate limit
-        rateLimitController_->waitForPermission(ExchangeRequestType::ORDER_CANCELLATION);
+        rateLimitController_->waitForPermission(ExchangeRequestType::CancelOrder);
         
         // Prepare parameters
         std::map<std::string, std::string> params;
@@ -192,14 +233,15 @@ std::future<ExecutionReport> BinanceApiClient::cancelOrder(const std::string& or
     });
 }
 
-std::future<ExecutionReport> BinanceApiClient::getOrderStatus(const std::string& orderId, const std::string& symbol) {
+std::future<trading::execution::models::ExecutionReport> BinanceApiClient::getOrderStatus(const std::string& orderId, const std::string& symbol) {
+    // Capture the parameters by value since they're already simple types
     return std::async(std::launch::async, [this, orderId, symbol]() {
         if (!isConnected()) {
             connect();
         }
         
         // Wait for rate limit
-        rateLimitController_->waitForPermission(ExchangeRequestType::ORDER_STATUS);
+        rateLimitController_->waitForPermission(ExchangeRequestType::GetOrderStatus);
         
         // Prepare parameters
         std::map<std::string, std::string> params;
@@ -236,7 +278,7 @@ std::future<std::map<std::string, double>> BinanceApiClient::getAccountBalances(
         }
         
         // Wait for rate limit
-        rateLimitController_->waitForPermission(ExchangeRequestType::ACCOUNT_INFO);
+        rateLimitController_->waitForPermission(ExchangeRequestType::GetAccountBalance);
         
         // Prepare parameters
         std::map<std::string, std::string> params;
@@ -278,7 +320,7 @@ std::future<double> BinanceApiClient::getCurrentPrice(const std::string& symbol)
         }
         
         // Wait for rate limit
-        rateLimitController_->waitForPermission(ExchangeRequestType::MARKET_DATA);
+        rateLimitController_->waitForPermission(ExchangeRequestType::GetMarketData);
         
         // Prepare parameters
         std::map<std::string, std::string> params;
@@ -306,10 +348,15 @@ std::chrono::milliseconds BinanceApiClient::getResetTimeForRequestType(ExchangeR
     return rateLimitController_->getResetTime(requestType);
 }
 
-std::string BinanceApiClient::makeApiRequest(const std::string& endpoint, const std::string& method, 
-                                           const std::map<std::string, std::string>& params, bool isPrivate) {
-    std::string url = pImpl_->baseUrl + endpoint;
-    std::string queryString;
+// std::string BinanceApiClient::makeApiRequest(const std::string& endpoint, const std::string& method, 
+//                                            const std::map<std::string, std::string>& params, bool isPrivate) const {
+std::string BinanceApiClient::makeApiRequest(std::string endpoint, std::string method,
+        const std::map<std::string, std::string>& params, bool isPrivate) const {
+        std::string url = pImpl_->baseUrl + endpoint;
+        std::string queryString;
+         
+    // std::string url = pImpl_->baseUrl + endpoint;
+    // std::string queryString;
     
     // Build query string
     for (const auto& [key, value] : params) {
@@ -415,51 +462,51 @@ std::string BinanceApiClient::generateSignature(const std::string& queryString) 
     return ss.str();
 }
 
-std::string BinanceApiClient::translateOrderType(OrderType type) const {
+std::string BinanceApiClient::translateOrderType(trading::execution::models::OrderType type) const {
     switch (type) {
-        case OrderType::MARKET: return "MARKET";
-        case OrderType::LIMIT: return "LIMIT";
-        case OrderType::STOP: return "STOP_LOSS";
-        case OrderType::STOP_LIMIT: return "STOP_LOSS_LIMIT";
-        case OrderType::TRAILING_STOP: return "TRAILING_STOP_MARKET";
-        case OrderType::FILL_OR_KILL: return "LIMIT";  // With timeInForce = FOK
-        case OrderType::IMMEDIATE_OR_CANCEL: return "LIMIT";  // With timeInForce = IOC
-        case OrderType::POST_ONLY: return "LIMIT";  // Special flag
-        case OrderType::ICEBERG: return "LIMIT";  // With icebergQty
+        case trading::execution::models::OrderType::MARKET: return "MARKET";
+        case trading::execution::models::OrderType::LIMIT: return "LIMIT";
+        case trading::execution::models::OrderType::STOP: return "STOP_LOSS";
+        case trading::execution::models::OrderType::STOP_LIMIT: return "STOP_LOSS_LIMIT";
+        case trading::execution::models::OrderType::TRAILING_STOP: return "TRAILING_STOP_MARKET";
+        case trading::execution::models::OrderType::FILL_OR_KILL: return "LIMIT";  // With timeInForce = FOK
+        case trading::execution::models::OrderType::IMMEDIATE_OR_CANCEL: return "LIMIT";  // With timeInForce = IOC
+        case trading::execution::models::OrderType::POST_ONLY: return "LIMIT";  // Special flag
+        case trading::execution::models::OrderType::ICEBERG: return "LIMIT";  // With icebergQty
         default: throw std::invalid_argument("Unsupported order type for Binance");
     }
 }
 
-std::string BinanceApiClient::translateTimeInForce(TimeInForce tif) const {
+std::string BinanceApiClient::translateTimeInForce(trading::execution::models::TimeInForce tif) const {
     switch (tif) {
-        case TimeInForce::GTC: return "GTC";  // Good Till Canceled
-        case TimeInForce::IOC: return "IOC";  // Immediate Or Cancel
-        case TimeInForce::FOK: return "FOK";  // Fill Or Kill
-        case TimeInForce::GTD: return "GTC";  // Binance doesn't directly support GTD
+        case trading::execution::models::TimeInForce::GTC: return "GTC";  // Good Till Canceled
+        case trading::execution::models::TimeInForce::IOC: return "IOC";  // Immediate Or Cancel
+        case trading::execution::models::TimeInForce::FOK: return "FOK";  // trading::execution::models::Fill Or Kill
+        case trading::execution::models::TimeInForce::GTD: return "GTC";  // Binance doesn't directly support GTD
         default: return "GTC";  // Default to GTC
     }
 }
 
-std::string BinanceApiClient::translateOrderSide(OrderSide side) const {
+std::string BinanceApiClient::translateOrderSide(trading::execution::models::OrderSide side) const {
     switch (side) {
-        case OrderSide::BUY: return "BUY";
-        case OrderSide::SELL: return "SELL";
+        case trading::execution::models::OrderSide::BUY: return "BUY";
+        case trading::execution::models::OrderSide::SELL: return "SELL";
         default: throw std::invalid_argument("Invalid order side");
     }
 }
 
-ExecutionReport BinanceApiClient::parseOrderResponse(const std::string& response) const {
+trading::execution::models::ExecutionReport BinanceApiClient::parseOrderResponse(const std::string& response) const {
     Json::Value root;
     Json::Reader reader;
     if (!reader.parse(response, root)) {
         throw std::runtime_error("Failed to parse Binance order response");
     }
     
-    ExecutionReport report;
+    trading::execution::models::ExecutionReport report;
     
     // Check for error response
     if (root.isMember("code") && root["code"].asInt() != 0) {
-        report.setStatus(OrderState::REJECTED);
+        report.setStatus(trading::execution::models::OrderState::REJECTED);
         report.setRejectReason(root["msg"].asString());
         return report;
     }
@@ -472,34 +519,34 @@ ExecutionReport BinanceApiClient::parseOrderResponse(const std::string& response
     
     // Parse order side
     std::string side = root["side"].asString();
-    report.setSide(side == "BUY" ? OrderSide::BUY : OrderSide::SELL);
+    report.setSide(side == "BUY" ? trading::execution::models::OrderSide::BUY : trading::execution::models::OrderSide::SELL);
     
     // Parse order type
     std::string type = root["type"].asString();
     if (type == "MARKET") {
-        report.setType(OrderType::MARKET);
+        report.setType(trading::execution::models::OrderType::MARKET);
     } else if (type == "LIMIT") {
-        report.setType(OrderType::LIMIT);
+        report.setType(trading::execution::models::OrderType::LIMIT);
     } else if (type == "STOP_LOSS") {
-        report.setType(OrderType::STOP);
+        report.setType(trading::execution::models::OrderType::STOP);
     } else if (type == "STOP_LOSS_LIMIT") {
-        report.setType(OrderType::STOP_LIMIT);
+        report.setType(trading::execution::models::OrderType::STOP_LIMIT);
     } else {
         // Handle other types as needed
-        report.setType(OrderType::LIMIT);
+        report.setType(trading::execution::models::OrderType::LIMIT);
     }
     
     // Parse order status
     std::string status = root["status"].asString();
     if (status == "NEW" || status == "PARTIALLY_FILLED") {
-        report.setStatus(status == "NEW" ? OrderState::OPEN : OrderState::PARTIALLY_FILLED);
+        report.setStatus(status == "NEW" ? trading::execution::models::OrderState::OPEN : trading::execution::models::OrderState::PARTIALLY_FILLED);
     } else if (status == "FILLED") {
-        report.setStatus(OrderState::FILLED);
+        report.setStatus(trading::execution::models::OrderState::FILLED);
     } else if (status == "CANCELED" || status == "PENDING_CANCEL" || status == "EXPIRED" || status == "REJECTED") {
         report.setStatus(
-            status == "CANCELED" ? OrderState::CANCELED :
-            status == "PENDING_CANCEL" ? OrderState::PENDING_CANCEL :
-            status == "EXPIRED" ? OrderState::EXPIRED : OrderState::REJECTED
+            status == "CANCELED" ? trading::execution::models::OrderState::CANCELED :
+            status == "PENDING_CANCEL" ? trading::execution::models::OrderState::PENDING_CANCEL :
+            status == "EXPIRED" ? trading::execution::models::OrderState::EXPIRED : trading::execution::models::OrderState::REJECTED
         );
     }
     
@@ -516,7 +563,7 @@ ExecutionReport BinanceApiClient::parseOrderResponse(const std::string& response
     if (root.isMember("fills") && root["fills"].isArray()) {
         const Json::Value& fills = root["fills"];
         for (const auto& fill : fills) {
-            Fill f;
+            trading::execution::models::Fill f;
             f.fill_id = fill["tradeId"].asString();
             f.orderId = root["orderId"].asString();
             f.quantity = std::stod(fill["qty"].asString());
