@@ -10,6 +10,7 @@
  */
 
  #include "strategy/pattern/hawkes_markov_detector.hpp"
+ #include "data_ingestion/orderbook/order_book_types.hpp"
  #include <algorithm>
  #include <cmath>
  #include <iostream>
@@ -180,11 +181,11 @@
      double askVolume = 0.0;
      
      for (const auto& level : bids) {
-         bidVolume += level.quantity;
+         bidVolume += level.getQuantity();
      }
      
      for (const auto& level : asks) {
-         askVolume += level.quantity;
+         askVolume += level.getQuantity();
      }
      
      int imbalance;

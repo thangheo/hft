@@ -125,7 +125,7 @@ The architecture follows a pipeline pattern where data flows through several pro
 │   News & Events API   │  │  Blockchain Monitor   │  │   Sentiment Analysis  │
 └───────────┬───────────┘  └───────────┬───────────┘  └───────────┬───────────┘
             │                          │                          │
-            └──────────────┬───────────┴──────────────┘
+            └──────────────┬───────────┴──────────────────────────┘
                            │
 ┌──────────────────────────▼──────────────────────────┐
 │               Data Integration Layer                │
