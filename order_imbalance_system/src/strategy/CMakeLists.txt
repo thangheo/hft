@@ -17,7 +17,12 @@ set(STRATEGY_SOURCES
 )
 
 add_library(strategy ${STRATEGY_SOURCES})
-
+# Add Hawkes-Markov model files
+target_sources(strategy
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/pattern/hawkes_markov_detector.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/pattern/hawkes_enhanced_detection_engine.cpp
+)
 target_link_libraries(strategy
     PUBLIC
         common
