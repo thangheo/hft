@@ -1,6 +1,6 @@
 /**
  * @file fill_reconciliation.hpp
- * @brief Fill reconciliation between expected and actual executions
+ * @brief models::Fill reconciliation between expected and actual executions
  * 
  * @details 
  * Reconciles expected fills with actual fills reported by exchanges,
@@ -60,14 +60,18 @@ public:
      * @brief Destructor
      */
     ~FillReconciliation() = default;
+    bool initialize();
     
+    void start() ;
+    
+    void stop() ;
     /**
      * @brief Record an expected fill
      * 
      * @param order_id The order ID
      * @param expected_fill The expected fill
      */
-    void recordExpectedFill(const std::string& order_id, const Fill& expected_fill);
+    void recordExpectedFill(const std::string& order_id, const models::Fill& expected_fill);
     
     /**
      * @brief Record an actual fill from the exchange
@@ -76,7 +80,7 @@ public:
      * @param actual_fill The actual fill
      * @return True if reconciliation succeeded, false if a discrepancy was detected
      */
-    bool recordActualFill(const std::string& order_id, const Fill& actual_fill);
+    bool recordActualFill(const std::string& order_id, const models::Fill& actual_fill);
     
     /**
      * @brief Check for missing fills (expected but not received)
@@ -106,7 +110,7 @@ public:
      * @param order_id The order ID
      * @return Vector of reconciled fills
      */
-    std::vector<Fill> getReconciledFills(const std::string& order_id) const;
+    std::vector<models::Fill> getReconciledFills(const std::string& order_id) const;
     
     /**
      * @brief Get all unreconciled expected fills for an order
@@ -114,7 +118,7 @@ public:
      * @param order_id The order ID
      * @return Vector of unreconciled expected fills
      */
-    std::vector<Fill> getUnreconciledExpectedFills(const std::string& order_id) const;
+    std::vector<models::Fill> getUnreconciledExpectedFills(const std::string& order_id) const;
     
     /**
      * @brief Get all unreconciled actual fills for an order
@@ -122,7 +126,7 @@ public:
      * @param order_id The order ID
      * @return Vector of unreconciled actual fills
      */
-    std::vector<Fill> getUnreconciledActualFills(const std::string& order_id) const;
+    std::vector<models::Fill> getUnreconciledActualFills(const std::string& order_id) const;
     
     /**
      * @brief Purge old reconciliation data
@@ -135,14 +139,14 @@ public:
 private:
     // Data structures for tracking fills
     struct FillRecord {
-        Fill fill;
+        models::Fill fill;
         bool reconciled;
         std::chrono::system_clock::time_point timestamp;
     };
     
     std::unordered_map<std::string, std::vector<FillRecord>> expected_fills_;
     std::unordered_map<std::string, std::vector<FillRecord>> actual_fills_;
-    std::unordered_map<std::string, std::vector<Fill>> reconciled_fills_;
+    std::unordered_map<std::string, std::vector<models::Fill>> reconciled_fills_;
     
     // Callbacks
     std::vector<DiscrepancyCallback> discrepancy_callbacks_;
@@ -152,7 +156,7 @@ private:
     
     // Helper methods
     void notifyDiscrepancy(const FillDiscrepancy& discrepancy);
-    bool matchFills(const Fill& expected, const Fill& actual, double price_tolerance, double quantity_tolerance);
+    bool matchFills(const models::Fill& expected, const models::Fill& actual, double price_tolerance, double quantity_tolerance);
 };
 
 } // namespace execution

@@ -19,7 +19,7 @@ struct ExchangeInfo {
     double liquidity_score;
     double latency_ms;
     double success_rate;
-    bool supports_order_type(OrderType type) const;
+    bool supports_order_type(models::OrderType type) const;
     bool supports_trading_pair(const std::string& trading_pair) const;
 };
 
@@ -52,7 +52,9 @@ public:
     
     // Initialize with exchange information
     void initialize(const std::vector<ExchangeInfo>& exchanges);
-    
+    // selectExchange
+    // Select the best exchange for a given order
+    RoutingResult selectExchange(const models::OrderPtr& order) const;
     // Update exchange information
     void updateExchangeInfo(const ExchangeInfo& exchange_info);
     

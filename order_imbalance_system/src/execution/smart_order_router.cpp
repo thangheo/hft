@@ -8,7 +8,7 @@ namespace execution {
 
 SmartOrderRouter::SmartOrderRouter() {
     // Set default routing strategy
-    routing_strategy_ = [this](const OrderPtr& order, 
+    routing_strategy_ = [this](const models::OrderPtr& order, 
                               const std::vector<ExchangeInfo>& exchanges, 
                               const RoutingFactors& factors) {
         return this->defaultRoutingStrategy(order, exchanges, factors);
@@ -28,8 +28,7 @@ void SmartOrderRouter::updateExchangeInfo(const ExchangeInfo& exchange_info) {
     std::lock_guard<std::mutex> lock(mutex_);
     exchanges_[exchange_info.exchange_id] = exchange_info;
 }
-
-RoutingResult SmartOrderRouter::routeOrder(const OrderPtr& order) const {
+RoutingResult SmartOrderRouter::selectExchange(const models::OrderPtr& order) const {
     std::lock_guard<std::mutex> lock(mutex_);
     
     // Get all available exchanges for this trading pair
@@ -52,7 +51,30 @@ RoutingResult SmartOrderRouter::routeOrder(const OrderPtr& order) const {
     return routing_strategy_(order, available_exchanges, routing_factors_);
 }
 
-bool SmartOrderRouter::routeToExchange(OrderPtr& order, const std::string& exchange_id) const {
+RoutingResult SmartOrderRouter::routeOrder(const models::OrderPtr& order) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Get all available exchanges for this trading pair
+    std::vector<ExchangeInfo> available_exchanges;
+    for (const auto& [id, info] : exchanges_) {
+        if (info.supports_trading_pair(order->getTradingPair()) && 
+            info.supports_order_type(order->getType())) {
+            available_exchanges.push_back(info);
+        }
+    }
+    
+    // If no available exchanges, return empty result
+    if (available_exchanges.empty()) {
+        return RoutingResult{
+            "", 0.0, "No available exchanges for this trading pair and order type"
+        };
+    }
+    
+    // Use the current routing strategy
+    return routing_strategy_(order, available_exchanges, routing_factors_);
+}
+
+bool SmartOrderRouter::routeToExchange(models::OrderPtr& order, const std::string& exchange_id) const {
     std::lock_guard<std::mutex> lock(mutex_);
     
     // Check if exchange exists and supports this trading pair and order type
@@ -86,7 +108,7 @@ std::vector<std::string> SmartOrderRouter::getAvailableExchanges(const std::stri
 }
 
 void SmartOrderRouter::setRoutingStrategy(
-    const std::function<RoutingResult(const OrderPtr&, 
+    const std::function<RoutingResult(const models::OrderPtr&, 
                                      const std::vector<ExchangeInfo>&,
                                      const RoutingFactors&)>& strategy) {
     routing_strategy_ = strategy;
@@ -101,7 +123,7 @@ RoutingFactors SmartOrderRouter::getRoutingFactors() const {
 }
 
 RoutingResult SmartOrderRouter::defaultRoutingStrategy(
-    const OrderPtr& order,
+    const models::OrderPtr& order,
     const std::vector<ExchangeInfo>& exchanges,
     const RoutingFactors& factors) const {
     
@@ -136,7 +158,7 @@ RoutingResult SmartOrderRouter::defaultRoutingStrategy(
 
 double SmartOrderRouter::calculateExchangeScore(
     const ExchangeInfo& exchange,
-    const OrderPtr& order) const {
+    const models::OrderPtr& order) const {
     
     // Normalize scores to 0-1 range
     double fee_score = 1.0 - std::min(exchange.trading_fee / 0.01, 1.0); // Assume 1% is max fee

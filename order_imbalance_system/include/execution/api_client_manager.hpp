@@ -38,7 +38,11 @@ public:
     
     // Get rate limit status for an exchange
     RateLimitStatus getRateLimitStatus(const std::string& exchangeId, ExchangeRequestType requestType) const;
-
+    bool initialize() ;
+    void shutdown() ;
+    
+    
+    
 private:
     std::unordered_map<std::string, std::shared_ptr<ExchangeApiClient>> clients_;
     std::shared_ptr<AuthenticationService> authService_;

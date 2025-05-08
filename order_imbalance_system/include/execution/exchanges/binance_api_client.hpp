@@ -21,8 +21,8 @@ public:
     
     // Implement ExchangeApiClient interface
     std::future<models::ExecutionReport> placeOrder(const models::Order& order) override;
-    std::future<trading::execution::models::ExecutionReport> cancelOrder(const std::string& orderId, const std::string& symbol) override;
-    std::future<trading::execution::models::ExecutionReport> getOrderStatus(const std::string& orderId, const std::string& symbol) override;
+    std::future<models::ExecutionReport> cancelOrder(const std::string& orderId, const std::string& symbol) override;
+    std::future<models::ExecutionReport> getOrderStatus(const std::string& orderId, const std::string& symbol) override;
     std::future<std::map<std::string, double>> getAccountBalances() override;
     std::future<double> getCurrentPrice(const std::string& symbol) override;
     bool isConnected() const override;

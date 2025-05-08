@@ -27,9 +27,9 @@ struct MarketCondition {
  * Order type selection result
  */
 struct OrderTypeSelection {
-    OrderType type;
+    models::OrderType type;
     double price;
-    TimeInForce time_in_force;
+    models::TimeInForce time_in_force;
     std::string reason;
 };
 
@@ -43,7 +43,7 @@ public:
     
     // Select optimal order type
     OrderTypeSelection selectOrderType(
-        const OrderPtr& order,
+        const models::OrderPtr& order,
         const MarketCondition& market_condition) const;
     
     // Update market condition
@@ -57,7 +57,7 @@ public:
     // Set custom selection strategy
     void setSelectionStrategy(
         const std::function<OrderTypeSelection(
-            const OrderPtr&,
+            const models::OrderPtr&,
             const MarketCondition&)>& strategy);
     
     // Configure selection thresholds
@@ -76,7 +76,7 @@ private:
     
     // Custom selection strategy
     std::function<OrderTypeSelection(
-        const OrderPtr&,
+        const models::OrderPtr&,
         const MarketCondition&)> selection_strategy_;
     
     // Mutex for thread safety
@@ -84,7 +84,7 @@ private:
     
     // Default selection strategy
     OrderTypeSelection defaultSelectionStrategy(
-        const OrderPtr& order,
+        const models::OrderPtr& order,
         const MarketCondition& condition) const;
 };
 

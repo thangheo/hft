@@ -13,7 +13,7 @@ IcebergAlgorithm::IcebergAlgorithm() = default;
 
 bool IcebergAlgorithm::initialize(
     const std::string& trading_pair,
-    trading::execution::models::OrderSide side,
+    models::OrderSide side,
     const IcebergConfig& config) {
     
     // Lock to prevent concurrent modification

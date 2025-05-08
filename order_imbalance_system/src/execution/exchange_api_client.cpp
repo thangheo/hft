@@ -42,17 +42,17 @@ int64_t generateNonce() {
 }
 
 // Format order side as a string (different exchanges use different formats)
-std::string formatOrderSide(trading::execution::models::OrderSide side, const std::string& format) {
+std::string formatOrderSide(models::OrderSide side, const std::string& format) {
     if (format == "UPPER") {
-        return side == trading::execution::models::OrderSide::BUY ? "BUY" : "SELL";
+        return side == models::OrderSide::BUY ? "BUY" : "SELL";
     } else if (format == "LOWER") {
-        return side == trading::execution::models::OrderSide::BUY ? "buy" : "sell";
+        return side == models::OrderSide::BUY ? "buy" : "sell";
     } else if (format == "NUMERIC") {
-        return side == trading::execution::models::OrderSide::BUY ? "1" : "2";
+        return side == models::OrderSide::BUY ? "1" : "2";
     }
     
     // Default format
-    return side == trading::execution::models::OrderSide::BUY ? "buy" : "sell";
+    return side == models::OrderSide::BUY ? "buy" : "sell";
 }
 /**
  * Formats an order type into a string representation based on specified format.
@@ -61,82 +61,82 @@ std::string formatOrderSide(trading::execution::models::OrderSide side, const st
  * @param format The desired format ("UPPER", "LOWER", or any other for default)
  * @return String representation of the order type
  */
-std::string formatOrderType(trading::execution::models::OrderType type, const std::string& format) {
+std::string formatOrderType(models::OrderType type, const std::string& format) {
     if (format == "UPPER") {
         switch (type) {
-            case trading::execution::models::OrderType::MARKET:             return "MARKET";
-            case trading::execution::models::OrderType::LIMIT:              return "LIMIT";
-            case trading::execution::models::OrderType::STOP:               return "STOP";
-            case trading::execution::models::OrderType::STOP_LIMIT:         return "STOP_LIMIT";
-            case trading::execution::models::OrderType::ICEBERG:            return "ICEBERG";
-            case trading::execution::models::OrderType::TRAILING_STOP:      return "TRAILING_STOP";
-            case trading::execution::models::OrderType::FILL_OR_KILL:       return "FILL_OR_KILL";
-            case trading::execution::models::OrderType::IMMEDIATE_OR_CANCEL: return "IMMEDIATE_OR_CANCEL";
-            case trading::execution::models::OrderType::POST_ONLY:          return "POST_ONLY";
+            case models::OrderType::MARKET:             return "MARKET";
+            case models::OrderType::LIMIT:              return "LIMIT";
+            case models::OrderType::STOP:               return "STOP";
+            case models::OrderType::STOP_LIMIT:         return "STOP_LIMIT";
+            case models::OrderType::ICEBERG:            return "ICEBERG";
+            case models::OrderType::TRAILING_STOP:      return "TRAILING_STOP";
+            case models::OrderType::FILL_OR_KILL:       return "FILL_OR_KILL";
+            case models::OrderType::IMMEDIATE_OR_CANCEL: return "IMMEDIATE_OR_CANCEL";
+            case models::OrderType::POST_ONLY:          return "POST_ONLY";
             default:                            return "UNKNOWN";
         }
     } else if (format == "LOWER") {
         switch (type) {
-            case trading::execution::models::OrderType::MARKET:             return "market";
-            case trading::execution::models::OrderType::LIMIT:              return "limit";
-            case trading::execution::models::OrderType::STOP:               return "stop";
-            case trading::execution::models::OrderType::STOP_LIMIT:         return "stop_limit";
-            case trading::execution::models::OrderType::ICEBERG:            return "iceberg";
-            case trading::execution::models::OrderType::TRAILING_STOP:      return "trailing_stop";
-            case trading::execution::models::OrderType::FILL_OR_KILL:       return "fill_or_kill";
-            case trading::execution::models::OrderType::IMMEDIATE_OR_CANCEL: return "ioc";
-            case trading::execution::models::OrderType::POST_ONLY:          return "post_only";
+            case models::OrderType::MARKET:             return "market";
+            case models::OrderType::LIMIT:              return "limit";
+            case models::OrderType::STOP:               return "stop";
+            case models::OrderType::STOP_LIMIT:         return "stop_limit";
+            case models::OrderType::ICEBERG:            return "iceberg";
+            case models::OrderType::TRAILING_STOP:      return "trailing_stop";
+            case models::OrderType::FILL_OR_KILL:       return "fill_or_kill";
+            case models::OrderType::IMMEDIATE_OR_CANCEL: return "ioc";
+            case models::OrderType::POST_ONLY:          return "post_only";
             default:                            return "unknown";
         }
     }
     
     // Default format
     switch (type) {
-        case trading::execution::models::OrderType::MARKET:             return "market";
-        case trading::execution::models::OrderType::LIMIT:              return "limit";
-        case trading::execution::models::OrderType::STOP:               return "stop";
-        case trading::execution::models::OrderType::STOP_LIMIT:         return "stop_limit";
-        case trading::execution::models::OrderType::ICEBERG:            return "iceberg";
-        case trading::execution::models::OrderType::TRAILING_STOP:      return "trailing_stop";
-        case trading::execution::models::OrderType::FILL_OR_KILL:       return "fok";
-        case trading::execution::models::OrderType::IMMEDIATE_OR_CANCEL: return "ioc";
-        case trading::execution::models::OrderType::POST_ONLY:          return "post_only";
+        case models::OrderType::MARKET:             return "market";
+        case models::OrderType::LIMIT:              return "limit";
+        case models::OrderType::STOP:               return "stop";
+        case models::OrderType::STOP_LIMIT:         return "stop_limit";
+        case models::OrderType::ICEBERG:            return "iceberg";
+        case models::OrderType::TRAILING_STOP:      return "trailing_stop";
+        case models::OrderType::FILL_OR_KILL:       return "fok";
+        case models::OrderType::IMMEDIATE_OR_CANCEL: return "ioc";
+        case models::OrderType::POST_ONLY:          return "post_only";
         default:                            return "unknown";
     }
 }
 
 // Format timeInForce as a string (different exchanges use different formats)
-std::string formatTimeInForce(trading::execution::models::TimeInForce tif, const std::string& format) {
+std::string formatTimeInForce(models::TimeInForce tif, const std::string& format) {
     if (format == "UPPER") {
         switch (tif) {
-            case trading::execution::models::TimeInForce::GTC: return "GTC";
-            case trading::execution::models::TimeInForce::IOC: return "IOC";
-            case trading::execution::models::TimeInForce::FOK: return "FOK";
-            case trading::execution::models::TimeInForce::GTD: return "GTD";
+            case models::TimeInForce::GTC: return "GTC";
+            case models::TimeInForce::IOC: return "IOC";
+            case models::TimeInForce::FOK: return "FOK";
+            case models::TimeInForce::GTD: return "GTD";
             default: return "UNKNOWN";
         }
     } else if (format == "LOWER") {
         switch (tif) {
-            case trading::execution::models::TimeInForce::GTC: return "gtc";
-            case trading::execution::models::TimeInForce::IOC: return "ioc";
-            case trading::execution::models::TimeInForce::FOK: return "fok";
-            case trading::execution::models::TimeInForce::GTD: return "gtd";
+            case models::TimeInForce::GTC: return "gtc";
+            case models::TimeInForce::IOC: return "ioc";
+            case models::TimeInForce::FOK: return "fok";
+            case models::TimeInForce::GTD: return "gtd";
             default: return "unknown";
         }
     }
     
     // Default format
     switch (tif) {
-        case trading::execution::models::TimeInForce::GTC: return "gtc";
-        case trading::execution::models::TimeInForce::IOC: return "ioc";
-        case trading::execution::models::TimeInForce::FOK: return "fok";
-        case trading::execution::models::TimeInForce::GTD: return "gtd";
+        case models::TimeInForce::GTC: return "gtc";
+        case models::TimeInForce::IOC: return "ioc";
+        case models::TimeInForce::FOK: return "fok";
+        case models::TimeInForce::GTD: return "gtd";
         default: return "unknown";
     }
 }
 
 // Create common parameters map for order placement
-std::map<std::string, std::string> createOrderParams(const trading::execution::models::Order& order) {
+std::map<std::string, std::string> createOrderParams(const models::Order& order) {
     std::map<std::string, std::string> params;
     
     // Common parameters
@@ -150,7 +150,7 @@ std::map<std::string, std::string> createOrderParams(const trading::execution::m
     params["quantity"] = qtyStr.str();
     
     // Price (for limit orders)
-    if (order.getType() != trading::execution::models::OrderType::MARKET) {
+    if (order.getType() != models::OrderType::MARKET) {
         std::ostringstream priceStr;
         priceStr << std::fixed << std::setprecision(8) << order.getPrice();
         params["price"] = priceStr.str();
@@ -174,10 +174,10 @@ std::map<std::string, std::string> createOrderParams(const trading::execution::m
 }
 
 // Parse order from JSON (common implementation - derived classes can specialize)
-trading::execution::models::ExecutionReport parseOrderResponse(const std::string& json, const trading::execution::models::Order& originalOrder) {
+models::ExecutionReport parseOrderResponse(const std::string& json, const models::Order& originalOrder) {
     // This is just a placeholder. In a real implementation, you would parse the JSON
-    // and extract order details to create an trading::execution::models::ExecutionReport.
-    trading::execution::models::ExecutionReport report(originalOrder.getOrderId());
+    // and extract order details to create an models::ExecutionReport.
+    models::ExecutionReport report(originalOrder.getOrderId());
     report.setClientOrderId(originalOrder.getClientOrderId());
     report.setSymbol(originalOrder.getTradingPair());
     report.setSide(originalOrder.getSide());
@@ -196,11 +196,11 @@ trading::execution::models::ExecutionReport parseOrderResponse(const std::string
 
 // Helper for exponential backoff retry logic
 template<typename Func>
-std::future<trading::execution::models::ExecutionReport> retryWithBackoff(
+std::future<models::ExecutionReport> retryWithBackoff(
     Func operation, int maxRetries, std::chrono::milliseconds initialDelay) {
     
     return std::async(std::launch::async, [=]() {
-        trading::execution::models::ExecutionReport result;
+        models::ExecutionReport result;
         bool success = false;
         std::chrono::milliseconds delay = initialDelay;
         std::exception_ptr lastException;

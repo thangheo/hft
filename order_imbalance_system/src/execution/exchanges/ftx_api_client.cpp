@@ -156,14 +156,14 @@ std::vector<std::string> FtxApiClient::getSupportedSymbols() const {
     return symbols;
 }
 
-std::future<trading::execution::models::ExecutionReport> FtxApiClient::placeOrder(const trading::execution::models::Order& order) {
+std::future<models::ExecutionReport> FtxApiClient::placeOrder(const models::Order& order) {
     // Extract necessary data from the order to avoid capturing the entire object
     std::string tradingPair = order.getTradingPair();
-    trading::execution::models::OrderSide side = order.getSide();
-    trading::execution::models::OrderType type = order.getType();
+    models::OrderSide side = order.getSide();
+    models::OrderType type = order.getType();
     double quantity = order.getQuantity();
     double price = order.getPrice();
-    trading::execution::models::TimeInForce timeInForce = order.getTimeInForce();
+    models::TimeInForce timeInForce = order.getTimeInForce();
     std::string clientOrderId = order.getClientOrderId();
     
     // Create a copy of the extra parameters
@@ -192,7 +192,7 @@ std::future<trading::execution::models::ExecutionReport> FtxApiClient::placeOrde
         params["type"] = translateOrderType(type);
         params["size"] = std::to_string(quantity);
         
-        if (type != trading::execution::models::OrderType::MARKET) {
+        if (type != models::OrderType::MARKET) {
             params["price"] = std::to_string(price);
         }
         
@@ -202,15 +202,15 @@ std::future<trading::execution::models::ExecutionReport> FtxApiClient::placeOrde
         }
         
         // Check for IOC/FOK
-        if (timeInForce == trading::execution::models::TimeInForce::IOC) {
+        if (timeInForce == models::TimeInForce::IOC) {
             params["ioc"] = "true";
-        } else if (timeInForce == trading::execution::models::TimeInForce::FOK) {
+        } else if (timeInForce == models::TimeInForce::FOK) {
             // FTX doesn't support FOK directly, we use IOC as closest option
             params["ioc"] = "true";
         }
         
         // Check for post-only
-        if (type == trading::execution::models::OrderType::POST_ONLY) {
+        if (type == models::OrderType::POST_ONLY) {
             params["postOnly"] = "true";
         }
         
@@ -227,7 +227,7 @@ std::future<trading::execution::models::ExecutionReport> FtxApiClient::placeOrde
     });
 }
 
-std::future<trading::execution::models::ExecutionReport> FtxApiClient::cancelOrder(const std::string& orderId, const std::string& symbol) {
+std::future<models::ExecutionReport> FtxApiClient::cancelOrder(const std::string& orderId, const std::string& symbol) {
     // Already using value types, so no need to extract anything
     return std::async(std::launch::async, [this, orderId]() {
         if (!isConnected()) {
@@ -267,7 +267,7 @@ std::future<trading::execution::models::ExecutionReport> FtxApiClient::cancelOrd
     });
 }
 
-std::future<trading::execution::models::ExecutionReport> FtxApiClient::getOrderStatus(const std::string& orderId, const std::string& symbol) {
+std::future<models::ExecutionReport> FtxApiClient::getOrderStatus(const std::string& orderId, const std::string& symbol) {
     // Already using value types, so no need to extract anything
     return std::async(std::launch::async, [this, orderId]() {
         if (!isConnected()) {
@@ -511,32 +511,32 @@ std::string FtxApiClient::generateSignature(const std::string& endpoint, const s
     return ss.str();
 }
 
-std::string FtxApiClient::translateOrderType(trading::execution::models::OrderType type) const {
+std::string FtxApiClient::translateOrderType(models::OrderType type) const {
     switch (type) {
-        case trading::execution::models::OrderType::MARKET: return "market";
-        case trading::execution::models::OrderType::LIMIT: return "limit";
+        case models::OrderType::MARKET: return "market";
+        case models::OrderType::LIMIT: return "limit";
         // FTX doesn't directly support these order types, map to closest equivalent
-        case trading::execution::models::OrderType::STOP: 
-        case trading::execution::models::OrderType::STOP_LIMIT:
-        case trading::execution::models::OrderType::TRAILING_STOP:
-        case trading::execution::models::OrderType::FILL_OR_KILL:
-        case trading::execution::models::OrderType::IMMEDIATE_OR_CANCEL:
-        case trading::execution::models::OrderType::POST_ONLY:
-        case trading::execution::models::OrderType::ICEBERG:
+        case models::OrderType::STOP: 
+        case models::OrderType::STOP_LIMIT:
+        case models::OrderType::TRAILING_STOP:
+        case models::OrderType::FILL_OR_KILL:
+        case models::OrderType::IMMEDIATE_OR_CANCEL:
+        case models::OrderType::POST_ONLY:
+        case models::OrderType::ICEBERG:
             return "limit";  // Additional parameters set separately
         default: throw std::invalid_argument("Unsupported order type for FTX");
     }
 }
 
-std::string FtxApiClient::translateOrderSide(trading::execution::models::OrderSide side) const {
+std::string FtxApiClient::translateOrderSide(models::OrderSide side) const {
     switch (side) {
-        case trading::execution::models::OrderSide::BUY: return "buy";
-        case trading::execution::models::OrderSide::SELL: return "sell";
+        case models::OrderSide::BUY: return "buy";
+        case models::OrderSide::SELL: return "sell";
         default: throw std::invalid_argument("Invalid order side");
     }
 }
 
-trading::execution::models::ExecutionReport FtxApiClient::parseOrderResponse(const std::string& response) const {
+models::ExecutionReport FtxApiClient::parseOrderResponse(const std::string& response) const {
     Json::Value root;
     Json::Reader reader;
     if (!reader.parse(response, root)) {
@@ -544,14 +544,14 @@ trading::execution::models::ExecutionReport FtxApiClient::parseOrderResponse(con
     }
     
     if (!root["success"].asBool()) {
-        trading::execution::models::ExecutionReport report;
-        report.setStatus(trading::execution::models::OrderState::REJECTED);
+        models::ExecutionReport report;
+        report.setStatus(models::OrderState::REJECTED);
         report.setRejectReason(root["error"].asString());
         return report;
     }
     
     const Json::Value& result = root["result"];
-    trading::execution::models::ExecutionReport report;
+    models::ExecutionReport report;
     
     // Set exchange info
     report.setExchangeId("FTX");
@@ -567,11 +567,11 @@ trading::execution::models::ExecutionReport FtxApiClient::parseOrderResponse(con
     
     // Set side
     std::string side = result["side"].asString();
-    report.setSide(side == "buy" ? trading::execution::models::OrderSide::BUY : trading::execution::models::OrderSide::SELL);
+    report.setSide(side == "buy" ? models::OrderSide::BUY : models::OrderSide::SELL);
     
     // Set type
     std::string type = result["type"].asString();
-    report.setType(type == "market" ? trading::execution::models::OrderType::MARKET : trading::execution::models::OrderType::LIMIT);
+    report.setType(type == "market" ? models::OrderType::MARKET : models::OrderType::LIMIT);
     
     // Set price if present
     if (result.isMember("price") && !result["price"].isNull()) {
@@ -586,16 +586,16 @@ trading::execution::models::ExecutionReport FtxApiClient::parseOrderResponse(con
     // Set status
     std::string status = result["status"].asString();
     if (status == "new") {
-        report.setStatus(trading::execution::models::OrderState::OPEN);
+        report.setStatus(models::OrderState::OPEN);
     } else if (status == "open") {
         double remainingSize = result["remainingSize"].asDouble();
-        report.setStatus(remainingSize < result["size"].asDouble() ? trading::execution::models::OrderState::PARTIALLY_FILLED : trading::execution::models::OrderState::OPEN);
+        report.setStatus(remainingSize < result["size"].asDouble() ? models::OrderState::PARTIALLY_FILLED : models::OrderState::OPEN);
     } else if (status == "closed") {
         // Check if it was filled or canceled
         if (report.filledQuantity() >= report.quantity() * 0.99) {  // Allow for tiny rounding differences
-            report.setStatus(trading::execution::models::OrderState::FILLED);
+            report.setStatus(models::OrderState::FILLED);
         } else {
-            report.setStatus(trading::execution::models::OrderState::CANCELED);
+            report.setStatus(models::OrderState::CANCELED);
         }
     }
     

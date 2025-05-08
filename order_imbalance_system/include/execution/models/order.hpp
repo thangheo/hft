@@ -84,7 +84,8 @@ public:
     // Constructors
     Order();
     explicit Order(const std::string& client_order_id);
-    
+    //copy constructor
+    Order(const Order& other);
     // Factory methods for common order types
     static std::shared_ptr<Order> createMarketOrder(
         const std::string& trading_pair, 
@@ -103,13 +104,14 @@ public:
     const std::string& getExchangeId() const;
     const std::string& getExchangeOrderId() const; // Added from second file
     const std::string& getTradingPair() const;
+    const std::string& getSymbol() const; // Added from second file
     OrderSide getSide() const;
     OrderType getType() const;
     double getQuantity() const;
     double getPrice() const;
     std::optional<double> getStopPrice() const; // Added from second file
     TimeInForce getTimeInForce() const;
-    OrderState getState() const;
+    OrderState getState() const;    
     const std::string& getStrategyId() const;
     const std::string& getSignalId() const;
     std::chrono::system_clock::time_point getCreatedTime() const;
@@ -129,6 +131,8 @@ public:
     void setSide(OrderSide side);
     void setType(OrderType type);
     void setQuantity(double quantity);
+    //setState
+    void setState(OrderState state);
     void setPrice(double price);
     void setStopPrice(std::optional<double> stop_price); // Added from second file
     void setTimeInForce(TimeInForce time_in_force);

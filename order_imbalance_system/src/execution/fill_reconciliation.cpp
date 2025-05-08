@@ -9,7 +9,7 @@
  * Created on: May 5, 2025
  */
 
- #include "execution/fill_reconciliation.h"
+ #include "execution/fill_reconciliation.hpp"
  #include <algorithm>
  #include <cmath>
  #include <sstream>
@@ -47,8 +47,21 @@
  FillReconciliation::FillReconciliation() {
      // Nothing to initialize
  }
- 
- void FillReconciliation::recordExpectedFill(const std::string& order_id, const Fill& expected_fill) {
+ bool FillReconciliation::initialize() {
+     // Initialization logic if needed
+     return true;
+ }
+ void FillReconciliation::start() {
+     // Start any necessary threads or processes
+        // For now, we just ensure the mutex is initialized
+    std::lock_guard<std::mutex> lock(mutex_);
+ }
+ void FillReconciliation::stop() {
+     // Stop any running threads or processes
+
+ }
+
+ void FillReconciliation::recordExpectedFill(const std::string& order_id, const models::Fill& expected_fill) {
      std::lock_guard<std::mutex> lock(mutex_);
      
      // Create a fill record
@@ -61,7 +74,7 @@
      expected_fills_[order_id].push_back(record);
  }
  
- bool FillReconciliation::recordActualFill(const std::string& order_id, const Fill& actual_fill) {
+ bool FillReconciliation::recordActualFill(const std::string& order_id, const models::Fill& actual_fill) {
      std::lock_guard<std::mutex> lock(mutex_);
      
      // Create a fill record
@@ -99,8 +112,8 @@
      // If no match was found, check for discrepancies
      if (!reconciled) {
          FillDiscrepancy discrepancy;
-         discrepancy.orderId = order_id;
-         discrepancy.exchange_id = actual_fill.exchange_order_id;
+         discrepancy.order_id = order_id;
+         discrepancy.exchange_id = actual_fill.exchangeOrderId;
          discrepancy.trading_pair = "";  // We don't have this info in the Fill struct
          discrepancy.actual_quantity = actual_fill.quantity;
          discrepancy.actual_price = actual_fill.price;
@@ -167,7 +180,7 @@
              if (elapsed > timeout_ms) {
                  // Create a discrepancy
                  FillDiscrepancy discrepancy;
-                 discrepancy.orderId = order_id;
+                 discrepancy.order_id = order_id;
                  discrepancy.exchange_id = exp_record.fill.exchangeOrderId;
                  discrepancy.trading_pair = "";  // We don't have this info
                  discrepancy.expected_quantity = exp_record.fill.quantity;
@@ -205,7 +218,7 @@
              
              // Create a discrepancy
              FillDiscrepancy discrepancy;
-             discrepancy.orderId = order_id;
+             discrepancy.order_id = order_id;
              discrepancy.exchange_id = act_record.fill.exchangeOrderId;
              discrepancy.trading_pair = "";  // We don't have this info
              discrepancy.expected_quantity = 0.0;
@@ -230,7 +243,7 @@
      discrepancy_callbacks_.push_back(callback);
  }
  
- std::vector<Fill> FillReconciliation::getReconciledFills(const std::string& order_id) const {
+ std::vector<models::Fill> FillReconciliation::getReconciledFills(const std::string& order_id) const {
      std::lock_guard<std::mutex> lock(mutex_);
      
      auto it = reconciled_fills_.find(order_id);
@@ -241,10 +254,10 @@
      return {};  // No reconciled fills
  }
  
- std::vector<Fill> FillReconciliation::getUnreconciledExpectedFills(const std::string& order_id) const {
+ std::vector<models::Fill> FillReconciliation::getUnreconciledExpectedFills(const std::string& order_id) const {
      std::lock_guard<std::mutex> lock(mutex_);
      
-     std::vector<Fill> unrec_fills;
+     std::vector<models::Fill> unrec_fills;
      
      auto it = expected_fills_.find(order_id);
      if (it != expected_fills_.end()) {
@@ -258,10 +271,10 @@
      return unrec_fills;
  }
  
- std::vector<Fill> FillReconciliation::getUnreconciledActualFills(const std::string& order_id) const {
+ std::vector<models::Fill> FillReconciliation::getUnreconciledActualFills(const std::string& order_id) const {
      std::lock_guard<std::mutex> lock(mutex_);
      
-     std::vector<Fill> unrec_fills;
+     std::vector<models::Fill> unrec_fills;
      
      auto it = actual_fills_.find(order_id);
      if (it != actual_fills_.end()) {
@@ -342,7 +355,7 @@
      }
  }
  
- bool FillReconciliation::matchFills(const Fill& expected, const Fill& actual, 
+ bool FillReconciliation::matchFills(const models::Fill& expected, const models::Fill& actual, 
                                   double price_tolerance, double quantity_tolerance) {
      // Check for exact match on fill ID if available
      if (!expected.fill_id.empty() && !actual.fill_id.empty() && 

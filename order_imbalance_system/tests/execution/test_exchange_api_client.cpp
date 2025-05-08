@@ -13,9 +13,9 @@ class MockExchangeApiClient : public ExchangeApiClient {
 public:
     MockExchangeApiClient(bool connected = true) : connected_(connected) {}
     
-    // Order operations
-    std::future<ExecutionReport> placeOrder(const Order& order) override {
-        return std::async(std::launch::async, [this, order]() {
+    // models::Order operations
+    std::future<models::ExecutionReport> placeOrder(const models::Order& order) override {
+        return std::async(std::launch::async, [this, &order]() {
             if (!isConnected()) {
                 throw std::runtime_error("Not connected to exchange");
             }
@@ -25,7 +25,7 @@ public:
             
             placeOrderCalled_++;
             
-            ExecutionReport report(order.getOrderId());
+            models::ExecutionReport report(order.getOrderId());
             report.setClientOrderId(order.getClientOrderId());
             report.setExchangeId(getExchangeName());
             report.setExchangeOrderId("mock-exchange-" + order.getOrderId());
@@ -34,24 +34,24 @@ public:
             report.setType(order.getType());
             report.setQuantity(order.getQuantity());
             
-            if (order.getType() != OrderType::MARKET) {
+            if (order.getType() != models::OrderType::MARKET) {
                 report.setPrice(order.getPrice());
             }
             
             // Set status based on mock behavior
             if (rejectNextOrder_) {
-                report.setStatus(OrderState::REJECTED);
+                report.setStatus(models::OrderState::REJECTED);
                 report.setRejectReason("Mock rejection");
                 rejectNextOrder_ = false;
             } else {
-                report.setStatus(OrderState::OPEN);
+                report.setStatus(models::OrderState::OPEN);
             }
             
             return report;
         });
     }
     
-    std::future<ExecutionReport> cancelOrder(const std::string& orderId, const std::string& symbol) override {
+    std::future<models::ExecutionReport> cancelOrder(const std::string& orderId, const std::string& symbol) override {
         return std::async(std::launch::async, [this, orderId, symbol]() {
             if (!isConnected()) {
                 throw std::runtime_error("Not connected to exchange");
@@ -62,16 +62,16 @@ public:
             
             cancelOrderCalled_++;
             
-            ExecutionReport report(orderId);
+            models::ExecutionReport report(orderId);
             report.setExchangeId(getExchangeName());
             report.setSymbol(symbol);
-            report.setStatus(OrderState::CANCELED);
+            report.setStatus(models::OrderState::CANCELED);
             
             return report;
         });
     }
     
-    std::future<ExecutionReport> getOrderStatus(const std::string& orderId, const std::string& symbol) override {
+    std::future<models::ExecutionReport> getOrderStatus(const std::string& orderId, const std::string& symbol) override {
         return std::async(std::launch::async, [this, orderId, symbol]() {
             if (!isConnected()) {
                 throw std::runtime_error("Not connected to exchange");
@@ -82,12 +82,12 @@ public:
             
             getOrderStatusCalled_++;
             
-            ExecutionReport report(orderId);
+            models::ExecutionReport report(orderId);
             report.setExchangeId(getExchangeName());
             report.setSymbol(symbol);
             
             // Return a mock status
-            report.setStatus(OrderState::OPEN);
+            report.setStatus(models::OrderState::OPEN);
             report.setQuantity(1.0);
             report.setFilledQuantity(0.0);
             
@@ -239,7 +239,7 @@ TEST_F(ExchangeApiClientTest, ConnectionManagement) {
 
 // Test place order
 TEST_F(ExchangeApiClientTest, PlaceOrder) {
-    auto order = Order::createMarketOrder("BTC/USDT", OrderSide::BUY, 1.0);
+    auto order = models::Order::createMarketOrder("BTC/USDT", OrderSide::BUY, 1.0);
     order->setOrderId("test-order-id");
     
     auto futureReport = client->placeOrder(*order);
@@ -247,7 +247,7 @@ TEST_F(ExchangeApiClientTest, PlaceOrder) {
     
     EXPECT_EQ(client->getPlaceOrderCallCount(), 1);
     EXPECT_EQ(report.orderId(), order->getOrderId());
-    EXPECT_EQ(report.status(), OrderState::OPEN);
+    EXPECT_EQ(report.status(), models::OrderState::OPEN);
     EXPECT_EQ(report.exchangeId(), "MockExchange");
     EXPECT_FALSE(report.exchangeOrderId().empty());
 }
@@ -256,7 +256,7 @@ TEST_F(ExchangeApiClientTest, PlaceOrder) {
 TEST_F(ExchangeApiClientTest, PlaceOrderRejection) {
     client->setRejectNextOrder(true);
     
-    auto order = Order::createLimitOrder("ETH/USDT", OrderSide::SELL, 2.0, 3000.0);
+    auto order = models::Order::createLimitOrder("ETH/USDT", OrderSide::SELL, 2.0, 3000.0);
     order->setOrderId("test-order-id-2");
     
     auto futureReport = client->placeOrder(*order);
@@ -264,7 +264,7 @@ TEST_F(ExchangeApiClientTest, PlaceOrderRejection) {
     
     EXPECT_EQ(client->getPlaceOrderCallCount(), 1);
     EXPECT_EQ(report.orderId(), order->getOrderId());
-    EXPECT_EQ(report.status(), OrderState::REJECTED);
+    EXPECT_EQ(report.status(), models::OrderState::REJECTED);
     EXPECT_FALSE(report.rejectReason().empty());
 }
 
@@ -275,7 +275,7 @@ TEST_F(ExchangeApiClientTest, CancelOrder) {
     
     EXPECT_EQ(client->getCancelOrderCallCount(), 1);
     EXPECT_EQ(report.orderId(), "test-order-id");
-    EXPECT_EQ(report.status(), OrderState::CANCELED);
+    EXPECT_EQ(report.status(), models::OrderState::CANCELED);
 }
 
 // Test get order status
@@ -286,7 +286,7 @@ TEST_F(ExchangeApiClientTest, GetOrderStatus) {
     EXPECT_EQ(client->getGetOrderStatusCallCount(), 1);
     EXPECT_EQ(report.orderId(), "test-order-id");
     EXPECT_EQ(report.symbol(), "BTC/USDT");
-    EXPECT_EQ(report.status(), OrderState::OPEN);
+    EXPECT_EQ(report.status(), models::OrderState::OPEN);
 }
 
 // Test get account balances
@@ -321,7 +321,7 @@ TEST_F(ExchangeApiClientTest, ExceptionWhenNotConnected) {
     client->disconnect();
     EXPECT_FALSE(client->isConnected());
     
-    auto order = Order::createMarketOrder("BTC/USDT", OrderSide::BUY, 1.0);
+    auto order = models::Order::createMarketOrder("BTC/USDT", OrderSide::BUY, 1.0);
     auto futureReport = client->placeOrder(*order);
     
     EXPECT_THROW(futureReport.get(), std::runtime_error);
@@ -330,7 +330,7 @@ TEST_F(ExchangeApiClientTest, ExceptionWhenNotConnected) {
 // Test concurrent operations
 TEST_F(ExchangeApiClientTest, ConcurrentOperations) {
     // Create multiple futures for different operations
-    auto order = Order::createMarketOrder("BTC/USDT", OrderSide::BUY, 1.0);
+    auto order = models::Order::createMarketOrder("BTC/USDT", OrderSide::BUY, 1.0);
     order->setOrderId("test-order-id-concurrent");
     
     auto futurePlaceOrder = client->placeOrder(*order);
@@ -389,7 +389,7 @@ TEST(ExchangeApiClientUtilTest, UtilityFunctions) {
     // or expose them for testing. This would typically be done in a real test suite.
     // For this example, we'll just test the basic functionality through the mock implementation.
     
-    auto order = Order::createLimitOrder("BTC/USDT", OrderSide::BUY, 1.0, 45000.0);
+    auto order = models::Order::createLimitOrder("BTC/USDT", OrderSide::BUY, 1.0, 45000.0);
     order->setOrderId("test-util");
     
     auto client = std::make_shared<MockExchangeApiClient>();
@@ -399,7 +399,7 @@ TEST(ExchangeApiClientUtilTest, UtilityFunctions) {
     // Verify the utility functions worked correctly by checking the result
     EXPECT_EQ(report.symbol(), "BTC/USDT");
     EXPECT_EQ(report.side(), OrderSide::BUY);
-    EXPECT_EQ(report.type(), OrderType::LIMIT);
+    EXPECT_EQ(report.type(), models::OrderType::LIMIT);
     EXPECT_EQ(report.price().value(), 45000.0);
 }
 

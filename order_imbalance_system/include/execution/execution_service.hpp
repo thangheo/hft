@@ -19,6 +19,7 @@
 #include "execution/order_lifecycle_tracker.hpp"
 #include "execution/fill_reconciliation.hpp"
 #include "execution/api_client_manager.hpp"
+#include "execution/exchanges/binance_api_client.hpp"
 
 #include <memory>
 #include <string>
@@ -44,11 +45,11 @@ public:
     /**
      * @brief Constructor
      * 
-     * @param order_generator Order generator component
+     * @param order_generator models::Order generator component
      * @param smart_order_router Smart order router component
-     * @param order_type_selector Order type selector component
+     * @param order_type_selector models::Order type selector component
      * @param execution_algorithm_factory Execution algorithm factory
-     * @param order_lifecycle_tracker Order lifecycle tracker
+     * @param order_lifecycle_tracker models::Order lifecycle tracker
      * @param fill_reconciliation Fill reconciliation
      * @param api_client_manager API client manager
      */
@@ -101,7 +102,7 @@ public:
      * @param order The order to place
      * @return ExecutionResponse containing execution status and details
      */
-    ExecutionResponse placeOrder(const Order& order);
+    ExecutionResponse placeOrder(const models::Order& order);
     
     /**
      * @brief Cancel an order
@@ -110,7 +111,8 @@ public:
      * @return CancelResponse containing cancellation status and details
      */
     CancelResponse cancelOrder(const std::string& client_order_id);
-    
+    std::string orderStateToString(models::OrderState state) ;
+
     /**
      * @brief Cancel an order by exchange order ID
      * 
@@ -144,7 +146,7 @@ public:
      * 
      * @return Vector of active orders
      */
-    std::vector<Order> getActiveOrders();
+    std::vector<models::Order> getActiveOrders();
     
     /**
      * @brief Get all filled orders within a time window
@@ -153,7 +155,7 @@ public:
      * @param end_time End time
      * @return Vector of filled orders
      */
-    std::vector<Order> getFilledOrders(
+    std::vector<models::Order> getFilledOrders(
         const std::chrono::system_clock::time_point& start_time,
         const std::chrono::system_clock::time_point& end_time);
     
@@ -182,9 +184,9 @@ private:
     mutable std::mutex mutex_;
     
     // Helper methods
-    Order createOrderFromSignal(const TradingSignal& signal);
-    bool validateOrder(const Order& order);
-    ExecutionResponse executeOrderWithAlgorithm(const Order& order);
+    models::Order createOrderFromSignal(const TradingSignal& signal);
+    bool validateOrder(const models::Order& order);
+    ExecutionResponse executeOrderWithAlgorithm(const models::Order& order);
 };
 
 } // namespace execution

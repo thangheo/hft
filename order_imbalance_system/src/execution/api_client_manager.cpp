@@ -111,7 +111,28 @@ RateLimitStatus ApiClientManager::getRateLimitStatus(const std::string& exchange
     
     return it->second->getRateLimitStatus(requestType);
 }
-
+bool ApiClientManager::initialize() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (clients_.empty()) {
+        return false; // No clients to initialize
+    }
+    for (auto& pair : clients_) {
+        auto& client = pair.second;
+        if (!client->isConnected()) {
+            client->connect();
+        }
+    }
+    return true;
+}
+// Shutdown all clients and release resources
+void ApiClientManager::shutdown() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    for (auto& pair : clients_) {
+        pair.second->disconnect();
+    }
+    clients_.clear();
+    rateLimitControllers_.clear();
+}
 // In api_client_manager.cpp
 std::shared_ptr<ExchangeApiClient> ApiClientManager::createClient(const std::string& exchangeId) {
     // Get credentials from the authentication service

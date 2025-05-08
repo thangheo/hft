@@ -30,7 +30,33 @@ Order::Order(const std::string& client_order_id) : client_order_id_(client_order
     created_at_ = std::chrono::system_clock::now();
     updated_at_ = created_at_;
 }
-
+//copy constructor
+Order::Order(const Order& other) {
+    std::lock_guard<std::mutex> lock(other.mutex_);
+    
+    order_id_ = other.order_id_;
+    client_order_id_ = other.client_order_id_;
+    exchange_id_ = other.exchange_id_;
+    exchange_order_id_ = other.exchange_order_id_;
+    trading_pair_ = other.trading_pair_;
+    side_ = other.side_;
+    type_ = other.type_;
+    quantity_ = other.quantity_;
+    price_ = other.price_;
+    stop_price_ = other.stop_price_;
+    time_in_force_ = other.time_in_force_;
+    expiry_time_ = other.expiry_time_;
+    state_ = other.state_.load();
+    rejection_reason_ = other.rejection_reason_;
+    created_at_ = other.created_at_;
+    updated_at_ = other.updated_at_;
+    strategy_id_ = other.strategy_id_;
+    signal_id_ = other.signal_id_;
+    fills_ = other.fills_;
+    filled_quantity_ = other.filled_quantity_;
+    average_fill_price_ = other.average_fill_price_;
+    extra_params_ = other.extra_params_;
+}
 // Factory method for market orders
 std::shared_ptr<Order> Order::createMarketOrder(
     const std::string& trading_pair, 
@@ -216,7 +242,11 @@ void Order::setQuantity(double quantity) {
     quantity_ = quantity;
     updated_at_ = std::chrono::system_clock::now();
 }
-
+void Order::setState(OrderState state) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    state_ = state;
+    updated_at_ = std::chrono::system_clock::now();
+}
 void Order::setPrice(double price) {
     std::lock_guard<std::mutex> lock(mutex_);
     price_ = price;

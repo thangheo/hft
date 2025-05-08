@@ -4,7 +4,6 @@
  * 
  * Created on: May 5, 2025
  */
-
  #include "execution/execution_service.hpp"
  #include <chrono>
  #include <sstream>
@@ -18,7 +17,7 @@
  struct TradingSignal {
      std::string signal_id;
      std::string trading_pair;
-     OrderSide direction;
+     models::OrderSide direction;
      double strength;
      double target_size;
      std::chrono::milliseconds signal_ttl;
@@ -37,7 +36,7 @@
  };
  
  struct OrderStatusResponse {
-     Order order;
+     models::Order order;
      bool found;
      std::string error_message;
  };
@@ -134,7 +133,7 @@
      }
      
      // Create order from signal
-     Order order = createOrderFromSignal(signal);
+     models::Order order = createOrderFromSignal(signal);
      
      // Validate order
      if (!validateOrder(order)) {
@@ -154,169 +153,234 @@
          return this->executeSignal(signal);
      });
  }
- 
- ExecutionResponse ExecutionService::placeOrder(const Order& order) {
-     // Validate service state
-     if (!is_running_) {
-         return ExecutionResponse{
-             "", "", false, "Execution service not running", 
-             "REJECTED", std::chrono::system_clock::now()
-         };
-     }
-     
-     // Validate order
-     if (!validateOrder(order)) {
-         return ExecutionResponse{
-             order.getClientOrderId(), "", false, 
-             "Invalid order parameters", "REJECTED", 
-             std::chrono::system_clock::now()
-         };
-     }
-     
-     // Select exchange
-     std::string exchange_id = smart_order_router_->selectExchange(order.getTradingPair(), order.getType());
-     
-     // Check if valid exchange was found
-     if (exchange_id.empty()) {
-         return ExecutionResponse{
-             order.getClientOrderId(), "", false, 
-             "No suitable exchange found", "REJECTED", 
-             std::chrono::system_clock::now()
-         };
-     }
-     
-     // Create a copy of the order with the exchange ID
-     Order exchange_order = order;
-     exchange_order.setExchangeId(exchange_id);
-     
-     // Register the order with the lifecycle tracker
-     order_lifecycle_tracker_->trackOrder(exchange_order);
-     
-     // Get the exchange API client
-     auto api_client = api_client_manager_->getClient(exchange_id);
-     if (!api_client) {
-         order_lifecycle_tracker_->updateOrderState(
-             exchange_order.getClientOrderId(), 
-             OrderState::REJECTED, 
-             "Exchange API client not available"
-         );
-         
-         return ExecutionResponse{
-             exchange_order.getClientOrderId(), "", false, 
-             "Exchange API client not available", "REJECTED", 
-             std::chrono::system_clock::now()
-         };
-     }
-     
-     // Submit the order to the exchange
-     auto result = api_client->placeOrder(exchange_order);
-     
-     // Update order state based on exchange response
-     if (result.success) {
-         // Update with exchange order ID
-         order_lifecycle_tracker_->updateOrderWithExchangeId(
-             exchange_order.getClientOrderId(),
-             result.exchange_order_id
-         );
-         
-         // Update order state to OPEN
-         order_lifecycle_tracker_->updateOrderState(
-             exchange_order.getClientOrderId(),
-             OrderState::OPEN
-         );
-     } else {
-         // Update order state to REJECTED
-         order_lifecycle_tracker_->updateOrderState(
-             exchange_order.getClientOrderId(),
-             OrderState::REJECTED,
-             result.error_message
-         );
-     }
-     
-     // Prepare response
-     ExecutionResponse response;
-     response.client_order_id = exchange_order.getClientOrderId();
-     response.exchange_order_id = result.exchange_order_id;
-     response.success = result.success;
-     response.error_message = result.error_message;
-     response.order_status = result.success ? "OPEN" : "REJECTED";
-     response.timestamp = std::chrono::system_clock::now();
-     
-     return response;
- }
- 
- CancelResponse ExecutionService::cancelOrder(const std::string& client_order_id) {
-     // Validate service state
-     if (!is_running_) {
-         return CancelResponse{
-             client_order_id, "", false, 
-             "Execution service not running", 
-             std::chrono::system_clock::now()
-         };
-     }
-     
-     // Get order details from lifecycle tracker
-     auto order_opt = order_lifecycle_tracker_->getOrder(client_order_id);
-     if (!order_opt) {
-         return CancelResponse{
-             client_order_id, "", false, 
-             "Order not found", 
-             std::chrono::system_clock::now()
-         };
-     }
-     
-     // Get the order
-     const auto& order = *order_opt;
-     
-     // Check if order can be canceled
-     if (!order.canCancel()) {
-         return CancelResponse{
-             client_order_id, order.getExchangeOrderId(), false, 
-             "Order cannot be canceled in current state: " + order.toString(), 
-             std::chrono::system_clock::now()
-         };
-     }
-     
-     // Get exchange API client
-     auto api_client = api_client_manager_->getClient(order.getExchangeId());
-     if (!api_client) {
-         return CancelResponse{
-             client_order_id, order.getExchangeOrderId(), false, 
-             "Exchange API client not available", 
-             std::chrono::system_clock::now()
-         };
-     }
-     
-     // Update order state to PENDING_CANCEL
-     order_lifecycle_tracker_->updateOrderState(
-         client_order_id,
-         OrderState::PENDING_CANCEL
-     );
-     
-     // Send cancel request to exchange
-     auto result = api_client->cancelOrder(order);
-     
-     // Update order state based on exchange response
-     if (result.success) {
-         order_lifecycle_tracker_->updateOrderState(
-             client_order_id,
-             OrderState::CANCELED
-         );
-     } else {
-         // Revert to previous state if cancel failed
-         order_lifecycle_tracker_->revertToPreviousState(client_order_id);
-     }
-     
-     // Prepare response
-     CancelResponse response;
-     response.client_order_id = client_order_id;
-     response.exchange_order_id = order.getExchangeOrderId();
-     response.success = result.success;
-     response.error_message = result.error_message;
-     response.timestamp = std::chrono::system_clock::now();
-     
-     return response;
- }
+ ExecutionResponse ExecutionService::placeOrder(const models::Order& order) {
+    // Validate service state
+    if (!is_running_) {
+        return ExecutionResponse{
+            "", "", false, "Execution service not running", 
+            "REJECTED", std::chrono::system_clock::now()
+        };
+    }
+    
+    // Validate order
+    if (!validateOrder(order)) {
+        return ExecutionResponse{
+            order.getClientOrderId(), "", false, 
+            "Invalid order parameters", "REJECTED", 
+            std::chrono::system_clock::now()
+        };
+    }
+    
+    // Select exchange
+    // std::string exchange_id = smart_order_router_->selectExchange(order.getTradingPair(), order.getType());
+    //  exchange_id = smart_order_router_->selectExchange(order);    
+    std::string exchange_id = smart_order_router_->routeOrder(order).exchange_id;
+    // Check if valid exchange was found
+    if (exchange_id.empty()) {
+        return ExecutionResponse{
+            order.getClientOrderId(), "", false, 
+            "No suitable exchange found", "REJECTED", 
+            std::chrono::system_clock::now()
+        };
+    }
+    
+    // Create a copy of the order with the exchange ID
+    // Use a shared_ptr to avoid copy constructor issues
+    auto exchange_order = std::make_shared<models::Order>();
+    *exchange_order = order;  // Use assignment operator instead of copy constructor
+    exchange_order->setExchangeId(exchange_id);
+    
+    // Register the order with the lifecycle tracker
+    order_lifecycle_tracker_->trackOrder(*exchange_order);
+    
+    // Get the exchange API client
+    auto api_client = api_client_manager_->getClient(exchange_id);
+    if (!api_client) {
+        order_lifecycle_tracker_->updateOrderState(
+            exchange_order->getClientOrderId(), 
+            models::OrderState::REJECTED, 
+            "Exchange API client not available"
+        );
+        
+        return ExecutionResponse{
+            exchange_order->getClientOrderId(), "", false, 
+            "Exchange API client not available", "REJECTED", 
+            std::chrono::system_clock::now()
+        };
+    }
+    
+    // Submit the order to the exchange
+    auto future_result = api_client->placeOrder(*exchange_order);
+    
+    // Wait for the result
+    models::ExecutionReport result;
+    try {
+        result = future_result.get();  // Wait for the async operation to complete
+        
+        // Update order state based on exchange response
+        if (result.status() != models::OrderState::REJECTED) {
+            // Update with exchange order ID
+            order_lifecycle_tracker_->updateOrderWithExchangeId(
+                exchange_order->getClientOrderId(),
+                result.exchangeOrderId()
+            );
+            
+            // Update order state to match the execution report
+            order_lifecycle_tracker_->updateOrderState(
+                exchange_order->getClientOrderId(),
+                result.status()
+            );
+        } else {
+            // Update order state to REJECTED
+            order_lifecycle_tracker_->updateOrderState(
+                exchange_order->getClientOrderId(),
+                models::OrderState::REJECTED,
+                result.rejectReason()
+            );
+        }
+        
+        // Prepare response
+        ExecutionResponse response;
+        response.client_order_id = exchange_order->getClientOrderId();
+        response.exchange_order_id = result.exchangeOrderId();
+        response.success = (result.status() != models::OrderState::REJECTED);
+        response.error_message = result.rejectReason();
+        response.order_status = orderStateToString(result.status());
+        response.timestamp = std::chrono::system_clock::now();
+        
+        return response;
+    } catch (const std::exception& e) {
+        // Handle exception from the async operation
+        order_lifecycle_tracker_->updateOrderState(
+            exchange_order->getClientOrderId(),
+            models::OrderState::REJECTED,
+            std::string("Exception during order placement: ") + e.what()
+        );
+        
+        return ExecutionResponse{
+            exchange_order->getClientOrderId(), "", false, 
+            std::string("Exception during order placement: ") + e.what(), 
+            "REJECTED", std::chrono::system_clock::now()
+        };
+    }
+}
+
+CancelResponse ExecutionService::cancelOrder(const std::string& client_order_id) {
+    // Validate service state
+    if (!is_running_) {
+        return CancelResponse{
+            client_order_id, "", false, 
+            "Execution service not running", 
+            std::chrono::system_clock::now()
+        };
+    }
+    
+    // Get order details from lifecycle tracker
+    auto order_opt = order_lifecycle_tracker_->getOrderByClientId(client_order_id);
+    if (!order_opt) {
+        return CancelResponse{
+            client_order_id, "", false, 
+            "Order not found", 
+            std::chrono::system_clock::now()
+        };
+    }
+    
+    // Get the order - create a copy to avoid modifying the original
+    auto order = std::make_shared<models::Order>(*order_opt);
+    
+    // Check if order can be canceled
+    if (!order->canCancel()) {
+        return CancelResponse{
+            client_order_id, order->getExchangeOrderId(), false, 
+            "Order cannot be canceled in current state: " + order->toString(), 
+            std::chrono::system_clock::now()
+        };
+    }
+    
+    // Get exchange API client
+    auto api_client = api_client_manager_->getClient(order->getExchangeId());
+    if (!api_client) {
+        return CancelResponse{
+            client_order_id, order->getExchangeOrderId(), false, 
+            "Exchange API client not available", 
+            std::chrono::system_clock::now()
+        };
+    }
+    
+    // Update order state to PENDING_CANCEL
+    order_lifecycle_tracker_->updateOrderState(
+        client_order_id,
+        models::OrderState::PENDING_CANCEL
+    );
+    
+    // Send cancel request to exchange
+    auto future_result = api_client->cancelOrder(order->getExchangeOrderId(), order->getTradingPair());
+    
+    try {
+        // Wait for the result
+        models::ExecutionReport result = future_result.get();
+        
+        // Update order state based on exchange response
+        if (result.status() == models::OrderState::CANCELED) {
+            order_lifecycle_tracker_->updateOrderState(
+                client_order_id,
+                models::OrderState::CANCELED
+            );
+            
+            // Prepare success response
+            CancelResponse response;
+            response.client_order_id = client_order_id;
+            response.exchange_order_id = order->getExchangeOrderId();
+            response.success = true;
+            response.error_message = "";
+            response.timestamp = std::chrono::system_clock::now();
+            
+            return response;
+        } else {
+            // Revert to previous state if cancel failed
+            order_lifecycle_tracker_->revertToPreviousState(client_order_id);
+            
+            // Prepare failure response
+            CancelResponse response;
+            response.client_order_id = client_order_id;
+            response.exchange_order_id = order->getExchangeOrderId();
+            response.success = false;
+            response.error_message = "Cancel request rejected by exchange: " + result.rejectReason();
+            response.timestamp = std::chrono::system_clock::now();
+            
+            return response;
+        }
+    } catch (const std::exception& e) {
+        // Revert to previous state if an exception occurred
+        order_lifecycle_tracker_->revertToPreviousState(client_order_id);
+        
+        // Prepare error response
+        CancelResponse response;
+        response.client_order_id = client_order_id;
+        response.exchange_order_id = order->getExchangeOrderId();
+        response.success = false;
+        response.error_message = std::string("Exception during cancel request: ") + e.what();
+        response.timestamp = std::chrono::system_clock::now();
+        
+        return response;
+    }
+}
+
+// Helper function to convert OrderState to string
+std::string ExecutionService::orderStateToString(models::OrderState state) {
+    switch (state) {
+        case models::OrderState::CREATED: return "CREATED";
+        case models::OrderState::PENDING: return "PENDING";
+        case models::OrderState::OPEN: return "OPEN";
+        case models::OrderState::PARTIALLY_FILLED: return "PARTIALLY_FILLED";
+        case models::OrderState::FILLED: return "FILLED";
+        case models::OrderState::CANCELED: return "CANCELED";
+        case models::OrderState::REJECTED: return "REJECTED";
+        case models::OrderState::PENDING_CANCEL: return "PENDING_CANCEL";
+        case models::OrderState::EXPIRED: return "EXPIRED";
+        default: return "UNKNOWN";
+    }
+}
  
  CancelResponse ExecutionService::cancelOrderByExchangeId(
      const std::string& exchange_order_id, 
@@ -336,7 +400,7 @@
      if (client_order_id.empty()) {
          return CancelResponse{
              "", exchange_order_id, false, 
-             "Order not found", 
+             "models::Order not found", 
              std::chrono::system_clock::now()
          };
      }
@@ -385,15 +449,15 @@
      // Validate service state
      if (!is_running_) {
          return OrderStatusResponse{
-             Order{}, false, "Execution service not running"
+             models::Order{}, false, "Execution service not running"
          };
      }
      
      // Get order from lifecycle tracker
-     auto order_opt = order_lifecycle_tracker_->getOrder(client_order_id);
+     auto order_opt = order_lifecycle_tracker_->getOrderByOrderId(client_order_id);
      if (!order_opt) {
          return OrderStatusResponse{
-             Order{}, false, "Order not found"
+             models::Order{}, false, "Order not found"
          };
      }
      
@@ -404,22 +468,23 @@
          auto api_client = api_client_manager_->getClient(order.getExchangeId());
          if (api_client) {
              // Query exchange for latest status
-             api_client->getOrderStatus(order);
+             api_client->getOrderStatus(order.getClientOrderId(), order.getTradingPair());
              // Refresh our local copy after potential update
-             order_opt = order_lifecycle_tracker_->getOrder(client_order_id);
+             order_opt = order_lifecycle_tracker_->getOrderByOrderId(client_order_id);
          }
      }
      
      // Prepare response
      OrderStatusResponse response;
-     response.order = *order_opt;
+     response.order = models::Order(*order_opt);  // Create a new Order by copy construction
      response.found = true;
      response.error_message = "";
      
      return response;
  }
- 
- std::vector<Order> ExecutionService::getActiveOrders() {
+ //order_lifecycle_tracker_
+
+ std::vector<models::Order> ExecutionService::getActiveOrders() {
      if (!is_running_) {
          return {};
      }
@@ -427,7 +492,7 @@
      return order_lifecycle_tracker_->getActiveOrders();
  }
  
- std::vector<Order> ExecutionService::getFilledOrders(
+ std::vector<models::Order> ExecutionService::getFilledOrders(
      const std::chrono::system_clock::time_point& start_time,
      const std::chrono::system_clock::time_point& end_time) {
      
@@ -464,9 +529,10 @@
  
  // Private helper methods
  
- Order ExecutionService::createOrderFromSignal(const TradingSignal& signal) {
+ models::Order ExecutionService::createOrderFromSignal(const TradingSignal& signal) {
      // Use order generator to create an order based on the signal
-     OrderGeneratorParams params;
+     OrderGenerationParams params;
+     
      params.trading_pair = signal.trading_pair;
      params.signal_strength = signal.strength;
      params.target_size = signal.target_size;
@@ -489,7 +555,7 @@
      return order;
  }
  
- bool ExecutionService::validateOrder(const Order& order) {
+ bool ExecutionService::validateOrder(const models::Order& order) {
      // Basic validation checks
      if (order.getTradingPair().empty()) {
          return false;
@@ -500,7 +566,7 @@
      }
      
      // Price validation for limit orders
-     if (order.getType() == OrderType::LIMIT && order.getPrice() <= 0.0) {
+     if (order.getType() == models::OrderType::LIMIT && order.getPrice() <= 0.0) {
          return false;
      }
      
@@ -509,14 +575,20 @@
      return true;
  }
  
- ExecutionResponse ExecutionService::executeOrderWithAlgorithm(const Order& order) {
+ ExecutionResponse ExecutionService::executeOrderWithAlgorithm(const models::Order& order) {
      // Determine if we need a specialized execution algorithm
-     if (order.getType() == OrderType::MARKET || order.getType() == OrderType::LIMIT) {
+     if (order.getType() == models::OrderType::MARKET || order.getType() == models::OrderType::LIMIT) {
          // Simple orders can be placed directly
          return placeOrder(order);
-     } else {
-         // Complex orders need a specialized algorithm
-         auto algorithm = execution_algorithm_factory_->createAlgorithm(order.getType());
+    } else {
+         // Create algorithm parameters
+         auto params = std::make_shared<AlgorithmParams>();
+         params->exchange_id = order.getExchangeId();
+         params->trading_pair = order.getTradingPair();
+         params->side = order.getSide();
+         params->order_type = order.getType();
+         
+         auto algorithm = execution_algorithm_factory_->createAlgorithm(params);
          if (!algorithm) {
              return ExecutionResponse{
                  order.getClientOrderId(), "", false, 

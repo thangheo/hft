@@ -14,13 +14,19 @@ namespace execution {
 struct OrderGenerationParams {
     std::string trading_pair;
     models::OrderSide side;
-    OrderType type = OrderType::MARKET;
+    models::OrderType type = models::OrderType::MARKET;
     double quantity = 0.0;
     double price = 0.0;
     models::TimeInForce time_in_force = models::TimeInForce::GTC;
     std::string strategy_id;
     std::string signal_id;
     std::string client_order_id;
+    // signal_strength 
+    double signal_strength = 0.0;
+    double target_size = 0.0;
+    std::chrono::milliseconds signal_ttl = std::chrono::milliseconds(0);
+    std::string exchange_id;
+
 };
 
 /**
