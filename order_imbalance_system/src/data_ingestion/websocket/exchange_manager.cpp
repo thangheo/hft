@@ -1,6 +1,5 @@
 // src/data_ingestion/exchange_manager.cpp
 #include "data_ingestion/exchange_manager.hpp"
-#include "data_ingestion/websocket/exchanges/binance_websocket_client.hpp"
 #include <iostream>
 #include <sstream>
 #include <algorithm>
@@ -10,16 +9,17 @@
 namespace trading {
 namespace data_ingestion {
 
-ExchangeManager::ExchangeManager(NormalizedOrderBookCallback callback)
+ExchangeManager::ExchangeManager(NormalizedOrderBookCallback callback, 
+                               int min_connections,
+                               int max_connections)
     : normalizer_(std::make_unique<OrderBookNormalizer>(std::move(callback))),
+      min_connections_(min_connections),
+      max_connections_(max_connections),
+      is_connected_(false),
       running_(false) {
     
     // Create market data callback
     data_callback_ = std::bind(&ExchangeManager::onMarketData, this, std::placeholders::_1);
-    
-    // Start the connection monitor thread
-    running_ = true;
-    monitor_thread_ = std::thread(&ExchangeManager::monitorConnections, this);
     
     std::cout << "Exchange Manager initialized" << std::endl;
 }
@@ -31,241 +31,170 @@ ExchangeManager::~ExchangeManager() {
         monitor_thread_.join();
     }
     
-    // Disconnect from all exchanges
-    disconnectAll();
+    // Disconnect from Binance
+    disconnect();
     
     std::cout << "Exchange Manager shutdown complete" << std::endl;
 }
 
-bool ExchangeManager::registerExchange(const std::string& exchange_id, 
-                                     ConnectionPoolFactory factory,
-                                     int min_connections,
-                                     int max_connections) {
+bool ExchangeManager::initialize() {
     std::lock_guard<std::mutex> lock(mutex_);
     
-    // Check if the exchange already exists
-    if (exchanges_.find(exchange_id) != exchanges_.end()) {
-        std::cerr << "Exchange '" << exchange_id << "' already registered" << std::endl;
-        return false;
-    }
-    
     try {
-        // Create the connection pool using the factory
-        auto connection_pool = factory(data_callback_);
+        // Create the connection pool for Binance
+        connection_pool_ = std::make_unique<ConnectionPool>(
+            "binance",
+            min_connections_,
+            max_connections_,
+            data_callback_,
+            // Factory function to create a new Binance WebSocket client
+            [](MarketDataCallback callback) -> std::shared_ptr<WebSocketClient> {
+                return std::make_shared<BinanceWebSocketClient>(callback);
+            }
+        );
         
-        if (!connection_pool) {
-            std::cerr << "Failed to create connection pool for exchange '" << exchange_id << "'" << std::endl;
-            return false;
-        }
+        // Start the connection monitor thread
+        running_ = true;
+        monitor_thread_ = std::thread(&ExchangeManager::monitorConnections, this);
         
-        // Create and add the exchange info
-        ExchangeInfo info{
-            exchange_id,
-            std::move(connection_pool),
-            {},  // active_subscriptions
-            false // is_connected
-        };
-        
-        exchanges_[exchange_id] = std::move(info);
-        
-        std::cout << "Registered exchange '" << exchange_id << "'" << std::endl;
+        std::cout << "Binance connection pool initialized with " 
+                  << min_connections_ << " to " << max_connections_ << " connections" << std::endl;
         return true;
     }
     catch (const std::exception& e) {
-        std::cerr << "Error registering exchange '" << exchange_id << "': " << e.what() << std::endl;
+        std::cerr << "Error initializing Binance connection pool: " << e.what() << std::endl;
         return false;
     }
 }
 
-bool ExchangeManager::removeExchange(const std::string& exchange_id) {
+bool ExchangeManager::connect() {
     std::lock_guard<std::mutex> lock(mutex_);
     
-    // Check if the exchange exists
-    auto it = exchanges_.find(exchange_id);
-    if (it == exchanges_.end()) {
-        std::cerr << "Exchange '" << exchange_id << "' not found" << std::endl;
+    if (!connection_pool_) {
+        std::cerr << "Connection pool not initialized. Call initialize() first." << std::endl;
         return false;
     }
     
-    // Disconnect and shut down the connection pool
     try {
-        if (it->second.connection_pool) {
-            it->second.connection_pool->shutdown();
+        // Pre-connect all connections in the pool
+        bool success = connection_pool_->connectAll();
+        if (success) {
+            is_connected_ = true;
+            std::cout << "Connected to Binance" << std::endl;
+        } else {
+            std::cerr << "Failed to connect to Binance" << std::endl;
         }
-        
-        // Remove the exchange
-        exchanges_.erase(it);
-        
-        std::cout << "Removed exchange '" << exchange_id << "'" << std::endl;
-        return true;
+        return success;
     }
     catch (const std::exception& e) {
-        std::cerr << "Error removing exchange '" << exchange_id << "': " << e.what() << std::endl;
+        std::cerr << "Error connecting to Binance: " << e.what() << std::endl;
         return false;
     }
 }
 
-void ExchangeManager::connectAll() {
+void ExchangeManager::disconnect() {
     std::lock_guard<std::mutex> lock(mutex_);
     
-    for (auto& pair : exchanges_) {
-        auto& exchange_info = pair.second;
-        
+    if (connection_pool_) {
         try {
-            if (exchange_info.connection_pool) {
-                // The pool should already be initialized, so we just mark it as connected
-                exchange_info.is_connected = true;
-                std::cout << "Connected to exchange '" << exchange_info.exchange_id << "'" << std::endl;
-            }
+            connection_pool_->shutdown();
+            is_connected_ = false;
+            std::cout << "Disconnected from Binance" << std::endl;
         }
         catch (const std::exception& e) {
-            std::cerr << "Error connecting to exchange '" << exchange_info.exchange_id 
-                      << "': " << e.what() << std::endl;
+            std::cerr << "Error disconnecting from Binance: " << e.what() << std::endl;
         }
     }
 }
 
-void ExchangeManager::disconnectAll() {
+bool ExchangeManager::subscribe(const std::vector<std::string>& trading_pairs,
+                              const std::vector<DataType>& data_types,
+                              int32_t depth) {
     std::lock_guard<std::mutex> lock(mutex_);
     
-    for (auto& pair : exchanges_) {
-        auto& exchange_info = pair.second;
-        
-        try {
-            if (exchange_info.connection_pool) {
-                exchange_info.connection_pool->shutdown();
-                exchange_info.is_connected = false;
-                std::cout << "Disconnected from exchange '" << exchange_info.exchange_id << "'" << std::endl;
-            }
-        }
-        catch (const std::exception& e) {
-            std::cerr << "Error disconnecting from exchange '" << exchange_info.exchange_id 
-                      << "': " << e.what() << std::endl;
-        }
-    }
-}
-
-bool ExchangeManager::subscribe(const std::string& exchange_id, 
-                               const std::vector<std::string>& trading_pairs,
-                               const std::vector<DataType>& data_types,
-                               int32_t depth) {
-    std::lock_guard<std::mutex> lock(mutex_);
-    
-    // Find the exchange
-    auto it = exchanges_.find(exchange_id);
-    if (it == exchanges_.end()) {
-        std::cerr << "Exchange '" << exchange_id << "' not found" << std::endl;
+    if (!connection_pool_ || !is_connected_) {
+        std::cerr << "Not connected to Binance. Call connect() first." << std::endl;
         return false;
     }
-    
-    auto& exchange_info = it->second;
     
     try {
-        if (!exchange_info.connection_pool) {
-            std::cerr << "Connection pool for exchange '" << exchange_id << "' is not initialized" << std::endl;
-            return false;
-        }
-        
-        // Create stream names (exchange-specific)
-        std::vector<std::string> streams = createStreamNames(
-            exchange_id, trading_pairs, data_types, depth);
+        // Create Binance-specific stream names
+        std::vector<std::string> streams = createStreamNames(trading_pairs, data_types, depth);
         
         if (streams.empty()) {
-            std::cerr << "Failed to create stream names for exchange '" << exchange_id << "'" << std::endl;
+            std::cerr << "Failed to create stream names for subscription" << std::endl;
             return false;
         }
         
-        // Get a connection from the pool
-        auto connection = exchange_info.connection_pool->acquireConnection();
+        // Acquire a connection from the pool for subscription
+        auto connection = connection_pool_->acquireConnection();
         
         if (!connection) {
-            std::cerr << "Failed to acquire connection for exchange '" << exchange_id << "'" << std::endl;
+            std::cerr << "Failed to acquire connection for subscription" << std::endl;
             return false;
         }
         
-        bool success = false;
-        
-        // Subscribe to the streams (exchange-specific)
-        if (exchange_id == "binance") {
-            auto binance_client = std::dynamic_pointer_cast<BinanceWebSocketClient>(connection);
-            if (binance_client) {
-                success = binance_client->subscribe(streams);
-            }
+        // Cast to BinanceWebSocketClient and subscribe
+        auto binance_client = std::dynamic_pointer_cast<BinanceWebSocketClient>(connection);
+        if (!binance_client) {
+            std::cerr << "Failed to cast connection to BinanceWebSocketClient" << std::endl;
+            connection_pool_->releaseConnection(connection);
+            return false;
         }
-        // Add other exchanges here as needed
+        
+        bool success = binance_client->subscribe(streams);
         
         // Release the connection back to the pool
-        exchange_info.connection_pool->releaseConnection(connection);
+        connection_pool_->releaseConnection(connection);
         
         if (success) {
             // Store the subscription request
             SubscriptionRequest request;
-            
-
-            request.exchange_id = exchange_id;
+            request.exchange_id = "binance";
             request.trading_pairs = trading_pairs;
             request.data_types = data_types;
             request.depth = depth;
             
-            exchange_info.active_subscriptions.push_back(request);
+            active_subscriptions_.push_back(request);
             
-            std::cout << "Subscribed to " << trading_pairs.size() << " trading pairs on exchange '" 
-                      << exchange_id << "'" << std::endl;
+            std::cout << "Subscribed to " << trading_pairs.size() << " trading pairs on Binance" << std::endl;
         } else {
-            std::cerr << "Failed to subscribe on exchange '" << exchange_id << "'" << std::endl;
+            std::cerr << "Failed to subscribe on Binance" << std::endl;
         }
         
         return success;
     }
     catch (const std::exception& e) {
-        std::cerr << "Error subscribing on exchange '" << exchange_id << "': " << e.what() << std::endl;
+        std::cerr << "Error subscribing on Binance: " << e.what() << std::endl;
         return false;
     }
 }
 
-void ExchangeManager::subscribeAll(const std::vector<std::string>& trading_pairs,
-                                  const std::vector<DataType>& data_types,
-                                  int32_t depth) {
+bool ExchangeManager::isConnected() const {
     std::lock_guard<std::mutex> lock(mutex_);
-    
-    for (auto& pair : exchanges_) {
-        const std::string& exchange_id = pair.first;
-        
-        try {
-            // Use the existing subscribe method (will acquire its own lock)
-            mutex_.unlock();
-            bool success = subscribe(exchange_id, trading_pairs, data_types, depth);
-            mutex_.lock();
-            
-            if (!success) {
-                std::cerr << "Failed to subscribe to all trading pairs on exchange '" 
-                          << exchange_id << "'" << std::endl;
-            }
-        }
-        catch (const std::exception& e) {
-            std::cerr << "Error subscribing to all trading pairs on exchange '" 
-                      << exchange_id << "': " << e.what() << std::endl;
-        }
-    }
+    return is_connected_ && connection_pool_ && connection_pool_->isHealthy();
 }
 
-std::vector<std::string> ExchangeManager::getConnectedExchanges() const {
-    std::lock_guard<std::mutex> lock(mutex_);
-    
-    std::vector<std::string> result;
-    for (const auto& pair : exchanges_) {
-        if (pair.second.is_connected) {
-            result.push_back(pair.first);
-        }
-    }
-    
-    return result;
-}
-
-OrderBookUpdate ExchangeManager::getOrderBook(const std::string& exchange_id, 
-                                            const std::string& trading_pair,
+OrderBookUpdate ExchangeManager::getOrderBook(const std::string& trading_pair,
                                             int32_t depth) const {
-    return normalizer_->getOrderBook(exchange_id, trading_pair, depth);
+    return normalizer_->getOrderBook("binance", trading_pair, depth);
+}
+
+std::string ExchangeManager::getConnectionStats() const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    std::stringstream ss;
+    
+    if (connection_pool_) {
+        ss << "Binance connection pool status: " 
+           << connection_pool_->getActiveConnectionCount() << " active, "
+           << connection_pool_->getAvailableConnectionCount() << " available, "
+           << connection_pool_->getTotalConnectionCount() << " total";
+    } else {
+        ss << "Connection pool not initialized";
+    }
+    
+    return ss.str();
 }
 
 void ExchangeManager::onMarketData(const MarketDataUpdate& update) {
@@ -280,34 +209,38 @@ void ExchangeManager::monitorConnections() {
         {
             std::lock_guard<std::mutex> lock(mutex_);
             
-            for (auto& pair : exchanges_) {
-                auto& exchange_info = pair.second;
+            if (connection_pool_) {
+                // Check if the connection pool is healthy
+                bool is_healthy = connection_pool_->isHealthy();
                 
-                if (exchange_info.connection_pool) {
-                    // Check if the connection pool is healthy
-                    bool is_healthy = exchange_info.connection_pool->isHealthy();
+                if (is_healthy != is_connected_) {
+                    if (is_healthy) {
+                        std::cout << "Binance connection restored" << std::endl;
+                    } else {
+                        std::cerr << "Binance connection lost" << std::endl;
+                    }
                     
-                    if (is_healthy != exchange_info.is_connected) {
-                        if (is_healthy) {
-                            std::cout << "Exchange '" << exchange_info.exchange_id 
-                                      << "' connection restored" << std::endl;
-                        } else {
-                            std::cerr << "Exchange '" << exchange_info.exchange_id 
-                                      << "' connection lost" << std::endl;
+                    is_connected_ = is_healthy;
+                }
+                
+                // If connection was lost, attempt to restore subscriptions
+                if (is_connected_ && !active_subscriptions_.empty()) {
+                    for (const auto& subscription : active_subscriptions_) {
+                        // Check if we need to resubscribe
+                        if (connection_pool_->needsResubscription()) {
+                            std::cout << "Restoring subscriptions after reconnection" << std::endl;
+                            
+                            // Temporarily unlock to avoid deadlock
+                            mutex_.unlock();
+                            subscribe(subscription.trading_pairs, subscription.data_types, subscription.depth);
+                            mutex_.lock();
                         }
-                        
-                        exchange_info.is_connected = is_healthy;
                     }
-                    
-                    // Log connection pool statistics periodically
-                    if (running_ && is_healthy) {
-                        std::cout << "Exchange '" << exchange_info.exchange_id 
-                                  << "' pool status: " 
-                                  << exchange_info.connection_pool->getActiveConnectionCount() << " active, "
-                                  << exchange_info.connection_pool->getAvailableConnectionCount() << " available, "
-                                  << exchange_info.connection_pool->getTotalConnectionCount() << " total"
-                                  << std::endl;
-                    }
+                }
+                
+                // Log connection pool statistics periodically
+                if (running_ && is_connected_) {
+                    std::cout << getConnectionStats() << std::endl;
                 }
             }
         }
@@ -319,48 +252,45 @@ void ExchangeManager::monitorConnections() {
     std::cout << "Connection monitor thread stopped" << std::endl;
 }
 
-std::vector<std::string> ExchangeManager::createStreamNames(const std::string& exchange_id,
-                                                         const std::vector<std::string>& trading_pairs,
-                                                         const std::vector<DataType>& data_types,
-                                                         int32_t depth) {
+std::vector<std::string> ExchangeManager::createStreamNames(
+    const std::vector<std::string>& trading_pairs,
+    const std::vector<DataType>& data_types,
+    int32_t depth) {
+    
     std::vector<std::string> streams;
     
-    // Binance-specific stream name formatting
-    if (exchange_id == "binance") {
-        for (const auto& pair : trading_pairs) {
-            // Convert trading pair to lowercase for Binance
-            std::string formatted_pair = pair;
-            std::transform(formatted_pair.begin(), formatted_pair.end(), 
-                          formatted_pair.begin(), ::tolower);
-            
-            // Remove separator if present (e.g., "BTC/USDT" -> "btcusdt")
-            formatted_pair.erase(std::remove(formatted_pair.begin(), formatted_pair.end(), '/'), 
-                               formatted_pair.end());
-            
-            for (const auto& type : data_types) {
-                if (type == DataType::ORDER_BOOK) {
-                    // Determine depth update stream based on requested depth
-                    if (depth <= 10) {
-                        streams.push_back(formatted_pair + "@depth10@100ms");
-                    } else if (depth <= 20) {
-                        streams.push_back(formatted_pair + "@depth20@100ms");
-                    } else {
-                        streams.push_back(formatted_pair + "@depth@100ms");
-                    }
-                    
-                    // Also subscribe to book ticker for best bid/ask updates
-                    streams.push_back(formatted_pair + "@bookTicker");
+    for (const auto& pair : trading_pairs) {
+        // Convert trading pair to lowercase for Binance
+        std::string formatted_pair = pair;
+        std::transform(formatted_pair.begin(), formatted_pair.end(), 
+                      formatted_pair.begin(), ::tolower);
+        
+        // Remove separator if present (e.g., "BTC/USDT" -> "btcusdt")
+        formatted_pair.erase(std::remove(formatted_pair.begin(), formatted_pair.end(), '/'), 
+                           formatted_pair.end());
+        
+        for (const auto& type : data_types) {
+            if (type == DataType::ORDER_BOOK) {
+                // Determine depth update stream based on requested depth
+                if (depth <= 10) {
+                    streams.push_back(formatted_pair + "@depth10@100ms");
+                } else if (depth <= 20) {
+                    streams.push_back(formatted_pair + "@depth20@100ms");
+                } else {
+                    streams.push_back(formatted_pair + "@depth@100ms");
                 }
-                else if (type == DataType::TRADES) {
-                    streams.push_back(formatted_pair + "@trade");
-                }
-                else if (type == DataType::TICKER) {
-                    streams.push_back(formatted_pair + "@ticker");
-                }
+                
+                // Also subscribe to book ticker for best bid/ask updates
+                streams.push_back(formatted_pair + "@bookTicker");
+            }
+            else if (type == DataType::TRADES) {
+                streams.push_back(formatted_pair + "@trade");
+            }
+            else if (type == DataType::TICKER) {
+                streams.push_back(formatted_pair + "@ticker");
             }
         }
     }
-    // Add other exchanges here as needed
     
     return streams;
 }

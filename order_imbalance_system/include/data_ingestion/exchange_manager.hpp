@@ -1,12 +1,10 @@
 // include/data_ingestion/exchange_manager.hpp
 #pragma once
 
-#include "data_ingestion/websocket/exchanges/exchange_connector.hpp"
 #include "data_ingestion/websocket/exchanges/binance_websocket_client.hpp"
 #include "data_ingestion/orderbook/order_book_types.hpp"
 #include "data_ingestion/normalization/order_book_normalizer.hpp"
 #include "data_ingestion/websocket/connection_pool.hpp"
-#include <map>
 #include <string>
 #include <memory>
 #include <vector>
@@ -21,9 +19,9 @@ namespace data_ingestion {
 // Forward declarations
 class ConnectionPool;
 class OrderBookNormalizer;
+class BinanceWebSocketClient;
 
 // Type definitions
-using ConnectionPoolFactory = std::function<std::unique_ptr<ConnectionPool>(MarketDataCallback)>;
 using MarketDataCallback = std::function<void(const MarketDataUpdate&)>;
 using NormalizedOrderBookCallback = std::function<void(const OrderBookUpdate&)>;
 
@@ -31,123 +29,90 @@ using NormalizedOrderBookCallback = std::function<void(const OrderBookUpdate&)>;
  * @class ExchangeManager
  * @brief Manages connections to cryptocurrency exchanges and handles market data.
  * 
- * The ExchangeManager is responsible for:
- * - Managing connections to multiple exchanges
- * - Subscribing to market data streams
- * - Normalizing order book data across exchanges
- * - Monitoring connection health
+ * This implementation is optimized for Binance as the primary exchange,
+ * with a connection pool for managing multiple WebSocket connections.
  */
 class ExchangeManager {
 public:
     /**
      * @brief Constructs an ExchangeManager with a callback for normalized order book updates
      * @param callback Function to be called when normalized order book updates are available
+     * @param min_connections Minimum number of connections to maintain
+     * @param max_connections Maximum number of connections allowed
      */
-    ExchangeManager(NormalizedOrderBookCallback callback);
+    ExchangeManager(NormalizedOrderBookCallback callback, 
+                   int min_connections = 2,
+                   int max_connections = 10);
     
     /**
      * @brief Destructor that ensures proper cleanup of connections
      */
     ~ExchangeManager();
-     // AddExchange: Adds a new exchange connector
-    bool addExchange(const std::string& exchange_id, 
-    std::unique_ptr<ExchangeConnector> connector);
-        
- 
-    /**
-     * @brief Registers a new exchange with the manager
-     * @param exchange_id Unique identifier for the exchange
-     * @param factory Factory function to create connection pools
-     * @param min_connections Minimum number of connections to maintain
-     * @param max_connections Maximum number of connections allowed
-     * @return true if registration successful, false otherwise
-     */
-    bool registerExchange(const std::string& exchange_id, 
-                        ConnectionPoolFactory factory,
-                        int min_connections = 1,
-                        int max_connections = 10);
-   
-    // std::lock_guard<std::mutex> lock(mutex_);
-    /**
-     * @brief Removes an exchange from the manager
-     * @param exchange_id Identifier of the exchange to remove
-     * @return true if removal successful, false otherwise
-     */
-    bool removeExchange(const std::string& exchange_id);
     
     /**
-     * @brief Connects to all registered exchanges
+     * @brief Initializes connection with Binance
+     * @return true if initialization successful, false otherwise
      */
-    void connectAll();
+    bool initialize();
     
     /**
-     * @brief Disconnects from all exchanges
+     * @brief Connects to Binance
+     * @return true if connection successful, false otherwise
      */
-    void disconnectAll();
+    bool connect();
     
     /**
-     * @brief Subscribes to market data for specific trading pairs on a single exchange
-     * @param exchange_id Identifier of the exchange
+     * @brief Disconnects from Binance
+     */
+    void disconnect();
+    
+    /**
+     * @brief Subscribes to market data for specific trading pairs
      * @param trading_pairs List of trading pairs to subscribe to
      * @param data_types Types of data to subscribe to (ORDER_BOOK, TRADES, TICKER)
      * @param depth Depth of order book to request
      * @return true if subscription successful, false otherwise
      */
-    // bool subscribe(const std::string& exchange_id, 
-    //               const std::vector<std::string>& trading_pairs,
-    //               const std::vector<DataType>& data_types,
-    //               int32_t depth = 10);
-     // Subscribe: Subscribes to data from a specific exchange
-     bool subscribe(const std::string& exchange_id, 
-        const std::vector<std::string>& trading_pairs, 
-        const std::vector<DataType>& data_types, 
-        int32_t depth);
-    /**
-     * @brief Subscribes to the same market data across all exchanges
-     * @param trading_pairs List of trading pairs to subscribe to
-     * @param data_types Types of data to subscribe to
-     * @param depth Depth of order book to request
-     */
-    void subscribeAll(const std::vector<std::string>& trading_pairs,
-                     const std::vector<DataType>& data_types,
-                     int32_t depth = 10);
+    bool subscribe(const std::vector<std::string>& trading_pairs,
+                  const std::vector<DataType>& data_types,
+                  int32_t depth = 10);
     
     /**
-     * @brief Gets a list of currently connected exchanges
-     * @return Vector of exchange identifiers
+     * @brief Checks if connected to Binance
+     * @return true if connected, false otherwise
      */
-    std::vector<std::string> getConnectedExchanges() const;
+    bool isConnected() const;
     
     /**
-     * @brief Gets the current order book for a specific exchange and trading pair
-     * @param exchange_id Identifier of the exchange
+     * @brief Gets the current order book for a specific trading pair
      * @param trading_pair The trading pair to get the order book for
      * @param depth Depth of order book to return (0 = full depth)
      * @return The current order book
      */
-    OrderBookUpdate getOrderBook(const std::string& exchange_id, 
-                               const std::string& trading_pair,
+    OrderBookUpdate getOrderBook(const std::string& trading_pair,
                                int32_t depth = 0) const;
     
-private:
-   
-     // Map of exchange IDs to their connectors
-     std::map<std::string, std::unique_ptr<ExchangeConnector>> connectors_;
     /**
-     * @brief Structure to store exchange connection information
+     * @brief Gets connection pool statistics
+     * @return String containing connection statistics
      */
-    struct ExchangeInfo {
-        std::string exchange_id;
-        std::unique_ptr<ConnectionPool> connection_pool;
-        std::vector<SubscriptionRequest> active_subscriptions;
-        bool is_connected;
-    };
-    
-    // Map of exchange information keyed by exchange ID
-    std::map<std::string, ExchangeInfo> exchanges_;
-    
+    std::string getConnectionStats() const;
+#ifdef TESTING
+    /**
+     * @brief For testing only - allows injection of a mock connection pool
+     * @param pool A unique pointer to a mock connection pool
+     */
+    void setConnectionPoolForTesting(std::unique_ptr<ConnectionPool> pool) {
+        connection_pool_ = std::move(pool);
+    }
+#endif
+
+private:
     // Order book normalizer
     std::unique_ptr<OrderBookNormalizer> normalizer_;
+    
+    // Connection pool for Binance
+    std::unique_ptr<ConnectionPool> connection_pool_;
     
     // Callback for market data updates
     MarketDataCallback data_callback_;
@@ -157,29 +122,36 @@ private:
     std::thread monitor_thread_;
     mutable std::mutex mutex_;
     
+    // Connection parameters
+    int min_connections_;
+    int max_connections_;
+    bool is_connected_;
+    
+    // Active subscriptions
+    std::vector<SubscriptionRequest> active_subscriptions_;
+    
     /**
-     * @brief Callback for receiving market data from exchanges
+     * @brief Callback for receiving market data from Binance
      * @param update The market data update
      */
     void onMarketData(const MarketDataUpdate& update);
     
     /**
-     * @brief Thread function to monitor exchange connections
+     * @brief Thread function to monitor connections
      */
     void monitorConnections();
     
     /**
-     * @brief Creates exchange-specific stream names for subscription
-     * @param exchange_id Identifier of the exchange
+     * @brief Creates Binance-specific stream names for subscription
      * @param trading_pairs List of trading pairs
      * @param data_types Types of data to subscribe to
      * @param depth Depth of order book
      * @return List of formatted stream names
      */
-    std::vector<std::string> createStreamNames(const std::string& exchange_id,
-                                            const std::vector<std::string>& trading_pairs,
-                                            const std::vector<DataType>& data_types,
-                                            int32_t depth);
+    std::vector<std::string> createStreamNames(
+        const std::vector<std::string>& trading_pairs,
+        const std::vector<DataType>& data_types,
+        int32_t depth);
 };
 
 } // namespace data_ingestion
