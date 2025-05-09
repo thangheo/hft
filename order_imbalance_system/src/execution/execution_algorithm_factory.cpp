@@ -1,5 +1,12 @@
 // execution_algorithm_factory.cpp
-#include "../include/execution/execution_algorithm_factory.hpp"
+#include "execution/execution_algorithm_factory.hpp"
+#include "execution/algorithms/twap_algorithm.hpp"
+#include "execution/algorithms/twap_config.hpp"
+#include "execution/algorithms/vwap_algorithm.hpp"
+#include "execution/algorithms/iceberg_algorithm.hpp"
+#include "execution/algorithms/pov_algorithm.hpp"
+#include "execution/algorithms/pov_config.hpp"
+
 #include <chrono>
 #include <iostream>
 #include <uuid/uuid.h>
@@ -79,6 +86,10 @@ public:
     void setCompletionCallback(
         const std::function<void(bool, const std::string&)>& callback) {
         algo_.setCompletionCallback(callback);
+    }
+    void setVolumeCallback(
+        const std::function<double(const std::string&, std::chrono::minutes)>& callback) {
+        algo_.setVolumeCallback(callback);
     }
     
 private:
@@ -221,7 +232,10 @@ public:
         const std::function<void(bool, const std::string&)>& callback) {
         algo_.setCompletionCallback(callback);
     }
-    
+    void setVolumeCallback(
+        const std::function<double(const std::string&, std::chrono::minutes)>& callback) {
+        algo_.setVolumeCallback(callback);
+    }
 private:
     std::string id_;
     algorithms::IcebergAlgorithm algo_;
@@ -230,141 +244,6 @@ private:
 ExecutionAlgorithmFactory::ExecutionAlgorithmFactory() = default;
 
 
-// std::shared_ptr<ExecutionAlgorithm> ExecutionAlgorithmFactory::createAlgorithm(
-//     const std::shared_ptr<DefaultAlgorithmParams>& params) {
-    
-//     std::lock_guard<std::mutex> lock(mutex_);
-    
-//     if (!params) {
-//         std::cerr << "Algorithm parameters cannot be null" << std::endl;
-//         return nullptr;
-//     }
-    
-//     // Generate a unique ID
-//     std::string algorithm_id = generateUniqueId();
-    
-//     // Create algorithm based on type
-//     std::shared_ptr<ExecutionAlgorithm> algorithm;
-    
-//     switch (params->getType()) {
-//         case AlgorithmType::TWAP: {
-//             auto twap_params = std::dynamic_pointer_cast<TwapParams>(params);
-//             if (!twap_params) {
-//                 std::cerr << "Invalid TWAP parameters" << std::endl;
-//                 return nullptr;
-//             }
-            
-//             auto wrapper = std::make_shared<TwapAlgorithmWrapper>(
-//                 algorithm_id, twap_params->trading_pair, twap_params->side, twap_params->config);
-            
-//             if (order_callback_) {
-//                 wrapper->setOrderCallback(order_callback_);
-//             }
-            
-//             if (completion_callback_) {
-//                 wrapper->setCompletionCallback(
-//                     [this, algorithm_id](bool success, const std::string& message) {
-//                         completion_callback_(algorithm_id, success, message);
-//                     });
-//             }
-            
-//             algorithm = wrapper;
-//             break;
-//         }
-        
-//         case AlgorithmType::VWAP: {
-//             auto vwap_params = std::dynamic_pointer_cast<VwapParams>(params);
-//             if (!vwap_params) {
-//                 std::cerr << "Invalid VWAP parameters" << std::endl;
-//                 return nullptr;
-//             }
-            
-//             auto wrapper = std::make_shared<VwapAlgorithmWrapper>(
-//                 algorithm_id, vwap_params->trading_pair, vwap_params->side, vwap_params->config);
-            
-//             if (order_callback_) {
-//                 wrapper->setOrderCallback(order_callback_);
-//             }
-            
-//             if (completion_callback_) {
-//                 wrapper->setCompletionCallback(
-//                     [this, algorithm_id](bool success, const std::string& message) {
-//                         completion_callback_(algorithm_id, success, message);
-//                     });
-//             }
-            
-//             if (volume_callback_) {
-//                 wrapper->setVolumeCallback(volume_callback_);
-//             }
-            
-//             algorithm = wrapper;
-//             break;
-//         }
-        
-//         case AlgorithmType::ICEBERG: {
-//             auto iceberg_params = std::dynamic_pointer_cast<IcebergParams>(params);
-//             if (!iceberg_params) {
-//                 std::cerr << "Invalid Iceberg parameters" << std::endl;
-//                 return nullptr;
-//             }
-            
-//             auto wrapper = std::make_shared<IcebergAlgorithmWrapper>(
-//                 algorithm_id, iceberg_params->trading_pair, iceberg_params->side, iceberg_params->config);
-            
-//             if (order_callback_) {
-//                 wrapper->setOrderCallback(order_callback_);
-//             }
-            
-//             if (completion_callback_) {
-//                 wrapper->setCompletionCallback(
-//                     [this, algorithm_id](bool success, const std::string& message) {
-//                         completion_callback_(algorithm_id, success, message);
-//                     });
-//             }
-            
-//             algorithm = wrapper;
-//             break;
-//         }
-        
-//         case AlgorithmType::POV: {
-//             auto pov_params = std::dynamic_pointer_cast<PovParams>(params);
-//             if (!pov_params) {
-//                 std::cerr << "Invalid POV parameters" << std::endl;
-//                 return nullptr;
-//             }
-            
-//             auto wrapper = std::make_shared<PovAlgorithmWrapper>(
-//                 algorithm_id, pov_params->trading_pair, pov_params->side, pov_params->config);
-            
-//             if (order_callback_) {
-//                 wrapper->setOrderCallback(order_callback_);
-//             }
-            
-//             if (completion_callback_) {
-//                 wrapper->setCompletionCallback(
-//                     [this, algorithm_id](bool success, const std::string& message) {
-//                         completion_callback_(algorithm_id, success, message);
-//                     });
-//             }
-            
-//             if (volume_callback_) {
-//                 wrapper->setVolumeCallback(volume_callback_);
-//             }
-            
-//             algorithm = wrapper;
-//             break;
-//         }
-        
-//         default:
-//             std::cerr << "Unsupported algorithm type: " << static_cast<int>(params->getType()) << std::endl;
-//             return nullptr;
-//     }
-    
-//     // Store algorithm in the factory's map
-//     algorithms_[algorithm_id] = algorithm;
-    
-//     return algorithm;
-// }
 
 std::shared_ptr<ExecutionAlgorithm> ExecutionAlgorithmFactory::createAlgorithm(
     const std::shared_ptr<DefaultAlgorithmParams>& params) {
@@ -467,9 +346,80 @@ std::shared_ptr<ExecutionAlgorithm> ExecutionAlgorithmFactory::createAlgorithm(
             algorithm = wrapper;
             break;
         }
-        
+        case AlgorithmType::POV: {
+            // Create POV config from default params
+            algorithms::PovConfig pov_config;
+            pov_config.total_quantity = params->quantity;
+            pov_config.duration = std::chrono::seconds(static_cast<int>(params->duration_seconds));
+            pov_config.price_limit = params->price;
+            
+            // Default to 5% participation rate if not specified
+            double participation_rate = 0.05;
+            if (params->extra_params.find("participation_rate") != params->extra_params.end()) {
+                participation_rate = std::stod(params->extra_params.at("participation_rate"));
+            }
+            pov_config.participation_rate = participation_rate;
+            
+            // Set optional parameters if specified
+            if (params->extra_params.find("min_order_size") != params->extra_params.end()) {
+                pov_config.min_order_size = std::stod(params->extra_params.at("min_order_size"));
+            }
+            
+            if (params->extra_params.find("max_order_size") != params->extra_params.end()) {
+                pov_config.max_order_size = std::stod(params->extra_params.at("max_order_size"));
+            }
+            
+            if (params->extra_params.find("check_interval_seconds") != params->extra_params.end()) {
+                pov_config.check_interval = std::chrono::seconds(
+                    std::stoi(params->extra_params.at("check_interval_seconds")));
+            }
+            
+            if (params->extra_params.find("dynamic_rate") != params->extra_params.end()) {
+                pov_config.dynamic_rate = (params->extra_params.at("dynamic_rate") == "true" 
+                                         || params->extra_params.at("dynamic_rate") == "1");
+            }
+            
+            if (params->extra_params.find("volume_lookback_minutes") != params->extra_params.end()) {
+                pov_config.volume_lookback = std::chrono::minutes(
+                    std::stoi(params->extra_params.at("volume_lookback_minutes")));
+            }
+            
+            if (params->extra_params.find("urgency_factor") != params->extra_params.end()) {
+                pov_config.urgency_factor = std::stod(params->extra_params.at("urgency_factor"));
+            }
+            
+            if (params->extra_params.find("deviation_pct") != params->extra_params.end()) {
+                pov_config.deviation_pct = std::stod(params->extra_params.at("deviation_pct"));
+            }
+            
+            // Use exchange ID if available
+            if (!params->exchange_id.empty()) {
+                pov_config.exchange_id = params->exchange_id;
+            }
+            
+            auto wrapper = std::make_shared<PovAlgorithmWrapper>(
+                algorithm_id, params->trading_pair, params->side, pov_config);
+            
+            if (order_callback_) {
+                wrapper->setOrderCallback(order_callback_);
+            }
+            
+            if (completion_callback_) {
+                wrapper->setCompletionCallback(
+                    [this, algorithm_id](bool success, const std::string& message) {
+                        completion_callback_(algorithm_id, success, message);
+                    });
+            }
+            
+            if (volume_callback_) {
+                wrapper->setMarketVolumeCallback(volume_callback_);
+            }
+            
+            algorithm = wrapper;
+            break;
+        }
         default:
-            std::cerr << "Unsupported algorithm type: " << static_cast<int>(params->getType()) << std::endl;
+            std::cerr << "Unsupported algorithm type" << std::endl;
             return nullptr;
     }
     
@@ -478,7 +428,7 @@ std::shared_ptr<ExecutionAlgorithm> ExecutionAlgorithmFactory::createAlgorithm(
     
     return algorithm;
 }
-
+        
 std::shared_ptr<ExecutionAlgorithm> ExecutionAlgorithmFactory::getAlgorithm(
     const std::string& id) const {
     
@@ -513,6 +463,13 @@ void ExecutionAlgorithmFactory::registerOrderCallback(
             }
         } else if (pair.second->getType() == AlgorithmType::ICEBERG) {
             auto wrapper = std::dynamic_pointer_cast<IcebergAlgorithmWrapper>(pair.second);
+            if (wrapper) {
+                wrapper->setOrderCallback(callback);
+            }
+        }
+        // Add POV case
+        else if (pair.second->getType() == AlgorithmType::POV) {
+            auto wrapper = std::dynamic_pointer_cast<PovAlgorithmWrapper>(pair.second);
             if (wrapper) {
                 wrapper->setOrderCallback(callback);
             }
@@ -554,6 +511,17 @@ void ExecutionAlgorithmFactory::registerCompletionCallback(
                     });
             }
         }
+        //pov case
+        else if (pair.second->getType() == AlgorithmType::POV) {
+            auto wrapper = std::dynamic_pointer_cast<PovAlgorithmWrapper>(pair.second);
+            if (wrapper) {
+                wrapper->setCompletionCallback(
+                    [this, id = pair.first](bool success, const std::string& message) {
+                        completion_callback_(id, success, message);
+                    });
+            }
+        }
+
     }
 }
 
@@ -564,7 +532,7 @@ void ExecutionAlgorithmFactory::registerVolumeCallback(
     
     volume_callback_ = callback;
     
-    // Update callback for existing VWAP algorithms
+    // Update callback for existing VWAP ,TWAP, ICEBERG, POV
     for (auto& pair : algorithms_) {
         if (pair.second->getType() == AlgorithmType::VWAP) {
             auto wrapper = std::dynamic_pointer_cast<VwapAlgorithmWrapper>(pair.second);
@@ -572,6 +540,24 @@ void ExecutionAlgorithmFactory::registerVolumeCallback(
                 wrapper->setVolumeCallback(callback);
             }
         }
+        else if (pair.second->getType() == AlgorithmType::TWAP) {
+            auto wrapper = std::dynamic_pointer_cast<TwapAlgorithmWrapper>(pair.second);
+            if (wrapper) {
+                wrapper->setVolumeCallback(callback);
+            }
+        } else if (pair.second->getType() == AlgorithmType::ICEBERG) {
+            auto wrapper = std::dynamic_pointer_cast<IcebergAlgorithmWrapper>(pair.second);
+            if (wrapper) {
+                wrapper->setVolumeCallback(callback);
+            }
+        }
+        else if (pair.second->getType() == AlgorithmType::POV) {
+            auto wrapper = std::dynamic_pointer_cast<PovAlgorithmWrapper>(pair.second);
+            if (wrapper) {
+                wrapper->setMarketVolumeCallback(callback);
+            }
+        }
+        
     }
 }
 

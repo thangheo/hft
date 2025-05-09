@@ -1,15 +1,17 @@
-// algorithms/twap_algorithm.cpp
-#include "../include/execution/algorithms/twap_algorithm.hpp"
+// twap_algorithm.cpp
+#include "execution/algorithms/twap_algorithm.hpp"
+#include "execution/algorithms/timer.hpp"
 #include <cmath>
 #include <iostream>
 #include <chrono>
-#include <thread>
 #include <random>
 #include <algorithm>
 
 namespace trading {
 namespace execution {
 namespace algorithms {
+
+    
 
 
 TwapAlgorithm::TwapAlgorithm() = default;

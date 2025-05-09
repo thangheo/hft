@@ -1,20 +1,7 @@
 #pragma once
 
-// #include "../models/order.hpp"
-// #include "execution/execution_service.hpp"
-// #include "execution/order_lifecycle_tracker.hpp"
-#include "timer.hpp"
 #include <string>
-#include <vector>
 #include <chrono>
-#include <memory>
-#include <functional>
-
-// Forward declaration to avoid circular dependency
-namespace trading {
-namespace execution {
-struct ExecutionResponse;
-}}
 
 namespace trading {
 namespace execution {
@@ -30,8 +17,8 @@ struct TwapConfig {
     double price_limit = 0.0;            // Optional price limit, 0 for market orders
     double deviation_pct = 0.0;          // Max allowed deviation from target price
     bool allow_partial = true;           // Whether to allow partial fills
-    
 };
-}
-}
-}
+
+} // namespace algorithms
+} // namespace execution
+} // namespace trading

@@ -56,7 +56,8 @@ public:
     // Register callbacks
     void setOrderCallback(const OrderCallback& callback);
     void setCompletionCallback(const CompletionCallback& callback);
-    
+    void setVolumeCallback(
+        const std::function<double(const std::string&, std::chrono::minutes)>& callback);
     // Handle order updates
     void handleOrderUpdate(const models::OrderPtr& order);
     
