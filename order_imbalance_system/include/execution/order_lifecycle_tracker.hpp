@@ -61,6 +61,16 @@ public:
      * @return true if successful, false if order not found
      */
     bool revertToPreviousState(const std::string& client_order_id, models::OrderState new_state);
+    // getHealthStatus
+    /**
+     * @brief Get the health status of the order lifecycle tracker
+     * 
+     * @return Health status as a string
+     */
+    std::string getHealthStatus() const {
+        std::lock_guard<std::mutex> lock(mutex_);
+        return "OrderLifecycleTracker: " + std::to_string(orders_by_client_id_.size()) + " orders tracked.";
+    }
     /**
      * @brief Update an order's state
      * 
@@ -72,11 +82,9 @@ public:
     bool updateOrderState(const std::string& client_order_id, 
                          models::OrderState new_state,
                          const std::string& exchange_order_id = "");
-    // bool updateOrderState(
-    //     const std::string& client_order_id,
-    //     models::OrderState new_state,
-    //     const std::string& exchange_order_id = "",
-    //     const std::string& rejection_reason = "") {
+    //updateOrderWithExchangeId method
+    void updateOrderWithExchangeId(models::Order& order, const std::string& exchange_order_id);
+
                         
     /**
      * @brief Record a fill for an order
@@ -86,6 +94,7 @@ public:
      * @return true if successful, false if order not found
      */
     bool recordFill(const std::string& client_order_id, const models::Fill& fill);
+    // getFilledOrders
     
     /**
      * @brief Get an order by client order ID
@@ -155,7 +164,61 @@ public:
      * @return Number of orders purged
      */
     int purgeOldOrders(int64_t age_threshold_ms);
-    
+    //protype for getFilledOrders
+    std::vector<std::shared_ptr<models::Order>> getFilledOrders(
+        const std::chrono::system_clock::time_point& start_time,
+        const std::chrono::system_clock::time_point& end_time) const;
+    // getActiveOrderCount
+    /**
+     * @brief Get the count of active orders
+     * 
+     * @return Number of active orders
+     */
+    int getActiveOrderCount() const {
+        std::lock_guard<std::mutex> lock(mutex_);
+        return orders_by_client_id_.size();
+    }
+    // getOrdersPlacedInLastHour
+    /**
+     * @brief Get the count of orders placed in the last hour
+     * 
+     * @return Number of orders placed in the last hour
+     */
+    int getOrdersPlacedInLastHour() const {
+        std::lock_guard<std::mutex> lock(mutex_);
+        int count = 0;
+        auto now = std::chrono::system_clock::now();
+        for (const auto& pair : orders_by_client_id_) {
+            if (pair.second->getCreatedTime() >= now - std::chrono::hours(1)) {
+                count++;
+            }
+        }
+        return count;
+    }
+    //getFillsInLastHour
+    /**
+     * @brief Get the count of fills in the last hour
+     * 
+     * @return Number of fills in the last hour
+     */
+    int getFillsInLastHour() const {
+        std::lock_guard<std::mutex> lock(mutex_);
+        int count = 0;
+        auto now = std::chrono::system_clock::now();
+        for (const auto& pair : orders_by_client_id_) {
+            for (const auto& fill : pair.second->getFills()) {
+                if (fill.timestamp >= now - std::chrono::hours(1)) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+    /**
+     * @brief Get the health status of the order lifecycle tracker
+     * 
+     * @return Health status as a JSON string
+     */
 private:
     // Maps for quick lookup
     std::unordered_map<std::string, std::shared_ptr<models::Order>> orders_by_client_id_;

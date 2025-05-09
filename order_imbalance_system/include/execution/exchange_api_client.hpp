@@ -16,7 +16,9 @@ enum class ExchangeRequestType {
     CancelOrder,
     GetOrderStatus,
     GetAccountBalance,
-    GetMarketData
+    GetMarketData,
+    GetHealthStatus,     // Added for health check
+    GetExchangeStatuses  // Added for exchange statuses
 };
 
 struct ExchangeCredentials {
@@ -49,7 +51,8 @@ public:
     // Exchange information
     virtual std::string getExchangeName() const = 0;
     virtual std::vector<std::string> getSupportedSymbols() const = 0;
-    
+    // getExchangeStatuse
+    virtual std::unordered_map<std::string, std::string> getExchangeStatuses() const = 0;
     // Rate limit information
     virtual int getRemainingRequests(ExchangeRequestType requestType) const = 0;
     virtual std::chrono::milliseconds getResetTimeForRequestType(ExchangeRequestType requestType) const = 0;

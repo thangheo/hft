@@ -33,7 +33,11 @@ public:
     int getRemainingRequests(ExchangeRequestType requestType) const override;
     std::chrono::milliseconds getResetTimeForRequestType(ExchangeRequestType requestType) const override;
     bool checkConnection() const override;
-
+    // Additional methods
+    // getHealthStatus
+    std::string getHealthStatus();
+    // getExchangeStatuses
+    std::unordered_map<std::string, std::string> getExchangeStatuses() ;
 private:
     struct BinanceImpl;
     std::unique_ptr<BinanceImpl> pImpl_;

@@ -109,6 +109,7 @@ public:
     OrderType getType() const;
     double getQuantity() const;
     double getPrice() const;
+    std::string getExtraParam(const std::string& key) const;
     std::optional<double> getStopPrice() const; // Added from second file
     TimeInForce getTimeInForce() const;
     OrderState getState() const;    

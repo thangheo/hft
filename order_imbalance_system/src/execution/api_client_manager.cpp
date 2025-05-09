@@ -2,6 +2,7 @@
 #include "execution/api_client_manager.hpp"
 #include "execution/exchanges/binance_api_client.hpp"
 #include "execution/exchanges/ftx_api_client.hpp"
+#include "nlohmann/json.hpp"
 #include <stdexcept>
 #include <iostream>
 
@@ -78,7 +79,45 @@ std::unordered_map<std::string, bool> ApiClientManager::checkConnections() const
     
     return statuses;
 }
-
+// getHealthStatus
+std::string ApiClientManager::getHealthStatus() const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    nlohmann::json health;
+    health["service"] = "api_client_manager";
+    health["clients"] = nlohmann::json::array();
+    
+    for (const auto& pair : clients_) {
+        const auto& exchangeId = pair.first;
+        const auto& client = pair.second;
+        nlohmann::json clientHealth;
+        clientHealth["exchange_id"] = exchangeId;
+        clientHealth["connected"] = client->isConnected();
+        health["clients"].push_back(clientHealth);
+    }
+    
+    return health.dump();
+}
+// getExchangeStatuses
+std::unordered_map<std::string, std::string> ApiClientManager::getExchangeStatuses() const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    std::unordered_map<std::string, std::string> statuses;
+    
+    for (const auto& pair : clients_) {
+        const auto& exchangeId = pair.first;
+        const auto& client = pair.second;
+        try {
+            auto status = client->getExchangeStatuses();
+            
+            statuses[exchangeId] = nlohmann::json(status).dump();
+        } catch (const std::exception& e) {
+            std::cerr << "Error getting exchange statuses for " << exchangeId 
+                      << ": " << e.what() << std::endl;
+            statuses[exchangeId] = "Error";
+        }
+    }
+    
+    return statuses;
+}
 void ApiClientManager::addClient(const std::string& exchangeId, 
                                 std::shared_ptr<ExchangeApiClient> client) {
     if (!client) {

@@ -96,7 +96,17 @@ public:
      * @return Vector of discrepancies
      */
     std::vector<FillDiscrepancy> checkForExtraFills();
-    
+    // getHealthStatus
+    /**
+     * @brief Get the health status of the fill reconciliation system
+     * 
+     * @return Health status as a string
+     */
+    std::string getHealthStatus() const {
+        std::lock_guard<std::mutex> lock(mutex_);
+        return "FillReconciliation: " + std::to_string(expected_fills_.size()) + " expected fills, " +
+               std::to_string(actual_fills_.size()) + " actual fills.";
+    }
     /**
      * @brief Register a callback for discrepancies
      * 

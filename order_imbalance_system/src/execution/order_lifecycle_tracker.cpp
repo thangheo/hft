@@ -80,71 +80,16 @@
     
     return true;
 }
+void OrderLifecycleTracker::updateOrderWithExchangeId(models::Order& order, const std::string& exchange_order_id) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Check if the order already has an exchange order ID
+    if (order.getExchangeOrderId().empty()) {
+        order.setExchangeOrderId(exchange_order_id);
+        exchange_to_client_id_map_[exchange_order_id] = order.getClientOrderId();
+    }
+}
 
-//  bool OrderLifecycleTracker::updateOrderState(const std::string& client_order_id, 
-//                                             models::OrderState new_state,
-//                                             const std::string& exchange_order_id) {
-//      std::lock_guard<std::mutex> lock(mutex_);
-     
-//      // Find the order
-//      auto it = orders_by_client_id_.find(client_order_id);
-//      if (it == orders_by_client_id_.end()) {
-//          return false;  // models::Order not found
-//      }
-     
-//      auto& order = it->second;
-     
-//      // Record the old state
-//      models::OrderState old_state = order->getState();
-     
-//      // Update exchange order ID if provided and not already set
-//      if (!exchange_order_id.empty() && order->getExchangeOrderId().empty()) {
-//          order->setExchangeOrderId(exchange_order_id);
-//          exchange_to_client_id_map_[exchange_order_id] = client_order_id;
-//      }
-     
-//      // Update state based on the new state
-//      bool state_updated = false;
-//      switch (new_state) {
-//          case models::OrderState::OPEN:
-//              state_updated = order->open();
-//              break;
-//          case models::OrderState::FILLED:
-//              // This should normally be done through recordFill, but we'll support it for completeness
-//              if (order->getFilledQuantity() >= order->getQuantity()) {
-//                  state_updated = true;  // Already filled
-//              }
-//              break;
-//          case models::OrderState::CANCELED:
-//              state_updated = order->cancel();
-//              break;
-//          case models::OrderState::REJECTED:
-//              state_updated = order->reject("Rejected by exchange");
-//              break;
-//          case models::OrderState::EXPIRED:
-//              state_updated = order->expire();
-//              break;
-//          case models::OrderState::PENDING:
-//          case models::OrderState::PENDING_CANCEL:
-//          case models::OrderState::PARTIALLY_FILLED:
-//              // These states are explicitly set
-//              if (old_state != new_state) {
-//                  order.get()->setExchangeOrderId(exchange_order_id);
-//                  state_updated = true;
-//              }
-//              break;
-//          default:
-//              state_updated = false;
-//              break;
-//      }
-     
-//      // Notify state change
-//      if (state_updated && old_state != new_state) {
-//          notifyStateChange(*order, old_state, new_state);
-//      }
-     
-//      return state_updated;
-//  }
 bool OrderLifecycleTracker::updateOrderState(
     const std::string& client_order_id,
     models::OrderState new_state,
@@ -368,7 +313,22 @@ std::shared_ptr<models::Order> OrderLifecycleTracker::getOrderByOrderId(const st
      
      return timed_out_orders;
  }
- 
+ std::vector<std::shared_ptr<models::Order>> OrderLifecycleTracker::getFilledOrders(
+    const std::chrono::system_clock::time_point& start_time,
+    const std::chrono::system_clock::time_point& end_time) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    std::vector<std::shared_ptr<models::Order>> filled_orders;
+    for (const auto& pair : orders_by_client_id_) {
+        const auto& order = pair.second;
+        // Check if the order is filled and within the time range
+        if (order->getState() == models::OrderState::FILLED &&
+            order->getCreatedTime() >= start_time && order->getCreatedTime() <= end_time) {
+            filled_orders.push_back(order);
+        }
+    }
+    return filled_orders;
+ }
+
  int OrderLifecycleTracker::purgeOldOrders(int64_t age_threshold_ms) {
      std::lock_guard<std::mutex> lock(mutex_);
      

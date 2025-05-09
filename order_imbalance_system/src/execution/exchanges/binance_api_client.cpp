@@ -348,6 +348,53 @@ std::chrono::milliseconds BinanceApiClient::getResetTimeForRequestType(ExchangeR
     return rateLimitController_->getResetTime(requestType);
 }
 
+std::string BinanceApiClient::getHealthStatus() {
+    if (!isConnected()) {
+        connect();
+    }
+    
+    // Wait for rate limit
+    rateLimitController_->waitForPermission(ExchangeRequestType::GetHealthStatus);
+    
+    // Prepare parameters
+    std::map<std::string, std::string> params;
+    
+    // Send request
+    std::string response = makeApiRequest("/api/v3/ping", "GET", params, false);
+    
+    return response;
+}
+// getExchangeStatuses
+std::unordered_map<std::string, std::string> BinanceApiClient::getExchangeStatuses() {
+    if (!isConnected()) {
+        connect();
+    }
+    
+    // Wait for rate limit
+    rateLimitController_->waitForPermission(ExchangeRequestType::GetExchangeStatuses);
+    
+    // Prepare parameters
+    std::map<std::string, std::string> params;
+    
+    // Send request
+    std::string response = makeApiRequest("/sapi/v1/exchangeStatus", "GET", params, false);
+    
+    Json::Value root;
+    Json::Reader reader;
+    if (!reader.parse(response, root)) {
+        throw std::runtime_error("Failed to parse Binance exchange status information");
+    }
+    
+    std::unordered_map<std::string, std::string> statuses;
+    const Json::Value& symbolsJson = root["symbols"];
+    for (const auto& symbolJson : symbolsJson) {
+        std::string symbol = symbolJson["symbol"].asString();
+        std::string status = symbolJson["status"].asString();
+        statuses[symbol] = status;
+    }
+    
+    return statuses;
+}
 // std::string BinanceApiClient::makeApiRequest(const std::string& endpoint, const std::string& method, 
 //                                            const std::map<std::string, std::string>& params, bool isPrivate) const {
 std::string BinanceApiClient::makeApiRequest(std::string endpoint, std::string method,

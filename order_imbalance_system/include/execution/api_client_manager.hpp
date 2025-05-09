@@ -26,7 +26,10 @@ public:
     
     // Get all available exchange clients
     std::vector<std::string> getAvailableExchanges() const;
-    
+    //getHealthStatus
+    std::string getHealthStatus() const;
+    // Get exchange statuses
+    std::unordered_map<std::string, std::string> getExchangeStatuses() const;
     // Health check for all exchange connections
     std::unordered_map<std::string, bool> checkConnections() const;
     

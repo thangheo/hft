@@ -32,6 +32,30 @@ struct AlgorithmParams {
 };
 
 /**
+ * Default algorithm parameters with basic trading information
+ */
+struct DefaultAlgorithmParams : public AlgorithmParams {
+    std::string exchange_id;
+    std::string trading_pair;
+    models::OrderSide side;
+    models::OrderType order_type;
+    double quantity;
+    double price;
+    std::string client_order_id;
+    models::TimeInForce time_in_force;
+    std::string start_time; // Optional start time for execution
+    std::string end_time;   // Optional end time for execution
+    double visible_quantity; // Optional visible size for iceberg orders
+    double duration_seconds;
+    double participation_rate = 0.0; // For POV algorithm
+    std::string signal_id;
+    std::unordered_map<std::string, std::string> extra_params;
+    std::chrono::system_clock::time_point created_at;
+    AlgorithmType algorithm_type = AlgorithmType::TWAP; // Default algorithm
+    
+    AlgorithmType getType() const override { return algorithm_type; }
+};
+/**
  * TWAP algorithm parameters
  */
 struct TwapParams : public AlgorithmParams {
@@ -84,11 +108,13 @@ public:
     ExecutionAlgorithmFactory();
     
     // Create algorithm instance
+    // std::shared_ptr<ExecutionAlgorithm> createAlgorithm(
+    //     const std::string& id,
+    //     const std::string& trading_pair,
+    //     models::OrderSide side,
+    //     const std::shared_ptr<AlgorithmParams>& params);
     std::shared_ptr<ExecutionAlgorithm> createAlgorithm(
-        const std::string& id,
-        const std::string& trading_pair,
-        models::OrderSide side,
-        const std::shared_ptr<AlgorithmParams>& params);
+        const std::shared_ptr<DefaultAlgorithmParams>& params) ;
     
     // Get algorithm by ID
     std::shared_ptr<ExecutionAlgorithm> getAlgorithm(const std::string& id) const;

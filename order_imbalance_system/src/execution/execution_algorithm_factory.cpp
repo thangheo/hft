@@ -229,41 +229,170 @@ private:
 
 ExecutionAlgorithmFactory::ExecutionAlgorithmFactory() = default;
 
+
+// std::shared_ptr<ExecutionAlgorithm> ExecutionAlgorithmFactory::createAlgorithm(
+//     const std::shared_ptr<DefaultAlgorithmParams>& params) {
+    
+//     std::lock_guard<std::mutex> lock(mutex_);
+    
+//     if (!params) {
+//         std::cerr << "Algorithm parameters cannot be null" << std::endl;
+//         return nullptr;
+//     }
+    
+//     // Generate a unique ID
+//     std::string algorithm_id = generateUniqueId();
+    
+//     // Create algorithm based on type
+//     std::shared_ptr<ExecutionAlgorithm> algorithm;
+    
+//     switch (params->getType()) {
+//         case AlgorithmType::TWAP: {
+//             auto twap_params = std::dynamic_pointer_cast<TwapParams>(params);
+//             if (!twap_params) {
+//                 std::cerr << "Invalid TWAP parameters" << std::endl;
+//                 return nullptr;
+//             }
+            
+//             auto wrapper = std::make_shared<TwapAlgorithmWrapper>(
+//                 algorithm_id, twap_params->trading_pair, twap_params->side, twap_params->config);
+            
+//             if (order_callback_) {
+//                 wrapper->setOrderCallback(order_callback_);
+//             }
+            
+//             if (completion_callback_) {
+//                 wrapper->setCompletionCallback(
+//                     [this, algorithm_id](bool success, const std::string& message) {
+//                         completion_callback_(algorithm_id, success, message);
+//                     });
+//             }
+            
+//             algorithm = wrapper;
+//             break;
+//         }
+        
+//         case AlgorithmType::VWAP: {
+//             auto vwap_params = std::dynamic_pointer_cast<VwapParams>(params);
+//             if (!vwap_params) {
+//                 std::cerr << "Invalid VWAP parameters" << std::endl;
+//                 return nullptr;
+//             }
+            
+//             auto wrapper = std::make_shared<VwapAlgorithmWrapper>(
+//                 algorithm_id, vwap_params->trading_pair, vwap_params->side, vwap_params->config);
+            
+//             if (order_callback_) {
+//                 wrapper->setOrderCallback(order_callback_);
+//             }
+            
+//             if (completion_callback_) {
+//                 wrapper->setCompletionCallback(
+//                     [this, algorithm_id](bool success, const std::string& message) {
+//                         completion_callback_(algorithm_id, success, message);
+//                     });
+//             }
+            
+//             if (volume_callback_) {
+//                 wrapper->setVolumeCallback(volume_callback_);
+//             }
+            
+//             algorithm = wrapper;
+//             break;
+//         }
+        
+//         case AlgorithmType::ICEBERG: {
+//             auto iceberg_params = std::dynamic_pointer_cast<IcebergParams>(params);
+//             if (!iceberg_params) {
+//                 std::cerr << "Invalid Iceberg parameters" << std::endl;
+//                 return nullptr;
+//             }
+            
+//             auto wrapper = std::make_shared<IcebergAlgorithmWrapper>(
+//                 algorithm_id, iceberg_params->trading_pair, iceberg_params->side, iceberg_params->config);
+            
+//             if (order_callback_) {
+//                 wrapper->setOrderCallback(order_callback_);
+//             }
+            
+//             if (completion_callback_) {
+//                 wrapper->setCompletionCallback(
+//                     [this, algorithm_id](bool success, const std::string& message) {
+//                         completion_callback_(algorithm_id, success, message);
+//                     });
+//             }
+            
+//             algorithm = wrapper;
+//             break;
+//         }
+        
+//         case AlgorithmType::POV: {
+//             auto pov_params = std::dynamic_pointer_cast<PovParams>(params);
+//             if (!pov_params) {
+//                 std::cerr << "Invalid POV parameters" << std::endl;
+//                 return nullptr;
+//             }
+            
+//             auto wrapper = std::make_shared<PovAlgorithmWrapper>(
+//                 algorithm_id, pov_params->trading_pair, pov_params->side, pov_params->config);
+            
+//             if (order_callback_) {
+//                 wrapper->setOrderCallback(order_callback_);
+//             }
+            
+//             if (completion_callback_) {
+//                 wrapper->setCompletionCallback(
+//                     [this, algorithm_id](bool success, const std::string& message) {
+//                         completion_callback_(algorithm_id, success, message);
+//                     });
+//             }
+            
+//             if (volume_callback_) {
+//                 wrapper->setVolumeCallback(volume_callback_);
+//             }
+            
+//             algorithm = wrapper;
+//             break;
+//         }
+        
+//         default:
+//             std::cerr << "Unsupported algorithm type: " << static_cast<int>(params->getType()) << std::endl;
+//             return nullptr;
+//     }
+    
+//     // Store algorithm in the factory's map
+//     algorithms_[algorithm_id] = algorithm;
+    
+//     return algorithm;
+// }
+
 std::shared_ptr<ExecutionAlgorithm> ExecutionAlgorithmFactory::createAlgorithm(
-    const std::string& id,
-    const std::string& trading_pair,
-    models::OrderSide side,
-    const std::shared_ptr<AlgorithmParams>& params) {
+    const std::shared_ptr<DefaultAlgorithmParams>& params) {
     
     std::lock_guard<std::mutex> lock(mutex_);
-    
-    // Check if algorithm ID already exists
-    if (algorithms_.find(id) != algorithms_.end()) {
-        std::cerr << "Algorithm with ID " << id << " already exists" << std::endl;
-        return nullptr;
-    }
-    
-    // Generate a unique ID if one was not provided
-    std::string algorithm_id = id.empty() ? generateUniqueId() : id;
-    
-    // Create algorithm based on type
-    std::shared_ptr<ExecutionAlgorithm> algorithm;
     
     if (!params) {
         std::cerr << "Algorithm parameters cannot be null" << std::endl;
         return nullptr;
     }
     
+    // Generate a unique ID
+    std::string algorithm_id = generateUniqueId();
+    
+    // Create algorithm based on type
+    std::shared_ptr<ExecutionAlgorithm> algorithm;
+    
     switch (params->getType()) {
         case AlgorithmType::TWAP: {
-            auto twap_params = std::dynamic_pointer_cast<TwapParams>(params);
-            if (!twap_params) {
-                std::cerr << "Invalid TWAP parameters" << std::endl;
-                return nullptr;
-            }
+            // Create TWAP config from default params
+            algorithms::TwapConfig twap_config;
+            twap_config.total_quantity = params->quantity;
+            twap_config.duration = std::chrono::seconds(static_cast<int>(params->duration_seconds));
+            twap_config.slice_interval = std::chrono::seconds(static_cast<int>(params->duration_seconds / 10)); // Default to 10 slices
+            twap_config.price_limit = params->price;
             
             auto wrapper = std::make_shared<TwapAlgorithmWrapper>(
-                algorithm_id, trading_pair, side, twap_params->config);
+                algorithm_id, params->trading_pair, params->side, twap_config);
             
             if (order_callback_) {
                 wrapper->setOrderCallback(order_callback_);
@@ -281,14 +410,18 @@ std::shared_ptr<ExecutionAlgorithm> ExecutionAlgorithmFactory::createAlgorithm(
         }
         
         case AlgorithmType::VWAP: {
-            auto vwap_params = std::dynamic_pointer_cast<VwapParams>(params);
-            if (!vwap_params) {
-                std::cerr << "Invalid VWAP parameters" << std::endl;
-                return nullptr;
-            }
+            // Create VWAP config from default params
+            algorithms::VwapConfig vwap_config;
+            vwap_config.total_quantity = params->quantity;
+            vwap_config.duration = std::chrono::seconds(static_cast<int>(params->duration_seconds));
+            vwap_config.price_limit = params->price;
+            
+            // Default volume profile (equal distribution)
+            std::vector<double> volume_profile(24, 1.0/24.0);
+            vwap_config.volume_profile = volume_profile;
             
             auto wrapper = std::make_shared<VwapAlgorithmWrapper>(
-                algorithm_id, trading_pair, side, vwap_params->config);
+                algorithm_id, params->trading_pair, params->side, vwap_config);
             
             if (order_callback_) {
                 wrapper->setOrderCallback(order_callback_);
@@ -310,14 +443,15 @@ std::shared_ptr<ExecutionAlgorithm> ExecutionAlgorithmFactory::createAlgorithm(
         }
         
         case AlgorithmType::ICEBERG: {
-            auto iceberg_params = std::dynamic_pointer_cast<IcebergParams>(params);
-            if (!iceberg_params) {
-                std::cerr << "Invalid Iceberg parameters" << std::endl;
-                return nullptr;
-            }
+            // Create Iceberg config from default params
+            algorithms::IcebergConfig iceberg_config;
+            iceberg_config.total_quantity = params->quantity;
+            iceberg_config.visible_quantity = params->visible_quantity > 0 ? 
+                params->visible_quantity : params->quantity / 10.0; // Default to 1/10th
+            iceberg_config.price = params->price;
             
             auto wrapper = std::make_shared<IcebergAlgorithmWrapper>(
-                algorithm_id, trading_pair, side, iceberg_params->config);
+                algorithm_id, params->trading_pair, params->side, iceberg_config);
             
             if (order_callback_) {
                 wrapper->setOrderCallback(order_callback_);
@@ -335,11 +469,11 @@ std::shared_ptr<ExecutionAlgorithm> ExecutionAlgorithmFactory::createAlgorithm(
         }
         
         default:
-            std::cerr << "Unsupported algorithm type" << std::endl;
+            std::cerr << "Unsupported algorithm type: " << static_cast<int>(params->getType()) << std::endl;
             return nullptr;
     }
     
-    // Store algorithm
+    // Store algorithm in the factory's map
     algorithms_[algorithm_id] = algorithm;
     
     return algorithm;

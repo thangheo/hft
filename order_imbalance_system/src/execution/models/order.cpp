@@ -134,7 +134,14 @@ double Order::getPrice() const {
     std::lock_guard<std::mutex> lock(mutex_);
     return price_;
 }
-
+std::string Order::getExtraParam(const std::string& key) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    auto it = extra_params_.find(key);
+    if (it != extra_params_.end()) {
+        return it->second;
+    }
+    return "";  // Return empty string if parameter not found
+}
 std::optional<double> Order::getStopPrice() const {
     std::lock_guard<std::mutex> lock(mutex_);
     return stop_price_;
