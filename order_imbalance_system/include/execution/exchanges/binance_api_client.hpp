@@ -18,7 +18,7 @@ public:
     BinanceApiClient(const ExchangeCredentials& credentials, 
                     std::shared_ptr<RateLimitController> rateLimitController);
     ~BinanceApiClient() override;
-    
+   
     // Implement ExchangeApiClient interface
     std::future<models::ExecutionReport> placeOrder(const models::Order& order) override;
     std::future<models::ExecutionReport> cancelOrder(const std::string& orderId, const std::string& symbol) override;
@@ -35,9 +35,11 @@ public:
     bool checkConnection() const override;
     // Additional methods
     // getHealthStatus
-    std::string getHealthStatus();
+    // std::string getHealthStatus();
+    std::string getHealthStatus() override; // Make sure this matches the base class
     // getExchangeStatuses
-    std::unordered_map<std::string, std::string> getExchangeStatuses() ;
+    std::unordered_map<std::string, std::string> getExchangeStatuses() const override;
+    
 private:
     struct BinanceImpl;
     std::unique_ptr<BinanceImpl> pImpl_;

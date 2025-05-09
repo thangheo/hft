@@ -17,6 +17,9 @@ public:
     ~FtxApiClient() override;
     
     // Implement ExchangeApiClient interface
+    std::string getHealthStatus() override;
+    std::unordered_map<std::string, std::string> getExchangeStatuses() const override;
+
     std::future<models::ExecutionReport> placeOrder(const models::Order& order) override;
     std::future<models::ExecutionReport> cancelOrder(const std::string& orderId, const std::string& symbol) override;
     std::future<models::ExecutionReport> getOrderStatus(const std::string& orderId, const std::string& symbol) override;

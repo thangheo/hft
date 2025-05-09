@@ -155,7 +155,58 @@ std::vector<std::string> FtxApiClient::getSupportedSymbols() const {
     
     return symbols;
 }
+// In ftx_api_client.cpp
 
+std::string FtxApiClient::getHealthStatus() {
+    if (!isConnected()) {
+        connect();
+    }
+    
+    // Wait for rate limit
+    rateLimitController_->waitForPermission(ExchangeRequestType::GetHealthStatus);
+    
+    // Prepare parameters
+    std::map<std::string, std::string> params;
+    
+    // Send request - adjust endpoint as needed for FTX
+    std::string response = makeApiRequest("/api/health", "GET", params, false);
+    
+    return response;
+}
+
+std::unordered_map<std::string, std::string> FtxApiClient::getExchangeStatuses() const {
+    if (!isConnected()) {
+        throw std::runtime_error("Not connected to FTX");
+    }
+    
+    // Implement logic similar to BinanceApiClient::getExchangeStatuses but for FTX
+    // Return a map of symbol -> status
+    std::unordered_map<std::string, std::string> statuses;
+    
+    // Example implementation:
+    try {
+        // Use const-safe methods only since this is a const method
+        std::map<std::string, std::string> params;
+        std::string response = makeApiRequest("/api/markets", "GET", params, false);
+        
+        // Parse response JSON and populate the statuses map
+        Json::Value root;
+        Json::Reader reader;
+        if (reader.parse(response, root)) {
+            const Json::Value& markets = root["result"];
+            for (const auto& market : markets) {
+                std::string symbol = market["name"].asString();
+                bool enabled = market["enabled"].asBool();
+                statuses[symbol] = enabled ? "TRADING" : "BREAK";
+            }
+        }
+    } catch (const std::exception&) {
+        // Handle exception (possibly by returning an empty map or throwing)
+        throw std::runtime_error("Failed to get exchange statuses from FTX");
+    }
+    
+    return statuses;
+}
 std::future<models::ExecutionReport> FtxApiClient::placeOrder(const models::Order& order) {
     // Extract necessary data from the order to avoid capturing the entire object
     std::string tradingPair = order.getTradingPair();

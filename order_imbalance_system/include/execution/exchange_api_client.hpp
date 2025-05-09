@@ -51,6 +51,8 @@ public:
     // Exchange information
     virtual std::string getExchangeName() const = 0;
     virtual std::vector<std::string> getSupportedSymbols() const = 0;
+    // Health status
+    virtual std::string getHealthStatus() = 0;
     // getExchangeStatuse
     virtual std::unordered_map<std::string, std::string> getExchangeStatuses() const = 0;
     // Rate limit information

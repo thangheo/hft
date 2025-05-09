@@ -20,7 +20,7 @@ public:
     
     // Get a client for a specific exchange
     std::shared_ptr<ExchangeApiClient> getClient(const std::string& exchangeId);
-    
+    // 
     // Check if a client for a specific exchange exists
     bool hasClient(const std::string& exchangeId) const;
     

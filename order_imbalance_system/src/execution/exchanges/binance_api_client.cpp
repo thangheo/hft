@@ -365,14 +365,15 @@ std::string BinanceApiClient::getHealthStatus() {
     return response;
 }
 // getExchangeStatuses
-std::unordered_map<std::string, std::string> BinanceApiClient::getExchangeStatuses() {
+std::unordered_map<std::string, std::string> BinanceApiClient::getExchangeStatuses() const {
+    // Check if connected    
     if (!isConnected()) {
-        connect();
+        // const_cast<BinanceApiClient*>(this)->connect();
+        throw std::runtime_error("Not connected to Binance");        
     }
     
     // Wait for rate limit
     rateLimitController_->waitForPermission(ExchangeRequestType::GetExchangeStatuses);
-    
     // Prepare parameters
     std::map<std::string, std::string> params;
     

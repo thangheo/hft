@@ -20,7 +20,22 @@
  OrderLifecycleTracker::OrderLifecycleTracker() {
      // Nothing to initialize
  }
- 
+ // Implementation in the .cpp file
+std::string OrderLifecycleTracker::getClientOrderId(const std::string& exchange_order_id, const std::string& exchange_id) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Find order with matching exchange order ID and exchange ID
+    for (const auto& [client_id, order_ptr] : orders_by_client_id_) {
+        if (order_ptr->getExchangeOrderId() == exchange_order_id && 
+            order_ptr->getExchangeId() == exchange_id) {
+            return client_id;
+        }
+    }
+    
+    // Not found
+    return "";
+}
+
  bool OrderLifecycleTracker::addOrder(const models::Order& order) {
      std::lock_guard<std::mutex> lock(mutex_);
      

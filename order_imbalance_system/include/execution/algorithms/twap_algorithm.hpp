@@ -1,12 +1,21 @@
 #pragma once
 
 #include "../models/order.hpp"
+#include "execution/algorithms/twap_config.hpp"
+#include "execution/execution_service.hpp"
+#include "execution/order_lifecycle_tracker.hpp"
 #include "timer.hpp"
 #include <string>
 #include <vector>
 #include <chrono>
 #include <memory>
 #include <functional>
+
+// Forward declaration to avoid circular dependency
+namespace trading {
+namespace execution {
+struct ExecutionResponse;
+}}
 
 namespace trading {
 namespace execution {
@@ -15,15 +24,30 @@ namespace algorithms {
 /**
  * Configuration parameters for TWAP algorithm
  */
-struct TwapConfig {
-    double total_quantity;               // Total quantity to execute
-    std::chrono::seconds duration;       // Duration of execution
-    std::chrono::seconds slice_interval; // Time between order slices
-    double price_limit = 0.0;            // Optional price limit, 0 for market orders
-    double deviation_pct = 0.0;          // Max allowed deviation from target price
-    bool allow_partial = true;           // Whether to allow partial fills
-};
+// struct TwapConfig {
+//     double total_quantity;               // Total quantity to execute
+//     std::chrono::seconds duration;       // Duration of execution
+//     std::chrono::seconds slice_interval; // Time between order slices
+//     double price_limit = 0.0;            // Optional price limit, 0 for market orders
+//     double deviation_pct = 0.0;          // Max allowed deviation from target price
+//     bool allow_partial = true;           // Whether to allow partial fills
 
+// };
+
+// struct TwapConfig {
+//     std::string symbol;
+//     double total_quantity;
+//     double price_limit;
+//     std::string side;  // "buy" or "sell"
+//     std::chrono::milliseconds duration;
+//     std::chrono::milliseconds slice_interval;
+//     std::string exchange_id;
+    
+//     // Optional parameters with default values
+//     bool use_market_orders = true;
+//     double price_deviation_limit = 0.01;  // 1% deviation limit
+//     int max_slices = 0;  // 0 means unlimited/auto-calculate
+// };
 /**
  * Time-Weighted Average Price (TWAP) execution algorithm
  * Splits a large order into smaller equal-sized orders spread over time
@@ -54,6 +78,15 @@ public:
     // Cancel execution
     bool cancel();
     
+    /**
+     * @brief Execute a parent order using TWAP algorithm
+     * 
+     * @param parentOrder The parent order with TWAP parameters
+     * @param execution_service Reference to the execution service for placing child orders
+     * @return ExecutionResponse with initial execution status
+     */
+    ExecutionResponse execute(const models::Order& parentOrder, ExecutionService& execution_service);
+    
     // Register callbacks
     void setOrderCallback(const OrderCallback& callback);
     void setCompletionCallback(const CompletionCallback& callback);
@@ -77,6 +110,9 @@ public:
     std::vector<models::OrderPtr> getChildOrders() const;
     
 private:
+    // Extract TWAP configuration from order parameters
+    TwapConfig extractConfigFromOrder(const models::Order& parentOrder);
+
     // Algorithm state
     enum class State {
         INITIALIZED,

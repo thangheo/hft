@@ -1,13 +1,14 @@
 #pragma once
 
-#include "algorithms/twap_algorithm.hpp"
+// #include "algorithms/twap_algorithm.hpp"
+#include "execution/algorithms/twap_config.hpp"
 #include "algorithms/vwap_algorithm.hpp"
 #include "algorithms/iceberg_algorithm.hpp"
+#include "execution/execution_service.hpp"
 #include "models/order.hpp"
 #include <memory>
 #include <string>
 #include <unordered_map>
-
 namespace trading {
 namespace execution {
 
@@ -78,14 +79,14 @@ struct IcebergParams : public AlgorithmParams {
     algorithms::IcebergConfig config;
     AlgorithmType getType() const override { return AlgorithmType::ICEBERG; }
 };
-
+class ExecutionService;  // Add this line
 /**
  * Base class for execution algorithms
  */
 class ExecutionAlgorithm {
 public:
     virtual ~ExecutionAlgorithm() = default;
-    
+    virtual ExecutionResponse execute(const models::Order& order, ExecutionService& execution_service) = 0;
     // Common interface methods
     virtual bool start() = 0;
     virtual bool pause() = 0;

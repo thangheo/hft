@@ -13,42 +13,6 @@
  namespace trading {
  namespace execution {
  
- // Struct definitions for service interfaces
- struct TradingSignal {
-     std::string signal_id;
-     std::string trading_pair;
-     models::OrderSide direction;
-     double strength;
-     double target_size;
-     std::chrono::milliseconds signal_ttl;
-     std::string strategy_id;
-     std::string strategy_version;
-     std::map<std::string, double> signal_metrics;
- };
- 
- struct ExecutionResponse {
-     std::string client_order_id;
-     std::string exchange_order_id;
-     bool success;
-     std::string error_message;
-     std::string order_status;
-     std::chrono::system_clock::time_point timestamp;
- };
- 
- struct OrderStatusResponse {
-     models::Order order;
-     bool found;
-     std::string error_message;
- };
- 
- struct CancelResponse {
-     std::string client_order_id;
-     std::string exchange_order_id;
-     bool success;
-     std::string error_message;
-     std::chrono::system_clock::time_point timestamp;
- };
- 
  ExecutionService::ExecutionService(
      std::shared_ptr<OrderGenerator> order_generator,
      std::shared_ptr<SmartOrderRouter> smart_order_router,
@@ -427,81 +391,133 @@ std::string ExecutionService::orderStateToString(models::OrderState state) {
      // Use the standard cancel method
      return cancelOrder(client_order_id);
  }
- 
- std::vector<CancelResponse> ExecutionService::cancelAllOrdersForSymbol(
-     const std::string& trading_pair,
-     const std::string& exchange_id) {
+  
+    std::vector<CancelResponse> ExecutionService::cancelAllOrdersForSymbol(
+    const std::string& trading_pair,
+    const std::string& exchange_id) {
+    
+    std::vector<CancelResponse> responses;
+    
+    // Validate service state
+    if (!is_running_) {
+        responses.push_back(CancelResponse{
+            "", "", false, 
+            "Execution service not running", 
+            std::chrono::system_clock::now()
+        });
+        return responses;
+    }
+    
+    // Get all active orders for the trading pair and exchange
+    std::vector<std::shared_ptr<models::Order>> active_orders;
+    
+    // Get all active orders first
+    auto all_active_orders = order_lifecycle_tracker_->getActiveOrders();
+    
+    // Filter by trading pair and exchange if needed
+    for (const auto& order : all_active_orders) {
+        if (order->getTradingPair() == trading_pair) {
+            if (exchange_id.empty() || order->getExchangeId() == exchange_id) {
+                active_orders.push_back(order);
+            }
+        }
+    }
+    
+    // Cancel each order
+    for (const auto& order : active_orders) {
+        responses.push_back(cancelOrder(order->getClientOrderId()));
+    }
+    
+    // If no orders were found, add a response indicating that
+    if (responses.empty()) {
+        std::string message = "No active orders found for " + trading_pair;
+        if (!exchange_id.empty()) {
+            message += " on exchange " + exchange_id;
+        }
+        
+        responses.push_back(CancelResponse{
+            "", "", true, message, std::chrono::system_clock::now()
+        });
+    }
+    
+    return responses;
+}
+//  OrderStatusResponse ExecutionService::getOrderStatus(const std::string& client_order_id) {
+//      // Validate service state
+//      if (!is_running_) {
+//          return OrderStatusResponse{
+//              models::Order{}, false, "Execution service not running"
+//          };
+//      }
      
-     std::vector<CancelResponse> responses;
+//      // Get order from lifecycle tracker
+//      auto order_opt = order_lifecycle_tracker_->getOrderByOrderId(client_order_id);
+//      if (!order_opt) {
+//          return OrderStatusResponse{
+//              models::Order{}, false, "Order not found"
+//          };
+//      }
      
-     // Validate service state
-     if (!is_running_) {
-         responses.push_back(CancelResponse{
-             "", "", false, 
-             "Execution service not running", 
-             std::chrono::system_clock::now()
-         });
-         return responses;
-     }
+//      // For active orders, refresh status from exchange
+//      const auto& order = *order_opt;
+//      if (order.isActive()) {
+//          // Get exchange API client
+//          auto api_client = api_client_manager_->getClient(order.getExchangeId());
+//          if (api_client) {
+//              // Query exchange for latest status
+//              api_client->getOrderStatus(order.getClientOrderId(), order.getTradingPair());
+//              // Refresh our local copy after potential update
+//              order_opt = order_lifecycle_tracker_->getOrderByOrderId(client_order_id);
+//          }
+//      }
      
-     // Get all active orders for the trading pair
-    //  auto active_orders = order_lifecycle_tracker_->getActiveOrdersForSymbol(trading_pair, exchange_id);
-     auto active_orders = order_lifecycle_tracker_->getOrdersByState(models::OrderState::OPEN);
+//      // Prepare response
+//      OrderStatusResponse response;
+//      response.order = models::Order(*order_opt);  // Create a new Order by copy construction
+//      response.found = true;
+//      response.error_message = "";
      
-     // Cancel each order
-     for (const auto& order : active_orders) {
-         responses.push_back(cancelOrder(order->getClientOrderId()));
-     }
-     
-     // If no orders were found, add a response indicating that
-     if (responses.empty()) {
-         responses.push_back(CancelResponse{
-             "", "", true, 
-             "No active orders found for " + trading_pair, 
-             std::chrono::system_clock::now()
-         });
-     }
-     
-     return responses;
- }
- 
- OrderStatusResponse ExecutionService::getOrderStatus(const std::string& client_order_id) {
-     // Validate service state
-     if (!is_running_) {
-         return OrderStatusResponse{
-             models::Order{}, false, "Execution service not running"
-         };
-     }
-     
-     // Get order from lifecycle tracker
-     auto order_opt = order_lifecycle_tracker_->getOrderByOrderId(client_order_id);
-     if (!order_opt) {
-         return OrderStatusResponse{
-             models::Order{}, false, "Order not found"
-         };
-     }
-     
-     // For active orders, refresh status from exchange
-     const auto& order = *order_opt;
-     if (order.isActive()) {
-         // Get exchange API client
-         auto api_client = api_client_manager_->getClient(order.getExchangeId());
-         if (api_client) {
-             // Query exchange for latest status
-             api_client->getOrderStatus(order.getClientOrderId(), order.getTradingPair());
-             // Refresh our local copy after potential update
-             order_opt = order_lifecycle_tracker_->getOrderByOrderId(client_order_id);
-         }
-     }
-     
-     // Prepare response
-     OrderStatusResponse response;
-     response.order = models::Order(*order_opt);  // Create a new Order by copy construction
-     response.found = true;
-     response.error_message = "";
-     
-     return response;
- }
+//      return response;
+//  }
+
+// Update the getOrderStatus method to use shared_ptr
+OrderStatusResponse ExecutionService::getOrderStatus(const std::string& client_order_id) {
+    // Validate service state
+    if (!is_running_) {
+        return OrderStatusResponse{
+            nullptr, false, "Execution service not running"
+        };
+    }
+    
+    // Get order from lifecycle tracker
+    auto order_opt = order_lifecycle_tracker_->getOrderByOrderId(client_order_id);
+    if (!order_opt) {
+        return OrderStatusResponse{
+            nullptr, false, "Order not found"
+        };
+    }
+    
+    // For active orders, refresh status from exchange
+    const auto& order = *order_opt;
+    if (order.isActive()) {
+        // Get exchange API client
+        auto api_client = api_client_manager_->getClient(order.getExchangeId());
+        if (api_client) {
+            // Query exchange for latest status
+            api_client->getOrderStatus(order.getClientOrderId(), order.getTradingPair());
+            // Refresh our local copy after potential update
+            order_opt = order_lifecycle_tracker_->getOrderByOrderId(client_order_id);
+        }
+    }
+    
+    // Prepare response with a shared copy of the order
+    OrderStatusResponse response;
+    response.order = std::make_shared<models::Order>(*order_opt);
+    response.found = true;
+    response.error_message = "";
+    
+    return response;
+}
  //order_lifecycle_tracker_
 
  std::vector<models::Order> ExecutionService::getActiveOrders() {
@@ -577,7 +593,7 @@ std::string ExecutionService::orderStateToString(models::OrderState state) {
      params.side = signal.direction;
      
      // Generate the order
-     auto order = order_generator_->generateOrder(params);
+     auto order = order_generator_->createOrder(params);
      
      // Select the best exchange
      std::string exchange_id = smart_order_router_->selectExchange(

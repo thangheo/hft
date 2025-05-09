@@ -143,7 +143,208 @@ bool TwapAlgorithm::cancel() {
     
     return true;
 }
+// void TwapAlgorithm::checkCompletion() {
+//     std::lock_guard<std::mutex> lock(mutex_);
+    
+//     if (state_ == State::RUNNING) {
+//         if (executed_quantity_ >= config_.total_quantity) {
+//             state_ = State::COMPLETED;
+//             timer_->stop();
+            
+//             // Notify completion with success status
+//             if (completion_callback_) {
+//                 completion_callback_(true, "Algorithm completed successfully");
+//             }
+//         } else if (std::chrono::system_clock::now() >= end_time_) {
+//             state_ = State::COMPLETED;
+//             timer_->stop();
+            
+//             // Notify completion with timeout status
+//             if (completion_callback_) {
+//                 completion_callback_(false, "Algorithm timed out");
+//             }
+//         }
+//     }
+// }
+// Add this helper method to TwapAlgorithm class
+TwapConfig TwapAlgorithm::extractConfigFromOrder(const models::Order& parentOrder) {
+    TwapConfig config;
+    
+    // Set total quantity from parent order
+    config.total_quantity = parentOrder.getQuantity();
+    
+    // Set price limit from parent order for limit orders
+    if (parentOrder.getType() == models::OrderType::LIMIT) {
+        config.price_limit = parentOrder.getPrice();
+    }
+    
+    // Extract additional parameters from extra_params
+    const auto& params = parentOrder.getExtraParams();
+    
+    // Extract duration (in seconds)
+    auto durationIt = params.find("twap_duration_seconds");
+    if (durationIt != params.end() && !durationIt->second.empty()) {
+        try {
+            config.duration = std::chrono::seconds(std::stoi(durationIt->second));
+        } catch (const std::exception& e) {
+            // Use default if conversion fails
+            config.duration = std::chrono::seconds(3600); // 1 hour default
+        }
+    } else {
+        config.duration = std::chrono::seconds(3600); // 1 hour default
+    }
+    
+    // Extract slice interval (in seconds)
+    auto intervalIt = params.find("twap_slice_interval_seconds");
+    if (intervalIt != params.end() && !intervalIt->second.empty()) {
+        try {
+            config.slice_interval = std::chrono::seconds(std::stoi(intervalIt->second));
+        } catch (const std::exception& e) {
+            // Use default if conversion fails
+            config.slice_interval = std::chrono::seconds(300); // 5 minutes default
+        }
+    } else {
+        config.slice_interval = std::chrono::seconds(300); // 5 minutes default
+    }
+    
+    // Extract price deviation percentage
+    auto deviationIt = params.find("twap_deviation_pct");
+    if (deviationIt != params.end() && !deviationIt->second.empty()) {
+        try {
+            config.deviation_pct = std::stod(deviationIt->second);
+        } catch (const std::exception& e) {
+            config.deviation_pct = 0.0; // Default to no deviation tolerance
+        }
+    }
+    
+    // Extract allow partial setting
+    auto partialIt = params.find("twap_allow_partial");
+    if (partialIt != params.end()) {
+        config.allow_partial = (partialIt->second == "true" || partialIt->second == "1");
+    }
+    
+    return config;
+}
+ExecutionResponse TwapAlgorithm::execute(const models::Order& parentOrder, ExecutionService& execution_service) {
+    // Lock to prevent concurrent modification
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Extract TWAP parameters from the parent order
+    TwapConfig config;
+    config.total_quantity = parentOrder.getQuantity();
+    config.price_limit = parentOrder.getPrice();
+    
+    // Extract duration in seconds (default: 1 hour)
+    std::string durationStr = parentOrder.getExtraParam("twap_duration_seconds");
+    if (!durationStr.empty()) {
+        try {
+            config.duration = std::chrono::seconds(std::stoi(durationStr));
+        } catch (const std::exception&) {
+            config.duration = std::chrono::seconds(3600); // Default to 1 hour
+        }
+    } else {
+        config.duration = std::chrono::seconds(3600); // Default to 1 hour
+    }
+    
+    // Extract slice interval in seconds (default: 5 minutes)
+    std::string intervalStr = parentOrder.getExtraParam("twap_slice_interval");
+    if (!intervalStr.empty()) {
+        try {
+            config.slice_interval = std::chrono::seconds(std::stoi(intervalStr));
+        } catch (const std::exception&) {
+            config.slice_interval = std::chrono::seconds(300); // Default to 5 minutes
+        }
+    } else {
+        config.slice_interval = std::chrono::seconds(300); // Default to 5 minutes
+    }
+    
+    // Extract price deviation percentage (default: 0.0)
+    std::string deviationStr = parentOrder.getExtraParam("deviation_pct");
+    if (!deviationStr.empty()) {
+        try {
+            config.deviation_pct = std::stod(deviationStr);
+        } catch (const std::exception&) {
+            config.deviation_pct = 0.0;
+        }
+    } else {
+        config.deviation_pct = 0.0;
+    }
+    
+    // Extract allow partial flag (default: true)
+    std::string allowPartialStr = parentOrder.getExtraParam("allow_partial");
+    if (!allowPartialStr.empty()) {
+        config.allow_partial = (allowPartialStr == "true" || allowPartialStr == "1");
+    } else {
+        config.allow_partial = true;
+    }
+    
+    // Initialize the algorithm
+    if (!initialize(parentOrder.getTradingPair(), parentOrder.getSide(), config)) {
+        return ExecutionResponse{
+            parentOrder.getClientOrderId(), 
+            "", 
+            false,
+            "Failed to initialize TWAP algorithm: " + error_message_,
+            "REJECTED", 
+            std::chrono::system_clock::now()
+        };
+    }
+    
+    // Keep track of the client order ID to use in our callbacks
+    std::string clientOrderId = parentOrder.getClientOrderId();
+    
+    // Set callbacks for order creation and algorithm completion
+    // Using value capture for the execution service to avoid dangling reference
+    // Store only the client order ID, not the entire order
+    setOrderCallback([&execution_service, clientOrderId](const models::OrderPtr& sliceOrder) {
+        // Set parent order ID as reference in slice order
+        sliceOrder->setExtraParam("parent_order_id", clientOrderId);
+        
+        // Execute the slice order
+        execution_service.placeOrder(*sliceOrder);
+    });
+    
+    // Set completion callback to log the final status
+    setCompletionCallback([clientOrderId](bool success, const std::string& message) {
+        // Log completion status
+        std::cout << "TWAP execution for order " << clientOrderId 
+                  << (success ? " completed successfully" : " failed")
+                  << ": " << message << std::endl;
+    });
+    
+    // Start the algorithm
+    if (!start()) {
+        return ExecutionResponse{
+            parentOrder.getClientOrderId(), 
+            "", 
+            false,
+            "Failed to start TWAP algorithm",
+            "REJECTED", 
+            std::chrono::system_clock::now()
+        };
+    }
+    
+    // Return initial response with ACCEPTED status
+    return ExecutionResponse{
+        parentOrder.getClientOrderId(),
+        "",  // No exchange order ID for the parent order
+        true,
+        "",
+        "ACCEPTED",  // Parent order is accepted for algorithmic execution
+        std::chrono::system_clock::now()
+    };
+}
 
+void TwapAlgorithm::setErrorState(const std::string& error_message) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    state_ = State::ERROR;
+    error_message_ = error_message;
+    
+    // Notify completion with error status
+    if (completion_callback_) {
+        completion_callback_(false, error_message);
+    }
+}
 void TwapAlgorithm::setOrderCallback(const OrderCallback& callback) {
     std::lock_guard<std::mutex> lock(mutex_);
     order_callback_ = callback;
@@ -306,52 +507,97 @@ void TwapAlgorithm::updateExecutionStatistics() {
         average_execution_price_ = total_filled_value / executed_quantity_;
     }
 }
-
 void TwapAlgorithm::checkCompletion() {
-    auto now = std::chrono::system_clock::now();
-    bool time_complete = now >= end_time_;
-    double remaining_quantity = config_.total_quantity - executed_quantity_;
-    bool quantity_complete = remaining_quantity <= 0.000001; // Small epsilon to handle floating point errors
+    std::lock_guard<std::mutex> lock(mutex_);
     
-    // Check if all orders are completed
-    bool all_orders_complete = true;
-    for (const auto& order : child_orders_) {
-        auto state = order->getState();
-        if (state != models::OrderState::FILLED &&
-            state != models::OrderState::CANCELED &&
-            state != models::OrderState::REJECTED) {
-            all_orders_complete = false;
-            break;
-        }
-    }
-    
-    // Algorithm is complete if we've reached the end time or executed all quantity
-    // and all orders are in a terminal state
-    if ((time_complete || quantity_complete) && all_orders_complete) {
-        if (state_ != State::COMPLETED && state_ != State::CANCELLED) {
-            state_ = State::COMPLETED;
-            
-            if (timer_) {
-                timer_->stop();
+    if (state_ == State::RUNNING) {
+        auto now = std::chrono::system_clock::now();
+        bool time_complete = now >= end_time_;
+        double remaining_quantity = config_.total_quantity - executed_quantity_;
+        bool quantity_complete = remaining_quantity <= 0.000001; // Small epsilon for floating point comparisons
+        
+        // Check if all orders are in terminal states
+        bool all_orders_complete = true;
+        for (const auto& order : child_orders_) {
+            auto state = order->getState();
+            if (state != models::OrderState::FILLED &&
+                state != models::OrderState::CANCELED &&
+                state != models::OrderState::REJECTED) {
+                all_orders_complete = false;
+                break;
             }
+        }
+        
+        // Complete if we've executed all quantity and all orders are done
+        if (quantity_complete && all_orders_complete) {
+            state_ = State::COMPLETED;
+            timer_->stop();
             
-            // Notify completion
+            // Notify completion with success status
             if (completion_callback_) {
                 completion_callback_(true, "Algorithm completed successfully");
             }
+        } 
+        // Complete if we've reached the end time and all orders are done
+        else if (time_complete && all_orders_complete) {
+            state_ = State::COMPLETED;
+            timer_->stop();
+            
+            // Notify completion with timeout status
+            if (completion_callback_) {
+                completion_callback_(
+                    quantity_complete, // Success if all quantity was executed
+                    quantity_complete ? "Algorithm completed successfully" : "Algorithm timed out"
+                );
+            }
         }
     }
 }
-
-void TwapAlgorithm::setErrorState(const std::string& error_message) {
-    state_ = State::ERROR;
-    error_message_ = error_message;
+// void TwapAlgorithm::checkCompletion() {
+//     auto now = std::chrono::system_clock::now();
+//     bool time_complete = now >= end_time_;
+//     double remaining_quantity = config_.total_quantity - executed_quantity_;
+//     bool quantity_complete = remaining_quantity <= 0.000001; // Small epsilon to handle floating point errors
     
-    // Notify completion with error
-    if (completion_callback_) {
-        completion_callback_(false, error_message);
-    }
-}
+//     // Check if all orders are completed
+//     bool all_orders_complete = true;
+//     for (const auto& order : child_orders_) {
+//         auto state = order->getState();
+//         if (state != models::OrderState::FILLED &&
+//             state != models::OrderState::CANCELED &&
+//             state != models::OrderState::REJECTED) {
+//             all_orders_complete = false;
+//             break;
+//         }
+//     }
+    
+//     // Algorithm is complete if we've reached the end time or executed all quantity
+//     // and all orders are in a terminal state
+//     if ((time_complete || quantity_complete) && all_orders_complete) {
+//         if (state_ != State::COMPLETED && state_ != State::CANCELLED) {
+//             state_ = State::COMPLETED;
+            
+//             if (timer_) {
+//                 timer_->stop();
+//             }
+            
+//             // Notify completion
+//             if (completion_callback_) {
+//                 completion_callback_(true, "Algorithm completed successfully");
+//             }
+//         }
+//     }
+// }
+
+// void TwapAlgorithm::setErrorState(const std::string& error_message) {
+//     state_ = State::ERROR;
+//     error_message_ = error_message;
+    
+//     // Notify completion with error
+//     if (completion_callback_) {
+//         completion_callback_(false, error_message);
+//     }
+// }
 
 } // namespace algorithms
 } // namespace execution
