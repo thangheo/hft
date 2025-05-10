@@ -12,6 +12,7 @@
  
  // Include real implementations
  #include "execution/execution_service.hpp"
+ #include "execution/execution_types.hpp"
  #include "execution/order_generator.hpp"
  #include "execution/smart_order_router.hpp"
  #include "execution/order_type_selector.hpp"

@@ -5,6 +5,7 @@
  * Created on: May 5, 2025
  */
  #include "execution/execution_service.hpp"
+ #include "execution/execution_types.hpp"
  #include <chrono>
  #include <sstream>
  #include <nlohmann/json.hpp>

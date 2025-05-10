@@ -3,7 +3,10 @@
 #include "execution/models/order.hpp"
 #include "execution/algorithms/twap_config.hpp" 
 #include "execution/algorithms/timer.hpp"
-#include "execution/execution_service.hpp"
+// #include "execution/execution_service.hpp"
+#include "execution/execution_forward_decl.hpp"
+#include "execution/execution_types.hpp"
+#include "execution/execution_algorithm_factory.hpp"
 #include <string>
 #include <vector>
 #include <chrono>
@@ -15,10 +18,10 @@ namespace trading {
 namespace execution {
 
 // Forward declarations
-struct ExecutionResponse;
-class ExecutionService;
+// struct ExecutionResponse;
+// class ExecutionService;
 
-// namespace algorithms {
+namespace algorithms {
 
 
 /**
@@ -129,6 +132,6 @@ private:
     void setErrorState(const std::string& error_message);
 };
 
-// } // namespace algorithms
+} // namespace algorithms
 } // namespace execution
 } // namespace trading

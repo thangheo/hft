@@ -8,7 +8,7 @@
  #include <gtest/gtest.h>
  #include <gmock/gmock.h>
  #include "execution/execution_service.hpp"
- 
+ #include "execution/execution_types.hpp"
  // Include mock headers for dependencies
  #include "mocks/mock_order_generator.hpp"
  #include "mocks/mock_smart_order_router.hpp"

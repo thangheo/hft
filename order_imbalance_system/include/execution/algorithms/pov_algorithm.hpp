@@ -12,12 +12,11 @@
 #include <unordered_map>
 #include <mutex>
 #include <algorithm>
+#include "execution/execution_types.hpp"
+#include "execution/execution_service.hpp"
 
 namespace trading {
 namespace execution {
-
-// Forward declarations
-struct ExecutionResponse;
 class ExecutionService;
 
 namespace algorithms {
@@ -58,7 +57,7 @@ public:
      * @param execution_service Reference to the execution service for placing child orders
      * @return ExecutionResponse with initial execution status
      */
-    ExecutionResponse execute(const models::Order& parentOrder, ExecutionService& execution_service);
+    ExecutionResponse execute(const models::Order& parentOrder, ::trading::execution::ExecutionService& execution_service);
     
     // Register callbacks
     void setOrderCallback(const OrderCallback& callback);
@@ -122,7 +121,7 @@ private:
     std::unique_ptr<Timer> timer_;
     
     // Service reference for order placement
-    ExecutionService* execution_service_ = nullptr;
+    ::trading::execution::ExecutionService* execution_service_ = nullptr; 
     
     // Callbacks
     OrderCallback order_callback_;

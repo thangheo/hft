@@ -11,15 +11,18 @@
 #pragma once
 
 #include "execution/models/order.hpp"
-#include "execution/models/execution_report.hpp"
+// #include "execution/models/execution_report.hpp"
 #include "execution/order_generator.hpp"
 #include "execution/smart_order_router.hpp"
 #include "execution/order_type_selector.hpp"
 #include "execution/execution_algorithm_factory.hpp"
+#include "execution/execution_forward_decl.hpp"
+
 #include "execution/order_lifecycle_tracker.hpp"
 #include "execution/fill_reconciliation.hpp"
 #include "execution/api_client_manager.hpp"
-#include "execution/exchanges/binance_api_client.hpp"
+// #include "execution/exchanges/binance_api_client.hpp"
+// #include "execution/execution_types.hpp"
 
 #include <memory>
 #include <string>
@@ -30,63 +33,18 @@
 
 namespace trading {
 namespace execution {
-
-// Forward declarations
-
- // Struct definitions for service interfaces
- struct TradingSignal {
-    std::string signal_id;
-    std::string trading_pair;
-    models::OrderSide direction;
-    double strength;
-    double target_size;
-    std::chrono::milliseconds signal_ttl;
-    std::string strategy_id;
-    std::string strategy_version;
-    std::map<std::string, double> signal_metrics;
-};
-
-struct ExecutionResponse {
-    std::string client_order_id;
-    std::string exchange_order_id;
-    bool success;
-    std::string error_message;
-    std::string order_status;
-    std::chrono::system_clock::time_point timestamp;
-};
-
-//  struct OrderStatusResponse {
-//      models::Order order;
-//      bool found;
-//      std::string error_message;
-//  };
-
-struct OrderStatusResponse {
-   // Instead of storing the Order by value, store it as a shared_ptr
-   std::shared_ptr<models::Order> order;
-   bool found;
-   std::string error_message;
-};
-
-struct CancelResponse {
-    std::string client_order_id;
-    std::string exchange_order_id;
-    bool success;
-    std::string error_message;
-    std::chrono::system_clock::time_point timestamp;
-};
-
-// Forward declarations of other classes used by ExecutionService
-class OrderGenerator;
-class SmartOrderRouter;
-class OrderTypeSelector;
-class ExecutionAlgorithmFactory;
-class OrderLifecycleTracker;
-class FillReconciliation;
-class ApiClientManager;
 /**
- * @brief Main service interface for the Execution Engine
- */
+ * @brief ExecutionService is the main service interface for the execution engine
+ * 
+ * @details 
+ * This class coordinates
+ * between different components to execute trading operations,
+ * manage orders, and handle fills.
+ * It provides methods for placing, canceling, and querying orders
+ * 
+ * as well as executing trading signals.
+ * 
+ * */
 class ExecutionService {
 public:
     /**

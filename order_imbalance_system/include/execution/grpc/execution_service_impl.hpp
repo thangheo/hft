@@ -11,6 +11,7 @@
 #pragma once
 
 #include "execution/execution_service.hpp"
+#include "execution/execution_types.hpp"
 #include "execution_service.grpc.pb.h"  // Generated from protobuf
 
 #include <memory>

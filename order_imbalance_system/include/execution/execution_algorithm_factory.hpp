@@ -5,13 +5,20 @@
 #include "algorithms/vwap_algorithm.hpp"
 #include "algorithms/iceberg_algorithm.hpp"
 #include "algorithms/pov_algorithm.hpp"
-#include "execution/execution_service.hpp"
+#include "execution/execution_forward_decl.hpp"
+#include "execution/execution_types.hpp"
 #include "models/order.hpp"
 #include <memory>
 #include <string>
 #include <unordered_map>
 namespace trading {
 namespace execution {
+
+// Forward declarations
+// class ExecutionService;
+// struct ExecutionResponse;  
+// struct DefaultAlgorithmParams;
+// struct TwapParams;
 
 /**
  * Enumeration of supported execution algorithm types
@@ -87,8 +94,6 @@ struct PovParams : public AlgorithmParams {
     algorithms::PovConfig config;
     AlgorithmType getType() const override { return AlgorithmType::POV; }
 };
-};
-class ExecutionService;  // Add this line
 /**
  * Base class for execution algorithms
  */
@@ -96,6 +101,7 @@ class ExecutionAlgorithm {
 public:
     virtual ~ExecutionAlgorithm() = default;
     virtual ExecutionResponse execute(const models::Order& order, ExecutionService& execution_service) = 0;
+
     // Common interface methods
     virtual bool start() = 0;
     virtual bool pause() = 0;
