@@ -1,6 +1,7 @@
 // twap_algorithm.cpp
 #include "execution/algorithms/twap_algorithm.hpp"
 #include "execution/algorithms/timer.hpp"
+#include "execution/execution_service.hpp"
 #include <cmath>
 #include <iostream>
 #include <chrono>

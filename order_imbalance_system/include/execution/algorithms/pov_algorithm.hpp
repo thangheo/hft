@@ -13,7 +13,8 @@
 #include <mutex>
 #include <algorithm>
 #include "execution/execution_types.hpp"
-#include "execution/execution_service.hpp"
+#include "execution/execution_forward_decl.hpp"
+// #include "execution/execution_service.hpp"
 
 namespace trading {
 namespace execution {
@@ -48,6 +49,7 @@ public:
     bool pause();
     
     // Resume execution
+    bool resume();
     bool cancel();
     
     /**
@@ -64,6 +66,7 @@ public:
     void setCompletionCallback(const CompletionCallback& callback);
     void setMarketVolumeCallback(const MarketVolumeCallback& callback);
     
+    
     // Handle order updates
     void handleOrderUpdate(const models::OrderPtr& order);
     
@@ -78,6 +81,7 @@ public:
     double getRemainingQuantity() const;
     double getAverageExecutionPrice() const;
     double getParticipationRate() const;
+
     std::chrono::seconds getRemainingTime() const;
     
     // Get all child orders

@@ -157,6 +157,9 @@ private:
     
     // Mutex for thread safety
     mutable std::mutex mutex_;
+    // Callbacks
+    std::function<void(const models::OrderPtr&)> order_callback_;
+    std::function<void(const std::string&, bool, const std::string&)> completion_callback_;
     
     // Algorithm wrapper classes
     class TwapAlgorithmWrapper;

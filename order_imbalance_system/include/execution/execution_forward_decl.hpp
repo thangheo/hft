@@ -19,6 +19,7 @@ class ExecutionAlgorithm;
 }
 
 // Add any other necessary forward declarations
-
+struct ExecutionResponse;
+class ExecutionService;
 } // namespace execution
 } // namespace trading

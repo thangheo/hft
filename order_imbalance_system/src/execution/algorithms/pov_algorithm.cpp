@@ -10,6 +10,8 @@
  */
  #include "execution/algorithms/timer.hpp"
  #include "execution/algorithms/pov_algorithm.hpp"
+ #include "execution/execution_forward_decl.hpp"
+ #include "execution/execution_service.hpp"
  #include <algorithm>
  #include <cmath>
  #include <sstream>
@@ -18,9 +20,16 @@
  namespace trading {
  namespace execution {
  namespace algorithms {
- 
- PovAlgorithm::PovAlgorithm() : timer_(std::make_unique<Timer>()) {}
- 
+    
+//  PovAlgorithm::PovAlgorithm() : timer_(std::make_unique<Timer>()) {}
+PovAlgorithm::PovAlgorithm() 
+    : timer_(std::make_unique<Timer>(nullptr, std::chrono::milliseconds(0))) {
+    // Initialize the timer with a default callback
+    timer_->setCallback([this]() {
+        checkMarketVolume();
+        calculateOrderSize();
+    });
+} 
  bool PovAlgorithm::initialize(
      const std::string& trading_pair,
      models::OrderSide side,
@@ -158,7 +167,6 @@
              "",
              false,
              error_message_,
-             "ERROR",
              std::chrono::system_clock::now()
          };
      }
@@ -172,7 +180,7 @@
              "",
              false,
              error_message_,
-             "ERROR",
+            //  "ERROR",
              std::chrono::system_clock::now()
          };
      }
@@ -182,7 +190,7 @@
          "",
          true,
          "",
-         "RUNNING",
+        //  "RUNNING",
          std::chrono::system_clock::now()
      };
  }

@@ -241,6 +241,75 @@ private:
     algorithms::IcebergAlgorithm algo_;
 };
 
+//POV Algorithm Wrapper
+class ExecutionAlgorithmFactory::PovAlgorithmWrapper : public ExecutionAlgorithm {
+public:
+    PovAlgorithmWrapper(
+        const std::string& id,
+        const std::string& trading_pair,
+        models::OrderSide side,
+        const algorithms::PovConfig& config)
+        : id_(id), algo_() {
+        
+        // Initialize algorithm
+        algo_.initialize(trading_pair, side, config);
+    }
+    
+    bool start() override {
+        return algo_.start();
+    }
+    
+    bool pause() override {
+        return algo_.pause();
+    }
+    
+    bool resume() override {
+        return algo_.resume();
+    }
+    
+    bool cancel() override {
+        return algo_.cancel();
+    }
+    
+    bool isRunning() const override {
+        return algo_.isRunning();
+    }
+    
+    bool isComplete() const override {
+        return algo_.isComplete();
+    }
+    
+    AlgorithmType getType() const override {
+        return AlgorithmType::POV;
+    }
+    
+    std::string getId() const override {
+        return id_;
+    }
+    
+    std::vector<models::OrderPtr> getChildOrders() const override {
+        return algo_.getChildOrders();
+    }
+    
+    void handleOrderUpdate(const models::OrderPtr& order) override {
+        algo_.handleOrderUpdate(order);
+    }
+    void setOrderCallback(const std::function<void(const models::OrderPtr&)>& callback) {
+        algo_.setOrderCallback(callback);
+    }
+    void setCompletionCallback(
+        const std::function<void(bool, const std::string&)>& callback) {
+        algo_.setCompletionCallback(callback);
+    }
+    void setMarketVolumeCallback(
+        const std::function<double(const std::string&, std::chrono::minutes)>& callback) {
+        algo_.setMarketVolumeCallback(callback);
+    }
+private:
+    std::string id_;
+    algorithms::PovAlgorithm algo_;
+};
+
 ExecutionAlgorithmFactory::ExecutionAlgorithmFactory() = default;
 
 
