@@ -125,7 +125,44 @@ bool IcebergAlgorithm::cancel() {
     
     return true;
 }
-
+//execute a parent order using Iceberg algorithm
+ExecutionResponse IcebergAlgorithm::execute(
+    const models::Order& parentOrder,
+    ExecutionService& execution_service) {
+    
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Validate parent order
+    if (parentOrder.getState() != models::OrderState::OPEN) {
+        setErrorState("Parent order must be in OPEN state");
+        return ExecutionResponse{
+                parentOrder.getClientOrderId(),
+                parentOrder.getExchangeOrderId(),
+                false,
+                "Parent order must be in OPEN state",
+                std::chrono::system_clock::now(),
+            };
+    }
+    
+    // Initialize algorithm with parent order parameters
+    trading_pair_ = parentOrder.getTradingPair();
+    side_ = parentOrder.getSide();
+    
+    // Start the algorithm
+    return start() ? ExecutionResponse{
+            parentOrder.getClientOrderId(),
+            parentOrder.getExchangeOrderId(),
+            true,
+            "Iceberg algorithm started",
+            std::chrono::system_clock::now(),
+        } : ExecutionResponse{
+            parentOrder.getClientOrderId(),
+            parentOrder.getExchangeOrderId(),
+            false,
+            "Failed to start Iceberg algorithm: " + error_message_,
+            std::chrono::system_clock::now(),
+        };
+}
 void IcebergAlgorithm::setOrderCallback(const OrderCallback& callback) {
     std::lock_guard<std::mutex> lock(mutex_);
     order_callback_ = callback;

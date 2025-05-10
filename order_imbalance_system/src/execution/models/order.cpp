@@ -213,7 +213,12 @@ void Order::setOrderId(const std::string& order_id) {
     order_id_ = order_id;
     updated_at_ = std::chrono::system_clock::now();
 }
-
+//setClientOrderId
+void Order::setClientOrderId(const std::string& client_order_id) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    client_order_id_ = client_order_id;
+    updated_at_ = std::chrono::system_clock::now();
+}
 void Order::setExchangeId(const std::string& exchange_id) {
     std::lock_guard<std::mutex> lock(mutex_);
     exchange_id_ = exchange_id;

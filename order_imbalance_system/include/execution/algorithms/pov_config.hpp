@@ -1,28 +1,34 @@
 #pragma once
 
-#include <string>
 #include <chrono>
+#include <string>
 
 namespace trading {
 namespace execution {
 namespace algorithms {
 
 /**
- * Configuration parameters for POV algorithm
+ * Configuration parameters for POV (Percentage of Volume) execution algorithm
  */
 struct PovConfig {
-    double total_quantity;               // Total quantity to execute
-    std::chrono::seconds duration;       // Maximum duration of execution
-    double participation_rate;           // Target percentage of market volume (0.01-1.0)
-    double min_order_size = 0.0;         // Minimum size for each child order
-    double max_order_size = 0.0;         // Maximum size for each child order
-    std::chrono::seconds check_interval = std::chrono::seconds(30); // Interval for checking market volume
-    double price_limit = 0.0;            // Optional price limit, 0 for market orders
-    double deviation_pct = 0.01;         // Max allowed deviation from target price (1%)
+    // Required parameters
+    double total_quantity = 0.0;         // Total quantity to execute
+    double participation_rate = 0.05;    // Target participation rate (0.0-1.0)
+    double price_limit = 0.0;            // Maximum price for buy or minimum price for sell
+    
+    // Optional parameters
+    std::chrono::seconds duration = std::chrono::hours(1);  // Maximum execution duration
+    std::chrono::seconds check_interval = std::chrono::seconds(15);  // Interval to check market volume
+    std::chrono::minutes volume_lookback = std::chrono::minutes(5);  // Lookback window for volume calculation
+    
+    double min_order_size = 0.0;         // Minimum order size (if > 0)
+    double max_order_size = 0.0;         // Maximum order size (if > 0)
     bool dynamic_rate = false;           // Whether to adjust participation rate dynamically
-    std::chrono::minutes volume_lookback = std::chrono::minutes(5); // Period to look back for volume analysis
-    std::string exchange_id;             // Target exchange for execution
-    double urgency_factor = 0.5;         // 0-1 factor for urgency (affects participation rate)
+    
+    double urgency_factor = 1.0;         // Factor to adjust participation rate (higher = more urgent)
+    double deviation_pct = 0.0;          // Allowed deviation from participation rate
+    
+    std::string exchange_id;             // Optional exchange ID
 };
 
 } // namespace algorithms

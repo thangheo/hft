@@ -1,10 +1,13 @@
 #pragma once
 
 #include "../models/order.hpp"
+#include "../execution/execution_forward_decl.hpp"
+#include "../execution/execution_types.hpp"
 #include <string>
 #include <vector>
 #include <memory>
 #include <functional>
+#include <chrono>
 
 namespace trading {
 namespace execution {
@@ -52,7 +55,10 @@ public:
     
     // Cancel execution
     bool cancel();
-    
+    //execute a parent order using Iceberg algorithm
+    ExecutionResponse execute(
+        const models::Order& parentOrder,
+        ExecutionService& execution_service);
     // Register callbacks
     void setOrderCallback(const OrderCallback& callback);
     void setCompletionCallback(const CompletionCallback& callback);

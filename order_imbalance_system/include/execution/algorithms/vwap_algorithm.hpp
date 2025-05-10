@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../models/order.hpp"
+#include "../execution/execution_forward_decl.hpp"
 #include <string>
 #include <vector>
 #include <chrono>
@@ -52,6 +53,8 @@ public:
     
     // Start algorithm execution
     bool start();
+    //execute the algorithm with a parent order
+    ExecutionResponse execute(const models::Order& parentOrder, ExecutionService& execution_service);
     
     // Pause execution
     bool pause();

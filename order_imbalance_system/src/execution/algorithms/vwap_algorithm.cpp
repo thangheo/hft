@@ -1,6 +1,7 @@
 // algorithms/vwap_algorithm.cpp
 #include "execution/algorithms/vwap_algorithm.hpp"
 #include "execution/algorithms/timer.hpp"
+#include "execution/execution_service.hpp"
 #include <cmath>
 #include <iostream>
 #include <chrono>
@@ -144,6 +145,58 @@ bool VwapAlgorithm::start() {
     scheduleNextBucket();
     
     return true;
+}
+//execute the algorithm with a parent order
+ExecutionResponse VwapAlgorithm::execute(const models::Order& parentOrder, ExecutionService& execution_service) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    if (state_ != State::RUNNING) {
+        return ExecutionResponse{
+            parentOrder.getClientOrderId(),
+            parentOrder.getExchangeOrderId(),
+            false,
+            "Algorithm not running",
+            std::chrono::system_clock::now()
+        };
+    }
+    
+    // Create child orders based on the volume profile
+    for (const auto& bucket : time_buckets_) {
+        if (!bucket.processed) {
+            double target_quantity = bucket.target_quantity - bucket.executed_quantity;
+            if (target_quantity > 0) {
+                auto child_order = std::make_shared<models::Order>();
+                child_order->setOrderId(parentOrder.getOrderId());
+                child_order->setClientOrderId(parentOrder.getClientOrderId());
+                child_order->setTradingPair(trading_pair_);
+                child_order->setSide(side_);
+                child_order->setQuantity(target_quantity);
+                child_order->setPrice(config_.price_limit);
+                
+                // Place the order through the execution service
+                execution_service.placeOrder(*child_order);
+                
+                // Store the order
+                child_orders_.push_back(child_order);
+                
+                // Update executed quantity
+                executed_quantity_ += target_quantity;
+                
+                // Call order callback if set
+                if (order_callback_) {
+                    order_callback_(child_order);
+                }
+            }
+        }
+    }
+    
+    return ExecutionResponse{
+        parentOrder.getClientOrderId(),
+        parentOrder.getExchangeOrderId(),
+        true,
+        "",
+        std::chrono::system_clock::now()
+    };
 }
 
 bool VwapAlgorithm::pause() {

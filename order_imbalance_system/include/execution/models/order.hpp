@@ -161,6 +161,7 @@ public:
     void setOrderId(const std::string& order_id);
     void setExchangeId(const std::string& exchange_id);
     void setExchangeOrderId(const std::string& exchange_order_id);
+    void setClientOrderId(const std::string& client_order_id);
     void setTradingPair(const std::string& trading_pair);
     void setSide(OrderSide side);
     void setType(OrderType type);

@@ -1,24 +1,20 @@
 #pragma once
 
-// #include "algorithms/twap_algorithm.hpp"
 #include "execution/algorithms/twap_config.hpp"
-#include "algorithms/vwap_algorithm.hpp"
-#include "algorithms/iceberg_algorithm.hpp"
-#include "algorithms/pov_algorithm.hpp"
+#include "execution/algorithms/vwap_algorithm.hpp"
+#include "execution/algorithms/iceberg_algorithm.hpp"
+#include "execution/algorithms/pov_algorithm.hpp"
 #include "execution/execution_forward_decl.hpp"
 #include "execution/execution_types.hpp"
 #include "models/order.hpp"
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <mutex>
+#include <chrono>
+
 namespace trading {
 namespace execution {
-
-// Forward declarations
-// class ExecutionService;
-// struct ExecutionResponse;  
-// struct DefaultAlgorithmParams;
-// struct TwapParams;
 
 /**
  * Enumeration of supported execution algorithm types
@@ -64,6 +60,7 @@ struct DefaultAlgorithmParams : public AlgorithmParams {
     
     AlgorithmType getType() const override { return algorithm_type; }
 };
+
 /**
  * TWAP algorithm parameters
  */
@@ -79,6 +76,7 @@ struct VwapParams : public AlgorithmParams {
     algorithms::VwapConfig config;
     AlgorithmType getType() const override { return AlgorithmType::VWAP; }
 };
+
 /**
  * Iceberg algorithm parameters
  */
@@ -94,12 +92,15 @@ struct PovParams : public AlgorithmParams {
     algorithms::PovConfig config;
     AlgorithmType getType() const override { return AlgorithmType::POV; }
 };
+
 /**
  * Base class for execution algorithms
  */
 class ExecutionAlgorithm {
 public:
     virtual ~ExecutionAlgorithm() = default;
+    
+    // Main execution method
     virtual ExecutionResponse execute(const models::Order& order, ExecutionService& execution_service) = 0;
 
     // Common interface methods
@@ -124,13 +125,8 @@ public:
     ExecutionAlgorithmFactory();
     
     // Create algorithm instance
-    // std::shared_ptr<ExecutionAlgorithm> createAlgorithm(
-    //     const std::string& id,
-    //     const std::string& trading_pair,
-    //     models::OrderSide side,
-    //     const std::shared_ptr<AlgorithmParams>& params);
     std::shared_ptr<ExecutionAlgorithm> createAlgorithm(
-        const std::shared_ptr<DefaultAlgorithmParams>& params) ;
+        const std::shared_ptr<DefaultAlgorithmParams>& params);
     
     // Get algorithm by ID
     std::shared_ptr<ExecutionAlgorithm> getAlgorithm(const std::string& id) const;
@@ -142,111 +138,32 @@ public:
     void registerCompletionCallback(
         const std::function<void(const std::string&, bool, const std::string&)>& callback);
     
-    // Register volume callback for VWAP algorithms
+    // Register volume callback for VWAP and POV algorithms
     void registerVolumeCallback(
         const std::function<double(const std::string&, std::chrono::minutes)>& callback);
     
 private:
-    std::unordered_map<std::string, std::shared_ptr<ExecutionAlgorithm>> algorithms_;
-    // Algorithm wrapper classes
+    // Algorithm wrapper classes - defined in cpp file
     class TwapAlgorithmWrapper;
     class VwapAlgorithmWrapper;
     class IcebergAlgorithmWrapper;
     class PovAlgorithmWrapper;
+    
+    // Map of algorithm instances by ID
+    std::unordered_map<std::string, std::shared_ptr<ExecutionAlgorithm>> algorithms_;
+    
+    // Callbacks
+    std::function<void(const models::OrderPtr&)> order_callback_;
+    std::function<void(const std::string&, bool, const std::string&)> completion_callback_;
     std::function<double(const std::string&, std::chrono::minutes)> volume_callback_;
     
     // Mutex for thread safety
     mutable std::mutex mutex_;
-    // Callbacks
-    std::function<void(const models::OrderPtr&)> order_callback_;
-    std::function<void(const std::string&, bool, const std::string&)> completion_callback_;
-    
-    // Algorithm wrapper classes
-    class TwapAlgorithmWrapper;
-    class VwapAlgorithmWrapper;
-    class IcebergAlgorithmWrapper;
 };
 
 // Type aliases for convenience
 using ExecutionAlgorithmPtr = std::shared_ptr<ExecutionAlgorithm>;
 using AlgorithmParamsPtr = std::shared_ptr<AlgorithmParams>;
 
-// 
-// POV Algorithm Wrapper
-class PovAlgorithmWrapper : public ExecutionAlgorithm {
-    public:
-        PovAlgorithmWrapper(
-            const std::string& id,
-            const std::string& trading_pair,
-            models::OrderSide side,
-            const algorithms::PovConfig& config)
-            : id_(id), algo_() {
-            
-            // Initialize algorithm
-            algo_.initialize(trading_pair, side, config);
-        }
-        
-        bool start() override {
-            return algo_.start();
-        }
-        
-        bool pause() override {
-            return algo_.pause();
-        }
-        
-        bool resume() override {
-            // POV doesn't have a resume method, use start instead if paused
-            if (algo_.isRunning()) {
-                return true; // Already running
-            }
-            return algo_.start();
-        }
-        
-        bool cancel() override {
-            return algo_.cancel();
-        }
-        
-        bool isRunning() const override {
-            return algo_.isRunning();
-        }
-        
-        bool isComplete() const override {
-            return algo_.isComplete();
-        }
-        
-        AlgorithmType getType() const override {
-            return AlgorithmType::POV;
-        }
-        
-        std::string getId() const override {
-            return id_;
-        }
-        
-        std::vector<models::OrderPtr> getChildOrders() const override {
-            return algo_.getChildOrders();
-        }
-        
-        void handleOrderUpdate(const models::OrderPtr& order) override {
-            algo_.handleOrderUpdate(order);
-        }
-        
-        void setOrderCallback(const std::function<void(const models::OrderPtr&)>& callback) {
-            algo_.setOrderCallback(callback);
-        }
-        
-        void setCompletionCallback(
-            const std::function<void(bool, const std::string&)>& callback) {
-            algo_.setCompletionCallback(callback);
-        }
-        
-        void setMarketVolumeCallback(
-            const std::function<double(const std::string&, std::chrono::minutes)>& callback) {
-            algo_.setMarketVolumeCallback(callback);
-        }
-        
-    private:
-        std::string id_;
-        algorithms::PovAlgorithm algo_;
-    };
 } // namespace execution
 } // namespace trading

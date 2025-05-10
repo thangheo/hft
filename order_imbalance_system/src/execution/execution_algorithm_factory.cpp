@@ -39,6 +39,11 @@ public:
         algo_.initialize(trading_pair, side, config);
     }
     
+    // Implement ExecutionAlgorithm interface
+    ExecutionResponse execute(const models::Order& order, ExecutionService& execution_service) override {
+        return algo_.execute(order, execution_service);
+    }
+    
     bool start() override {
         return algo_.start();
     }
@@ -87,6 +92,7 @@ public:
         const std::function<void(bool, const std::string&)>& callback) {
         algo_.setCompletionCallback(callback);
     }
+    
     void setVolumeCallback(
         const std::function<double(const std::string&, std::chrono::minutes)>& callback) {
         algo_.setVolumeCallback(callback);
@@ -109,6 +115,11 @@ public:
         
         // Initialize algorithm
         algo_.initialize(trading_pair, side, config);
+    }
+    
+    // Implement ExecutionAlgorithm interface
+    ExecutionResponse execute(const models::Order& order, ExecutionService& execution_service) override {
+        return algo_.execute(order, execution_service);
     }
     
     bool start() override {
@@ -184,6 +195,11 @@ public:
         algo_.initialize(trading_pair, side, config);
     }
     
+    // Implement ExecutionAlgorithm interface
+    ExecutionResponse execute(const models::Order& order, ExecutionService& execution_service) override {
+        return algo_.execute(order, execution_service);
+    }
+    
     bool start() override {
         return algo_.start();
     }
@@ -232,16 +248,13 @@ public:
         const std::function<void(bool, const std::string&)>& callback) {
         algo_.setCompletionCallback(callback);
     }
-    void setVolumeCallback(
-        const std::function<double(const std::string&, std::chrono::minutes)>& callback) {
-        algo_.setVolumeCallback(callback);
-    }
+    
 private:
     std::string id_;
     algorithms::IcebergAlgorithm algo_;
 };
 
-//POV Algorithm Wrapper
+// POV Algorithm Wrapper
 class ExecutionAlgorithmFactory::PovAlgorithmWrapper : public ExecutionAlgorithm {
 public:
     PovAlgorithmWrapper(
@@ -253,6 +266,11 @@ public:
         
         // Initialize algorithm
         algo_.initialize(trading_pair, side, config);
+    }
+    
+    // Implement ExecutionAlgorithm interface
+    ExecutionResponse execute(const models::Order& order, ExecutionService& execution_service) override {
+        return algo_.execute(order, execution_service);
     }
     
     bool start() override {
@@ -294,25 +312,29 @@ public:
     void handleOrderUpdate(const models::OrderPtr& order) override {
         algo_.handleOrderUpdate(order);
     }
+    
     void setOrderCallback(const std::function<void(const models::OrderPtr&)>& callback) {
         algo_.setOrderCallback(callback);
     }
+    
     void setCompletionCallback(
         const std::function<void(bool, const std::string&)>& callback) {
         algo_.setCompletionCallback(callback);
     }
+    
     void setMarketVolumeCallback(
         const std::function<double(const std::string&, std::chrono::minutes)>& callback) {
         algo_.setMarketVolumeCallback(callback);
     }
+    
 private:
     std::string id_;
     algorithms::PovAlgorithm algo_;
 };
 
+// Factory implementation methods follow...
+
 ExecutionAlgorithmFactory::ExecutionAlgorithmFactory() = default;
-
-
 
 std::shared_ptr<ExecutionAlgorithm> ExecutionAlgorithmFactory::createAlgorithm(
     const std::shared_ptr<DefaultAlgorithmParams>& params) {
@@ -415,6 +437,7 @@ std::shared_ptr<ExecutionAlgorithm> ExecutionAlgorithmFactory::createAlgorithm(
             algorithm = wrapper;
             break;
         }
+        
         case AlgorithmType::POV: {
             // Create POV config from default params
             algorithms::PovConfig pov_config;
@@ -443,24 +466,6 @@ std::shared_ptr<ExecutionAlgorithm> ExecutionAlgorithmFactory::createAlgorithm(
                     std::stoi(params->extra_params.at("check_interval_seconds")));
             }
             
-            if (params->extra_params.find("dynamic_rate") != params->extra_params.end()) {
-                pov_config.dynamic_rate = (params->extra_params.at("dynamic_rate") == "true" 
-                                         || params->extra_params.at("dynamic_rate") == "1");
-            }
-            
-            if (params->extra_params.find("volume_lookback_minutes") != params->extra_params.end()) {
-                pov_config.volume_lookback = std::chrono::minutes(
-                    std::stoi(params->extra_params.at("volume_lookback_minutes")));
-            }
-            
-            if (params->extra_params.find("urgency_factor") != params->extra_params.end()) {
-                pov_config.urgency_factor = std::stod(params->extra_params.at("urgency_factor"));
-            }
-            
-            if (params->extra_params.find("deviation_pct") != params->extra_params.end()) {
-                pov_config.deviation_pct = std::stod(params->extra_params.at("deviation_pct"));
-            }
-            
             // Use exchange ID if available
             if (!params->exchange_id.empty()) {
                 pov_config.exchange_id = params->exchange_id;
@@ -487,6 +492,7 @@ std::shared_ptr<ExecutionAlgorithm> ExecutionAlgorithmFactory::createAlgorithm(
             algorithm = wrapper;
             break;
         }
+        
         default:
             std::cerr << "Unsupported algorithm type" << std::endl;
             return nullptr;
@@ -497,7 +503,7 @@ std::shared_ptr<ExecutionAlgorithm> ExecutionAlgorithmFactory::createAlgorithm(
     
     return algorithm;
 }
-        
+
 std::shared_ptr<ExecutionAlgorithm> ExecutionAlgorithmFactory::getAlgorithm(
     const std::string& id) const {
     
@@ -535,9 +541,7 @@ void ExecutionAlgorithmFactory::registerOrderCallback(
             if (wrapper) {
                 wrapper->setOrderCallback(callback);
             }
-        }
-        // Add POV case
-        else if (pair.second->getType() == AlgorithmType::POV) {
+        } else if (pair.second->getType() == AlgorithmType::POV) {
             auto wrapper = std::dynamic_pointer_cast<PovAlgorithmWrapper>(pair.second);
             if (wrapper) {
                 wrapper->setOrderCallback(callback);
@@ -579,9 +583,7 @@ void ExecutionAlgorithmFactory::registerCompletionCallback(
                         completion_callback_(id, success, message);
                     });
             }
-        }
-        //pov case
-        else if (pair.second->getType() == AlgorithmType::POV) {
+        } else if (pair.second->getType() == AlgorithmType::POV) {
             auto wrapper = std::dynamic_pointer_cast<PovAlgorithmWrapper>(pair.second);
             if (wrapper) {
                 wrapper->setCompletionCallback(
@@ -590,7 +592,6 @@ void ExecutionAlgorithmFactory::registerCompletionCallback(
                     });
             }
         }
-
     }
 }
 
@@ -601,32 +602,24 @@ void ExecutionAlgorithmFactory::registerVolumeCallback(
     
     volume_callback_ = callback;
     
-    // Update callback for existing VWAP ,TWAP, ICEBERG, POV
+    // Update callback for existing algorithms
     for (auto& pair : algorithms_) {
         if (pair.second->getType() == AlgorithmType::VWAP) {
             auto wrapper = std::dynamic_pointer_cast<VwapAlgorithmWrapper>(pair.second);
             if (wrapper) {
                 wrapper->setVolumeCallback(callback);
             }
-        }
-        else if (pair.second->getType() == AlgorithmType::TWAP) {
+        } else if (pair.second->getType() == AlgorithmType::TWAP) {
             auto wrapper = std::dynamic_pointer_cast<TwapAlgorithmWrapper>(pair.second);
             if (wrapper) {
                 wrapper->setVolumeCallback(callback);
             }
-        } else if (pair.second->getType() == AlgorithmType::ICEBERG) {
-            auto wrapper = std::dynamic_pointer_cast<IcebergAlgorithmWrapper>(pair.second);
-            if (wrapper) {
-                wrapper->setVolumeCallback(callback);
-            }
-        }
-        else if (pair.second->getType() == AlgorithmType::POV) {
+        } else if (pair.second->getType() == AlgorithmType::POV) {
             auto wrapper = std::dynamic_pointer_cast<PovAlgorithmWrapper>(pair.second);
             if (wrapper) {
                 wrapper->setMarketVolumeCallback(callback);
             }
         }
-        
     }
 }
 
