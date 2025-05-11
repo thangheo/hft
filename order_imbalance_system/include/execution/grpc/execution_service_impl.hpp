@@ -147,8 +147,7 @@
 #pragma once
 
 #include "execution/execution_service.hpp"
-#include "execution_service.grpc.pb.h"  // Generated from protobuf
-
+#include "proto/generated/execution_service.grpc.pb.h"
 #include <memory>
 #include <grpcpp/grpcpp.h>
 
