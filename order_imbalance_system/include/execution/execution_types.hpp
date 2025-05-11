@@ -46,6 +46,7 @@ struct ExecutionResponse {
     bool success;
     std::string error_message;
     std::chrono::system_clock::time_point timestamp;
+    std::string order_status;
 };
 } // namespace execution
 } // namespace trading

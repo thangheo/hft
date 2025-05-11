@@ -288,8 +288,8 @@ ExecutionResponse TwapAlgorithm::execute(const models::Order& parentOrder, Execu
             "", 
             false,
             "Failed to initialize TWAP algorithm: " + error_message_,
-            // "REJECTED", 
-            std::chrono::system_clock::now()
+            std::chrono::system_clock::now(),
+            "REJECTED", 
         };
     }
     
@@ -322,8 +322,8 @@ ExecutionResponse TwapAlgorithm::execute(const models::Order& parentOrder, Execu
             "", 
             false,
             "Failed to start TWAP algorithm",
-            // "REJECTED", 
-            std::chrono::system_clock::now()
+            std::chrono::system_clock::now(),
+            "REJECTED"
         };
     }
     
@@ -333,8 +333,9 @@ ExecutionResponse TwapAlgorithm::execute(const models::Order& parentOrder, Execu
         "",  // No exchange order ID for the parent order
         true,
         "",
-        // "ACCEPTED",  // Parent order is accepted for algorithmic execution
-        std::chrono::system_clock::now()
+        std::chrono::system_clock::now(),
+        "ACCEPTED",  // Parent order is accepted for algorithmic execution
+
     };
 }
 

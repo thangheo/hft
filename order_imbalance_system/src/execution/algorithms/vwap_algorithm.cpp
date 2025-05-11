@@ -156,7 +156,8 @@ ExecutionResponse VwapAlgorithm::execute(const models::Order& parentOrder, Execu
             parentOrder.getExchangeOrderId(),
             false,
             "Algorithm not running",
-            std::chrono::system_clock::now()
+            std::chrono::system_clock::now(),
+            ""
         };
     }
     
@@ -195,7 +196,8 @@ ExecutionResponse VwapAlgorithm::execute(const models::Order& parentOrder, Execu
         parentOrder.getExchangeOrderId(),
         true,
         "",
-        std::chrono::system_clock::now()
+        std::chrono::system_clock::now(),
+        "RUNNING"
     };
 }
 

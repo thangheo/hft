@@ -6,13 +6,13 @@ namespace execution {
 
 OrderTypeSelector::OrderTypeSelector() {
     // Set default selection strategy
-    selection_strategy_ = [this](const OrderPtr& order, const MarketCondition& condition) {
+    selection_strategy_ = [this](const models::OrderPtr& order, const MarketCondition& condition) {
         return this->defaultSelectionStrategy(order, condition);
     };
 }
 
 OrderTypeSelection OrderTypeSelector::selectOrderType(
-    const OrderPtr& order,
+    const models::OrderPtr& order,
     const MarketCondition& market_condition) const {
     
     // Use the current selection strategy
@@ -41,7 +41,7 @@ MarketCondition OrderTypeSelector::getMarketCondition(const std::string& trading
 
 void OrderTypeSelector::setSelectionStrategy(
     const std::function<OrderTypeSelection(
-        const OrderPtr&,
+        const models::OrderPtr&,
         const MarketCondition&)>& strategy) {
     
     selection_strategy_ = strategy;
@@ -60,33 +60,33 @@ void OrderTypeSelector::setSpreadThreshold(double threshold) {
 }
 
 OrderTypeSelection OrderTypeSelector::defaultSelectionStrategy(
-    const OrderPtr& order,
+    const models::OrderPtr& order,
     const MarketCondition& condition) const {
     
     OrderTypeSelection selection;
     
     // If already a market order and market conditions are favorable, keep it
-    if (order->getType() == OrderType::MARKET) {
+    if (order->getType() == models::OrderType::MARKET) {
         // Check if we should convert to a limit order
         if (condition.spread > spread_threshold_ && condition.liquidity_score > liquidity_threshold_) {
             // Convert to limit order for better price
-            selection.type = OrderType::LIMIT;
+            selection.type = models::OrderType::LIMIT;
             
             // For buy orders: use price slightly above best bid to ensure quick fill
             // For sell orders: use price slightly below best ask to ensure quick fill
-            if (order->getSide() == OrderSide::BUY) {
+            if (order->getSide() == models::OrderSide::BUY) {
                 selection.price = condition.bid_price * (1.001); // 0.1% above bid
             } else {
                 selection.price = condition.ask_price * (0.999); // 0.1% below ask
             }
             
-            selection.time_in_force = TimeInForce::GTC;
+            selection.time_in_force = models::TimeInForce::GTC;
             selection.reason = "Converted to limit order due to wide spread";
         } else {
             // Keep as market order
-            selection.type = OrderType::MARKET;
+            selection.type = models::OrderType::MARKET;
             selection.price = 0.0; // Not applicable for market orders
-            selection.time_in_force = TimeInForce::IOC; // Immediate execution
+            selection.time_in_force = models::TimeInForce::IOC; // Immediate execution
             selection.reason = "Using market order for immediate execution";
         }
         
@@ -94,23 +94,23 @@ OrderTypeSelection OrderTypeSelector::defaultSelectionStrategy(
     }
     
     // If already a limit order, check if we should adjust or convert
-    if (order->getType() == OrderType::LIMIT) {
+    if (order->getType() == models::OrderType::LIMIT) {
         // If market is highly volatile, consider switching to market
         if (condition.volatility > volatility_threshold_) {
-            selection.type = OrderType::MARKET;
+            selection.type = models::OrderType::MARKET;
             selection.price = 0.0;
-            selection.time_in_force = TimeInForce::IOC;
+            selection.time_in_force = models::TimeInForce::IOC;
             selection.reason = "Converted to market order due to high volatility";
         } else {
             // Keep as limit order but potentially adjust price
-            selection.type = OrderType::LIMIT;
+            selection.type = models::OrderType::LIMIT;
             double current_price = order->getPrice();
             
             // Adjust price if needed based on current market conditions
-            if (order->getSide() == OrderSide::BUY && current_price < condition.bid_price) {
+            if (order->getSide() == models::OrderSide::BUY && current_price < condition.bid_price) {
                 selection.price = condition.bid_price * (1.001); // 0.1% above bid
                 selection.reason = "Adjusted limit buy price to increase fill probability";
-            } else if (order->getSide() == OrderSide::SELL && current_price > condition.ask_price) {
+            } else if (order->getSide() == models::OrderSide::SELL && current_price > condition.ask_price) {
                 selection.price = condition.ask_price * (0.999); // 0.1% below ask
                 selection.reason = "Adjusted limit sell price to increase fill probability";
             } else {
@@ -118,7 +118,7 @@ OrderTypeSelection OrderTypeSelector::defaultSelectionStrategy(
                 selection.reason = "Maintained current limit price";
             }
             
-            selection.time_in_force = TimeInForce::GTC;
+            selection.time_in_force = models::TimeInForce::GTC;
         }
         
         return selection;

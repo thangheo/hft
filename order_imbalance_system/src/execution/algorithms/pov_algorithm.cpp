@@ -169,6 +169,7 @@ ExecutionResponse PovAlgorithm::execute(
             response.exchange_order_id = parentOrder.getExchangeOrderId();
             response.timestamp = std::chrono::system_clock::now();
             response.error_message = "Failed to start POV algorithm: " + error_message_;
+            response.order_status = "ERROR";
             return response;
         }
     }

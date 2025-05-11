@@ -92,8 +92,8 @@
      // Validate service state
      if (!is_running_) {
          return ExecutionResponse{
-             "", "", false, "Execution service not running", 
-             "REJECTED", std::chrono::system_clock::now()
+             "", "", false, "Execution service not running", std::chrono::system_clock::now(),
+                ""
          };
      }
      
@@ -104,8 +104,9 @@
      if (!validateOrder(order)) {
          return ExecutionResponse{
              order.getClientOrderId(), "", false, 
-             "Invalid order parameters", "REJECTED", 
-             std::chrono::system_clock::now()
+             "Invalid order parameters",
+             std::chrono::system_clock::now(),
+                ""
          };
      }
      
@@ -123,7 +124,9 @@
     if (!is_running_) {
         return ExecutionResponse{
             "", "", false, "Execution service not running", 
-            "REJECTED", std::chrono::system_clock::now()
+             std::chrono::system_clock::now(),
+             //orderstatus
+            ""
         };
     }
     
@@ -131,8 +134,9 @@
     if (!validateOrder(order)) {
         return ExecutionResponse{
             order.getClientOrderId(), "", false, 
-            "Invalid order parameters", "REJECTED", 
-            std::chrono::system_clock::now()
+            "Invalid order parameters",  
+            std::chrono::system_clock::now(),
+            ""
         };
     }
     
@@ -142,8 +146,9 @@
     if (exchange_id.empty()) {
         return ExecutionResponse{
             order.getClientOrderId(), "", false, 
-            "No suitable exchange found", "REJECTED", 
-            std::chrono::system_clock::now()
+            "No suitable exchange found",  
+            std::chrono::system_clock::now(),
+            ""
         };
     }
     
@@ -182,9 +187,12 @@
         );
         
         return ExecutionResponse{
-            exchange_order->getClientOrderId(), "", false, 
-            "Exchange API client not available", "REJECTED", 
-            std::chrono::system_clock::now()
+            exchange_order->getClientOrderId(), 
+            "", 
+            false, 
+            "Exchange API client not available",
+            std::chrono::system_clock::now(),
+            ""
         };
     }
     
@@ -241,8 +249,8 @@
         
         return ExecutionResponse{
             exchange_order->getClientOrderId(), "", false, 
-            std::string("Exception during order placement: ") + e.what(), 
-            "REJECTED", std::chrono::system_clock::now()
+            std::string("Exception during order placement: ") + e.what(), std::chrono::system_clock::now(),
+            ""
         };
     }
 }
@@ -254,6 +262,7 @@ CancelResponse ExecutionService::cancelOrder(const std::string& client_order_id)
             client_order_id, "", false, 
             "Execution service not running", 
             std::chrono::system_clock::now()
+            
         };
     }
     
@@ -443,43 +452,6 @@ std::string ExecutionService::orderStateToString(models::OrderState state) {
     
     return responses;
 }
-//  OrderStatusResponse ExecutionService::getOrderStatus(const std::string& client_order_id) {
-//      // Validate service state
-//      if (!is_running_) {
-//          return OrderStatusResponse{
-//              models::Order{}, false, "Execution service not running"
-//          };
-//      }
-     
-//      // Get order from lifecycle tracker
-//      auto order_opt = order_lifecycle_tracker_->getOrderByOrderId(client_order_id);
-//      if (!order_opt) {
-//          return OrderStatusResponse{
-//              models::Order{}, false, "Order not found"
-//          };
-//      }
-     
-//      // For active orders, refresh status from exchange
-//      const auto& order = *order_opt;
-//      if (order.isActive()) {
-//          // Get exchange API client
-//          auto api_client = api_client_manager_->getClient(order.getExchangeId());
-//          if (api_client) {
-//              // Query exchange for latest status
-//              api_client->getOrderStatus(order.getClientOrderId(), order.getTradingPair());
-//              // Refresh our local copy after potential update
-//              order_opt = order_lifecycle_tracker_->getOrderByOrderId(client_order_id);
-//          }
-//      }
-     
-//      // Prepare response
-//      OrderStatusResponse response;
-//      response.order = models::Order(*order_opt);  // Create a new Order by copy construction
-//      response.found = true;
-//      response.error_message = "";
-     
-//      return response;
-//  }
 
 // Update the getOrderStatus method to use shared_ptr
 OrderStatusResponse ExecutionService::getOrderStatus(const std::string& client_order_id) {
@@ -581,32 +553,71 @@ OrderStatusResponse ExecutionService::getOrderStatus(const std::string& client_o
  }
  
  // Private helper methods
- 
  models::Order ExecutionService::createOrderFromSignal(const TradingSignal& signal) {
-     // Use order generator to create an order based on the signal
-     OrderGenerationParams params;
-     
-     params.trading_pair = signal.trading_pair;
-     params.signal_strength = signal.strength;
-     params.target_size = signal.target_size;
-     params.signal_id = signal.signal_id;
-     params.strategy_id = signal.strategy_id;
-     params.side = signal.direction;
-     
-     // Generate the order
-     auto order = order_generator_->createOrder(params);
-     
-     // Select the best exchange
-     std::string exchange_id = smart_order_router_->selectExchange(
-         signal.trading_pair, order.getType());
-     order.setExchangeId(exchange_id);
-     
-     // Select the most appropriate order type
-     auto selected_type = order_type_selector_->selectOrderType(order, signal.signal_metrics);
-     order.setType(selected_type);
-     
-     return order;
- }
+    // Use order generator to create an order based on the signal
+    OrderGenerationParams params;
+    params.trading_pair = signal.trading_pair;
+    params.signal_strength = signal.strength;
+    params.target_size = signal.target_size;
+    params.signal_id = signal.signal_id;
+    params.strategy_id = signal.strategy_id;
+    params.side = signal.direction;
+    
+    // Generate the order
+    auto order = order_generator_->createOrder(params);
+    
+    // Select the best exchange
+    RoutingResult routing_result = smart_order_router_->selectExchange(order);
+    std::string exchange_id = routing_result.exchange_id;
+    if (exchange_id.empty()) {
+        // logger_->error("No suitable exchange found for order generation");
+        throw std::runtime_error("No suitable exchange found for order generation");
+    }
+    
+    // Set exchange ID
+    order->setExchangeId(exchange_id);
+    
+    // Create a shared pointer to the order for the selector
+    // auto order_ptr = std::make_shared<models::Order> (order);
+    auto order_ptr = std::make_shared<models::Order>(*order);
+    order_ptr->setOrderId(signal.signal_id);
+    
+    // Create MarketCondition from signal metrics
+    MarketCondition market_condition;
+    // Set market condition from signal metrics
+    auto it = signal.signal_metrics.find("bid_price");
+    if (it != signal.signal_metrics.end()) market_condition.bid_price = it->second;
+    
+    it = signal.signal_metrics.find("ask_price");
+    if (it != signal.signal_metrics.end()) market_condition.ask_price = it->second;
+    
+    it = signal.signal_metrics.find("spread");
+    if (it != signal.signal_metrics.end()) market_condition.spread = it->second;
+    
+    it = signal.signal_metrics.find("volatility");
+    if (it != signal.signal_metrics.end()) market_condition.volatility = it->second;
+    
+    it = signal.signal_metrics.find("volume");
+    if (it != signal.signal_metrics.end()) market_condition.volume = it->second;
+    
+    it = signal.signal_metrics.find("liquidity_score");
+    if (it != signal.signal_metrics.end()) market_condition.liquidity_score = it->second;
+    
+    it = signal.signal_metrics.find("market_impact_estimate");
+    if (it != signal.signal_metrics.end()) market_condition.market_impact_estimate = it->second;
+    
+    // Select the most appropriate order type
+    OrderTypeSelection selection = order_type_selector_->selectOrderType(order_ptr, market_condition);
+    
+    // Apply the selected order type and other parameters
+    order->setType(selection.type);
+    if (selection.type == models::OrderType::LIMIT) {
+        order->setPrice(selection.price);
+    }
+    order->setTimeInForce(selection.time_in_force);
+    
+    return *order_ptr;
+}
  
  bool ExecutionService::validateOrder(const models::Order& order) {
      // Basic validation checks
@@ -627,97 +638,7 @@ OrderStatusResponse ExecutionService::getOrderStatus(const std::string& client_o
      
      return true;
  }
-//  ExecutionResponse ExecutionService::executeOrderWithAlgorithm(const models::Order& order) {
-//     // Simple market and limit orders can be placed directly
-//     if (order.getType() == models::OrderType::MARKET || 
-//         order.getType() == models::OrderType::LIMIT) {
-//         return placeOrder(order);
-//     }
-    
-//     // For specialized orders, use execution algorithms
-//     auto params = std::make_shared<DefaultAlgorithmParams>();
-    
-//     // Copy base parameters from order
-//     params->exchange_id = order.getExchangeId();
-//     params->trading_pair = order.getTradingPair();
-//     params->side = order.getSide();
-//     params->quantity = order.getQuantity();
-//     params->price = order.getPrice();
-//     params->client_order_id = order.getClientOrderId();
-//     params->time_in_force = order.getTimeInForce();
-    
-//     // Determine algorithm type based on order type
-//     switch (order.getType()) {
-//         case models::OrderType::ICEBERG:
-//             params->algorithm_type = AlgorithmType::ICEBERG;
-//             params->visible_size = order.getExtraParam("visible_size");  // Hypothetical
-//             break;
-            
-//         case models::OrderType::STOP:
-//         case models::OrderType::STOP_LIMIT:
-//         case models::OrderType::TRAILING_STOP:
-//             // Could use a specialized stop order algorithm or handle directly
-//             return placeOrder(order);  // For now, place directly
-            
-//         case models::OrderType::FILL_OR_KILL:
-//         case models::OrderType::IMMEDIATE_OR_CANCEL:
-//         case models::OrderType::POST_ONLY:
-//             // These are typically exchange features rather than algorithms
-//             return placeOrder(order);
-            
-//         default:
-//             // Handle custom/advanced order types via parameters
-//             // This is where you could map to TWAP, VWAP, etc. based on custom fields
-//             if (order.getExtraParam("algorithm") == "TWAP") {
-//                 params->algorithm_type = AlgorithmType::TWAP;
-//                 params->duration_seconds = std::stoi(order.getExtraParam("duration_seconds"));
-//             } 
-//             else if (order.getExtraParam("algorithm") == "VWAP") {
-//                 params->algorithm_type = AlgorithmType::VWAP;
-//                 params->start_time = order.getExtraParam("start_time");
-//                 params->end_time = order.getExtraParam("end_time");
-//             }
-//             else if (order.getExtraParam("algorithm") == "POV") {
-//                 params->algorithm_type = AlgorithmType::POV;
-//                 params->participation_rate = std::stod(order.getExtraParam("participation_rate"));
-//             }
-//             else if (order.getExtraParam("algorithm") == "IMPLEMENTATION_SHORTFALL") {
-//                 params->algorithm_type = AlgorithmType::IMPLEMENTATION_SHORTFALL;
-//                 // Set implementation shortfall specific parameters
-//             }
-//             else if (order.getExtraParam("algorithm") == "ADAPTIVE") {
-//                 params->algorithm_type = AlgorithmType::ADAPTIVE;
-//                 // Set adaptive algorithm specific parameters
-//             }
-//             else {
-//                 // No recognized algorithm
-//                 // //logger_->error("Unknown algorithm type for order: {}", order.getClientOrderId());
-//                 return ExecutionResponse{
-//                     order.getClientOrderId(), "", false,
-//                     "No algorithm available for order type", "REJECTED",
-//                     std::chrono::system_clock::now()
-//                 };
-//             }
-//             break;
-//     }
-    
-//     // Create and execute the algorithm
-//     auto algorithm = execution_algorithm_factory_->createAlgorithm(params);
-//     if (!algorithm) {
-//         //logger_->error("Failed to create algorithm for order: {}", order.getClientOrderId());
-//         return ExecutionResponse{
-//             order.getClientOrderId(), "", false,
-//             "Failed to create execution algorithm", "REJECTED",
-//             std::chrono::system_clock::now()
-//         };
-//     }
-    
-//     // Execute using the algorithm
-//     //logger_->info("Executing order {} using {} algorithm", 
-//                  order.getClientOrderId(), 
-//                  AlgorithmTypeToString(params->algorithm_type));
-//     return algorithm->execute(order, *this);
-// }
+ 
 ExecutionResponse ExecutionService::executeOrderWithAlgorithm(const models::Order& order) {
     // Simple market and limit orders can be placed directly
     if (order.getType() == models::OrderType::MARKET || 
@@ -770,8 +691,9 @@ ExecutionResponse ExecutionService::executeOrderWithAlgorithm(const models::Orde
             // logger_->warn("Unsupported algorithm specified: {}", algorithmName);
             return ExecutionResponse{
                 order.getClientOrderId(), "", false,
-                "Unsupported algorithm type: " + algorithmName, "REJECTED",
-                std::chrono::system_clock::now()
+                "Unsupported algorithm type: " + algorithmName, 
+                std::chrono::system_clock::now(),
+                ""
             };
         }
     }
@@ -790,8 +712,9 @@ ExecutionResponse ExecutionService::executeOrderWithAlgorithm(const models::Orde
                 // logger_->error("No algorithm defined for order type");
                 return ExecutionResponse{
                     order.getClientOrderId(), "", false,
-                    "No algorithm available for order type", "REJECTED",
-                    std::chrono::system_clock::now()
+                    "No algorithm available for order type", 
+                    std::chrono::system_clock::now(),
+                    ""
                 };
         }
     }
@@ -802,8 +725,9 @@ ExecutionResponse ExecutionService::executeOrderWithAlgorithm(const models::Orde
         // logger_->error("Failed to create algorithm for order: {}", order.getClientOrderId());
         return ExecutionResponse{
             order.getClientOrderId(), "", false,
-            "Failed to create execution algorithm", "REJECTED",
-            std::chrono::system_clock::now()
+            "Failed to create execution algorithm", 
+            std::chrono::system_clock::now(),
+            ""
         };
     }
     
