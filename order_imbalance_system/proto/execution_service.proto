@@ -1,10 +1,185 @@
-// Defines the gRPC service interface for the execution engine
-// Order Imbalance Strategy - Execution Engine
-// Generated: 2025-04-29
-
+// execution_service.proto
 syntax = "proto3";
 
-package execution;
+package trading.execution;
 
-// TODO: Define service and message types for Defines the gRPC service interface for the execution engine
+// Trading signal to be executed
+message TradingSignalProto {
+    string signal_id = 1;
+    string trading_pair = 2;
+    enum OrderSide {
+        BUY = 0;
+        SELL = 1;
+    }
+    OrderSide direction = 3;
+    double strength = 4;
+    double target_size = 5;
+    int64 signal_ttl_ms = 6;  // Signal time-to-live in milliseconds
+    string strategy_id = 7;
+    string strategy_version = 8;
+    map<string, double> signal_metrics = 9;
+}
 
+// Order state in the system
+enum OrderStateProto {
+    CREATED = 0;
+    PENDING = 1;
+    PENDING_CANCEL = 2;
+    OPEN = 3;
+    PARTIALLY_FILLED = 4;
+    FILLED = 5;
+    CANCELED = 6;
+    REJECTED = 7;
+    EXPIRED = 8;
+}
+
+// Response for execution requests
+message ExecutionResponseProto {
+    string client_order_id = 1;
+    string exchange_order_id = 2;
+    bool success = 3;
+    string error_message = 4;
+    int64 timestamp = 5;  // Timestamp in milliseconds since epoch
+    string order_status = 6;
+}
+
+// Cancel order response
+message CancelResponseProto {
+    string client_order_id = 1;
+    string exchange_order_id = 2;
+    bool success = 3;
+    string error_message = 4;
+    int64 timestamp = 5;  // Timestamp in milliseconds since epoch
+}
+
+// Fill information for an order
+message FillProto {
+    string fill_id = 1;
+    string order_id = 2;
+    double quantity = 3;
+    double price = 4;
+    double fee = 5;
+    string fee_currency = 6;
+    int64 timestamp = 7;  // Timestamp in milliseconds since epoch
+}
+
+// Order information
+message OrderProto {
+    string order_id = 1;
+    string client_order_id = 2;
+    string exchange_id = 3;
+    string exchange_order_id = 4;
+    string trading_pair = 5;
+    enum OrderSide {
+        BUY = 0;
+        SELL = 1;
+    }
+    OrderSide side = 6;
+    enum OrderType {
+        MARKET = 0;
+        LIMIT = 1;
+        STOP = 2;
+        STOP_LIMIT = 3;
+        ICEBERG = 4;
+        TRAILING_STOP = 5;
+        FILL_OR_KILL = 6;
+        IMMEDIATE_OR_CANCEL = 7;
+        POST_ONLY = 8;
+    }
+    OrderType type = 7;
+    double quantity = 8;
+    double price = 9;
+    double stop_price = 10;
+    enum TimeInForce {
+        GTC = 0;  // Good Till Canceled
+        IOC = 1;  // Immediate Or Cancel
+        FOK = 2;  // Fill Or Kill
+        GTD = 3;  // Good Till Date
+    }
+    TimeInForce time_in_force = 11;
+    OrderStateProto state = 12;
+    string strategy_id = 13;
+    string signal_id = 14;
+    int64 created_at = 15;  // Timestamp in milliseconds since epoch
+    int64 updated_at = 16;  // Timestamp in milliseconds since epoch
+    repeated FillProto fills = 17;
+    double filled_quantity = 18;
+    double average_fill_price = 19;
+    map<string, string> extra_params = 20;
+}
+
+// Order status response
+message OrderStatusResponseProto {
+    OrderProto order = 1;
+    bool found = 2;
+    string error_message = 3;
+}
+
+// Health status request
+message HealthStatusRequestProto {
+}
+
+// Health status response
+message HealthStatusResponseProto {
+    string health_json = 1;
+}
+
+// Service definition
+service ExecutionService {
+    // Execute a trading signal
+    rpc ExecuteSignal(TradingSignalProto) returns (ExecutionResponseProto);
+    
+    // Place an order directly
+    rpc PlaceOrder(OrderProto) returns (ExecutionResponseProto);
+    
+    // Cancel an order
+    rpc CancelOrder(CancelOrderRequestProto) returns (CancelResponseProto);
+    
+    // Cancel all orders for a symbol
+    rpc CancelAllOrdersForSymbol(CancelAllOrdersRequestProto) returns (CancelAllOrdersResponseProto);
+    
+    // Get order status
+    rpc GetOrderStatus(OrderStatusRequestProto) returns (OrderStatusResponseProto);
+    
+    // Get active orders
+    rpc GetActiveOrders(ActiveOrdersRequestProto) returns (ActiveOrdersResponseProto);
+    
+    // Get health status
+    rpc GetHealthStatus(HealthStatusRequestProto) returns (HealthStatusResponseProto);
+}
+
+// Cancel order request
+message CancelOrderRequestProto {
+    string client_order_id = 1;
+}
+
+// Cancel order by exchange ID request
+message CancelOrderByExchangeIdRequestProto {
+    string exchange_order_id = 1;
+    string exchange_id = 2;
+}
+
+// Cancel all orders request
+message CancelAllOrdersRequestProto {
+    string trading_pair = 1;
+    string exchange_id = 2;  // Optional, can be empty
+}
+
+// Cancel all orders response
+message CancelAllOrdersResponseProto {
+    repeated CancelResponseProto responses = 1;
+}
+
+// Order status request
+message OrderStatusRequestProto {
+    string client_order_id = 1;
+}
+
+// Active orders request
+message ActiveOrdersRequestProto {
+}
+
+// Active orders response
+message ActiveOrdersResponseProto {
+    repeated OrderProto orders = 1;
+}
