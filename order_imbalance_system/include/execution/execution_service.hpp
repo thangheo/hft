@@ -11,7 +11,6 @@
 #pragma once
 
 #include "execution/models/order.hpp"
-// #include "execution/models/execution_report.hpp"
 #include "execution/order_generator.hpp"
 #include "execution/smart_order_router.hpp"
 #include "execution/order_type_selector.hpp"

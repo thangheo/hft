@@ -39,14 +39,7 @@ struct OrderBookKeyHash {
         return h1 ^ (h2 << 1);
     }
 }; 
-// struct PriceLevel {
-//     double price;
-//     double quantity;
-//     std::unordered_map<std::string, double> orders; // order_id -> quantity
-    
-//     PriceLevel(double p = 0.0, double q = 0.0)
-//         : price(p), quantity(q) {}
-// };
+
 
 // Raw market data from an exchange
 struct MarketDataUpdate {

@@ -57,8 +57,7 @@ std::string OrderLifecycleTracker::getClientOrderId(const std::string& exchange_
      
      return true;
  }
- //revertToPreviousState
- bool OrderLifecycleTracker::revertToPreviousState(const std::string& client_order_id) {
+ bool OrderLifecycleTracker::revertToPreviousState(const std::string& client_order_id, models::OrderState revert_to_state) {
     std::lock_guard<std::mutex> lock(mutex_);
     
     // Find the order
@@ -68,33 +67,43 @@ std::string OrderLifecycleTracker::getClientOrderId(const std::string& exchange_
     }
     
     auto& order = it->second;
-    
-    // Check if we have a previous state recorded
-    auto prev_state_it = previous_states_.find(client_order_id);
-    if (prev_state_it == previous_states_.end()) {
-        // No previous state recorded, default to OPEN
-        order->setState(models::OrderState::OPEN);
-        notifyStateChange(*order, order->getState(), models::OrderState::OPEN);
-        return true;
-    }
-    
-    // Record the current state
     models::OrderState current_state = order->getState();
     
-    // Get the previous state
-    models::OrderState previous_state = prev_state_it->second;
+    // Only allow reverting from certain problematic states
+    if (current_state != models::OrderState::REJECTED && 
+        current_state != models::OrderState::EXPIRED &&
+        current_state != models::OrderState::PENDING_CANCEL) {
+        // Could add other states that make sense to revert from
+        return false; // Cannot revert from this state
+    }
     
-    // Revert to the previous state
-    order->setState(previous_state);
+    // Check if we should use a stored previous state instead of the provided one
+    auto prev_state_it = previous_states_.find(client_order_id);
+    if (prev_state_it != previous_states_.end()) {
+        // We have a stored previous state, use it instead of the provided one
+        // This gives precedence to the actual previous state over the suggested fallback
+        revert_to_state = prev_state_it->second;
+        
+        // Remove the previous state record since we've used it
+        previous_states_.erase(prev_state_it);
+    }
     
-    // Remove the previous state record since we've used it
-    previous_states_.erase(prev_state_it);
+    // Verify the state to revert to is valid
+    if (revert_to_state == models::OrderState::FILLED || 
+        revert_to_state == models::OrderState::REJECTED ||
+        revert_to_state == models::OrderState::EXPIRED) {
+        return false; // Cannot revert to a terminal state
+    }
+    
+    // Revert to the specified state
+    order->setState(revert_to_state);
     
     // Notify state change
-    notifyStateChange(*order, current_state, previous_state);
+    notifyStateChange(*order, current_state, revert_to_state);
     
     return true;
 }
+
 void OrderLifecycleTracker::updateOrderWithExchangeId(models::Order& order, const std::string& exchange_order_id) {
     std::lock_guard<std::mutex> lock(mutex_);
     
@@ -108,8 +117,8 @@ void OrderLifecycleTracker::updateOrderWithExchangeId(models::Order& order, cons
 bool OrderLifecycleTracker::updateOrderState(
     const std::string& client_order_id,
     models::OrderState new_state,
-    const std::string& exchange_order_id = ""){
-    // const std::string& rejection_reason = "") {
+    const std::string& exchange_order_id,
+    const std::string& rejection_reason) {
     
     std::lock_guard<std::mutex> lock(mutex_);
     
@@ -150,9 +159,11 @@ bool OrderLifecycleTracker::updateOrderState(
         case models::OrderState::CANCELED:
             state_updated = order->cancel();
             break;
+        // case models::OrderState::REJECTED:
+        //     state_updated = order->reject("Rejected by exchange");
+        //     break;
         case models::OrderState::REJECTED:
-            state_updated = order->reject("Rejected by exchange");
-            // state_updated = order->reject(rejection_reason.empty() ? "Rejected by exchange" : rejection_reason);
+            state_updated = order->reject(rejection_reason.empty() ? "Rejected by exchange" : rejection_reason);
             break;
         case models::OrderState::EXPIRED:
             state_updated = order->expire();

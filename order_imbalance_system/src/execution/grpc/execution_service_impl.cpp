@@ -156,35 +156,35 @@
  }
  
  // Helper methods for type conversion
- 
  trading::execution::TradingSignal ExecutionServiceImpl::convertTradingSignal(
-     const ::trading::execution::grpc::TradingSignalProto& proto_signal) {
-     
-     trading::execution::TradingSignal signal;
-     
-     // Basic fields
-     signal.signal_id = proto_signal.signal_id();
-     signal.trading_pair = proto_signal.trading_pair();
-     signal.strategy_id = proto_signal.strategy_id();
-     signal.strategy_version = proto_signal.strategy_version();
-     signal.target_size = proto_signal.target_size();
-     signal.strength = proto_signal.strength();
-     
-     // Convert direction
-     signal.direction = (proto_signal.direction() == TradingSignalProto::BUY) 
-         ? trading::execution::models::OrderSide::BUY 
-         : trading::execution::models::OrderSide::SELL;
-     
-     // Convert TTL
-     signal.signal_ttl = std::chrono::milliseconds(proto_signal.signal_ttl_ms());
-     
-     // Convert metrics
-     for (const auto& entry : proto_signal.signal_metrics()) {
-         signal.signal_metrics[entry.first] = entry.second;
-     }
-     
-     return signal;
- }
+    const ::trading::execution::grpc::TradingSignalProto& proto_signal) {
+    
+    trading::execution::TradingSignal signal;
+    
+    // Basic fields
+    signal.signal_id = proto_signal.signal_id();
+    signal.trading_pair = proto_signal.trading_pair();
+    signal.strategy_id = proto_signal.strategy_id();
+    signal.strategy_version = proto_signal.strategy_version();
+    signal.target_size = proto_signal.target_size();
+    signal.strength = proto_signal.strength();
+    
+    // Convert direction (enum to enum)
+    signal.direction = (proto_signal.direction() == ::trading::execution::grpc::TradingSignalProto_OrderSide_BUY) 
+        ? trading::execution::models::OrderSide::BUY 
+        : trading::execution::models::OrderSide::SELL;
+    
+    // Convert TTL
+    signal.signal_ttl = std::chrono::milliseconds(proto_signal.signal_ttl_ms());
+    
+    // Convert metrics
+    for (const auto& entry : proto_signal.signal_metrics()) {
+        signal.signal_metrics[entry.first] = entry.second;
+    }
+    
+    return signal;
+}
+
  trading::execution::models::Order ExecutionServiceImpl::convertOrderRequest(
     const ::trading::execution::grpc::OrderProto& proto_order) {
     

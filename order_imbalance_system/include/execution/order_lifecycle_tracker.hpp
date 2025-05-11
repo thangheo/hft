@@ -60,7 +60,8 @@ public:
      * @param new_state The new state
      * @return true if successful, false if order not found
      */
-    bool revertToPreviousState(const std::string& client_order_id, models::OrderState new_state);
+    bool revertToPreviousState(const std::string& client_order_id, models::OrderState revert_to_state) ;
+
     // getHealthStatus
     /**
      * @brief Get the health status of the order lifecycle tracker
@@ -81,7 +82,9 @@ public:
      */
     bool updateOrderState(const std::string& client_order_id, 
                          models::OrderState new_state,
-                         const std::string& exchange_order_id = "");
+                         const std::string& exchange_order_id = "",
+                         const std::string& rejection_reason = "");
+
     //updateOrderWithExchangeId method
     void updateOrderWithExchangeId(models::Order& order, const std::string& exchange_order_id);
     std::string getClientOrderId(const std::string& exchange_order_id, const std::string& exchange_id) const;

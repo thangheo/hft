@@ -183,6 +183,7 @@
         order_lifecycle_tracker_->updateOrderState(
             exchange_order->getClientOrderId(), 
             models::OrderState::REJECTED, 
+            exchange_order->getExchangeOrderId(),
             "Exchange API client not available"
         );
         
@@ -225,6 +226,7 @@
             order_lifecycle_tracker_->updateOrderState(
                 clientOrderId,
                 models::OrderState::REJECTED,
+                result.exchangeOrderId(),
                 result.rejectReason()
             );
         }

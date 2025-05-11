@@ -1,5 +1,6 @@
 #include "execution/order_generator.hpp"
 #include "execution/models/order.hpp"
+#include "execution/trading_signal.hpp" 
 #include <chrono>
 #include <sstream>
 #include <iomanip>
@@ -16,7 +17,7 @@ OrderGenerator::OrderGenerator() {
     order_id_sequence_ = distrib(gen);
 }
 
-OrderPtr OrderGenerator::createOrder(const OrderGenerationParams& params) {
+models::OrderPtr OrderGenerator::createOrder(const OrderGenerationParams& params) {
     OrderGenerationParams processed_params = params;
     
     // Apply custom transformations if provided
@@ -28,7 +29,7 @@ OrderPtr OrderGenerator::createOrder(const OrderGenerationParams& params) {
     validateParams(processed_params);
     
     // Create the order
-    OrderPtr order = std::make_shared<Order>();
+    models::OrderPtr order = std::make_shared<models::Order>();
     
     // Set client order ID if provided or generate one
     if (!processed_params.client_order_id.empty()) {
@@ -45,8 +46,8 @@ OrderPtr OrderGenerator::createOrder(const OrderGenerationParams& params) {
     
     // Set price if applicable (for limit orders)
     if (processed_params.price > 0 && 
-        (processed_params.type == OrderType::LIMIT || 
-         processed_params.type == OrderType::STOP_LIMIT)) {
+        (processed_params.type == models::OrderType::LIMIT || 
+         processed_params.type == models::OrderType::STOP_LIMIT)) {
         order->setPrice(processed_params.price);
     }
     
@@ -67,20 +68,22 @@ OrderPtr OrderGenerator::createOrder(const OrderGenerationParams& params) {
     
     return order;
 }
-
-OrderPtr OrderGenerator::createOrderFromSignal(const std::shared_ptr<class TradingSignal>& signal) {
+models::OrderPtr OrderGenerator::createOrderFromSignal(const std::shared_ptr<TradingSignal>& signal) {
     // Extract order parameters from the trading signal
     OrderGenerationParams params;
     
     // Basic signal to order conversion
-    params.trading_pair = signal->getTradingPair();
-    params.side = (signal->getDirection() == "buy") ? OrderSide::BUY : OrderSide::SELL;
-    params.quantity = signal->getTargetSize();
-    params.strategy_id = signal->getStrategyId();
-    params.signal_id = signal->getSignalId();
+    params.trading_pair = signal->trading_pair;
+    params.side = signal->direction;  // Already a models::OrderSide, no conversion needed
+    params.quantity = signal->target_size;
+    params.strategy_id = signal->strategy_id;
+    params.signal_id = signal->signal_id;
+    params.signal_strength = signal->strength;
+    params.target_size = signal->target_size;
+    params.signal_ttl = signal->signal_ttl;
     
     // Default to market order, will be refined by OrderTypeSelector
-    params.type = OrderType::MARKET;
+    params.type = models::OrderType::MARKET;
     
     // Set a unique client order ID
     params.client_order_id = generateClientOrderId();
@@ -89,7 +92,7 @@ OrderPtr OrderGenerator::createOrderFromSignal(const std::shared_ptr<class Tradi
     return createOrder(params);
 }
 
-std::string OrderGenerator::generateClientOrderId() const {
+std::string OrderGenerator::generateClientOrderId() {
     std::lock_guard<std::mutex> lock(mutex_);
     
     // Format: OID-TIMESTAMP-SEQUENCE
@@ -130,18 +133,18 @@ void OrderGenerator::validateParams(const OrderGenerationParams& params) const {
     }
     
     // Validate price for limit orders
-    if ((params.type == OrderType::LIMIT || params.type == OrderType::STOP_LIMIT) 
+    if ((params.type == models::OrderType::LIMIT || params.type == models::OrderType::STOP_LIMIT) 
         && params.price <= 0) {
         throw std::invalid_argument("Limit orders require a valid price");
     }
 }
 
-void OrderGenerator::enrichOrder(OrderPtr& order, const OrderGenerationParams& params) {
+void OrderGenerator::enrichOrder(models::OrderPtr& order, const OrderGenerationParams& params) {
     // Add exchange-specific parameters if needed
     // These could be derived from the trading pair or other parameters
     
     // Set default expiry time for GTD orders
-    if (params.time_in_force == TimeInForce::GTD) {
+    if (params.time_in_force == models::TimeInForce::GTD) {
         // Default to 24 hours from now
         auto expiry_time = std::chrono::system_clock::now() + std::chrono::hours(24);
         order->setExpiryTime(expiry_time);

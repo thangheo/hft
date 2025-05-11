@@ -46,7 +46,7 @@ public:
     models::OrderPtr createOrderFromSignal(const std::shared_ptr<class TradingSignal>& signal);
     
     // Generate a unique client order ID
-    std::string generateClientOrderId() const;
+    std::string generateClientOrderId();
     
     // Set callback for new orders
     void setOrderCallback(const OrderCallback& callback);
