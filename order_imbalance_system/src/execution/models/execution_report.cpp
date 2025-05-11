@@ -4,8 +4,9 @@
 
 namespace trading {
 namespace execution {
-
+namespace models {
 // Basic constructor with order ID
+// ExecutionReport(const std::string& orderId) : orderId_(orderId) {
 ExecutionReport::ExecutionReport(const std::string& orderId) : orderId_(orderId) {
     createdAt_ = std::chrono::system_clock::now();
     updatedAt_ = createdAt_;
@@ -248,3 +249,4 @@ std::string ExecutionReport::toString() const {
 
 } // namespace execution
 } // namespace trading
+} // namespace models
