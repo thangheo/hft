@@ -1,8 +1,7 @@
 // execution_service.proto
 syntax = "proto3";
 
-package trading.execution;
-
+package trading.execution.grpc;  // Added ".grpc" to avoid collision
 // Trading signal to be executed
 message TradingSignalProto {
     string signal_id = 1;

@@ -51,6 +51,7 @@ struct TableStruct_execution_5fservice_2eproto {
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_execution_5fservice_2eproto;
 namespace trading {
 namespace execution {
+namespace grpc {
 class ActiveOrdersRequestProto;
 struct ActiveOrdersRequestProtoDefaultTypeInternal;
 extern ActiveOrdersRequestProtoDefaultTypeInternal _ActiveOrdersRequestProto_default_instance_;
@@ -102,29 +103,31 @@ extern TradingSignalProtoDefaultTypeInternal _TradingSignalProto_default_instanc
 class TradingSignalProto_SignalMetricsEntry_DoNotUse;
 struct TradingSignalProto_SignalMetricsEntry_DoNotUseDefaultTypeInternal;
 extern TradingSignalProto_SignalMetricsEntry_DoNotUseDefaultTypeInternal _TradingSignalProto_SignalMetricsEntry_DoNotUse_default_instance_;
+}  // namespace grpc
 }  // namespace execution
 }  // namespace trading
 PROTOBUF_NAMESPACE_OPEN
-template<> ::trading::execution::ActiveOrdersRequestProto* Arena::CreateMaybeMessage<::trading::execution::ActiveOrdersRequestProto>(Arena*);
-template<> ::trading::execution::ActiveOrdersResponseProto* Arena::CreateMaybeMessage<::trading::execution::ActiveOrdersResponseProto>(Arena*);
-template<> ::trading::execution::CancelAllOrdersRequestProto* Arena::CreateMaybeMessage<::trading::execution::CancelAllOrdersRequestProto>(Arena*);
-template<> ::trading::execution::CancelAllOrdersResponseProto* Arena::CreateMaybeMessage<::trading::execution::CancelAllOrdersResponseProto>(Arena*);
-template<> ::trading::execution::CancelOrderByExchangeIdRequestProto* Arena::CreateMaybeMessage<::trading::execution::CancelOrderByExchangeIdRequestProto>(Arena*);
-template<> ::trading::execution::CancelOrderRequestProto* Arena::CreateMaybeMessage<::trading::execution::CancelOrderRequestProto>(Arena*);
-template<> ::trading::execution::CancelResponseProto* Arena::CreateMaybeMessage<::trading::execution::CancelResponseProto>(Arena*);
-template<> ::trading::execution::ExecutionResponseProto* Arena::CreateMaybeMessage<::trading::execution::ExecutionResponseProto>(Arena*);
-template<> ::trading::execution::FillProto* Arena::CreateMaybeMessage<::trading::execution::FillProto>(Arena*);
-template<> ::trading::execution::HealthStatusRequestProto* Arena::CreateMaybeMessage<::trading::execution::HealthStatusRequestProto>(Arena*);
-template<> ::trading::execution::HealthStatusResponseProto* Arena::CreateMaybeMessage<::trading::execution::HealthStatusResponseProto>(Arena*);
-template<> ::trading::execution::OrderProto* Arena::CreateMaybeMessage<::trading::execution::OrderProto>(Arena*);
-template<> ::trading::execution::OrderProto_ExtraParamsEntry_DoNotUse* Arena::CreateMaybeMessage<::trading::execution::OrderProto_ExtraParamsEntry_DoNotUse>(Arena*);
-template<> ::trading::execution::OrderStatusRequestProto* Arena::CreateMaybeMessage<::trading::execution::OrderStatusRequestProto>(Arena*);
-template<> ::trading::execution::OrderStatusResponseProto* Arena::CreateMaybeMessage<::trading::execution::OrderStatusResponseProto>(Arena*);
-template<> ::trading::execution::TradingSignalProto* Arena::CreateMaybeMessage<::trading::execution::TradingSignalProto>(Arena*);
-template<> ::trading::execution::TradingSignalProto_SignalMetricsEntry_DoNotUse* Arena::CreateMaybeMessage<::trading::execution::TradingSignalProto_SignalMetricsEntry_DoNotUse>(Arena*);
+template<> ::trading::execution::grpc::ActiveOrdersRequestProto* Arena::CreateMaybeMessage<::trading::execution::grpc::ActiveOrdersRequestProto>(Arena*);
+template<> ::trading::execution::grpc::ActiveOrdersResponseProto* Arena::CreateMaybeMessage<::trading::execution::grpc::ActiveOrdersResponseProto>(Arena*);
+template<> ::trading::execution::grpc::CancelAllOrdersRequestProto* Arena::CreateMaybeMessage<::trading::execution::grpc::CancelAllOrdersRequestProto>(Arena*);
+template<> ::trading::execution::grpc::CancelAllOrdersResponseProto* Arena::CreateMaybeMessage<::trading::execution::grpc::CancelAllOrdersResponseProto>(Arena*);
+template<> ::trading::execution::grpc::CancelOrderByExchangeIdRequestProto* Arena::CreateMaybeMessage<::trading::execution::grpc::CancelOrderByExchangeIdRequestProto>(Arena*);
+template<> ::trading::execution::grpc::CancelOrderRequestProto* Arena::CreateMaybeMessage<::trading::execution::grpc::CancelOrderRequestProto>(Arena*);
+template<> ::trading::execution::grpc::CancelResponseProto* Arena::CreateMaybeMessage<::trading::execution::grpc::CancelResponseProto>(Arena*);
+template<> ::trading::execution::grpc::ExecutionResponseProto* Arena::CreateMaybeMessage<::trading::execution::grpc::ExecutionResponseProto>(Arena*);
+template<> ::trading::execution::grpc::FillProto* Arena::CreateMaybeMessage<::trading::execution::grpc::FillProto>(Arena*);
+template<> ::trading::execution::grpc::HealthStatusRequestProto* Arena::CreateMaybeMessage<::trading::execution::grpc::HealthStatusRequestProto>(Arena*);
+template<> ::trading::execution::grpc::HealthStatusResponseProto* Arena::CreateMaybeMessage<::trading::execution::grpc::HealthStatusResponseProto>(Arena*);
+template<> ::trading::execution::grpc::OrderProto* Arena::CreateMaybeMessage<::trading::execution::grpc::OrderProto>(Arena*);
+template<> ::trading::execution::grpc::OrderProto_ExtraParamsEntry_DoNotUse* Arena::CreateMaybeMessage<::trading::execution::grpc::OrderProto_ExtraParamsEntry_DoNotUse>(Arena*);
+template<> ::trading::execution::grpc::OrderStatusRequestProto* Arena::CreateMaybeMessage<::trading::execution::grpc::OrderStatusRequestProto>(Arena*);
+template<> ::trading::execution::grpc::OrderStatusResponseProto* Arena::CreateMaybeMessage<::trading::execution::grpc::OrderStatusResponseProto>(Arena*);
+template<> ::trading::execution::grpc::TradingSignalProto* Arena::CreateMaybeMessage<::trading::execution::grpc::TradingSignalProto>(Arena*);
+template<> ::trading::execution::grpc::TradingSignalProto_SignalMetricsEntry_DoNotUse* Arena::CreateMaybeMessage<::trading::execution::grpc::TradingSignalProto_SignalMetricsEntry_DoNotUse>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace trading {
 namespace execution {
+namespace grpc {
 
 enum TradingSignalProto_OrderSide : int {
   TradingSignalProto_OrderSide_BUY = 0,
@@ -285,7 +288,7 @@ public:
   void MergeFrom(const TradingSignalProto_SignalMetricsEntry_DoNotUse& other);
   static const TradingSignalProto_SignalMetricsEntry_DoNotUse* internal_default_instance() { return reinterpret_cast<const TradingSignalProto_SignalMetricsEntry_DoNotUse*>(&_TradingSignalProto_SignalMetricsEntry_DoNotUse_default_instance_); }
   static bool ValidateKey(std::string* s) {
-    return ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(s->data(), static_cast<int>(s->size()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::PARSE, "trading.execution.TradingSignalProto.SignalMetricsEntry.key");
+    return ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(s->data(), static_cast<int>(s->size()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::PARSE, "trading.execution.grpc.TradingSignalProto.SignalMetricsEntry.key");
  }
   static bool ValidateValue(void*) { return true; }
   using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
@@ -296,7 +299,7 @@ public:
 // -------------------------------------------------------------------
 
 class TradingSignalProto final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.TradingSignalProto) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.grpc.TradingSignalProto) */ {
  public:
   inline TradingSignalProto() : TradingSignalProto(nullptr) {}
   ~TradingSignalProto() override;
@@ -399,7 +402,7 @@ class TradingSignalProto final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "trading.execution.TradingSignalProto";
+    return "trading.execution.grpc.TradingSignalProto";
   }
   protected:
   explicit TradingSignalProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -559,16 +562,16 @@ class TradingSignalProto final :
   void _internal_set_signal_ttl_ms(int64_t value);
   public:
 
-  // .trading.execution.TradingSignalProto.OrderSide direction = 3;
+  // .trading.execution.grpc.TradingSignalProto.OrderSide direction = 3;
   void clear_direction();
-  ::trading::execution::TradingSignalProto_OrderSide direction() const;
-  void set_direction(::trading::execution::TradingSignalProto_OrderSide value);
+  ::trading::execution::grpc::TradingSignalProto_OrderSide direction() const;
+  void set_direction(::trading::execution::grpc::TradingSignalProto_OrderSide value);
   private:
-  ::trading::execution::TradingSignalProto_OrderSide _internal_direction() const;
-  void _internal_set_direction(::trading::execution::TradingSignalProto_OrderSide value);
+  ::trading::execution::grpc::TradingSignalProto_OrderSide _internal_direction() const;
+  void _internal_set_direction(::trading::execution::grpc::TradingSignalProto_OrderSide value);
   public:
 
-  // @@protoc_insertion_point(class_scope:trading.execution.TradingSignalProto)
+  // @@protoc_insertion_point(class_scope:trading.execution.grpc.TradingSignalProto)
  private:
   class _Internal;
 
@@ -597,7 +600,7 @@ class TradingSignalProto final :
 // -------------------------------------------------------------------
 
 class ExecutionResponseProto final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.ExecutionResponseProto) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.grpc.ExecutionResponseProto) */ {
  public:
   inline ExecutionResponseProto() : ExecutionResponseProto(nullptr) {}
   ~ExecutionResponseProto() override;
@@ -700,7 +703,7 @@ class ExecutionResponseProto final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "trading.execution.ExecutionResponseProto";
+    return "trading.execution.grpc.ExecutionResponseProto";
   }
   protected:
   explicit ExecutionResponseProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -798,7 +801,7 @@ class ExecutionResponseProto final :
   void _internal_set_success(bool value);
   public:
 
-  // @@protoc_insertion_point(class_scope:trading.execution.ExecutionResponseProto)
+  // @@protoc_insertion_point(class_scope:trading.execution.grpc.ExecutionResponseProto)
  private:
   class _Internal;
 
@@ -820,7 +823,7 @@ class ExecutionResponseProto final :
 // -------------------------------------------------------------------
 
 class CancelResponseProto final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.CancelResponseProto) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.grpc.CancelResponseProto) */ {
  public:
   inline CancelResponseProto() : CancelResponseProto(nullptr) {}
   ~CancelResponseProto() override;
@@ -923,7 +926,7 @@ class CancelResponseProto final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "trading.execution.CancelResponseProto";
+    return "trading.execution.grpc.CancelResponseProto";
   }
   protected:
   explicit CancelResponseProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -1006,7 +1009,7 @@ class CancelResponseProto final :
   void _internal_set_success(bool value);
   public:
 
-  // @@protoc_insertion_point(class_scope:trading.execution.CancelResponseProto)
+  // @@protoc_insertion_point(class_scope:trading.execution.grpc.CancelResponseProto)
  private:
   class _Internal;
 
@@ -1027,7 +1030,7 @@ class CancelResponseProto final :
 // -------------------------------------------------------------------
 
 class FillProto final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.FillProto) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.grpc.FillProto) */ {
  public:
   inline FillProto() : FillProto(nullptr) {}
   ~FillProto() override;
@@ -1130,7 +1133,7 @@ class FillProto final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "trading.execution.FillProto";
+    return "trading.execution.grpc.FillProto";
   }
   protected:
   explicit FillProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -1233,7 +1236,7 @@ class FillProto final :
   void _internal_set_timestamp(int64_t value);
   public:
 
-  // @@protoc_insertion_point(class_scope:trading.execution.FillProto)
+  // @@protoc_insertion_point(class_scope:trading.execution.grpc.FillProto)
  private:
   class _Internal;
 
@@ -1271,10 +1274,10 @@ public:
   void MergeFrom(const OrderProto_ExtraParamsEntry_DoNotUse& other);
   static const OrderProto_ExtraParamsEntry_DoNotUse* internal_default_instance() { return reinterpret_cast<const OrderProto_ExtraParamsEntry_DoNotUse*>(&_OrderProto_ExtraParamsEntry_DoNotUse_default_instance_); }
   static bool ValidateKey(std::string* s) {
-    return ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(s->data(), static_cast<int>(s->size()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::PARSE, "trading.execution.OrderProto.ExtraParamsEntry.key");
+    return ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(s->data(), static_cast<int>(s->size()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::PARSE, "trading.execution.grpc.OrderProto.ExtraParamsEntry.key");
  }
   static bool ValidateValue(std::string* s) {
-    return ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(s->data(), static_cast<int>(s->size()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::PARSE, "trading.execution.OrderProto.ExtraParamsEntry.value");
+    return ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(s->data(), static_cast<int>(s->size()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::PARSE, "trading.execution.grpc.OrderProto.ExtraParamsEntry.value");
  }
   using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
   ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
@@ -1284,7 +1287,7 @@ public:
 // -------------------------------------------------------------------
 
 class OrderProto final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.OrderProto) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.grpc.OrderProto) */ {
  public:
   inline OrderProto() : OrderProto(nullptr) {}
   ~OrderProto() override;
@@ -1387,7 +1390,7 @@ class OrderProto final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "trading.execution.OrderProto";
+    return "trading.execution.grpc.OrderProto";
   }
   protected:
   explicit OrderProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -1536,22 +1539,22 @@ class OrderProto final :
     kFilledQuantityFieldNumber = 18,
     kAverageFillPriceFieldNumber = 19,
   };
-  // repeated .trading.execution.FillProto fills = 17;
+  // repeated .trading.execution.grpc.FillProto fills = 17;
   int fills_size() const;
   private:
   int _internal_fills_size() const;
   public:
   void clear_fills();
-  ::trading::execution::FillProto* mutable_fills(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::FillProto >*
+  ::trading::execution::grpc::FillProto* mutable_fills(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::grpc::FillProto >*
       mutable_fills();
   private:
-  const ::trading::execution::FillProto& _internal_fills(int index) const;
-  ::trading::execution::FillProto* _internal_add_fills();
+  const ::trading::execution::grpc::FillProto& _internal_fills(int index) const;
+  ::trading::execution::grpc::FillProto* _internal_add_fills();
   public:
-  const ::trading::execution::FillProto& fills(int index) const;
-  ::trading::execution::FillProto* add_fills();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::FillProto >&
+  const ::trading::execution::grpc::FillProto& fills(int index) const;
+  ::trading::execution::grpc::FillProto* add_fills();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::grpc::FillProto >&
       fills() const;
 
   // map<string, string> extra_params = 20;
@@ -1669,22 +1672,22 @@ class OrderProto final :
   std::string* _internal_mutable_signal_id();
   public:
 
-  // .trading.execution.OrderProto.OrderSide side = 6;
+  // .trading.execution.grpc.OrderProto.OrderSide side = 6;
   void clear_side();
-  ::trading::execution::OrderProto_OrderSide side() const;
-  void set_side(::trading::execution::OrderProto_OrderSide value);
+  ::trading::execution::grpc::OrderProto_OrderSide side() const;
+  void set_side(::trading::execution::grpc::OrderProto_OrderSide value);
   private:
-  ::trading::execution::OrderProto_OrderSide _internal_side() const;
-  void _internal_set_side(::trading::execution::OrderProto_OrderSide value);
+  ::trading::execution::grpc::OrderProto_OrderSide _internal_side() const;
+  void _internal_set_side(::trading::execution::grpc::OrderProto_OrderSide value);
   public:
 
-  // .trading.execution.OrderProto.OrderType type = 7;
+  // .trading.execution.grpc.OrderProto.OrderType type = 7;
   void clear_type();
-  ::trading::execution::OrderProto_OrderType type() const;
-  void set_type(::trading::execution::OrderProto_OrderType value);
+  ::trading::execution::grpc::OrderProto_OrderType type() const;
+  void set_type(::trading::execution::grpc::OrderProto_OrderType value);
   private:
-  ::trading::execution::OrderProto_OrderType _internal_type() const;
-  void _internal_set_type(::trading::execution::OrderProto_OrderType value);
+  ::trading::execution::grpc::OrderProto_OrderType _internal_type() const;
+  void _internal_set_type(::trading::execution::grpc::OrderProto_OrderType value);
   public:
 
   // double quantity = 8;
@@ -1714,22 +1717,22 @@ class OrderProto final :
   void _internal_set_stop_price(double value);
   public:
 
-  // .trading.execution.OrderProto.TimeInForce time_in_force = 11;
+  // .trading.execution.grpc.OrderProto.TimeInForce time_in_force = 11;
   void clear_time_in_force();
-  ::trading::execution::OrderProto_TimeInForce time_in_force() const;
-  void set_time_in_force(::trading::execution::OrderProto_TimeInForce value);
+  ::trading::execution::grpc::OrderProto_TimeInForce time_in_force() const;
+  void set_time_in_force(::trading::execution::grpc::OrderProto_TimeInForce value);
   private:
-  ::trading::execution::OrderProto_TimeInForce _internal_time_in_force() const;
-  void _internal_set_time_in_force(::trading::execution::OrderProto_TimeInForce value);
+  ::trading::execution::grpc::OrderProto_TimeInForce _internal_time_in_force() const;
+  void _internal_set_time_in_force(::trading::execution::grpc::OrderProto_TimeInForce value);
   public:
 
-  // .trading.execution.OrderStateProto state = 12;
+  // .trading.execution.grpc.OrderStateProto state = 12;
   void clear_state();
-  ::trading::execution::OrderStateProto state() const;
-  void set_state(::trading::execution::OrderStateProto value);
+  ::trading::execution::grpc::OrderStateProto state() const;
+  void set_state(::trading::execution::grpc::OrderStateProto value);
   private:
-  ::trading::execution::OrderStateProto _internal_state() const;
-  void _internal_set_state(::trading::execution::OrderStateProto value);
+  ::trading::execution::grpc::OrderStateProto _internal_state() const;
+  void _internal_set_state(::trading::execution::grpc::OrderStateProto value);
   public:
 
   // int64 created_at = 15;
@@ -1768,7 +1771,7 @@ class OrderProto final :
   void _internal_set_average_fill_price(double value);
   public:
 
-  // @@protoc_insertion_point(class_scope:trading.execution.OrderProto)
+  // @@protoc_insertion_point(class_scope:trading.execution.grpc.OrderProto)
  private:
   class _Internal;
 
@@ -1776,7 +1779,7 @@ class OrderProto final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::FillProto > fills_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::grpc::FillProto > fills_;
     ::PROTOBUF_NAMESPACE_ID::internal::MapField<
         OrderProto_ExtraParamsEntry_DoNotUse,
         std::string, std::string,
@@ -1808,7 +1811,7 @@ class OrderProto final :
 // -------------------------------------------------------------------
 
 class OrderStatusResponseProto final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.OrderStatusResponseProto) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.grpc.OrderStatusResponseProto) */ {
  public:
   inline OrderStatusResponseProto() : OrderStatusResponseProto(nullptr) {}
   ~OrderStatusResponseProto() override;
@@ -1911,7 +1914,7 @@ class OrderStatusResponseProto final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "trading.execution.OrderStatusResponseProto";
+    return "trading.execution.grpc.OrderStatusResponseProto";
   }
   protected:
   explicit OrderStatusResponseProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -1946,23 +1949,23 @@ class OrderStatusResponseProto final :
   std::string* _internal_mutable_error_message();
   public:
 
-  // .trading.execution.OrderProto order = 1;
+  // .trading.execution.grpc.OrderProto order = 1;
   bool has_order() const;
   private:
   bool _internal_has_order() const;
   public:
   void clear_order();
-  const ::trading::execution::OrderProto& order() const;
-  PROTOBUF_NODISCARD ::trading::execution::OrderProto* release_order();
-  ::trading::execution::OrderProto* mutable_order();
-  void set_allocated_order(::trading::execution::OrderProto* order);
+  const ::trading::execution::grpc::OrderProto& order() const;
+  PROTOBUF_NODISCARD ::trading::execution::grpc::OrderProto* release_order();
+  ::trading::execution::grpc::OrderProto* mutable_order();
+  void set_allocated_order(::trading::execution::grpc::OrderProto* order);
   private:
-  const ::trading::execution::OrderProto& _internal_order() const;
-  ::trading::execution::OrderProto* _internal_mutable_order();
+  const ::trading::execution::grpc::OrderProto& _internal_order() const;
+  ::trading::execution::grpc::OrderProto* _internal_mutable_order();
   public:
   void unsafe_arena_set_allocated_order(
-      ::trading::execution::OrderProto* order);
-  ::trading::execution::OrderProto* unsafe_arena_release_order();
+      ::trading::execution::grpc::OrderProto* order);
+  ::trading::execution::grpc::OrderProto* unsafe_arena_release_order();
 
   // bool found = 2;
   void clear_found();
@@ -1973,7 +1976,7 @@ class OrderStatusResponseProto final :
   void _internal_set_found(bool value);
   public:
 
-  // @@protoc_insertion_point(class_scope:trading.execution.OrderStatusResponseProto)
+  // @@protoc_insertion_point(class_scope:trading.execution.grpc.OrderStatusResponseProto)
  private:
   class _Internal;
 
@@ -1982,7 +1985,7 @@ class OrderStatusResponseProto final :
   typedef void DestructorSkippable_;
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr error_message_;
-    ::trading::execution::OrderProto* order_;
+    ::trading::execution::grpc::OrderProto* order_;
     bool found_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
@@ -1992,7 +1995,7 @@ class OrderStatusResponseProto final :
 // -------------------------------------------------------------------
 
 class HealthStatusRequestProto final :
-    public ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase /* @@protoc_insertion_point(class_definition:trading.execution.HealthStatusRequestProto) */ {
+    public ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase /* @@protoc_insertion_point(class_definition:trading.execution.grpc.HealthStatusRequestProto) */ {
  public:
   inline HealthStatusRequestProto() : HealthStatusRequestProto(nullptr) {}
   explicit PROTOBUF_CONSTEXPR HealthStatusRequestProto(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
@@ -2080,7 +2083,7 @@ class HealthStatusRequestProto final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "trading.execution.HealthStatusRequestProto";
+    return "trading.execution.grpc.HealthStatusRequestProto";
   }
   protected:
   explicit HealthStatusRequestProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -2096,7 +2099,7 @@ class HealthStatusRequestProto final :
 
   // accessors -------------------------------------------------------
 
-  // @@protoc_insertion_point(class_scope:trading.execution.HealthStatusRequestProto)
+  // @@protoc_insertion_point(class_scope:trading.execution.grpc.HealthStatusRequestProto)
  private:
   class _Internal;
 
@@ -2110,7 +2113,7 @@ class HealthStatusRequestProto final :
 // -------------------------------------------------------------------
 
 class HealthStatusResponseProto final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.HealthStatusResponseProto) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.grpc.HealthStatusResponseProto) */ {
  public:
   inline HealthStatusResponseProto() : HealthStatusResponseProto(nullptr) {}
   ~HealthStatusResponseProto() override;
@@ -2213,7 +2216,7 @@ class HealthStatusResponseProto final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "trading.execution.HealthStatusResponseProto";
+    return "trading.execution.grpc.HealthStatusResponseProto";
   }
   protected:
   explicit HealthStatusResponseProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -2246,7 +2249,7 @@ class HealthStatusResponseProto final :
   std::string* _internal_mutable_health_json();
   public:
 
-  // @@protoc_insertion_point(class_scope:trading.execution.HealthStatusResponseProto)
+  // @@protoc_insertion_point(class_scope:trading.execution.grpc.HealthStatusResponseProto)
  private:
   class _Internal;
 
@@ -2263,7 +2266,7 @@ class HealthStatusResponseProto final :
 // -------------------------------------------------------------------
 
 class CancelOrderRequestProto final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.CancelOrderRequestProto) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.grpc.CancelOrderRequestProto) */ {
  public:
   inline CancelOrderRequestProto() : CancelOrderRequestProto(nullptr) {}
   ~CancelOrderRequestProto() override;
@@ -2366,7 +2369,7 @@ class CancelOrderRequestProto final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "trading.execution.CancelOrderRequestProto";
+    return "trading.execution.grpc.CancelOrderRequestProto";
   }
   protected:
   explicit CancelOrderRequestProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -2399,7 +2402,7 @@ class CancelOrderRequestProto final :
   std::string* _internal_mutable_client_order_id();
   public:
 
-  // @@protoc_insertion_point(class_scope:trading.execution.CancelOrderRequestProto)
+  // @@protoc_insertion_point(class_scope:trading.execution.grpc.CancelOrderRequestProto)
  private:
   class _Internal;
 
@@ -2416,7 +2419,7 @@ class CancelOrderRequestProto final :
 // -------------------------------------------------------------------
 
 class CancelOrderByExchangeIdRequestProto final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.CancelOrderByExchangeIdRequestProto) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.grpc.CancelOrderByExchangeIdRequestProto) */ {
  public:
   inline CancelOrderByExchangeIdRequestProto() : CancelOrderByExchangeIdRequestProto(nullptr) {}
   ~CancelOrderByExchangeIdRequestProto() override;
@@ -2519,7 +2522,7 @@ class CancelOrderByExchangeIdRequestProto final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "trading.execution.CancelOrderByExchangeIdRequestProto";
+    return "trading.execution.grpc.CancelOrderByExchangeIdRequestProto";
   }
   protected:
   explicit CancelOrderByExchangeIdRequestProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -2567,7 +2570,7 @@ class CancelOrderByExchangeIdRequestProto final :
   std::string* _internal_mutable_exchange_id();
   public:
 
-  // @@protoc_insertion_point(class_scope:trading.execution.CancelOrderByExchangeIdRequestProto)
+  // @@protoc_insertion_point(class_scope:trading.execution.grpc.CancelOrderByExchangeIdRequestProto)
  private:
   class _Internal;
 
@@ -2585,7 +2588,7 @@ class CancelOrderByExchangeIdRequestProto final :
 // -------------------------------------------------------------------
 
 class CancelAllOrdersRequestProto final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.CancelAllOrdersRequestProto) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.grpc.CancelAllOrdersRequestProto) */ {
  public:
   inline CancelAllOrdersRequestProto() : CancelAllOrdersRequestProto(nullptr) {}
   ~CancelAllOrdersRequestProto() override;
@@ -2688,7 +2691,7 @@ class CancelAllOrdersRequestProto final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "trading.execution.CancelAllOrdersRequestProto";
+    return "trading.execution.grpc.CancelAllOrdersRequestProto";
   }
   protected:
   explicit CancelAllOrdersRequestProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -2736,7 +2739,7 @@ class CancelAllOrdersRequestProto final :
   std::string* _internal_mutable_exchange_id();
   public:
 
-  // @@protoc_insertion_point(class_scope:trading.execution.CancelAllOrdersRequestProto)
+  // @@protoc_insertion_point(class_scope:trading.execution.grpc.CancelAllOrdersRequestProto)
  private:
   class _Internal;
 
@@ -2754,7 +2757,7 @@ class CancelAllOrdersRequestProto final :
 // -------------------------------------------------------------------
 
 class CancelAllOrdersResponseProto final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.CancelAllOrdersResponseProto) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.grpc.CancelAllOrdersResponseProto) */ {
  public:
   inline CancelAllOrdersResponseProto() : CancelAllOrdersResponseProto(nullptr) {}
   ~CancelAllOrdersResponseProto() override;
@@ -2857,7 +2860,7 @@ class CancelAllOrdersResponseProto final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "trading.execution.CancelAllOrdersResponseProto";
+    return "trading.execution.grpc.CancelAllOrdersResponseProto";
   }
   protected:
   explicit CancelAllOrdersResponseProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -2876,25 +2879,25 @@ class CancelAllOrdersResponseProto final :
   enum : int {
     kResponsesFieldNumber = 1,
   };
-  // repeated .trading.execution.CancelResponseProto responses = 1;
+  // repeated .trading.execution.grpc.CancelResponseProto responses = 1;
   int responses_size() const;
   private:
   int _internal_responses_size() const;
   public:
   void clear_responses();
-  ::trading::execution::CancelResponseProto* mutable_responses(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::CancelResponseProto >*
+  ::trading::execution::grpc::CancelResponseProto* mutable_responses(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::grpc::CancelResponseProto >*
       mutable_responses();
   private:
-  const ::trading::execution::CancelResponseProto& _internal_responses(int index) const;
-  ::trading::execution::CancelResponseProto* _internal_add_responses();
+  const ::trading::execution::grpc::CancelResponseProto& _internal_responses(int index) const;
+  ::trading::execution::grpc::CancelResponseProto* _internal_add_responses();
   public:
-  const ::trading::execution::CancelResponseProto& responses(int index) const;
-  ::trading::execution::CancelResponseProto* add_responses();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::CancelResponseProto >&
+  const ::trading::execution::grpc::CancelResponseProto& responses(int index) const;
+  ::trading::execution::grpc::CancelResponseProto* add_responses();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::grpc::CancelResponseProto >&
       responses() const;
 
-  // @@protoc_insertion_point(class_scope:trading.execution.CancelAllOrdersResponseProto)
+  // @@protoc_insertion_point(class_scope:trading.execution.grpc.CancelAllOrdersResponseProto)
  private:
   class _Internal;
 
@@ -2902,7 +2905,7 @@ class CancelAllOrdersResponseProto final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::CancelResponseProto > responses_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::grpc::CancelResponseProto > responses_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -2911,7 +2914,7 @@ class CancelAllOrdersResponseProto final :
 // -------------------------------------------------------------------
 
 class OrderStatusRequestProto final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.OrderStatusRequestProto) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.grpc.OrderStatusRequestProto) */ {
  public:
   inline OrderStatusRequestProto() : OrderStatusRequestProto(nullptr) {}
   ~OrderStatusRequestProto() override;
@@ -3014,7 +3017,7 @@ class OrderStatusRequestProto final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "trading.execution.OrderStatusRequestProto";
+    return "trading.execution.grpc.OrderStatusRequestProto";
   }
   protected:
   explicit OrderStatusRequestProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -3047,7 +3050,7 @@ class OrderStatusRequestProto final :
   std::string* _internal_mutable_client_order_id();
   public:
 
-  // @@protoc_insertion_point(class_scope:trading.execution.OrderStatusRequestProto)
+  // @@protoc_insertion_point(class_scope:trading.execution.grpc.OrderStatusRequestProto)
  private:
   class _Internal;
 
@@ -3064,7 +3067,7 @@ class OrderStatusRequestProto final :
 // -------------------------------------------------------------------
 
 class ActiveOrdersRequestProto final :
-    public ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase /* @@protoc_insertion_point(class_definition:trading.execution.ActiveOrdersRequestProto) */ {
+    public ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase /* @@protoc_insertion_point(class_definition:trading.execution.grpc.ActiveOrdersRequestProto) */ {
  public:
   inline ActiveOrdersRequestProto() : ActiveOrdersRequestProto(nullptr) {}
   explicit PROTOBUF_CONSTEXPR ActiveOrdersRequestProto(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
@@ -3152,7 +3155,7 @@ class ActiveOrdersRequestProto final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "trading.execution.ActiveOrdersRequestProto";
+    return "trading.execution.grpc.ActiveOrdersRequestProto";
   }
   protected:
   explicit ActiveOrdersRequestProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -3168,7 +3171,7 @@ class ActiveOrdersRequestProto final :
 
   // accessors -------------------------------------------------------
 
-  // @@protoc_insertion_point(class_scope:trading.execution.ActiveOrdersRequestProto)
+  // @@protoc_insertion_point(class_scope:trading.execution.grpc.ActiveOrdersRequestProto)
  private:
   class _Internal;
 
@@ -3182,7 +3185,7 @@ class ActiveOrdersRequestProto final :
 // -------------------------------------------------------------------
 
 class ActiveOrdersResponseProto final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.ActiveOrdersResponseProto) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.grpc.ActiveOrdersResponseProto) */ {
  public:
   inline ActiveOrdersResponseProto() : ActiveOrdersResponseProto(nullptr) {}
   ~ActiveOrdersResponseProto() override;
@@ -3285,7 +3288,7 @@ class ActiveOrdersResponseProto final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "trading.execution.ActiveOrdersResponseProto";
+    return "trading.execution.grpc.ActiveOrdersResponseProto";
   }
   protected:
   explicit ActiveOrdersResponseProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -3304,25 +3307,25 @@ class ActiveOrdersResponseProto final :
   enum : int {
     kOrdersFieldNumber = 1,
   };
-  // repeated .trading.execution.OrderProto orders = 1;
+  // repeated .trading.execution.grpc.OrderProto orders = 1;
   int orders_size() const;
   private:
   int _internal_orders_size() const;
   public:
   void clear_orders();
-  ::trading::execution::OrderProto* mutable_orders(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::OrderProto >*
+  ::trading::execution::grpc::OrderProto* mutable_orders(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::grpc::OrderProto >*
       mutable_orders();
   private:
-  const ::trading::execution::OrderProto& _internal_orders(int index) const;
-  ::trading::execution::OrderProto* _internal_add_orders();
+  const ::trading::execution::grpc::OrderProto& _internal_orders(int index) const;
+  ::trading::execution::grpc::OrderProto* _internal_add_orders();
   public:
-  const ::trading::execution::OrderProto& orders(int index) const;
-  ::trading::execution::OrderProto* add_orders();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::OrderProto >&
+  const ::trading::execution::grpc::OrderProto& orders(int index) const;
+  ::trading::execution::grpc::OrderProto* add_orders();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::grpc::OrderProto >&
       orders() const;
 
-  // @@protoc_insertion_point(class_scope:trading.execution.ActiveOrdersResponseProto)
+  // @@protoc_insertion_point(class_scope:trading.execution.grpc.ActiveOrdersResponseProto)
  private:
   class _Internal;
 
@@ -3330,7 +3333,7 @@ class ActiveOrdersResponseProto final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::OrderProto > orders_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::grpc::OrderProto > orders_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -3354,7 +3357,7 @@ inline void TradingSignalProto::clear_signal_id() {
   _impl_.signal_id_.ClearToEmpty();
 }
 inline const std::string& TradingSignalProto::signal_id() const {
-  // @@protoc_insertion_point(field_get:trading.execution.TradingSignalProto.signal_id)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.TradingSignalProto.signal_id)
   return _internal_signal_id();
 }
 template <typename ArgT0, typename... ArgT>
@@ -3362,11 +3365,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void TradingSignalProto::set_signal_id(ArgT0&& arg0, ArgT... args) {
  
  _impl_.signal_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.TradingSignalProto.signal_id)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.TradingSignalProto.signal_id)
 }
 inline std::string* TradingSignalProto::mutable_signal_id() {
   std::string* _s = _internal_mutable_signal_id();
-  // @@protoc_insertion_point(field_mutable:trading.execution.TradingSignalProto.signal_id)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.TradingSignalProto.signal_id)
   return _s;
 }
 inline const std::string& TradingSignalProto::_internal_signal_id() const {
@@ -3381,7 +3384,7 @@ inline std::string* TradingSignalProto::_internal_mutable_signal_id() {
   return _impl_.signal_id_.Mutable(GetArenaForAllocation());
 }
 inline std::string* TradingSignalProto::release_signal_id() {
-  // @@protoc_insertion_point(field_release:trading.execution.TradingSignalProto.signal_id)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.TradingSignalProto.signal_id)
   return _impl_.signal_id_.Release();
 }
 inline void TradingSignalProto::set_allocated_signal_id(std::string* signal_id) {
@@ -3396,7 +3399,7 @@ inline void TradingSignalProto::set_allocated_signal_id(std::string* signal_id) 
     _impl_.signal_id_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.TradingSignalProto.signal_id)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.TradingSignalProto.signal_id)
 }
 
 // string trading_pair = 2;
@@ -3404,7 +3407,7 @@ inline void TradingSignalProto::clear_trading_pair() {
   _impl_.trading_pair_.ClearToEmpty();
 }
 inline const std::string& TradingSignalProto::trading_pair() const {
-  // @@protoc_insertion_point(field_get:trading.execution.TradingSignalProto.trading_pair)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.TradingSignalProto.trading_pair)
   return _internal_trading_pair();
 }
 template <typename ArgT0, typename... ArgT>
@@ -3412,11 +3415,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void TradingSignalProto::set_trading_pair(ArgT0&& arg0, ArgT... args) {
  
  _impl_.trading_pair_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.TradingSignalProto.trading_pair)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.TradingSignalProto.trading_pair)
 }
 inline std::string* TradingSignalProto::mutable_trading_pair() {
   std::string* _s = _internal_mutable_trading_pair();
-  // @@protoc_insertion_point(field_mutable:trading.execution.TradingSignalProto.trading_pair)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.TradingSignalProto.trading_pair)
   return _s;
 }
 inline const std::string& TradingSignalProto::_internal_trading_pair() const {
@@ -3431,7 +3434,7 @@ inline std::string* TradingSignalProto::_internal_mutable_trading_pair() {
   return _impl_.trading_pair_.Mutable(GetArenaForAllocation());
 }
 inline std::string* TradingSignalProto::release_trading_pair() {
-  // @@protoc_insertion_point(field_release:trading.execution.TradingSignalProto.trading_pair)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.TradingSignalProto.trading_pair)
   return _impl_.trading_pair_.Release();
 }
 inline void TradingSignalProto::set_allocated_trading_pair(std::string* trading_pair) {
@@ -3446,27 +3449,27 @@ inline void TradingSignalProto::set_allocated_trading_pair(std::string* trading_
     _impl_.trading_pair_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.TradingSignalProto.trading_pair)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.TradingSignalProto.trading_pair)
 }
 
-// .trading.execution.TradingSignalProto.OrderSide direction = 3;
+// .trading.execution.grpc.TradingSignalProto.OrderSide direction = 3;
 inline void TradingSignalProto::clear_direction() {
   _impl_.direction_ = 0;
 }
-inline ::trading::execution::TradingSignalProto_OrderSide TradingSignalProto::_internal_direction() const {
-  return static_cast< ::trading::execution::TradingSignalProto_OrderSide >(_impl_.direction_);
+inline ::trading::execution::grpc::TradingSignalProto_OrderSide TradingSignalProto::_internal_direction() const {
+  return static_cast< ::trading::execution::grpc::TradingSignalProto_OrderSide >(_impl_.direction_);
 }
-inline ::trading::execution::TradingSignalProto_OrderSide TradingSignalProto::direction() const {
-  // @@protoc_insertion_point(field_get:trading.execution.TradingSignalProto.direction)
+inline ::trading::execution::grpc::TradingSignalProto_OrderSide TradingSignalProto::direction() const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.TradingSignalProto.direction)
   return _internal_direction();
 }
-inline void TradingSignalProto::_internal_set_direction(::trading::execution::TradingSignalProto_OrderSide value) {
+inline void TradingSignalProto::_internal_set_direction(::trading::execution::grpc::TradingSignalProto_OrderSide value) {
   
   _impl_.direction_ = value;
 }
-inline void TradingSignalProto::set_direction(::trading::execution::TradingSignalProto_OrderSide value) {
+inline void TradingSignalProto::set_direction(::trading::execution::grpc::TradingSignalProto_OrderSide value) {
   _internal_set_direction(value);
-  // @@protoc_insertion_point(field_set:trading.execution.TradingSignalProto.direction)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.TradingSignalProto.direction)
 }
 
 // double strength = 4;
@@ -3477,7 +3480,7 @@ inline double TradingSignalProto::_internal_strength() const {
   return _impl_.strength_;
 }
 inline double TradingSignalProto::strength() const {
-  // @@protoc_insertion_point(field_get:trading.execution.TradingSignalProto.strength)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.TradingSignalProto.strength)
   return _internal_strength();
 }
 inline void TradingSignalProto::_internal_set_strength(double value) {
@@ -3486,7 +3489,7 @@ inline void TradingSignalProto::_internal_set_strength(double value) {
 }
 inline void TradingSignalProto::set_strength(double value) {
   _internal_set_strength(value);
-  // @@protoc_insertion_point(field_set:trading.execution.TradingSignalProto.strength)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.TradingSignalProto.strength)
 }
 
 // double target_size = 5;
@@ -3497,7 +3500,7 @@ inline double TradingSignalProto::_internal_target_size() const {
   return _impl_.target_size_;
 }
 inline double TradingSignalProto::target_size() const {
-  // @@protoc_insertion_point(field_get:trading.execution.TradingSignalProto.target_size)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.TradingSignalProto.target_size)
   return _internal_target_size();
 }
 inline void TradingSignalProto::_internal_set_target_size(double value) {
@@ -3506,7 +3509,7 @@ inline void TradingSignalProto::_internal_set_target_size(double value) {
 }
 inline void TradingSignalProto::set_target_size(double value) {
   _internal_set_target_size(value);
-  // @@protoc_insertion_point(field_set:trading.execution.TradingSignalProto.target_size)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.TradingSignalProto.target_size)
 }
 
 // int64 signal_ttl_ms = 6;
@@ -3517,7 +3520,7 @@ inline int64_t TradingSignalProto::_internal_signal_ttl_ms() const {
   return _impl_.signal_ttl_ms_;
 }
 inline int64_t TradingSignalProto::signal_ttl_ms() const {
-  // @@protoc_insertion_point(field_get:trading.execution.TradingSignalProto.signal_ttl_ms)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.TradingSignalProto.signal_ttl_ms)
   return _internal_signal_ttl_ms();
 }
 inline void TradingSignalProto::_internal_set_signal_ttl_ms(int64_t value) {
@@ -3526,7 +3529,7 @@ inline void TradingSignalProto::_internal_set_signal_ttl_ms(int64_t value) {
 }
 inline void TradingSignalProto::set_signal_ttl_ms(int64_t value) {
   _internal_set_signal_ttl_ms(value);
-  // @@protoc_insertion_point(field_set:trading.execution.TradingSignalProto.signal_ttl_ms)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.TradingSignalProto.signal_ttl_ms)
 }
 
 // string strategy_id = 7;
@@ -3534,7 +3537,7 @@ inline void TradingSignalProto::clear_strategy_id() {
   _impl_.strategy_id_.ClearToEmpty();
 }
 inline const std::string& TradingSignalProto::strategy_id() const {
-  // @@protoc_insertion_point(field_get:trading.execution.TradingSignalProto.strategy_id)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.TradingSignalProto.strategy_id)
   return _internal_strategy_id();
 }
 template <typename ArgT0, typename... ArgT>
@@ -3542,11 +3545,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void TradingSignalProto::set_strategy_id(ArgT0&& arg0, ArgT... args) {
  
  _impl_.strategy_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.TradingSignalProto.strategy_id)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.TradingSignalProto.strategy_id)
 }
 inline std::string* TradingSignalProto::mutable_strategy_id() {
   std::string* _s = _internal_mutable_strategy_id();
-  // @@protoc_insertion_point(field_mutable:trading.execution.TradingSignalProto.strategy_id)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.TradingSignalProto.strategy_id)
   return _s;
 }
 inline const std::string& TradingSignalProto::_internal_strategy_id() const {
@@ -3561,7 +3564,7 @@ inline std::string* TradingSignalProto::_internal_mutable_strategy_id() {
   return _impl_.strategy_id_.Mutable(GetArenaForAllocation());
 }
 inline std::string* TradingSignalProto::release_strategy_id() {
-  // @@protoc_insertion_point(field_release:trading.execution.TradingSignalProto.strategy_id)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.TradingSignalProto.strategy_id)
   return _impl_.strategy_id_.Release();
 }
 inline void TradingSignalProto::set_allocated_strategy_id(std::string* strategy_id) {
@@ -3576,7 +3579,7 @@ inline void TradingSignalProto::set_allocated_strategy_id(std::string* strategy_
     _impl_.strategy_id_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.TradingSignalProto.strategy_id)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.TradingSignalProto.strategy_id)
 }
 
 // string strategy_version = 8;
@@ -3584,7 +3587,7 @@ inline void TradingSignalProto::clear_strategy_version() {
   _impl_.strategy_version_.ClearToEmpty();
 }
 inline const std::string& TradingSignalProto::strategy_version() const {
-  // @@protoc_insertion_point(field_get:trading.execution.TradingSignalProto.strategy_version)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.TradingSignalProto.strategy_version)
   return _internal_strategy_version();
 }
 template <typename ArgT0, typename... ArgT>
@@ -3592,11 +3595,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void TradingSignalProto::set_strategy_version(ArgT0&& arg0, ArgT... args) {
  
  _impl_.strategy_version_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.TradingSignalProto.strategy_version)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.TradingSignalProto.strategy_version)
 }
 inline std::string* TradingSignalProto::mutable_strategy_version() {
   std::string* _s = _internal_mutable_strategy_version();
-  // @@protoc_insertion_point(field_mutable:trading.execution.TradingSignalProto.strategy_version)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.TradingSignalProto.strategy_version)
   return _s;
 }
 inline const std::string& TradingSignalProto::_internal_strategy_version() const {
@@ -3611,7 +3614,7 @@ inline std::string* TradingSignalProto::_internal_mutable_strategy_version() {
   return _impl_.strategy_version_.Mutable(GetArenaForAllocation());
 }
 inline std::string* TradingSignalProto::release_strategy_version() {
-  // @@protoc_insertion_point(field_release:trading.execution.TradingSignalProto.strategy_version)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.TradingSignalProto.strategy_version)
   return _impl_.strategy_version_.Release();
 }
 inline void TradingSignalProto::set_allocated_strategy_version(std::string* strategy_version) {
@@ -3626,7 +3629,7 @@ inline void TradingSignalProto::set_allocated_strategy_version(std::string* stra
     _impl_.strategy_version_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.TradingSignalProto.strategy_version)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.TradingSignalProto.strategy_version)
 }
 
 // map<string, double> signal_metrics = 9;
@@ -3645,7 +3648,7 @@ TradingSignalProto::_internal_signal_metrics() const {
 }
 inline const ::PROTOBUF_NAMESPACE_ID::Map< std::string, double >&
 TradingSignalProto::signal_metrics() const {
-  // @@protoc_insertion_point(field_map:trading.execution.TradingSignalProto.signal_metrics)
+  // @@protoc_insertion_point(field_map:trading.execution.grpc.TradingSignalProto.signal_metrics)
   return _internal_signal_metrics();
 }
 inline ::PROTOBUF_NAMESPACE_ID::Map< std::string, double >*
@@ -3654,7 +3657,7 @@ TradingSignalProto::_internal_mutable_signal_metrics() {
 }
 inline ::PROTOBUF_NAMESPACE_ID::Map< std::string, double >*
 TradingSignalProto::mutable_signal_metrics() {
-  // @@protoc_insertion_point(field_mutable_map:trading.execution.TradingSignalProto.signal_metrics)
+  // @@protoc_insertion_point(field_mutable_map:trading.execution.grpc.TradingSignalProto.signal_metrics)
   return _internal_mutable_signal_metrics();
 }
 
@@ -3667,7 +3670,7 @@ inline void ExecutionResponseProto::clear_client_order_id() {
   _impl_.client_order_id_.ClearToEmpty();
 }
 inline const std::string& ExecutionResponseProto::client_order_id() const {
-  // @@protoc_insertion_point(field_get:trading.execution.ExecutionResponseProto.client_order_id)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.ExecutionResponseProto.client_order_id)
   return _internal_client_order_id();
 }
 template <typename ArgT0, typename... ArgT>
@@ -3675,11 +3678,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void ExecutionResponseProto::set_client_order_id(ArgT0&& arg0, ArgT... args) {
  
  _impl_.client_order_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.ExecutionResponseProto.client_order_id)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.ExecutionResponseProto.client_order_id)
 }
 inline std::string* ExecutionResponseProto::mutable_client_order_id() {
   std::string* _s = _internal_mutable_client_order_id();
-  // @@protoc_insertion_point(field_mutable:trading.execution.ExecutionResponseProto.client_order_id)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.ExecutionResponseProto.client_order_id)
   return _s;
 }
 inline const std::string& ExecutionResponseProto::_internal_client_order_id() const {
@@ -3694,7 +3697,7 @@ inline std::string* ExecutionResponseProto::_internal_mutable_client_order_id() 
   return _impl_.client_order_id_.Mutable(GetArenaForAllocation());
 }
 inline std::string* ExecutionResponseProto::release_client_order_id() {
-  // @@protoc_insertion_point(field_release:trading.execution.ExecutionResponseProto.client_order_id)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.ExecutionResponseProto.client_order_id)
   return _impl_.client_order_id_.Release();
 }
 inline void ExecutionResponseProto::set_allocated_client_order_id(std::string* client_order_id) {
@@ -3709,7 +3712,7 @@ inline void ExecutionResponseProto::set_allocated_client_order_id(std::string* c
     _impl_.client_order_id_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.ExecutionResponseProto.client_order_id)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.ExecutionResponseProto.client_order_id)
 }
 
 // string exchange_order_id = 2;
@@ -3717,7 +3720,7 @@ inline void ExecutionResponseProto::clear_exchange_order_id() {
   _impl_.exchange_order_id_.ClearToEmpty();
 }
 inline const std::string& ExecutionResponseProto::exchange_order_id() const {
-  // @@protoc_insertion_point(field_get:trading.execution.ExecutionResponseProto.exchange_order_id)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.ExecutionResponseProto.exchange_order_id)
   return _internal_exchange_order_id();
 }
 template <typename ArgT0, typename... ArgT>
@@ -3725,11 +3728,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void ExecutionResponseProto::set_exchange_order_id(ArgT0&& arg0, ArgT... args) {
  
  _impl_.exchange_order_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.ExecutionResponseProto.exchange_order_id)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.ExecutionResponseProto.exchange_order_id)
 }
 inline std::string* ExecutionResponseProto::mutable_exchange_order_id() {
   std::string* _s = _internal_mutable_exchange_order_id();
-  // @@protoc_insertion_point(field_mutable:trading.execution.ExecutionResponseProto.exchange_order_id)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.ExecutionResponseProto.exchange_order_id)
   return _s;
 }
 inline const std::string& ExecutionResponseProto::_internal_exchange_order_id() const {
@@ -3744,7 +3747,7 @@ inline std::string* ExecutionResponseProto::_internal_mutable_exchange_order_id(
   return _impl_.exchange_order_id_.Mutable(GetArenaForAllocation());
 }
 inline std::string* ExecutionResponseProto::release_exchange_order_id() {
-  // @@protoc_insertion_point(field_release:trading.execution.ExecutionResponseProto.exchange_order_id)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.ExecutionResponseProto.exchange_order_id)
   return _impl_.exchange_order_id_.Release();
 }
 inline void ExecutionResponseProto::set_allocated_exchange_order_id(std::string* exchange_order_id) {
@@ -3759,7 +3762,7 @@ inline void ExecutionResponseProto::set_allocated_exchange_order_id(std::string*
     _impl_.exchange_order_id_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.ExecutionResponseProto.exchange_order_id)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.ExecutionResponseProto.exchange_order_id)
 }
 
 // bool success = 3;
@@ -3770,7 +3773,7 @@ inline bool ExecutionResponseProto::_internal_success() const {
   return _impl_.success_;
 }
 inline bool ExecutionResponseProto::success() const {
-  // @@protoc_insertion_point(field_get:trading.execution.ExecutionResponseProto.success)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.ExecutionResponseProto.success)
   return _internal_success();
 }
 inline void ExecutionResponseProto::_internal_set_success(bool value) {
@@ -3779,7 +3782,7 @@ inline void ExecutionResponseProto::_internal_set_success(bool value) {
 }
 inline void ExecutionResponseProto::set_success(bool value) {
   _internal_set_success(value);
-  // @@protoc_insertion_point(field_set:trading.execution.ExecutionResponseProto.success)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.ExecutionResponseProto.success)
 }
 
 // string error_message = 4;
@@ -3787,7 +3790,7 @@ inline void ExecutionResponseProto::clear_error_message() {
   _impl_.error_message_.ClearToEmpty();
 }
 inline const std::string& ExecutionResponseProto::error_message() const {
-  // @@protoc_insertion_point(field_get:trading.execution.ExecutionResponseProto.error_message)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.ExecutionResponseProto.error_message)
   return _internal_error_message();
 }
 template <typename ArgT0, typename... ArgT>
@@ -3795,11 +3798,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void ExecutionResponseProto::set_error_message(ArgT0&& arg0, ArgT... args) {
  
  _impl_.error_message_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.ExecutionResponseProto.error_message)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.ExecutionResponseProto.error_message)
 }
 inline std::string* ExecutionResponseProto::mutable_error_message() {
   std::string* _s = _internal_mutable_error_message();
-  // @@protoc_insertion_point(field_mutable:trading.execution.ExecutionResponseProto.error_message)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.ExecutionResponseProto.error_message)
   return _s;
 }
 inline const std::string& ExecutionResponseProto::_internal_error_message() const {
@@ -3814,7 +3817,7 @@ inline std::string* ExecutionResponseProto::_internal_mutable_error_message() {
   return _impl_.error_message_.Mutable(GetArenaForAllocation());
 }
 inline std::string* ExecutionResponseProto::release_error_message() {
-  // @@protoc_insertion_point(field_release:trading.execution.ExecutionResponseProto.error_message)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.ExecutionResponseProto.error_message)
   return _impl_.error_message_.Release();
 }
 inline void ExecutionResponseProto::set_allocated_error_message(std::string* error_message) {
@@ -3829,7 +3832,7 @@ inline void ExecutionResponseProto::set_allocated_error_message(std::string* err
     _impl_.error_message_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.ExecutionResponseProto.error_message)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.ExecutionResponseProto.error_message)
 }
 
 // int64 timestamp = 5;
@@ -3840,7 +3843,7 @@ inline int64_t ExecutionResponseProto::_internal_timestamp() const {
   return _impl_.timestamp_;
 }
 inline int64_t ExecutionResponseProto::timestamp() const {
-  // @@protoc_insertion_point(field_get:trading.execution.ExecutionResponseProto.timestamp)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.ExecutionResponseProto.timestamp)
   return _internal_timestamp();
 }
 inline void ExecutionResponseProto::_internal_set_timestamp(int64_t value) {
@@ -3849,7 +3852,7 @@ inline void ExecutionResponseProto::_internal_set_timestamp(int64_t value) {
 }
 inline void ExecutionResponseProto::set_timestamp(int64_t value) {
   _internal_set_timestamp(value);
-  // @@protoc_insertion_point(field_set:trading.execution.ExecutionResponseProto.timestamp)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.ExecutionResponseProto.timestamp)
 }
 
 // string order_status = 6;
@@ -3857,7 +3860,7 @@ inline void ExecutionResponseProto::clear_order_status() {
   _impl_.order_status_.ClearToEmpty();
 }
 inline const std::string& ExecutionResponseProto::order_status() const {
-  // @@protoc_insertion_point(field_get:trading.execution.ExecutionResponseProto.order_status)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.ExecutionResponseProto.order_status)
   return _internal_order_status();
 }
 template <typename ArgT0, typename... ArgT>
@@ -3865,11 +3868,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void ExecutionResponseProto::set_order_status(ArgT0&& arg0, ArgT... args) {
  
  _impl_.order_status_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.ExecutionResponseProto.order_status)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.ExecutionResponseProto.order_status)
 }
 inline std::string* ExecutionResponseProto::mutable_order_status() {
   std::string* _s = _internal_mutable_order_status();
-  // @@protoc_insertion_point(field_mutable:trading.execution.ExecutionResponseProto.order_status)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.ExecutionResponseProto.order_status)
   return _s;
 }
 inline const std::string& ExecutionResponseProto::_internal_order_status() const {
@@ -3884,7 +3887,7 @@ inline std::string* ExecutionResponseProto::_internal_mutable_order_status() {
   return _impl_.order_status_.Mutable(GetArenaForAllocation());
 }
 inline std::string* ExecutionResponseProto::release_order_status() {
-  // @@protoc_insertion_point(field_release:trading.execution.ExecutionResponseProto.order_status)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.ExecutionResponseProto.order_status)
   return _impl_.order_status_.Release();
 }
 inline void ExecutionResponseProto::set_allocated_order_status(std::string* order_status) {
@@ -3899,7 +3902,7 @@ inline void ExecutionResponseProto::set_allocated_order_status(std::string* orde
     _impl_.order_status_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.ExecutionResponseProto.order_status)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.ExecutionResponseProto.order_status)
 }
 
 // -------------------------------------------------------------------
@@ -3911,7 +3914,7 @@ inline void CancelResponseProto::clear_client_order_id() {
   _impl_.client_order_id_.ClearToEmpty();
 }
 inline const std::string& CancelResponseProto::client_order_id() const {
-  // @@protoc_insertion_point(field_get:trading.execution.CancelResponseProto.client_order_id)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.CancelResponseProto.client_order_id)
   return _internal_client_order_id();
 }
 template <typename ArgT0, typename... ArgT>
@@ -3919,11 +3922,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void CancelResponseProto::set_client_order_id(ArgT0&& arg0, ArgT... args) {
  
  _impl_.client_order_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.CancelResponseProto.client_order_id)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.CancelResponseProto.client_order_id)
 }
 inline std::string* CancelResponseProto::mutable_client_order_id() {
   std::string* _s = _internal_mutable_client_order_id();
-  // @@protoc_insertion_point(field_mutable:trading.execution.CancelResponseProto.client_order_id)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.CancelResponseProto.client_order_id)
   return _s;
 }
 inline const std::string& CancelResponseProto::_internal_client_order_id() const {
@@ -3938,7 +3941,7 @@ inline std::string* CancelResponseProto::_internal_mutable_client_order_id() {
   return _impl_.client_order_id_.Mutable(GetArenaForAllocation());
 }
 inline std::string* CancelResponseProto::release_client_order_id() {
-  // @@protoc_insertion_point(field_release:trading.execution.CancelResponseProto.client_order_id)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.CancelResponseProto.client_order_id)
   return _impl_.client_order_id_.Release();
 }
 inline void CancelResponseProto::set_allocated_client_order_id(std::string* client_order_id) {
@@ -3953,7 +3956,7 @@ inline void CancelResponseProto::set_allocated_client_order_id(std::string* clie
     _impl_.client_order_id_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.CancelResponseProto.client_order_id)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.CancelResponseProto.client_order_id)
 }
 
 // string exchange_order_id = 2;
@@ -3961,7 +3964,7 @@ inline void CancelResponseProto::clear_exchange_order_id() {
   _impl_.exchange_order_id_.ClearToEmpty();
 }
 inline const std::string& CancelResponseProto::exchange_order_id() const {
-  // @@protoc_insertion_point(field_get:trading.execution.CancelResponseProto.exchange_order_id)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.CancelResponseProto.exchange_order_id)
   return _internal_exchange_order_id();
 }
 template <typename ArgT0, typename... ArgT>
@@ -3969,11 +3972,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void CancelResponseProto::set_exchange_order_id(ArgT0&& arg0, ArgT... args) {
  
  _impl_.exchange_order_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.CancelResponseProto.exchange_order_id)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.CancelResponseProto.exchange_order_id)
 }
 inline std::string* CancelResponseProto::mutable_exchange_order_id() {
   std::string* _s = _internal_mutable_exchange_order_id();
-  // @@protoc_insertion_point(field_mutable:trading.execution.CancelResponseProto.exchange_order_id)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.CancelResponseProto.exchange_order_id)
   return _s;
 }
 inline const std::string& CancelResponseProto::_internal_exchange_order_id() const {
@@ -3988,7 +3991,7 @@ inline std::string* CancelResponseProto::_internal_mutable_exchange_order_id() {
   return _impl_.exchange_order_id_.Mutable(GetArenaForAllocation());
 }
 inline std::string* CancelResponseProto::release_exchange_order_id() {
-  // @@protoc_insertion_point(field_release:trading.execution.CancelResponseProto.exchange_order_id)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.CancelResponseProto.exchange_order_id)
   return _impl_.exchange_order_id_.Release();
 }
 inline void CancelResponseProto::set_allocated_exchange_order_id(std::string* exchange_order_id) {
@@ -4003,7 +4006,7 @@ inline void CancelResponseProto::set_allocated_exchange_order_id(std::string* ex
     _impl_.exchange_order_id_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.CancelResponseProto.exchange_order_id)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.CancelResponseProto.exchange_order_id)
 }
 
 // bool success = 3;
@@ -4014,7 +4017,7 @@ inline bool CancelResponseProto::_internal_success() const {
   return _impl_.success_;
 }
 inline bool CancelResponseProto::success() const {
-  // @@protoc_insertion_point(field_get:trading.execution.CancelResponseProto.success)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.CancelResponseProto.success)
   return _internal_success();
 }
 inline void CancelResponseProto::_internal_set_success(bool value) {
@@ -4023,7 +4026,7 @@ inline void CancelResponseProto::_internal_set_success(bool value) {
 }
 inline void CancelResponseProto::set_success(bool value) {
   _internal_set_success(value);
-  // @@protoc_insertion_point(field_set:trading.execution.CancelResponseProto.success)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.CancelResponseProto.success)
 }
 
 // string error_message = 4;
@@ -4031,7 +4034,7 @@ inline void CancelResponseProto::clear_error_message() {
   _impl_.error_message_.ClearToEmpty();
 }
 inline const std::string& CancelResponseProto::error_message() const {
-  // @@protoc_insertion_point(field_get:trading.execution.CancelResponseProto.error_message)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.CancelResponseProto.error_message)
   return _internal_error_message();
 }
 template <typename ArgT0, typename... ArgT>
@@ -4039,11 +4042,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void CancelResponseProto::set_error_message(ArgT0&& arg0, ArgT... args) {
  
  _impl_.error_message_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.CancelResponseProto.error_message)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.CancelResponseProto.error_message)
 }
 inline std::string* CancelResponseProto::mutable_error_message() {
   std::string* _s = _internal_mutable_error_message();
-  // @@protoc_insertion_point(field_mutable:trading.execution.CancelResponseProto.error_message)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.CancelResponseProto.error_message)
   return _s;
 }
 inline const std::string& CancelResponseProto::_internal_error_message() const {
@@ -4058,7 +4061,7 @@ inline std::string* CancelResponseProto::_internal_mutable_error_message() {
   return _impl_.error_message_.Mutable(GetArenaForAllocation());
 }
 inline std::string* CancelResponseProto::release_error_message() {
-  // @@protoc_insertion_point(field_release:trading.execution.CancelResponseProto.error_message)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.CancelResponseProto.error_message)
   return _impl_.error_message_.Release();
 }
 inline void CancelResponseProto::set_allocated_error_message(std::string* error_message) {
@@ -4073,7 +4076,7 @@ inline void CancelResponseProto::set_allocated_error_message(std::string* error_
     _impl_.error_message_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.CancelResponseProto.error_message)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.CancelResponseProto.error_message)
 }
 
 // int64 timestamp = 5;
@@ -4084,7 +4087,7 @@ inline int64_t CancelResponseProto::_internal_timestamp() const {
   return _impl_.timestamp_;
 }
 inline int64_t CancelResponseProto::timestamp() const {
-  // @@protoc_insertion_point(field_get:trading.execution.CancelResponseProto.timestamp)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.CancelResponseProto.timestamp)
   return _internal_timestamp();
 }
 inline void CancelResponseProto::_internal_set_timestamp(int64_t value) {
@@ -4093,7 +4096,7 @@ inline void CancelResponseProto::_internal_set_timestamp(int64_t value) {
 }
 inline void CancelResponseProto::set_timestamp(int64_t value) {
   _internal_set_timestamp(value);
-  // @@protoc_insertion_point(field_set:trading.execution.CancelResponseProto.timestamp)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.CancelResponseProto.timestamp)
 }
 
 // -------------------------------------------------------------------
@@ -4105,7 +4108,7 @@ inline void FillProto::clear_fill_id() {
   _impl_.fill_id_.ClearToEmpty();
 }
 inline const std::string& FillProto::fill_id() const {
-  // @@protoc_insertion_point(field_get:trading.execution.FillProto.fill_id)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.FillProto.fill_id)
   return _internal_fill_id();
 }
 template <typename ArgT0, typename... ArgT>
@@ -4113,11 +4116,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void FillProto::set_fill_id(ArgT0&& arg0, ArgT... args) {
  
  _impl_.fill_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.FillProto.fill_id)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.FillProto.fill_id)
 }
 inline std::string* FillProto::mutable_fill_id() {
   std::string* _s = _internal_mutable_fill_id();
-  // @@protoc_insertion_point(field_mutable:trading.execution.FillProto.fill_id)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.FillProto.fill_id)
   return _s;
 }
 inline const std::string& FillProto::_internal_fill_id() const {
@@ -4132,7 +4135,7 @@ inline std::string* FillProto::_internal_mutable_fill_id() {
   return _impl_.fill_id_.Mutable(GetArenaForAllocation());
 }
 inline std::string* FillProto::release_fill_id() {
-  // @@protoc_insertion_point(field_release:trading.execution.FillProto.fill_id)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.FillProto.fill_id)
   return _impl_.fill_id_.Release();
 }
 inline void FillProto::set_allocated_fill_id(std::string* fill_id) {
@@ -4147,7 +4150,7 @@ inline void FillProto::set_allocated_fill_id(std::string* fill_id) {
     _impl_.fill_id_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.FillProto.fill_id)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.FillProto.fill_id)
 }
 
 // string order_id = 2;
@@ -4155,7 +4158,7 @@ inline void FillProto::clear_order_id() {
   _impl_.order_id_.ClearToEmpty();
 }
 inline const std::string& FillProto::order_id() const {
-  // @@protoc_insertion_point(field_get:trading.execution.FillProto.order_id)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.FillProto.order_id)
   return _internal_order_id();
 }
 template <typename ArgT0, typename... ArgT>
@@ -4163,11 +4166,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void FillProto::set_order_id(ArgT0&& arg0, ArgT... args) {
  
  _impl_.order_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.FillProto.order_id)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.FillProto.order_id)
 }
 inline std::string* FillProto::mutable_order_id() {
   std::string* _s = _internal_mutable_order_id();
-  // @@protoc_insertion_point(field_mutable:trading.execution.FillProto.order_id)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.FillProto.order_id)
   return _s;
 }
 inline const std::string& FillProto::_internal_order_id() const {
@@ -4182,7 +4185,7 @@ inline std::string* FillProto::_internal_mutable_order_id() {
   return _impl_.order_id_.Mutable(GetArenaForAllocation());
 }
 inline std::string* FillProto::release_order_id() {
-  // @@protoc_insertion_point(field_release:trading.execution.FillProto.order_id)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.FillProto.order_id)
   return _impl_.order_id_.Release();
 }
 inline void FillProto::set_allocated_order_id(std::string* order_id) {
@@ -4197,7 +4200,7 @@ inline void FillProto::set_allocated_order_id(std::string* order_id) {
     _impl_.order_id_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.FillProto.order_id)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.FillProto.order_id)
 }
 
 // double quantity = 3;
@@ -4208,7 +4211,7 @@ inline double FillProto::_internal_quantity() const {
   return _impl_.quantity_;
 }
 inline double FillProto::quantity() const {
-  // @@protoc_insertion_point(field_get:trading.execution.FillProto.quantity)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.FillProto.quantity)
   return _internal_quantity();
 }
 inline void FillProto::_internal_set_quantity(double value) {
@@ -4217,7 +4220,7 @@ inline void FillProto::_internal_set_quantity(double value) {
 }
 inline void FillProto::set_quantity(double value) {
   _internal_set_quantity(value);
-  // @@protoc_insertion_point(field_set:trading.execution.FillProto.quantity)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.FillProto.quantity)
 }
 
 // double price = 4;
@@ -4228,7 +4231,7 @@ inline double FillProto::_internal_price() const {
   return _impl_.price_;
 }
 inline double FillProto::price() const {
-  // @@protoc_insertion_point(field_get:trading.execution.FillProto.price)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.FillProto.price)
   return _internal_price();
 }
 inline void FillProto::_internal_set_price(double value) {
@@ -4237,7 +4240,7 @@ inline void FillProto::_internal_set_price(double value) {
 }
 inline void FillProto::set_price(double value) {
   _internal_set_price(value);
-  // @@protoc_insertion_point(field_set:trading.execution.FillProto.price)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.FillProto.price)
 }
 
 // double fee = 5;
@@ -4248,7 +4251,7 @@ inline double FillProto::_internal_fee() const {
   return _impl_.fee_;
 }
 inline double FillProto::fee() const {
-  // @@protoc_insertion_point(field_get:trading.execution.FillProto.fee)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.FillProto.fee)
   return _internal_fee();
 }
 inline void FillProto::_internal_set_fee(double value) {
@@ -4257,7 +4260,7 @@ inline void FillProto::_internal_set_fee(double value) {
 }
 inline void FillProto::set_fee(double value) {
   _internal_set_fee(value);
-  // @@protoc_insertion_point(field_set:trading.execution.FillProto.fee)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.FillProto.fee)
 }
 
 // string fee_currency = 6;
@@ -4265,7 +4268,7 @@ inline void FillProto::clear_fee_currency() {
   _impl_.fee_currency_.ClearToEmpty();
 }
 inline const std::string& FillProto::fee_currency() const {
-  // @@protoc_insertion_point(field_get:trading.execution.FillProto.fee_currency)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.FillProto.fee_currency)
   return _internal_fee_currency();
 }
 template <typename ArgT0, typename... ArgT>
@@ -4273,11 +4276,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void FillProto::set_fee_currency(ArgT0&& arg0, ArgT... args) {
  
  _impl_.fee_currency_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.FillProto.fee_currency)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.FillProto.fee_currency)
 }
 inline std::string* FillProto::mutable_fee_currency() {
   std::string* _s = _internal_mutable_fee_currency();
-  // @@protoc_insertion_point(field_mutable:trading.execution.FillProto.fee_currency)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.FillProto.fee_currency)
   return _s;
 }
 inline const std::string& FillProto::_internal_fee_currency() const {
@@ -4292,7 +4295,7 @@ inline std::string* FillProto::_internal_mutable_fee_currency() {
   return _impl_.fee_currency_.Mutable(GetArenaForAllocation());
 }
 inline std::string* FillProto::release_fee_currency() {
-  // @@protoc_insertion_point(field_release:trading.execution.FillProto.fee_currency)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.FillProto.fee_currency)
   return _impl_.fee_currency_.Release();
 }
 inline void FillProto::set_allocated_fee_currency(std::string* fee_currency) {
@@ -4307,7 +4310,7 @@ inline void FillProto::set_allocated_fee_currency(std::string* fee_currency) {
     _impl_.fee_currency_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.FillProto.fee_currency)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.FillProto.fee_currency)
 }
 
 // int64 timestamp = 7;
@@ -4318,7 +4321,7 @@ inline int64_t FillProto::_internal_timestamp() const {
   return _impl_.timestamp_;
 }
 inline int64_t FillProto::timestamp() const {
-  // @@protoc_insertion_point(field_get:trading.execution.FillProto.timestamp)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.FillProto.timestamp)
   return _internal_timestamp();
 }
 inline void FillProto::_internal_set_timestamp(int64_t value) {
@@ -4327,7 +4330,7 @@ inline void FillProto::_internal_set_timestamp(int64_t value) {
 }
 inline void FillProto::set_timestamp(int64_t value) {
   _internal_set_timestamp(value);
-  // @@protoc_insertion_point(field_set:trading.execution.FillProto.timestamp)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.FillProto.timestamp)
 }
 
 // -------------------------------------------------------------------
@@ -4341,7 +4344,7 @@ inline void OrderProto::clear_order_id() {
   _impl_.order_id_.ClearToEmpty();
 }
 inline const std::string& OrderProto::order_id() const {
-  // @@protoc_insertion_point(field_get:trading.execution.OrderProto.order_id)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.order_id)
   return _internal_order_id();
 }
 template <typename ArgT0, typename... ArgT>
@@ -4349,11 +4352,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void OrderProto::set_order_id(ArgT0&& arg0, ArgT... args) {
  
  _impl_.order_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.OrderProto.order_id)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.order_id)
 }
 inline std::string* OrderProto::mutable_order_id() {
   std::string* _s = _internal_mutable_order_id();
-  // @@protoc_insertion_point(field_mutable:trading.execution.OrderProto.order_id)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.OrderProto.order_id)
   return _s;
 }
 inline const std::string& OrderProto::_internal_order_id() const {
@@ -4368,7 +4371,7 @@ inline std::string* OrderProto::_internal_mutable_order_id() {
   return _impl_.order_id_.Mutable(GetArenaForAllocation());
 }
 inline std::string* OrderProto::release_order_id() {
-  // @@protoc_insertion_point(field_release:trading.execution.OrderProto.order_id)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.OrderProto.order_id)
   return _impl_.order_id_.Release();
 }
 inline void OrderProto::set_allocated_order_id(std::string* order_id) {
@@ -4383,7 +4386,7 @@ inline void OrderProto::set_allocated_order_id(std::string* order_id) {
     _impl_.order_id_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.OrderProto.order_id)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.OrderProto.order_id)
 }
 
 // string client_order_id = 2;
@@ -4391,7 +4394,7 @@ inline void OrderProto::clear_client_order_id() {
   _impl_.client_order_id_.ClearToEmpty();
 }
 inline const std::string& OrderProto::client_order_id() const {
-  // @@protoc_insertion_point(field_get:trading.execution.OrderProto.client_order_id)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.client_order_id)
   return _internal_client_order_id();
 }
 template <typename ArgT0, typename... ArgT>
@@ -4399,11 +4402,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void OrderProto::set_client_order_id(ArgT0&& arg0, ArgT... args) {
  
  _impl_.client_order_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.OrderProto.client_order_id)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.client_order_id)
 }
 inline std::string* OrderProto::mutable_client_order_id() {
   std::string* _s = _internal_mutable_client_order_id();
-  // @@protoc_insertion_point(field_mutable:trading.execution.OrderProto.client_order_id)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.OrderProto.client_order_id)
   return _s;
 }
 inline const std::string& OrderProto::_internal_client_order_id() const {
@@ -4418,7 +4421,7 @@ inline std::string* OrderProto::_internal_mutable_client_order_id() {
   return _impl_.client_order_id_.Mutable(GetArenaForAllocation());
 }
 inline std::string* OrderProto::release_client_order_id() {
-  // @@protoc_insertion_point(field_release:trading.execution.OrderProto.client_order_id)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.OrderProto.client_order_id)
   return _impl_.client_order_id_.Release();
 }
 inline void OrderProto::set_allocated_client_order_id(std::string* client_order_id) {
@@ -4433,7 +4436,7 @@ inline void OrderProto::set_allocated_client_order_id(std::string* client_order_
     _impl_.client_order_id_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.OrderProto.client_order_id)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.OrderProto.client_order_id)
 }
 
 // string exchange_id = 3;
@@ -4441,7 +4444,7 @@ inline void OrderProto::clear_exchange_id() {
   _impl_.exchange_id_.ClearToEmpty();
 }
 inline const std::string& OrderProto::exchange_id() const {
-  // @@protoc_insertion_point(field_get:trading.execution.OrderProto.exchange_id)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.exchange_id)
   return _internal_exchange_id();
 }
 template <typename ArgT0, typename... ArgT>
@@ -4449,11 +4452,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void OrderProto::set_exchange_id(ArgT0&& arg0, ArgT... args) {
  
  _impl_.exchange_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.OrderProto.exchange_id)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.exchange_id)
 }
 inline std::string* OrderProto::mutable_exchange_id() {
   std::string* _s = _internal_mutable_exchange_id();
-  // @@protoc_insertion_point(field_mutable:trading.execution.OrderProto.exchange_id)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.OrderProto.exchange_id)
   return _s;
 }
 inline const std::string& OrderProto::_internal_exchange_id() const {
@@ -4468,7 +4471,7 @@ inline std::string* OrderProto::_internal_mutable_exchange_id() {
   return _impl_.exchange_id_.Mutable(GetArenaForAllocation());
 }
 inline std::string* OrderProto::release_exchange_id() {
-  // @@protoc_insertion_point(field_release:trading.execution.OrderProto.exchange_id)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.OrderProto.exchange_id)
   return _impl_.exchange_id_.Release();
 }
 inline void OrderProto::set_allocated_exchange_id(std::string* exchange_id) {
@@ -4483,7 +4486,7 @@ inline void OrderProto::set_allocated_exchange_id(std::string* exchange_id) {
     _impl_.exchange_id_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.OrderProto.exchange_id)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.OrderProto.exchange_id)
 }
 
 // string exchange_order_id = 4;
@@ -4491,7 +4494,7 @@ inline void OrderProto::clear_exchange_order_id() {
   _impl_.exchange_order_id_.ClearToEmpty();
 }
 inline const std::string& OrderProto::exchange_order_id() const {
-  // @@protoc_insertion_point(field_get:trading.execution.OrderProto.exchange_order_id)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.exchange_order_id)
   return _internal_exchange_order_id();
 }
 template <typename ArgT0, typename... ArgT>
@@ -4499,11 +4502,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void OrderProto::set_exchange_order_id(ArgT0&& arg0, ArgT... args) {
  
  _impl_.exchange_order_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.OrderProto.exchange_order_id)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.exchange_order_id)
 }
 inline std::string* OrderProto::mutable_exchange_order_id() {
   std::string* _s = _internal_mutable_exchange_order_id();
-  // @@protoc_insertion_point(field_mutable:trading.execution.OrderProto.exchange_order_id)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.OrderProto.exchange_order_id)
   return _s;
 }
 inline const std::string& OrderProto::_internal_exchange_order_id() const {
@@ -4518,7 +4521,7 @@ inline std::string* OrderProto::_internal_mutable_exchange_order_id() {
   return _impl_.exchange_order_id_.Mutable(GetArenaForAllocation());
 }
 inline std::string* OrderProto::release_exchange_order_id() {
-  // @@protoc_insertion_point(field_release:trading.execution.OrderProto.exchange_order_id)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.OrderProto.exchange_order_id)
   return _impl_.exchange_order_id_.Release();
 }
 inline void OrderProto::set_allocated_exchange_order_id(std::string* exchange_order_id) {
@@ -4533,7 +4536,7 @@ inline void OrderProto::set_allocated_exchange_order_id(std::string* exchange_or
     _impl_.exchange_order_id_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.OrderProto.exchange_order_id)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.OrderProto.exchange_order_id)
 }
 
 // string trading_pair = 5;
@@ -4541,7 +4544,7 @@ inline void OrderProto::clear_trading_pair() {
   _impl_.trading_pair_.ClearToEmpty();
 }
 inline const std::string& OrderProto::trading_pair() const {
-  // @@protoc_insertion_point(field_get:trading.execution.OrderProto.trading_pair)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.trading_pair)
   return _internal_trading_pair();
 }
 template <typename ArgT0, typename... ArgT>
@@ -4549,11 +4552,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void OrderProto::set_trading_pair(ArgT0&& arg0, ArgT... args) {
  
  _impl_.trading_pair_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.OrderProto.trading_pair)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.trading_pair)
 }
 inline std::string* OrderProto::mutable_trading_pair() {
   std::string* _s = _internal_mutable_trading_pair();
-  // @@protoc_insertion_point(field_mutable:trading.execution.OrderProto.trading_pair)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.OrderProto.trading_pair)
   return _s;
 }
 inline const std::string& OrderProto::_internal_trading_pair() const {
@@ -4568,7 +4571,7 @@ inline std::string* OrderProto::_internal_mutable_trading_pair() {
   return _impl_.trading_pair_.Mutable(GetArenaForAllocation());
 }
 inline std::string* OrderProto::release_trading_pair() {
-  // @@protoc_insertion_point(field_release:trading.execution.OrderProto.trading_pair)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.OrderProto.trading_pair)
   return _impl_.trading_pair_.Release();
 }
 inline void OrderProto::set_allocated_trading_pair(std::string* trading_pair) {
@@ -4583,47 +4586,47 @@ inline void OrderProto::set_allocated_trading_pair(std::string* trading_pair) {
     _impl_.trading_pair_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.OrderProto.trading_pair)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.OrderProto.trading_pair)
 }
 
-// .trading.execution.OrderProto.OrderSide side = 6;
+// .trading.execution.grpc.OrderProto.OrderSide side = 6;
 inline void OrderProto::clear_side() {
   _impl_.side_ = 0;
 }
-inline ::trading::execution::OrderProto_OrderSide OrderProto::_internal_side() const {
-  return static_cast< ::trading::execution::OrderProto_OrderSide >(_impl_.side_);
+inline ::trading::execution::grpc::OrderProto_OrderSide OrderProto::_internal_side() const {
+  return static_cast< ::trading::execution::grpc::OrderProto_OrderSide >(_impl_.side_);
 }
-inline ::trading::execution::OrderProto_OrderSide OrderProto::side() const {
-  // @@protoc_insertion_point(field_get:trading.execution.OrderProto.side)
+inline ::trading::execution::grpc::OrderProto_OrderSide OrderProto::side() const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.side)
   return _internal_side();
 }
-inline void OrderProto::_internal_set_side(::trading::execution::OrderProto_OrderSide value) {
+inline void OrderProto::_internal_set_side(::trading::execution::grpc::OrderProto_OrderSide value) {
   
   _impl_.side_ = value;
 }
-inline void OrderProto::set_side(::trading::execution::OrderProto_OrderSide value) {
+inline void OrderProto::set_side(::trading::execution::grpc::OrderProto_OrderSide value) {
   _internal_set_side(value);
-  // @@protoc_insertion_point(field_set:trading.execution.OrderProto.side)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.side)
 }
 
-// .trading.execution.OrderProto.OrderType type = 7;
+// .trading.execution.grpc.OrderProto.OrderType type = 7;
 inline void OrderProto::clear_type() {
   _impl_.type_ = 0;
 }
-inline ::trading::execution::OrderProto_OrderType OrderProto::_internal_type() const {
-  return static_cast< ::trading::execution::OrderProto_OrderType >(_impl_.type_);
+inline ::trading::execution::grpc::OrderProto_OrderType OrderProto::_internal_type() const {
+  return static_cast< ::trading::execution::grpc::OrderProto_OrderType >(_impl_.type_);
 }
-inline ::trading::execution::OrderProto_OrderType OrderProto::type() const {
-  // @@protoc_insertion_point(field_get:trading.execution.OrderProto.type)
+inline ::trading::execution::grpc::OrderProto_OrderType OrderProto::type() const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.type)
   return _internal_type();
 }
-inline void OrderProto::_internal_set_type(::trading::execution::OrderProto_OrderType value) {
+inline void OrderProto::_internal_set_type(::trading::execution::grpc::OrderProto_OrderType value) {
   
   _impl_.type_ = value;
 }
-inline void OrderProto::set_type(::trading::execution::OrderProto_OrderType value) {
+inline void OrderProto::set_type(::trading::execution::grpc::OrderProto_OrderType value) {
   _internal_set_type(value);
-  // @@protoc_insertion_point(field_set:trading.execution.OrderProto.type)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.type)
 }
 
 // double quantity = 8;
@@ -4634,7 +4637,7 @@ inline double OrderProto::_internal_quantity() const {
   return _impl_.quantity_;
 }
 inline double OrderProto::quantity() const {
-  // @@protoc_insertion_point(field_get:trading.execution.OrderProto.quantity)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.quantity)
   return _internal_quantity();
 }
 inline void OrderProto::_internal_set_quantity(double value) {
@@ -4643,7 +4646,7 @@ inline void OrderProto::_internal_set_quantity(double value) {
 }
 inline void OrderProto::set_quantity(double value) {
   _internal_set_quantity(value);
-  // @@protoc_insertion_point(field_set:trading.execution.OrderProto.quantity)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.quantity)
 }
 
 // double price = 9;
@@ -4654,7 +4657,7 @@ inline double OrderProto::_internal_price() const {
   return _impl_.price_;
 }
 inline double OrderProto::price() const {
-  // @@protoc_insertion_point(field_get:trading.execution.OrderProto.price)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.price)
   return _internal_price();
 }
 inline void OrderProto::_internal_set_price(double value) {
@@ -4663,7 +4666,7 @@ inline void OrderProto::_internal_set_price(double value) {
 }
 inline void OrderProto::set_price(double value) {
   _internal_set_price(value);
-  // @@protoc_insertion_point(field_set:trading.execution.OrderProto.price)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.price)
 }
 
 // double stop_price = 10;
@@ -4674,7 +4677,7 @@ inline double OrderProto::_internal_stop_price() const {
   return _impl_.stop_price_;
 }
 inline double OrderProto::stop_price() const {
-  // @@protoc_insertion_point(field_get:trading.execution.OrderProto.stop_price)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.stop_price)
   return _internal_stop_price();
 }
 inline void OrderProto::_internal_set_stop_price(double value) {
@@ -4683,47 +4686,47 @@ inline void OrderProto::_internal_set_stop_price(double value) {
 }
 inline void OrderProto::set_stop_price(double value) {
   _internal_set_stop_price(value);
-  // @@protoc_insertion_point(field_set:trading.execution.OrderProto.stop_price)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.stop_price)
 }
 
-// .trading.execution.OrderProto.TimeInForce time_in_force = 11;
+// .trading.execution.grpc.OrderProto.TimeInForce time_in_force = 11;
 inline void OrderProto::clear_time_in_force() {
   _impl_.time_in_force_ = 0;
 }
-inline ::trading::execution::OrderProto_TimeInForce OrderProto::_internal_time_in_force() const {
-  return static_cast< ::trading::execution::OrderProto_TimeInForce >(_impl_.time_in_force_);
+inline ::trading::execution::grpc::OrderProto_TimeInForce OrderProto::_internal_time_in_force() const {
+  return static_cast< ::trading::execution::grpc::OrderProto_TimeInForce >(_impl_.time_in_force_);
 }
-inline ::trading::execution::OrderProto_TimeInForce OrderProto::time_in_force() const {
-  // @@protoc_insertion_point(field_get:trading.execution.OrderProto.time_in_force)
+inline ::trading::execution::grpc::OrderProto_TimeInForce OrderProto::time_in_force() const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.time_in_force)
   return _internal_time_in_force();
 }
-inline void OrderProto::_internal_set_time_in_force(::trading::execution::OrderProto_TimeInForce value) {
+inline void OrderProto::_internal_set_time_in_force(::trading::execution::grpc::OrderProto_TimeInForce value) {
   
   _impl_.time_in_force_ = value;
 }
-inline void OrderProto::set_time_in_force(::trading::execution::OrderProto_TimeInForce value) {
+inline void OrderProto::set_time_in_force(::trading::execution::grpc::OrderProto_TimeInForce value) {
   _internal_set_time_in_force(value);
-  // @@protoc_insertion_point(field_set:trading.execution.OrderProto.time_in_force)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.time_in_force)
 }
 
-// .trading.execution.OrderStateProto state = 12;
+// .trading.execution.grpc.OrderStateProto state = 12;
 inline void OrderProto::clear_state() {
   _impl_.state_ = 0;
 }
-inline ::trading::execution::OrderStateProto OrderProto::_internal_state() const {
-  return static_cast< ::trading::execution::OrderStateProto >(_impl_.state_);
+inline ::trading::execution::grpc::OrderStateProto OrderProto::_internal_state() const {
+  return static_cast< ::trading::execution::grpc::OrderStateProto >(_impl_.state_);
 }
-inline ::trading::execution::OrderStateProto OrderProto::state() const {
-  // @@protoc_insertion_point(field_get:trading.execution.OrderProto.state)
+inline ::trading::execution::grpc::OrderStateProto OrderProto::state() const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.state)
   return _internal_state();
 }
-inline void OrderProto::_internal_set_state(::trading::execution::OrderStateProto value) {
+inline void OrderProto::_internal_set_state(::trading::execution::grpc::OrderStateProto value) {
   
   _impl_.state_ = value;
 }
-inline void OrderProto::set_state(::trading::execution::OrderStateProto value) {
+inline void OrderProto::set_state(::trading::execution::grpc::OrderStateProto value) {
   _internal_set_state(value);
-  // @@protoc_insertion_point(field_set:trading.execution.OrderProto.state)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.state)
 }
 
 // string strategy_id = 13;
@@ -4731,7 +4734,7 @@ inline void OrderProto::clear_strategy_id() {
   _impl_.strategy_id_.ClearToEmpty();
 }
 inline const std::string& OrderProto::strategy_id() const {
-  // @@protoc_insertion_point(field_get:trading.execution.OrderProto.strategy_id)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.strategy_id)
   return _internal_strategy_id();
 }
 template <typename ArgT0, typename... ArgT>
@@ -4739,11 +4742,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void OrderProto::set_strategy_id(ArgT0&& arg0, ArgT... args) {
  
  _impl_.strategy_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.OrderProto.strategy_id)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.strategy_id)
 }
 inline std::string* OrderProto::mutable_strategy_id() {
   std::string* _s = _internal_mutable_strategy_id();
-  // @@protoc_insertion_point(field_mutable:trading.execution.OrderProto.strategy_id)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.OrderProto.strategy_id)
   return _s;
 }
 inline const std::string& OrderProto::_internal_strategy_id() const {
@@ -4758,7 +4761,7 @@ inline std::string* OrderProto::_internal_mutable_strategy_id() {
   return _impl_.strategy_id_.Mutable(GetArenaForAllocation());
 }
 inline std::string* OrderProto::release_strategy_id() {
-  // @@protoc_insertion_point(field_release:trading.execution.OrderProto.strategy_id)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.OrderProto.strategy_id)
   return _impl_.strategy_id_.Release();
 }
 inline void OrderProto::set_allocated_strategy_id(std::string* strategy_id) {
@@ -4773,7 +4776,7 @@ inline void OrderProto::set_allocated_strategy_id(std::string* strategy_id) {
     _impl_.strategy_id_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.OrderProto.strategy_id)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.OrderProto.strategy_id)
 }
 
 // string signal_id = 14;
@@ -4781,7 +4784,7 @@ inline void OrderProto::clear_signal_id() {
   _impl_.signal_id_.ClearToEmpty();
 }
 inline const std::string& OrderProto::signal_id() const {
-  // @@protoc_insertion_point(field_get:trading.execution.OrderProto.signal_id)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.signal_id)
   return _internal_signal_id();
 }
 template <typename ArgT0, typename... ArgT>
@@ -4789,11 +4792,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void OrderProto::set_signal_id(ArgT0&& arg0, ArgT... args) {
  
  _impl_.signal_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.OrderProto.signal_id)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.signal_id)
 }
 inline std::string* OrderProto::mutable_signal_id() {
   std::string* _s = _internal_mutable_signal_id();
-  // @@protoc_insertion_point(field_mutable:trading.execution.OrderProto.signal_id)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.OrderProto.signal_id)
   return _s;
 }
 inline const std::string& OrderProto::_internal_signal_id() const {
@@ -4808,7 +4811,7 @@ inline std::string* OrderProto::_internal_mutable_signal_id() {
   return _impl_.signal_id_.Mutable(GetArenaForAllocation());
 }
 inline std::string* OrderProto::release_signal_id() {
-  // @@protoc_insertion_point(field_release:trading.execution.OrderProto.signal_id)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.OrderProto.signal_id)
   return _impl_.signal_id_.Release();
 }
 inline void OrderProto::set_allocated_signal_id(std::string* signal_id) {
@@ -4823,7 +4826,7 @@ inline void OrderProto::set_allocated_signal_id(std::string* signal_id) {
     _impl_.signal_id_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.OrderProto.signal_id)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.OrderProto.signal_id)
 }
 
 // int64 created_at = 15;
@@ -4834,7 +4837,7 @@ inline int64_t OrderProto::_internal_created_at() const {
   return _impl_.created_at_;
 }
 inline int64_t OrderProto::created_at() const {
-  // @@protoc_insertion_point(field_get:trading.execution.OrderProto.created_at)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.created_at)
   return _internal_created_at();
 }
 inline void OrderProto::_internal_set_created_at(int64_t value) {
@@ -4843,7 +4846,7 @@ inline void OrderProto::_internal_set_created_at(int64_t value) {
 }
 inline void OrderProto::set_created_at(int64_t value) {
   _internal_set_created_at(value);
-  // @@protoc_insertion_point(field_set:trading.execution.OrderProto.created_at)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.created_at)
 }
 
 // int64 updated_at = 16;
@@ -4854,7 +4857,7 @@ inline int64_t OrderProto::_internal_updated_at() const {
   return _impl_.updated_at_;
 }
 inline int64_t OrderProto::updated_at() const {
-  // @@protoc_insertion_point(field_get:trading.execution.OrderProto.updated_at)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.updated_at)
   return _internal_updated_at();
 }
 inline void OrderProto::_internal_set_updated_at(int64_t value) {
@@ -4863,10 +4866,10 @@ inline void OrderProto::_internal_set_updated_at(int64_t value) {
 }
 inline void OrderProto::set_updated_at(int64_t value) {
   _internal_set_updated_at(value);
-  // @@protoc_insertion_point(field_set:trading.execution.OrderProto.updated_at)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.updated_at)
 }
 
-// repeated .trading.execution.FillProto fills = 17;
+// repeated .trading.execution.grpc.FillProto fills = 17;
 inline int OrderProto::_internal_fills_size() const {
   return _impl_.fills_.size();
 }
@@ -4876,33 +4879,33 @@ inline int OrderProto::fills_size() const {
 inline void OrderProto::clear_fills() {
   _impl_.fills_.Clear();
 }
-inline ::trading::execution::FillProto* OrderProto::mutable_fills(int index) {
-  // @@protoc_insertion_point(field_mutable:trading.execution.OrderProto.fills)
+inline ::trading::execution::grpc::FillProto* OrderProto::mutable_fills(int index) {
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.OrderProto.fills)
   return _impl_.fills_.Mutable(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::FillProto >*
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::grpc::FillProto >*
 OrderProto::mutable_fills() {
-  // @@protoc_insertion_point(field_mutable_list:trading.execution.OrderProto.fills)
+  // @@protoc_insertion_point(field_mutable_list:trading.execution.grpc.OrderProto.fills)
   return &_impl_.fills_;
 }
-inline const ::trading::execution::FillProto& OrderProto::_internal_fills(int index) const {
+inline const ::trading::execution::grpc::FillProto& OrderProto::_internal_fills(int index) const {
   return _impl_.fills_.Get(index);
 }
-inline const ::trading::execution::FillProto& OrderProto::fills(int index) const {
-  // @@protoc_insertion_point(field_get:trading.execution.OrderProto.fills)
+inline const ::trading::execution::grpc::FillProto& OrderProto::fills(int index) const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.fills)
   return _internal_fills(index);
 }
-inline ::trading::execution::FillProto* OrderProto::_internal_add_fills() {
+inline ::trading::execution::grpc::FillProto* OrderProto::_internal_add_fills() {
   return _impl_.fills_.Add();
 }
-inline ::trading::execution::FillProto* OrderProto::add_fills() {
-  ::trading::execution::FillProto* _add = _internal_add_fills();
-  // @@protoc_insertion_point(field_add:trading.execution.OrderProto.fills)
+inline ::trading::execution::grpc::FillProto* OrderProto::add_fills() {
+  ::trading::execution::grpc::FillProto* _add = _internal_add_fills();
+  // @@protoc_insertion_point(field_add:trading.execution.grpc.OrderProto.fills)
   return _add;
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::FillProto >&
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::grpc::FillProto >&
 OrderProto::fills() const {
-  // @@protoc_insertion_point(field_list:trading.execution.OrderProto.fills)
+  // @@protoc_insertion_point(field_list:trading.execution.grpc.OrderProto.fills)
   return _impl_.fills_;
 }
 
@@ -4914,7 +4917,7 @@ inline double OrderProto::_internal_filled_quantity() const {
   return _impl_.filled_quantity_;
 }
 inline double OrderProto::filled_quantity() const {
-  // @@protoc_insertion_point(field_get:trading.execution.OrderProto.filled_quantity)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.filled_quantity)
   return _internal_filled_quantity();
 }
 inline void OrderProto::_internal_set_filled_quantity(double value) {
@@ -4923,7 +4926,7 @@ inline void OrderProto::_internal_set_filled_quantity(double value) {
 }
 inline void OrderProto::set_filled_quantity(double value) {
   _internal_set_filled_quantity(value);
-  // @@protoc_insertion_point(field_set:trading.execution.OrderProto.filled_quantity)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.filled_quantity)
 }
 
 // double average_fill_price = 19;
@@ -4934,7 +4937,7 @@ inline double OrderProto::_internal_average_fill_price() const {
   return _impl_.average_fill_price_;
 }
 inline double OrderProto::average_fill_price() const {
-  // @@protoc_insertion_point(field_get:trading.execution.OrderProto.average_fill_price)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.average_fill_price)
   return _internal_average_fill_price();
 }
 inline void OrderProto::_internal_set_average_fill_price(double value) {
@@ -4943,7 +4946,7 @@ inline void OrderProto::_internal_set_average_fill_price(double value) {
 }
 inline void OrderProto::set_average_fill_price(double value) {
   _internal_set_average_fill_price(value);
-  // @@protoc_insertion_point(field_set:trading.execution.OrderProto.average_fill_price)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.average_fill_price)
 }
 
 // map<string, string> extra_params = 20;
@@ -4962,7 +4965,7 @@ OrderProto::_internal_extra_params() const {
 }
 inline const ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >&
 OrderProto::extra_params() const {
-  // @@protoc_insertion_point(field_map:trading.execution.OrderProto.extra_params)
+  // @@protoc_insertion_point(field_map:trading.execution.grpc.OrderProto.extra_params)
   return _internal_extra_params();
 }
 inline ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >*
@@ -4971,7 +4974,7 @@ OrderProto::_internal_mutable_extra_params() {
 }
 inline ::PROTOBUF_NAMESPACE_ID::Map< std::string, std::string >*
 OrderProto::mutable_extra_params() {
-  // @@protoc_insertion_point(field_mutable_map:trading.execution.OrderProto.extra_params)
+  // @@protoc_insertion_point(field_mutable_map:trading.execution.grpc.OrderProto.extra_params)
   return _internal_mutable_extra_params();
 }
 
@@ -4979,7 +4982,7 @@ OrderProto::mutable_extra_params() {
 
 // OrderStatusResponseProto
 
-// .trading.execution.OrderProto order = 1;
+// .trading.execution.grpc.OrderProto order = 1;
 inline bool OrderStatusResponseProto::_internal_has_order() const {
   return this != internal_default_instance() && _impl_.order_ != nullptr;
 }
@@ -4992,17 +4995,17 @@ inline void OrderStatusResponseProto::clear_order() {
   }
   _impl_.order_ = nullptr;
 }
-inline const ::trading::execution::OrderProto& OrderStatusResponseProto::_internal_order() const {
-  const ::trading::execution::OrderProto* p = _impl_.order_;
-  return p != nullptr ? *p : reinterpret_cast<const ::trading::execution::OrderProto&>(
-      ::trading::execution::_OrderProto_default_instance_);
+inline const ::trading::execution::grpc::OrderProto& OrderStatusResponseProto::_internal_order() const {
+  const ::trading::execution::grpc::OrderProto* p = _impl_.order_;
+  return p != nullptr ? *p : reinterpret_cast<const ::trading::execution::grpc::OrderProto&>(
+      ::trading::execution::grpc::_OrderProto_default_instance_);
 }
-inline const ::trading::execution::OrderProto& OrderStatusResponseProto::order() const {
-  // @@protoc_insertion_point(field_get:trading.execution.OrderStatusResponseProto.order)
+inline const ::trading::execution::grpc::OrderProto& OrderStatusResponseProto::order() const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderStatusResponseProto.order)
   return _internal_order();
 }
 inline void OrderStatusResponseProto::unsafe_arena_set_allocated_order(
-    ::trading::execution::OrderProto* order) {
+    ::trading::execution::grpc::OrderProto* order) {
   if (GetArenaForAllocation() == nullptr) {
     delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.order_);
   }
@@ -5012,11 +5015,11 @@ inline void OrderStatusResponseProto::unsafe_arena_set_allocated_order(
   } else {
     
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:trading.execution.OrderStatusResponseProto.order)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:trading.execution.grpc.OrderStatusResponseProto.order)
 }
-inline ::trading::execution::OrderProto* OrderStatusResponseProto::release_order() {
+inline ::trading::execution::grpc::OrderProto* OrderStatusResponseProto::release_order() {
   
-  ::trading::execution::OrderProto* temp = _impl_.order_;
+  ::trading::execution::grpc::OrderProto* temp = _impl_.order_;
   _impl_.order_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
   auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
@@ -5029,27 +5032,27 @@ inline ::trading::execution::OrderProto* OrderStatusResponseProto::release_order
 #endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
   return temp;
 }
-inline ::trading::execution::OrderProto* OrderStatusResponseProto::unsafe_arena_release_order() {
-  // @@protoc_insertion_point(field_release:trading.execution.OrderStatusResponseProto.order)
+inline ::trading::execution::grpc::OrderProto* OrderStatusResponseProto::unsafe_arena_release_order() {
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.OrderStatusResponseProto.order)
   
-  ::trading::execution::OrderProto* temp = _impl_.order_;
+  ::trading::execution::grpc::OrderProto* temp = _impl_.order_;
   _impl_.order_ = nullptr;
   return temp;
 }
-inline ::trading::execution::OrderProto* OrderStatusResponseProto::_internal_mutable_order() {
+inline ::trading::execution::grpc::OrderProto* OrderStatusResponseProto::_internal_mutable_order() {
   
   if (_impl_.order_ == nullptr) {
-    auto* p = CreateMaybeMessage<::trading::execution::OrderProto>(GetArenaForAllocation());
+    auto* p = CreateMaybeMessage<::trading::execution::grpc::OrderProto>(GetArenaForAllocation());
     _impl_.order_ = p;
   }
   return _impl_.order_;
 }
-inline ::trading::execution::OrderProto* OrderStatusResponseProto::mutable_order() {
-  ::trading::execution::OrderProto* _msg = _internal_mutable_order();
-  // @@protoc_insertion_point(field_mutable:trading.execution.OrderStatusResponseProto.order)
+inline ::trading::execution::grpc::OrderProto* OrderStatusResponseProto::mutable_order() {
+  ::trading::execution::grpc::OrderProto* _msg = _internal_mutable_order();
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.OrderStatusResponseProto.order)
   return _msg;
 }
-inline void OrderStatusResponseProto::set_allocated_order(::trading::execution::OrderProto* order) {
+inline void OrderStatusResponseProto::set_allocated_order(::trading::execution::grpc::OrderProto* order) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   if (message_arena == nullptr) {
     delete _impl_.order_;
@@ -5066,7 +5069,7 @@ inline void OrderStatusResponseProto::set_allocated_order(::trading::execution::
     
   }
   _impl_.order_ = order;
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.OrderStatusResponseProto.order)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.OrderStatusResponseProto.order)
 }
 
 // bool found = 2;
@@ -5077,7 +5080,7 @@ inline bool OrderStatusResponseProto::_internal_found() const {
   return _impl_.found_;
 }
 inline bool OrderStatusResponseProto::found() const {
-  // @@protoc_insertion_point(field_get:trading.execution.OrderStatusResponseProto.found)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderStatusResponseProto.found)
   return _internal_found();
 }
 inline void OrderStatusResponseProto::_internal_set_found(bool value) {
@@ -5086,7 +5089,7 @@ inline void OrderStatusResponseProto::_internal_set_found(bool value) {
 }
 inline void OrderStatusResponseProto::set_found(bool value) {
   _internal_set_found(value);
-  // @@protoc_insertion_point(field_set:trading.execution.OrderStatusResponseProto.found)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderStatusResponseProto.found)
 }
 
 // string error_message = 3;
@@ -5094,7 +5097,7 @@ inline void OrderStatusResponseProto::clear_error_message() {
   _impl_.error_message_.ClearToEmpty();
 }
 inline const std::string& OrderStatusResponseProto::error_message() const {
-  // @@protoc_insertion_point(field_get:trading.execution.OrderStatusResponseProto.error_message)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderStatusResponseProto.error_message)
   return _internal_error_message();
 }
 template <typename ArgT0, typename... ArgT>
@@ -5102,11 +5105,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void OrderStatusResponseProto::set_error_message(ArgT0&& arg0, ArgT... args) {
  
  _impl_.error_message_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.OrderStatusResponseProto.error_message)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderStatusResponseProto.error_message)
 }
 inline std::string* OrderStatusResponseProto::mutable_error_message() {
   std::string* _s = _internal_mutable_error_message();
-  // @@protoc_insertion_point(field_mutable:trading.execution.OrderStatusResponseProto.error_message)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.OrderStatusResponseProto.error_message)
   return _s;
 }
 inline const std::string& OrderStatusResponseProto::_internal_error_message() const {
@@ -5121,7 +5124,7 @@ inline std::string* OrderStatusResponseProto::_internal_mutable_error_message() 
   return _impl_.error_message_.Mutable(GetArenaForAllocation());
 }
 inline std::string* OrderStatusResponseProto::release_error_message() {
-  // @@protoc_insertion_point(field_release:trading.execution.OrderStatusResponseProto.error_message)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.OrderStatusResponseProto.error_message)
   return _impl_.error_message_.Release();
 }
 inline void OrderStatusResponseProto::set_allocated_error_message(std::string* error_message) {
@@ -5136,7 +5139,7 @@ inline void OrderStatusResponseProto::set_allocated_error_message(std::string* e
     _impl_.error_message_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.OrderStatusResponseProto.error_message)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.OrderStatusResponseProto.error_message)
 }
 
 // -------------------------------------------------------------------
@@ -5152,7 +5155,7 @@ inline void HealthStatusResponseProto::clear_health_json() {
   _impl_.health_json_.ClearToEmpty();
 }
 inline const std::string& HealthStatusResponseProto::health_json() const {
-  // @@protoc_insertion_point(field_get:trading.execution.HealthStatusResponseProto.health_json)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.HealthStatusResponseProto.health_json)
   return _internal_health_json();
 }
 template <typename ArgT0, typename... ArgT>
@@ -5160,11 +5163,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void HealthStatusResponseProto::set_health_json(ArgT0&& arg0, ArgT... args) {
  
  _impl_.health_json_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.HealthStatusResponseProto.health_json)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.HealthStatusResponseProto.health_json)
 }
 inline std::string* HealthStatusResponseProto::mutable_health_json() {
   std::string* _s = _internal_mutable_health_json();
-  // @@protoc_insertion_point(field_mutable:trading.execution.HealthStatusResponseProto.health_json)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.HealthStatusResponseProto.health_json)
   return _s;
 }
 inline const std::string& HealthStatusResponseProto::_internal_health_json() const {
@@ -5179,7 +5182,7 @@ inline std::string* HealthStatusResponseProto::_internal_mutable_health_json() {
   return _impl_.health_json_.Mutable(GetArenaForAllocation());
 }
 inline std::string* HealthStatusResponseProto::release_health_json() {
-  // @@protoc_insertion_point(field_release:trading.execution.HealthStatusResponseProto.health_json)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.HealthStatusResponseProto.health_json)
   return _impl_.health_json_.Release();
 }
 inline void HealthStatusResponseProto::set_allocated_health_json(std::string* health_json) {
@@ -5194,7 +5197,7 @@ inline void HealthStatusResponseProto::set_allocated_health_json(std::string* he
     _impl_.health_json_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.HealthStatusResponseProto.health_json)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.HealthStatusResponseProto.health_json)
 }
 
 // -------------------------------------------------------------------
@@ -5206,7 +5209,7 @@ inline void CancelOrderRequestProto::clear_client_order_id() {
   _impl_.client_order_id_.ClearToEmpty();
 }
 inline const std::string& CancelOrderRequestProto::client_order_id() const {
-  // @@protoc_insertion_point(field_get:trading.execution.CancelOrderRequestProto.client_order_id)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.CancelOrderRequestProto.client_order_id)
   return _internal_client_order_id();
 }
 template <typename ArgT0, typename... ArgT>
@@ -5214,11 +5217,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void CancelOrderRequestProto::set_client_order_id(ArgT0&& arg0, ArgT... args) {
  
  _impl_.client_order_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.CancelOrderRequestProto.client_order_id)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.CancelOrderRequestProto.client_order_id)
 }
 inline std::string* CancelOrderRequestProto::mutable_client_order_id() {
   std::string* _s = _internal_mutable_client_order_id();
-  // @@protoc_insertion_point(field_mutable:trading.execution.CancelOrderRequestProto.client_order_id)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.CancelOrderRequestProto.client_order_id)
   return _s;
 }
 inline const std::string& CancelOrderRequestProto::_internal_client_order_id() const {
@@ -5233,7 +5236,7 @@ inline std::string* CancelOrderRequestProto::_internal_mutable_client_order_id()
   return _impl_.client_order_id_.Mutable(GetArenaForAllocation());
 }
 inline std::string* CancelOrderRequestProto::release_client_order_id() {
-  // @@protoc_insertion_point(field_release:trading.execution.CancelOrderRequestProto.client_order_id)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.CancelOrderRequestProto.client_order_id)
   return _impl_.client_order_id_.Release();
 }
 inline void CancelOrderRequestProto::set_allocated_client_order_id(std::string* client_order_id) {
@@ -5248,7 +5251,7 @@ inline void CancelOrderRequestProto::set_allocated_client_order_id(std::string* 
     _impl_.client_order_id_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.CancelOrderRequestProto.client_order_id)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.CancelOrderRequestProto.client_order_id)
 }
 
 // -------------------------------------------------------------------
@@ -5260,7 +5263,7 @@ inline void CancelOrderByExchangeIdRequestProto::clear_exchange_order_id() {
   _impl_.exchange_order_id_.ClearToEmpty();
 }
 inline const std::string& CancelOrderByExchangeIdRequestProto::exchange_order_id() const {
-  // @@protoc_insertion_point(field_get:trading.execution.CancelOrderByExchangeIdRequestProto.exchange_order_id)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_order_id)
   return _internal_exchange_order_id();
 }
 template <typename ArgT0, typename... ArgT>
@@ -5268,11 +5271,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void CancelOrderByExchangeIdRequestProto::set_exchange_order_id(ArgT0&& arg0, ArgT... args) {
  
  _impl_.exchange_order_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.CancelOrderByExchangeIdRequestProto.exchange_order_id)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_order_id)
 }
 inline std::string* CancelOrderByExchangeIdRequestProto::mutable_exchange_order_id() {
   std::string* _s = _internal_mutable_exchange_order_id();
-  // @@protoc_insertion_point(field_mutable:trading.execution.CancelOrderByExchangeIdRequestProto.exchange_order_id)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_order_id)
   return _s;
 }
 inline const std::string& CancelOrderByExchangeIdRequestProto::_internal_exchange_order_id() const {
@@ -5287,7 +5290,7 @@ inline std::string* CancelOrderByExchangeIdRequestProto::_internal_mutable_excha
   return _impl_.exchange_order_id_.Mutable(GetArenaForAllocation());
 }
 inline std::string* CancelOrderByExchangeIdRequestProto::release_exchange_order_id() {
-  // @@protoc_insertion_point(field_release:trading.execution.CancelOrderByExchangeIdRequestProto.exchange_order_id)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_order_id)
   return _impl_.exchange_order_id_.Release();
 }
 inline void CancelOrderByExchangeIdRequestProto::set_allocated_exchange_order_id(std::string* exchange_order_id) {
@@ -5302,7 +5305,7 @@ inline void CancelOrderByExchangeIdRequestProto::set_allocated_exchange_order_id
     _impl_.exchange_order_id_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.CancelOrderByExchangeIdRequestProto.exchange_order_id)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_order_id)
 }
 
 // string exchange_id = 2;
@@ -5310,7 +5313,7 @@ inline void CancelOrderByExchangeIdRequestProto::clear_exchange_id() {
   _impl_.exchange_id_.ClearToEmpty();
 }
 inline const std::string& CancelOrderByExchangeIdRequestProto::exchange_id() const {
-  // @@protoc_insertion_point(field_get:trading.execution.CancelOrderByExchangeIdRequestProto.exchange_id)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_id)
   return _internal_exchange_id();
 }
 template <typename ArgT0, typename... ArgT>
@@ -5318,11 +5321,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void CancelOrderByExchangeIdRequestProto::set_exchange_id(ArgT0&& arg0, ArgT... args) {
  
  _impl_.exchange_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.CancelOrderByExchangeIdRequestProto.exchange_id)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_id)
 }
 inline std::string* CancelOrderByExchangeIdRequestProto::mutable_exchange_id() {
   std::string* _s = _internal_mutable_exchange_id();
-  // @@protoc_insertion_point(field_mutable:trading.execution.CancelOrderByExchangeIdRequestProto.exchange_id)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_id)
   return _s;
 }
 inline const std::string& CancelOrderByExchangeIdRequestProto::_internal_exchange_id() const {
@@ -5337,7 +5340,7 @@ inline std::string* CancelOrderByExchangeIdRequestProto::_internal_mutable_excha
   return _impl_.exchange_id_.Mutable(GetArenaForAllocation());
 }
 inline std::string* CancelOrderByExchangeIdRequestProto::release_exchange_id() {
-  // @@protoc_insertion_point(field_release:trading.execution.CancelOrderByExchangeIdRequestProto.exchange_id)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_id)
   return _impl_.exchange_id_.Release();
 }
 inline void CancelOrderByExchangeIdRequestProto::set_allocated_exchange_id(std::string* exchange_id) {
@@ -5352,7 +5355,7 @@ inline void CancelOrderByExchangeIdRequestProto::set_allocated_exchange_id(std::
     _impl_.exchange_id_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.CancelOrderByExchangeIdRequestProto.exchange_id)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_id)
 }
 
 // -------------------------------------------------------------------
@@ -5364,7 +5367,7 @@ inline void CancelAllOrdersRequestProto::clear_trading_pair() {
   _impl_.trading_pair_.ClearToEmpty();
 }
 inline const std::string& CancelAllOrdersRequestProto::trading_pair() const {
-  // @@protoc_insertion_point(field_get:trading.execution.CancelAllOrdersRequestProto.trading_pair)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.CancelAllOrdersRequestProto.trading_pair)
   return _internal_trading_pair();
 }
 template <typename ArgT0, typename... ArgT>
@@ -5372,11 +5375,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void CancelAllOrdersRequestProto::set_trading_pair(ArgT0&& arg0, ArgT... args) {
  
  _impl_.trading_pair_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.CancelAllOrdersRequestProto.trading_pair)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.CancelAllOrdersRequestProto.trading_pair)
 }
 inline std::string* CancelAllOrdersRequestProto::mutable_trading_pair() {
   std::string* _s = _internal_mutable_trading_pair();
-  // @@protoc_insertion_point(field_mutable:trading.execution.CancelAllOrdersRequestProto.trading_pair)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.CancelAllOrdersRequestProto.trading_pair)
   return _s;
 }
 inline const std::string& CancelAllOrdersRequestProto::_internal_trading_pair() const {
@@ -5391,7 +5394,7 @@ inline std::string* CancelAllOrdersRequestProto::_internal_mutable_trading_pair(
   return _impl_.trading_pair_.Mutable(GetArenaForAllocation());
 }
 inline std::string* CancelAllOrdersRequestProto::release_trading_pair() {
-  // @@protoc_insertion_point(field_release:trading.execution.CancelAllOrdersRequestProto.trading_pair)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.CancelAllOrdersRequestProto.trading_pair)
   return _impl_.trading_pair_.Release();
 }
 inline void CancelAllOrdersRequestProto::set_allocated_trading_pair(std::string* trading_pair) {
@@ -5406,7 +5409,7 @@ inline void CancelAllOrdersRequestProto::set_allocated_trading_pair(std::string*
     _impl_.trading_pair_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.CancelAllOrdersRequestProto.trading_pair)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.CancelAllOrdersRequestProto.trading_pair)
 }
 
 // string exchange_id = 2;
@@ -5414,7 +5417,7 @@ inline void CancelAllOrdersRequestProto::clear_exchange_id() {
   _impl_.exchange_id_.ClearToEmpty();
 }
 inline const std::string& CancelAllOrdersRequestProto::exchange_id() const {
-  // @@protoc_insertion_point(field_get:trading.execution.CancelAllOrdersRequestProto.exchange_id)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.CancelAllOrdersRequestProto.exchange_id)
   return _internal_exchange_id();
 }
 template <typename ArgT0, typename... ArgT>
@@ -5422,11 +5425,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void CancelAllOrdersRequestProto::set_exchange_id(ArgT0&& arg0, ArgT... args) {
  
  _impl_.exchange_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.CancelAllOrdersRequestProto.exchange_id)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.CancelAllOrdersRequestProto.exchange_id)
 }
 inline std::string* CancelAllOrdersRequestProto::mutable_exchange_id() {
   std::string* _s = _internal_mutable_exchange_id();
-  // @@protoc_insertion_point(field_mutable:trading.execution.CancelAllOrdersRequestProto.exchange_id)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.CancelAllOrdersRequestProto.exchange_id)
   return _s;
 }
 inline const std::string& CancelAllOrdersRequestProto::_internal_exchange_id() const {
@@ -5441,7 +5444,7 @@ inline std::string* CancelAllOrdersRequestProto::_internal_mutable_exchange_id()
   return _impl_.exchange_id_.Mutable(GetArenaForAllocation());
 }
 inline std::string* CancelAllOrdersRequestProto::release_exchange_id() {
-  // @@protoc_insertion_point(field_release:trading.execution.CancelAllOrdersRequestProto.exchange_id)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.CancelAllOrdersRequestProto.exchange_id)
   return _impl_.exchange_id_.Release();
 }
 inline void CancelAllOrdersRequestProto::set_allocated_exchange_id(std::string* exchange_id) {
@@ -5456,14 +5459,14 @@ inline void CancelAllOrdersRequestProto::set_allocated_exchange_id(std::string* 
     _impl_.exchange_id_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.CancelAllOrdersRequestProto.exchange_id)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.CancelAllOrdersRequestProto.exchange_id)
 }
 
 // -------------------------------------------------------------------
 
 // CancelAllOrdersResponseProto
 
-// repeated .trading.execution.CancelResponseProto responses = 1;
+// repeated .trading.execution.grpc.CancelResponseProto responses = 1;
 inline int CancelAllOrdersResponseProto::_internal_responses_size() const {
   return _impl_.responses_.size();
 }
@@ -5473,33 +5476,33 @@ inline int CancelAllOrdersResponseProto::responses_size() const {
 inline void CancelAllOrdersResponseProto::clear_responses() {
   _impl_.responses_.Clear();
 }
-inline ::trading::execution::CancelResponseProto* CancelAllOrdersResponseProto::mutable_responses(int index) {
-  // @@protoc_insertion_point(field_mutable:trading.execution.CancelAllOrdersResponseProto.responses)
+inline ::trading::execution::grpc::CancelResponseProto* CancelAllOrdersResponseProto::mutable_responses(int index) {
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.CancelAllOrdersResponseProto.responses)
   return _impl_.responses_.Mutable(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::CancelResponseProto >*
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::grpc::CancelResponseProto >*
 CancelAllOrdersResponseProto::mutable_responses() {
-  // @@protoc_insertion_point(field_mutable_list:trading.execution.CancelAllOrdersResponseProto.responses)
+  // @@protoc_insertion_point(field_mutable_list:trading.execution.grpc.CancelAllOrdersResponseProto.responses)
   return &_impl_.responses_;
 }
-inline const ::trading::execution::CancelResponseProto& CancelAllOrdersResponseProto::_internal_responses(int index) const {
+inline const ::trading::execution::grpc::CancelResponseProto& CancelAllOrdersResponseProto::_internal_responses(int index) const {
   return _impl_.responses_.Get(index);
 }
-inline const ::trading::execution::CancelResponseProto& CancelAllOrdersResponseProto::responses(int index) const {
-  // @@protoc_insertion_point(field_get:trading.execution.CancelAllOrdersResponseProto.responses)
+inline const ::trading::execution::grpc::CancelResponseProto& CancelAllOrdersResponseProto::responses(int index) const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.CancelAllOrdersResponseProto.responses)
   return _internal_responses(index);
 }
-inline ::trading::execution::CancelResponseProto* CancelAllOrdersResponseProto::_internal_add_responses() {
+inline ::trading::execution::grpc::CancelResponseProto* CancelAllOrdersResponseProto::_internal_add_responses() {
   return _impl_.responses_.Add();
 }
-inline ::trading::execution::CancelResponseProto* CancelAllOrdersResponseProto::add_responses() {
-  ::trading::execution::CancelResponseProto* _add = _internal_add_responses();
-  // @@protoc_insertion_point(field_add:trading.execution.CancelAllOrdersResponseProto.responses)
+inline ::trading::execution::grpc::CancelResponseProto* CancelAllOrdersResponseProto::add_responses() {
+  ::trading::execution::grpc::CancelResponseProto* _add = _internal_add_responses();
+  // @@protoc_insertion_point(field_add:trading.execution.grpc.CancelAllOrdersResponseProto.responses)
   return _add;
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::CancelResponseProto >&
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::grpc::CancelResponseProto >&
 CancelAllOrdersResponseProto::responses() const {
-  // @@protoc_insertion_point(field_list:trading.execution.CancelAllOrdersResponseProto.responses)
+  // @@protoc_insertion_point(field_list:trading.execution.grpc.CancelAllOrdersResponseProto.responses)
   return _impl_.responses_;
 }
 
@@ -5512,7 +5515,7 @@ inline void OrderStatusRequestProto::clear_client_order_id() {
   _impl_.client_order_id_.ClearToEmpty();
 }
 inline const std::string& OrderStatusRequestProto::client_order_id() const {
-  // @@protoc_insertion_point(field_get:trading.execution.OrderStatusRequestProto.client_order_id)
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderStatusRequestProto.client_order_id)
   return _internal_client_order_id();
 }
 template <typename ArgT0, typename... ArgT>
@@ -5520,11 +5523,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void OrderStatusRequestProto::set_client_order_id(ArgT0&& arg0, ArgT... args) {
  
  _impl_.client_order_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.OrderStatusRequestProto.client_order_id)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderStatusRequestProto.client_order_id)
 }
 inline std::string* OrderStatusRequestProto::mutable_client_order_id() {
   std::string* _s = _internal_mutable_client_order_id();
-  // @@protoc_insertion_point(field_mutable:trading.execution.OrderStatusRequestProto.client_order_id)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.OrderStatusRequestProto.client_order_id)
   return _s;
 }
 inline const std::string& OrderStatusRequestProto::_internal_client_order_id() const {
@@ -5539,7 +5542,7 @@ inline std::string* OrderStatusRequestProto::_internal_mutable_client_order_id()
   return _impl_.client_order_id_.Mutable(GetArenaForAllocation());
 }
 inline std::string* OrderStatusRequestProto::release_client_order_id() {
-  // @@protoc_insertion_point(field_release:trading.execution.OrderStatusRequestProto.client_order_id)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.OrderStatusRequestProto.client_order_id)
   return _impl_.client_order_id_.Release();
 }
 inline void OrderStatusRequestProto::set_allocated_client_order_id(std::string* client_order_id) {
@@ -5554,7 +5557,7 @@ inline void OrderStatusRequestProto::set_allocated_client_order_id(std::string* 
     _impl_.client_order_id_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.OrderStatusRequestProto.client_order_id)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.OrderStatusRequestProto.client_order_id)
 }
 
 // -------------------------------------------------------------------
@@ -5565,7 +5568,7 @@ inline void OrderStatusRequestProto::set_allocated_client_order_id(std::string* 
 
 // ActiveOrdersResponseProto
 
-// repeated .trading.execution.OrderProto orders = 1;
+// repeated .trading.execution.grpc.OrderProto orders = 1;
 inline int ActiveOrdersResponseProto::_internal_orders_size() const {
   return _impl_.orders_.size();
 }
@@ -5575,33 +5578,33 @@ inline int ActiveOrdersResponseProto::orders_size() const {
 inline void ActiveOrdersResponseProto::clear_orders() {
   _impl_.orders_.Clear();
 }
-inline ::trading::execution::OrderProto* ActiveOrdersResponseProto::mutable_orders(int index) {
-  // @@protoc_insertion_point(field_mutable:trading.execution.ActiveOrdersResponseProto.orders)
+inline ::trading::execution::grpc::OrderProto* ActiveOrdersResponseProto::mutable_orders(int index) {
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.ActiveOrdersResponseProto.orders)
   return _impl_.orders_.Mutable(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::OrderProto >*
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::grpc::OrderProto >*
 ActiveOrdersResponseProto::mutable_orders() {
-  // @@protoc_insertion_point(field_mutable_list:trading.execution.ActiveOrdersResponseProto.orders)
+  // @@protoc_insertion_point(field_mutable_list:trading.execution.grpc.ActiveOrdersResponseProto.orders)
   return &_impl_.orders_;
 }
-inline const ::trading::execution::OrderProto& ActiveOrdersResponseProto::_internal_orders(int index) const {
+inline const ::trading::execution::grpc::OrderProto& ActiveOrdersResponseProto::_internal_orders(int index) const {
   return _impl_.orders_.Get(index);
 }
-inline const ::trading::execution::OrderProto& ActiveOrdersResponseProto::orders(int index) const {
-  // @@protoc_insertion_point(field_get:trading.execution.ActiveOrdersResponseProto.orders)
+inline const ::trading::execution::grpc::OrderProto& ActiveOrdersResponseProto::orders(int index) const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.ActiveOrdersResponseProto.orders)
   return _internal_orders(index);
 }
-inline ::trading::execution::OrderProto* ActiveOrdersResponseProto::_internal_add_orders() {
+inline ::trading::execution::grpc::OrderProto* ActiveOrdersResponseProto::_internal_add_orders() {
   return _impl_.orders_.Add();
 }
-inline ::trading::execution::OrderProto* ActiveOrdersResponseProto::add_orders() {
-  ::trading::execution::OrderProto* _add = _internal_add_orders();
-  // @@protoc_insertion_point(field_add:trading.execution.ActiveOrdersResponseProto.orders)
+inline ::trading::execution::grpc::OrderProto* ActiveOrdersResponseProto::add_orders() {
+  ::trading::execution::grpc::OrderProto* _add = _internal_add_orders();
+  // @@protoc_insertion_point(field_add:trading.execution.grpc.ActiveOrdersResponseProto.orders)
   return _add;
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::OrderProto >&
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::execution::grpc::OrderProto >&
 ActiveOrdersResponseProto::orders() const {
-  // @@protoc_insertion_point(field_list:trading.execution.ActiveOrdersResponseProto.orders)
+  // @@protoc_insertion_point(field_list:trading.execution.grpc.ActiveOrdersResponseProto.orders)
   return _impl_.orders_;
 }
 
@@ -5643,35 +5646,36 @@ ActiveOrdersResponseProto::orders() const {
 
 // @@protoc_insertion_point(namespace_scope)
 
+}  // namespace grpc
 }  // namespace execution
 }  // namespace trading
 
 PROTOBUF_NAMESPACE_OPEN
 
-template <> struct is_proto_enum< ::trading::execution::TradingSignalProto_OrderSide> : ::std::true_type {};
+template <> struct is_proto_enum< ::trading::execution::grpc::TradingSignalProto_OrderSide> : ::std::true_type {};
 template <>
-inline const EnumDescriptor* GetEnumDescriptor< ::trading::execution::TradingSignalProto_OrderSide>() {
-  return ::trading::execution::TradingSignalProto_OrderSide_descriptor();
+inline const EnumDescriptor* GetEnumDescriptor< ::trading::execution::grpc::TradingSignalProto_OrderSide>() {
+  return ::trading::execution::grpc::TradingSignalProto_OrderSide_descriptor();
 }
-template <> struct is_proto_enum< ::trading::execution::OrderProto_OrderSide> : ::std::true_type {};
+template <> struct is_proto_enum< ::trading::execution::grpc::OrderProto_OrderSide> : ::std::true_type {};
 template <>
-inline const EnumDescriptor* GetEnumDescriptor< ::trading::execution::OrderProto_OrderSide>() {
-  return ::trading::execution::OrderProto_OrderSide_descriptor();
+inline const EnumDescriptor* GetEnumDescriptor< ::trading::execution::grpc::OrderProto_OrderSide>() {
+  return ::trading::execution::grpc::OrderProto_OrderSide_descriptor();
 }
-template <> struct is_proto_enum< ::trading::execution::OrderProto_OrderType> : ::std::true_type {};
+template <> struct is_proto_enum< ::trading::execution::grpc::OrderProto_OrderType> : ::std::true_type {};
 template <>
-inline const EnumDescriptor* GetEnumDescriptor< ::trading::execution::OrderProto_OrderType>() {
-  return ::trading::execution::OrderProto_OrderType_descriptor();
+inline const EnumDescriptor* GetEnumDescriptor< ::trading::execution::grpc::OrderProto_OrderType>() {
+  return ::trading::execution::grpc::OrderProto_OrderType_descriptor();
 }
-template <> struct is_proto_enum< ::trading::execution::OrderProto_TimeInForce> : ::std::true_type {};
+template <> struct is_proto_enum< ::trading::execution::grpc::OrderProto_TimeInForce> : ::std::true_type {};
 template <>
-inline const EnumDescriptor* GetEnumDescriptor< ::trading::execution::OrderProto_TimeInForce>() {
-  return ::trading::execution::OrderProto_TimeInForce_descriptor();
+inline const EnumDescriptor* GetEnumDescriptor< ::trading::execution::grpc::OrderProto_TimeInForce>() {
+  return ::trading::execution::grpc::OrderProto_TimeInForce_descriptor();
 }
-template <> struct is_proto_enum< ::trading::execution::OrderStateProto> : ::std::true_type {};
+template <> struct is_proto_enum< ::trading::execution::grpc::OrderStateProto> : ::std::true_type {};
 template <>
-inline const EnumDescriptor* GetEnumDescriptor< ::trading::execution::OrderStateProto>() {
-  return ::trading::execution::OrderStateProto_descriptor();
+inline const EnumDescriptor* GetEnumDescriptor< ::trading::execution::grpc::OrderStateProto>() {
+  return ::trading::execution::grpc::OrderStateProto_descriptor();
 }
 
 PROTOBUF_NAMESPACE_CLOSE

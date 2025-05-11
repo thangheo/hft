@@ -1,212 +1,81 @@
-// /**
-//  * @file execution_service_impl.hpp
-//  * @brief gRPC implementation of the execution service interface
-//  * 
-//  * @details 
-//  * Implements the gRPC service interface for the execution engine,
-//  * translating between gRPC messages and internal data structures.
-//  * 
-//  * Created on: May 5, 2025
-//  */
-// #pragma once
-
-// #include "execution/execution_service.hpp"
-// #include "execution/execution_types.hpp"
-// #include "execution_service.grpc.pb.h"  // Generated from protobuf
-
-// #include <memory>
-// #include <grpcpp/grpcpp.h>
-
-// namespace trading {
-// namespace execution {
-// namespace grpc {
-
-// /**
-//  * @brief gRPC implementation of the execution service
-//  */
-// class ExecutionServiceImpl final : public trading::proto::ExecutionService::Service {
-// public:
-//     /**
-//      * @brief Constructor
-//      * 
-//      * @param execution_service Reference to the core execution service
-//      */
-//     explicit ExecutionServiceImpl(std::shared_ptr<ExecutionService> execution_service);
-    
-//     /**
-//      * @brief Destructor
-//      */
-//     ~ExecutionServiceImpl() override = default;
-    
-//     /**
-//      * @brief Execute a trading signal (gRPC method)
-//      * 
-//      * @param context The gRPC context
-//      * @param request The execution request
-//      * @param response The execution response
-//      * @return gRPC status
-//      */
-//     ::grpc::Status ExecuteSignal(
-//         ::grpc::ServerContext* context,
-//         const ::trading::proto::TradingSignal* request,
-//         ::trading::proto::ExecutionResponse* response) override;
-    
-//     /**
-//      * @brief Place an order directly (gRPC method)
-//      * 
-//      * @param context The gRPC context
-//      * @param request The order request
-//      * @param response The execution response
-//      * @return gRPC status
-//      */
-//     ::grpc::Status PlaceOrder(
-//         ::grpc::ServerContext* context,
-//         const ::trading::proto::OrderRequest* request,
-//         ::trading::proto::ExecutionResponse* response) override;
-    
-//     /**
-//      * @brief Cancel an order (gRPC method)
-//      * 
-//      * @param context The gRPC context
-//      * @param request The cancel request
-//      * @param response The cancel response
-//      * @return gRPC status
-//      */
-//     ::grpc::Status CancelOrder(
-//         ::grpc::ServerContext* context,
-//         const ::trading::proto::CancelRequest* request,
-//         ::trading::proto::CancelResponse* response) override;
-    
-//     /**
-//      * @brief Get order status (gRPC method)
-//      * 
-//      * @param context The gRPC context
-//      * @param request The status request
-//      * @param response The order status response
-//      * @return gRPC status
-//      */
-//     ::grpc::Status GetOrderStatus(
-//         ::grpc::ServerContext* context,
-//         const ::trading::proto::StatusRequest* request,
-//         ::trading::proto::OrderStatusResponse* response) override;
-    
-//     /**
-//      * @brief Get active orders (gRPC method)
-//      * 
-//      * @param context The gRPC context
-//      * @param request The active orders request
-//      * @param response The active orders response
-//      * @return gRPC status
-//      */
-//     ::grpc::Status GetActiveOrders(
-//         ::grpc::ServerContext* context,
-//         const ::trading::proto::ActiveOrdersRequest* request,
-//         ::trading::proto::ActiveOrdersResponse* response) override;
-    
-//     /**
-//      * @brief Get health status (gRPC method)
-//      * 
-//      * @param context The gRPC context
-//      * @param request The health request
-//      * @param response The health response
-//      * @return gRPC status
-//      */
-//     ::grpc::Status GetHealthStatus(
-//         ::grpc::ServerContext* context,
-//         const ::trading::proto::HealthRequest* request,
-//         ::trading::proto::HealthResponse* response) override;
-    
-// private:
-//     // Reference to the core execution service
-//     std::shared_ptr<ExecutionService> execution_service_;
-    
-//     // Helper methods for converting between gRPC and internal types
-//     trading::execution::TradingSignal convertTradingSignal(
-//         const ::trading::proto::TradingSignal& proto_signal);
-    
-//     trading::execution::Order convertOrderRequest(
-//         const ::trading::proto::OrderRequest& proto_order);
-    
-//     ::trading::proto::ExecutionResponse createExecutionResponse(
-//         const trading::execution::ExecutionResponse& internal_response);
-    
-//     ::trading::proto::CancelResponse createCancelResponse(
-//         const trading::execution::CancelResponse& internal_response);
-    
-//     ::trading::proto::OrderStatusResponse createOrderStatusResponse(
-//         const trading::execution::OrderStatusResponse& internal_status);
-    
-//     ::trading::proto::Order createProtoOrder(
-//         const trading::execution::Order& internal_order);
-// };
-
-// } // namespace grpc
-// } // namespace execution
-// } // namespace trading
 // execution_service_impl.hpp
 #pragma once
 
 #include "execution/execution_service.hpp"
-#include "proto/generated/execution_service.grpc.pb.h"
+#include "execution_service.grpc.pb.h"
 #include <memory>
 #include <grpcpp/grpcpp.h>
 
 namespace trading {
 namespace execution {
+namespace grpc {
 
 // Implementation of the gRPC service
-class ExecutionServiceImpl final : public trading::execution::ExecutionService::Service {
-public:
+class ExecutionServiceImpl final : public ::trading::execution::grpc::ExecutionService::Service {
+public: // Add the public specifier
     ExecutionServiceImpl(std::shared_ptr<trading::execution::ExecutionService> execution_service);
     
-    grpc::Status ExecuteSignal(
-        grpc::ServerContext* context, 
-        const trading::execution::TradingSignalProto* request,
-        trading::execution::ExecutionResponseProto* response) override;
+    ::grpc::Status ExecuteSignal(
+        ::grpc::ServerContext* context, 
+        const ::trading::execution::grpc::TradingSignalProto* request,
+        ::trading::execution::grpc::ExecutionResponseProto* response) override;
     
-    grpc::Status PlaceOrder(
-        grpc::ServerContext* context, 
-        const trading::execution::OrderProto* request,
-        trading::execution::ExecutionResponseProto* response) override;
+    ::grpc::Status PlaceOrder(
+        ::grpc::ServerContext* context, 
+        const ::trading::execution::grpc::OrderProto* request,
+        ::trading::execution::grpc::ExecutionResponseProto* response) override;
     
-    grpc::Status CancelOrder(
-        grpc::ServerContext* context, 
-        const trading::execution::CancelOrderRequestProto* request,
-        trading::execution::CancelResponseProto* response) override;
+    ::grpc::Status CancelOrder(
+        ::grpc::ServerContext* context, 
+        const ::trading::execution::grpc::CancelOrderRequestProto* request,
+        ::trading::execution::grpc::CancelResponseProto* response) override;
     
-    grpc::Status CancelAllOrdersForSymbol(
-        grpc::ServerContext* context, 
-        const trading::execution::CancelAllOrdersRequestProto* request,
-        trading::execution::CancelAllOrdersResponseProto* response) override;
+    ::grpc::Status CancelAllOrdersForSymbol(
+        ::grpc::ServerContext* context, 
+        const ::trading::execution::grpc::CancelAllOrdersRequestProto* request,
+        ::trading::execution::grpc::CancelAllOrdersResponseProto* response) override;
     
-    grpc::Status GetOrderStatus(
-        grpc::ServerContext* context, 
-        const trading::execution::OrderStatusRequestProto* request,
-        trading::execution::OrderStatusResponseProto* response) override;
+    ::grpc::Status GetOrderStatus(
+        ::grpc::ServerContext* context, 
+        const ::trading::execution::grpc::OrderStatusRequestProto* request,
+        ::trading::execution::grpc::OrderStatusResponseProto* response) override;
     
-    grpc::Status GetActiveOrders(
-        grpc::ServerContext* context, 
-        const trading::execution::ActiveOrdersRequestProto* request,
-        trading::execution::ActiveOrdersResponseProto* response) override;
+    ::grpc::Status GetActiveOrders(
+        ::grpc::ServerContext* context, 
+        const ::trading::execution::grpc::ActiveOrdersRequestProto* request,
+        ::trading::execution::grpc::ActiveOrdersResponseProto* response) override;
     
-    grpc::Status GetHealthStatus(
-        grpc::ServerContext* context, 
-        const trading::execution::HealthStatusRequestProto* request,
-        trading::execution::HealthStatusResponseProto* response) override;
+    ::grpc::Status GetHealthStatus(
+        ::grpc::ServerContext* context, 
+        const ::trading::execution::grpc::HealthStatusRequestProto* request,
+        ::trading::execution::grpc::HealthStatusResponseProto* response) override;
 
 private:
     std::shared_ptr<trading::execution::ExecutionService> execution_service_;
     
     // Helper conversion methods
-    trading::execution::TradingSignal convertTradingSignal(const trading::execution::TradingSignalProto& proto);
-    trading::execution::models::Order convertOrder(const trading::execution::OrderProto& proto);
-    trading::execution::OrderProto convertToProto(const trading::execution::models::Order& order);
-    trading::execution::ExecutionResponseProto convertToProto(const trading::execution::ExecutionResponse& response);
-    trading::execution::CancelResponseProto convertToProto(const trading::execution::CancelResponse& response);
-    trading::execution::OrderStatusResponseProto convertToProto(const trading::execution::OrderStatusResponse& response);
+    trading::execution::TradingSignal convertTradingSignal(
+        const ::trading::execution::grpc::TradingSignalProto& proto);
+    
+    trading::execution::models::Order convertOrderRequest(
+        const ::trading::execution::grpc::OrderProto& proto);
+    
+    ::trading::execution::grpc::OrderProto createProtoOrder(
+        const trading::execution::models::Order& order);
+    
+    ::trading::execution::grpc::ExecutionResponseProto createExecutionResponse(
+        const trading::execution::ExecutionResponse& response);
+    
+    ::trading::execution::grpc::CancelResponseProto createCancelResponse(
+        const trading::execution::CancelResponse& response);
+    
+    ::trading::execution::grpc::OrderStatusResponseProto createOrderStatusResponse(
+        const trading::execution::OrderStatusResponse& response);
 };
 
-// Server class to run the gRPC service
+} // namespace grpc
+
+// Server class to run the gRPC service - This stays in the execution namespace
 class ExecutionServiceServer {
 public:
     ExecutionServiceServer(
@@ -218,8 +87,8 @@ public:
     void waitForShutdown();
 
 private:
-    std::unique_ptr<grpc::Server> server_;
-    trading::execution::ExecutionServiceImpl service_;
+    std::unique_ptr<::grpc::Server> server_;
+    trading::execution::grpc::ExecutionServiceImpl service_;
     std::string server_address_;
 };
 

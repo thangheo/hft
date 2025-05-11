@@ -21,15 +21,16 @@
 #include <grpcpp/support/sync_stream.h>
 namespace trading {
 namespace execution {
+namespace grpc {
 
 static const char* ExecutionService_method_names[] = {
-  "/trading.execution.ExecutionService/ExecuteSignal",
-  "/trading.execution.ExecutionService/PlaceOrder",
-  "/trading.execution.ExecutionService/CancelOrder",
-  "/trading.execution.ExecutionService/CancelAllOrdersForSymbol",
-  "/trading.execution.ExecutionService/GetOrderStatus",
-  "/trading.execution.ExecutionService/GetActiveOrders",
-  "/trading.execution.ExecutionService/GetHealthStatus",
+  "/trading.execution.grpc.ExecutionService/ExecuteSignal",
+  "/trading.execution.grpc.ExecutionService/PlaceOrder",
+  "/trading.execution.grpc.ExecutionService/CancelOrder",
+  "/trading.execution.grpc.ExecutionService/CancelAllOrdersForSymbol",
+  "/trading.execution.grpc.ExecutionService/GetOrderStatus",
+  "/trading.execution.grpc.ExecutionService/GetActiveOrders",
+  "/trading.execution.grpc.ExecutionService/GetHealthStatus",
 };
 
 std::unique_ptr< ExecutionService::Stub> ExecutionService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -48,161 +49,161 @@ ExecutionService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& c
   , rpcmethod_GetHealthStatus_(ExecutionService_method_names[6], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
-::grpc::Status ExecutionService::Stub::ExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::TradingSignalProto& request, ::trading::execution::ExecutionResponseProto* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::trading::execution::TradingSignalProto, ::trading::execution::ExecutionResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ExecuteSignal_, context, request, response);
+::grpc::Status ExecutionService::Stub::ExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::grpc::TradingSignalProto& request, ::trading::execution::grpc::ExecutionResponseProto* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::trading::execution::grpc::TradingSignalProto, ::trading::execution::grpc::ExecutionResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ExecuteSignal_, context, request, response);
 }
 
-void ExecutionService::Stub::async::ExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::TradingSignalProto* request, ::trading::execution::ExecutionResponseProto* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::trading::execution::TradingSignalProto, ::trading::execution::ExecutionResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ExecuteSignal_, context, request, response, std::move(f));
+void ExecutionService::Stub::async::ExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::grpc::TradingSignalProto* request, ::trading::execution::grpc::ExecutionResponseProto* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::trading::execution::grpc::TradingSignalProto, ::trading::execution::grpc::ExecutionResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ExecuteSignal_, context, request, response, std::move(f));
 }
 
-void ExecutionService::Stub::async::ExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::TradingSignalProto* request, ::trading::execution::ExecutionResponseProto* response, ::grpc::ClientUnaryReactor* reactor) {
+void ExecutionService::Stub::async::ExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::grpc::TradingSignalProto* request, ::trading::execution::grpc::ExecutionResponseProto* response, ::grpc::ClientUnaryReactor* reactor) {
   ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ExecuteSignal_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::trading::execution::ExecutionResponseProto>* ExecutionService::Stub::PrepareAsyncExecuteSignalRaw(::grpc::ClientContext* context, const ::trading::execution::TradingSignalProto& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::trading::execution::ExecutionResponseProto, ::trading::execution::TradingSignalProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ExecuteSignal_, context, request);
+::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::ExecutionResponseProto>* ExecutionService::Stub::PrepareAsyncExecuteSignalRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::TradingSignalProto& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::trading::execution::grpc::ExecutionResponseProto, ::trading::execution::grpc::TradingSignalProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ExecuteSignal_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::trading::execution::ExecutionResponseProto>* ExecutionService::Stub::AsyncExecuteSignalRaw(::grpc::ClientContext* context, const ::trading::execution::TradingSignalProto& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::ExecutionResponseProto>* ExecutionService::Stub::AsyncExecuteSignalRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::TradingSignalProto& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncExecuteSignalRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status ExecutionService::Stub::PlaceOrder(::grpc::ClientContext* context, const ::trading::execution::OrderProto& request, ::trading::execution::ExecutionResponseProto* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::trading::execution::OrderProto, ::trading::execution::ExecutionResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_PlaceOrder_, context, request, response);
+::grpc::Status ExecutionService::Stub::PlaceOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderProto& request, ::trading::execution::grpc::ExecutionResponseProto* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::trading::execution::grpc::OrderProto, ::trading::execution::grpc::ExecutionResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_PlaceOrder_, context, request, response);
 }
 
-void ExecutionService::Stub::async::PlaceOrder(::grpc::ClientContext* context, const ::trading::execution::OrderProto* request, ::trading::execution::ExecutionResponseProto* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::trading::execution::OrderProto, ::trading::execution::ExecutionResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_PlaceOrder_, context, request, response, std::move(f));
+void ExecutionService::Stub::async::PlaceOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderProto* request, ::trading::execution::grpc::ExecutionResponseProto* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::trading::execution::grpc::OrderProto, ::trading::execution::grpc::ExecutionResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_PlaceOrder_, context, request, response, std::move(f));
 }
 
-void ExecutionService::Stub::async::PlaceOrder(::grpc::ClientContext* context, const ::trading::execution::OrderProto* request, ::trading::execution::ExecutionResponseProto* response, ::grpc::ClientUnaryReactor* reactor) {
+void ExecutionService::Stub::async::PlaceOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderProto* request, ::trading::execution::grpc::ExecutionResponseProto* response, ::grpc::ClientUnaryReactor* reactor) {
   ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_PlaceOrder_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::trading::execution::ExecutionResponseProto>* ExecutionService::Stub::PrepareAsyncPlaceOrderRaw(::grpc::ClientContext* context, const ::trading::execution::OrderProto& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::trading::execution::ExecutionResponseProto, ::trading::execution::OrderProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_PlaceOrder_, context, request);
+::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::ExecutionResponseProto>* ExecutionService::Stub::PrepareAsyncPlaceOrderRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderProto& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::trading::execution::grpc::ExecutionResponseProto, ::trading::execution::grpc::OrderProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_PlaceOrder_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::trading::execution::ExecutionResponseProto>* ExecutionService::Stub::AsyncPlaceOrderRaw(::grpc::ClientContext* context, const ::trading::execution::OrderProto& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::ExecutionResponseProto>* ExecutionService::Stub::AsyncPlaceOrderRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderProto& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncPlaceOrderRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status ExecutionService::Stub::CancelOrder(::grpc::ClientContext* context, const ::trading::execution::CancelOrderRequestProto& request, ::trading::execution::CancelResponseProto* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::trading::execution::CancelOrderRequestProto, ::trading::execution::CancelResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_CancelOrder_, context, request, response);
+::grpc::Status ExecutionService::Stub::CancelOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelOrderRequestProto& request, ::trading::execution::grpc::CancelResponseProto* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::trading::execution::grpc::CancelOrderRequestProto, ::trading::execution::grpc::CancelResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_CancelOrder_, context, request, response);
 }
 
-void ExecutionService::Stub::async::CancelOrder(::grpc::ClientContext* context, const ::trading::execution::CancelOrderRequestProto* request, ::trading::execution::CancelResponseProto* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::trading::execution::CancelOrderRequestProto, ::trading::execution::CancelResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CancelOrder_, context, request, response, std::move(f));
+void ExecutionService::Stub::async::CancelOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelOrderRequestProto* request, ::trading::execution::grpc::CancelResponseProto* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::trading::execution::grpc::CancelOrderRequestProto, ::trading::execution::grpc::CancelResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CancelOrder_, context, request, response, std::move(f));
 }
 
-void ExecutionService::Stub::async::CancelOrder(::grpc::ClientContext* context, const ::trading::execution::CancelOrderRequestProto* request, ::trading::execution::CancelResponseProto* response, ::grpc::ClientUnaryReactor* reactor) {
+void ExecutionService::Stub::async::CancelOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelOrderRequestProto* request, ::trading::execution::grpc::CancelResponseProto* response, ::grpc::ClientUnaryReactor* reactor) {
   ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CancelOrder_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::trading::execution::CancelResponseProto>* ExecutionService::Stub::PrepareAsyncCancelOrderRaw(::grpc::ClientContext* context, const ::trading::execution::CancelOrderRequestProto& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::trading::execution::CancelResponseProto, ::trading::execution::CancelOrderRequestProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_CancelOrder_, context, request);
+::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::CancelResponseProto>* ExecutionService::Stub::PrepareAsyncCancelOrderRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelOrderRequestProto& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::trading::execution::grpc::CancelResponseProto, ::trading::execution::grpc::CancelOrderRequestProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_CancelOrder_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::trading::execution::CancelResponseProto>* ExecutionService::Stub::AsyncCancelOrderRaw(::grpc::ClientContext* context, const ::trading::execution::CancelOrderRequestProto& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::CancelResponseProto>* ExecutionService::Stub::AsyncCancelOrderRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelOrderRequestProto& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncCancelOrderRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status ExecutionService::Stub::CancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::CancelAllOrdersRequestProto& request, ::trading::execution::CancelAllOrdersResponseProto* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::trading::execution::CancelAllOrdersRequestProto, ::trading::execution::CancelAllOrdersResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_CancelAllOrdersForSymbol_, context, request, response);
+::grpc::Status ExecutionService::Stub::CancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelAllOrdersRequestProto& request, ::trading::execution::grpc::CancelAllOrdersResponseProto* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::trading::execution::grpc::CancelAllOrdersRequestProto, ::trading::execution::grpc::CancelAllOrdersResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_CancelAllOrdersForSymbol_, context, request, response);
 }
 
-void ExecutionService::Stub::async::CancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::CancelAllOrdersRequestProto* request, ::trading::execution::CancelAllOrdersResponseProto* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::trading::execution::CancelAllOrdersRequestProto, ::trading::execution::CancelAllOrdersResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CancelAllOrdersForSymbol_, context, request, response, std::move(f));
+void ExecutionService::Stub::async::CancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelAllOrdersRequestProto* request, ::trading::execution::grpc::CancelAllOrdersResponseProto* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::trading::execution::grpc::CancelAllOrdersRequestProto, ::trading::execution::grpc::CancelAllOrdersResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CancelAllOrdersForSymbol_, context, request, response, std::move(f));
 }
 
-void ExecutionService::Stub::async::CancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::CancelAllOrdersRequestProto* request, ::trading::execution::CancelAllOrdersResponseProto* response, ::grpc::ClientUnaryReactor* reactor) {
+void ExecutionService::Stub::async::CancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelAllOrdersRequestProto* request, ::trading::execution::grpc::CancelAllOrdersResponseProto* response, ::grpc::ClientUnaryReactor* reactor) {
   ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CancelAllOrdersForSymbol_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::trading::execution::CancelAllOrdersResponseProto>* ExecutionService::Stub::PrepareAsyncCancelAllOrdersForSymbolRaw(::grpc::ClientContext* context, const ::trading::execution::CancelAllOrdersRequestProto& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::trading::execution::CancelAllOrdersResponseProto, ::trading::execution::CancelAllOrdersRequestProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_CancelAllOrdersForSymbol_, context, request);
+::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::CancelAllOrdersResponseProto>* ExecutionService::Stub::PrepareAsyncCancelAllOrdersForSymbolRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelAllOrdersRequestProto& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::trading::execution::grpc::CancelAllOrdersResponseProto, ::trading::execution::grpc::CancelAllOrdersRequestProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_CancelAllOrdersForSymbol_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::trading::execution::CancelAllOrdersResponseProto>* ExecutionService::Stub::AsyncCancelAllOrdersForSymbolRaw(::grpc::ClientContext* context, const ::trading::execution::CancelAllOrdersRequestProto& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::CancelAllOrdersResponseProto>* ExecutionService::Stub::AsyncCancelAllOrdersForSymbolRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelAllOrdersRequestProto& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncCancelAllOrdersForSymbolRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status ExecutionService::Stub::GetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::OrderStatusRequestProto& request, ::trading::execution::OrderStatusResponseProto* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::trading::execution::OrderStatusRequestProto, ::trading::execution::OrderStatusResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetOrderStatus_, context, request, response);
+::grpc::Status ExecutionService::Stub::GetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderStatusRequestProto& request, ::trading::execution::grpc::OrderStatusResponseProto* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::trading::execution::grpc::OrderStatusRequestProto, ::trading::execution::grpc::OrderStatusResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetOrderStatus_, context, request, response);
 }
 
-void ExecutionService::Stub::async::GetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::OrderStatusRequestProto* request, ::trading::execution::OrderStatusResponseProto* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::trading::execution::OrderStatusRequestProto, ::trading::execution::OrderStatusResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetOrderStatus_, context, request, response, std::move(f));
+void ExecutionService::Stub::async::GetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderStatusRequestProto* request, ::trading::execution::grpc::OrderStatusResponseProto* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::trading::execution::grpc::OrderStatusRequestProto, ::trading::execution::grpc::OrderStatusResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetOrderStatus_, context, request, response, std::move(f));
 }
 
-void ExecutionService::Stub::async::GetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::OrderStatusRequestProto* request, ::trading::execution::OrderStatusResponseProto* response, ::grpc::ClientUnaryReactor* reactor) {
+void ExecutionService::Stub::async::GetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderStatusRequestProto* request, ::trading::execution::grpc::OrderStatusResponseProto* response, ::grpc::ClientUnaryReactor* reactor) {
   ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetOrderStatus_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::trading::execution::OrderStatusResponseProto>* ExecutionService::Stub::PrepareAsyncGetOrderStatusRaw(::grpc::ClientContext* context, const ::trading::execution::OrderStatusRequestProto& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::trading::execution::OrderStatusResponseProto, ::trading::execution::OrderStatusRequestProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetOrderStatus_, context, request);
+::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::OrderStatusResponseProto>* ExecutionService::Stub::PrepareAsyncGetOrderStatusRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderStatusRequestProto& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::trading::execution::grpc::OrderStatusResponseProto, ::trading::execution::grpc::OrderStatusRequestProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetOrderStatus_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::trading::execution::OrderStatusResponseProto>* ExecutionService::Stub::AsyncGetOrderStatusRaw(::grpc::ClientContext* context, const ::trading::execution::OrderStatusRequestProto& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::OrderStatusResponseProto>* ExecutionService::Stub::AsyncGetOrderStatusRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderStatusRequestProto& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncGetOrderStatusRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status ExecutionService::Stub::GetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::ActiveOrdersRequestProto& request, ::trading::execution::ActiveOrdersResponseProto* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::trading::execution::ActiveOrdersRequestProto, ::trading::execution::ActiveOrdersResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetActiveOrders_, context, request, response);
+::grpc::Status ExecutionService::Stub::GetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::grpc::ActiveOrdersRequestProto& request, ::trading::execution::grpc::ActiveOrdersResponseProto* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::trading::execution::grpc::ActiveOrdersRequestProto, ::trading::execution::grpc::ActiveOrdersResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetActiveOrders_, context, request, response);
 }
 
-void ExecutionService::Stub::async::GetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::ActiveOrdersRequestProto* request, ::trading::execution::ActiveOrdersResponseProto* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::trading::execution::ActiveOrdersRequestProto, ::trading::execution::ActiveOrdersResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetActiveOrders_, context, request, response, std::move(f));
+void ExecutionService::Stub::async::GetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::grpc::ActiveOrdersRequestProto* request, ::trading::execution::grpc::ActiveOrdersResponseProto* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::trading::execution::grpc::ActiveOrdersRequestProto, ::trading::execution::grpc::ActiveOrdersResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetActiveOrders_, context, request, response, std::move(f));
 }
 
-void ExecutionService::Stub::async::GetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::ActiveOrdersRequestProto* request, ::trading::execution::ActiveOrdersResponseProto* response, ::grpc::ClientUnaryReactor* reactor) {
+void ExecutionService::Stub::async::GetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::grpc::ActiveOrdersRequestProto* request, ::trading::execution::grpc::ActiveOrdersResponseProto* response, ::grpc::ClientUnaryReactor* reactor) {
   ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetActiveOrders_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::trading::execution::ActiveOrdersResponseProto>* ExecutionService::Stub::PrepareAsyncGetActiveOrdersRaw(::grpc::ClientContext* context, const ::trading::execution::ActiveOrdersRequestProto& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::trading::execution::ActiveOrdersResponseProto, ::trading::execution::ActiveOrdersRequestProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetActiveOrders_, context, request);
+::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::ActiveOrdersResponseProto>* ExecutionService::Stub::PrepareAsyncGetActiveOrdersRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::ActiveOrdersRequestProto& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::trading::execution::grpc::ActiveOrdersResponseProto, ::trading::execution::grpc::ActiveOrdersRequestProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetActiveOrders_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::trading::execution::ActiveOrdersResponseProto>* ExecutionService::Stub::AsyncGetActiveOrdersRaw(::grpc::ClientContext* context, const ::trading::execution::ActiveOrdersRequestProto& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::ActiveOrdersResponseProto>* ExecutionService::Stub::AsyncGetActiveOrdersRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::ActiveOrdersRequestProto& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncGetActiveOrdersRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status ExecutionService::Stub::GetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::HealthStatusRequestProto& request, ::trading::execution::HealthStatusResponseProto* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::trading::execution::HealthStatusRequestProto, ::trading::execution::HealthStatusResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetHealthStatus_, context, request, response);
+::grpc::Status ExecutionService::Stub::GetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::HealthStatusRequestProto& request, ::trading::execution::grpc::HealthStatusResponseProto* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::trading::execution::grpc::HealthStatusRequestProto, ::trading::execution::grpc::HealthStatusResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetHealthStatus_, context, request, response);
 }
 
-void ExecutionService::Stub::async::GetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::HealthStatusRequestProto* request, ::trading::execution::HealthStatusResponseProto* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::trading::execution::HealthStatusRequestProto, ::trading::execution::HealthStatusResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetHealthStatus_, context, request, response, std::move(f));
+void ExecutionService::Stub::async::GetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::HealthStatusRequestProto* request, ::trading::execution::grpc::HealthStatusResponseProto* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::trading::execution::grpc::HealthStatusRequestProto, ::trading::execution::grpc::HealthStatusResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetHealthStatus_, context, request, response, std::move(f));
 }
 
-void ExecutionService::Stub::async::GetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::HealthStatusRequestProto* request, ::trading::execution::HealthStatusResponseProto* response, ::grpc::ClientUnaryReactor* reactor) {
+void ExecutionService::Stub::async::GetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::HealthStatusRequestProto* request, ::trading::execution::grpc::HealthStatusResponseProto* response, ::grpc::ClientUnaryReactor* reactor) {
   ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetHealthStatus_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::trading::execution::HealthStatusResponseProto>* ExecutionService::Stub::PrepareAsyncGetHealthStatusRaw(::grpc::ClientContext* context, const ::trading::execution::HealthStatusRequestProto& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::trading::execution::HealthStatusResponseProto, ::trading::execution::HealthStatusRequestProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetHealthStatus_, context, request);
+::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::HealthStatusResponseProto>* ExecutionService::Stub::PrepareAsyncGetHealthStatusRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::HealthStatusRequestProto& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::trading::execution::grpc::HealthStatusResponseProto, ::trading::execution::grpc::HealthStatusRequestProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetHealthStatus_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::trading::execution::HealthStatusResponseProto>* ExecutionService::Stub::AsyncGetHealthStatusRaw(::grpc::ClientContext* context, const ::trading::execution::HealthStatusRequestProto& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::HealthStatusResponseProto>* ExecutionService::Stub::AsyncGetHealthStatusRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::HealthStatusRequestProto& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncGetHealthStatusRaw(context, request, cq);
   result->StartCall();
@@ -213,71 +214,71 @@ ExecutionService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       ExecutionService_method_names[0],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< ExecutionService::Service, ::trading::execution::TradingSignalProto, ::trading::execution::ExecutionResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< ExecutionService::Service, ::trading::execution::grpc::TradingSignalProto, ::trading::execution::grpc::ExecutionResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](ExecutionService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::trading::execution::TradingSignalProto* req,
-             ::trading::execution::ExecutionResponseProto* resp) {
+             const ::trading::execution::grpc::TradingSignalProto* req,
+             ::trading::execution::grpc::ExecutionResponseProto* resp) {
                return service->ExecuteSignal(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       ExecutionService_method_names[1],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< ExecutionService::Service, ::trading::execution::OrderProto, ::trading::execution::ExecutionResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< ExecutionService::Service, ::trading::execution::grpc::OrderProto, ::trading::execution::grpc::ExecutionResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](ExecutionService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::trading::execution::OrderProto* req,
-             ::trading::execution::ExecutionResponseProto* resp) {
+             const ::trading::execution::grpc::OrderProto* req,
+             ::trading::execution::grpc::ExecutionResponseProto* resp) {
                return service->PlaceOrder(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       ExecutionService_method_names[2],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< ExecutionService::Service, ::trading::execution::CancelOrderRequestProto, ::trading::execution::CancelResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< ExecutionService::Service, ::trading::execution::grpc::CancelOrderRequestProto, ::trading::execution::grpc::CancelResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](ExecutionService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::trading::execution::CancelOrderRequestProto* req,
-             ::trading::execution::CancelResponseProto* resp) {
+             const ::trading::execution::grpc::CancelOrderRequestProto* req,
+             ::trading::execution::grpc::CancelResponseProto* resp) {
                return service->CancelOrder(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       ExecutionService_method_names[3],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< ExecutionService::Service, ::trading::execution::CancelAllOrdersRequestProto, ::trading::execution::CancelAllOrdersResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< ExecutionService::Service, ::trading::execution::grpc::CancelAllOrdersRequestProto, ::trading::execution::grpc::CancelAllOrdersResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](ExecutionService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::trading::execution::CancelAllOrdersRequestProto* req,
-             ::trading::execution::CancelAllOrdersResponseProto* resp) {
+             const ::trading::execution::grpc::CancelAllOrdersRequestProto* req,
+             ::trading::execution::grpc::CancelAllOrdersResponseProto* resp) {
                return service->CancelAllOrdersForSymbol(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       ExecutionService_method_names[4],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< ExecutionService::Service, ::trading::execution::OrderStatusRequestProto, ::trading::execution::OrderStatusResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< ExecutionService::Service, ::trading::execution::grpc::OrderStatusRequestProto, ::trading::execution::grpc::OrderStatusResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](ExecutionService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::trading::execution::OrderStatusRequestProto* req,
-             ::trading::execution::OrderStatusResponseProto* resp) {
+             const ::trading::execution::grpc::OrderStatusRequestProto* req,
+             ::trading::execution::grpc::OrderStatusResponseProto* resp) {
                return service->GetOrderStatus(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       ExecutionService_method_names[5],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< ExecutionService::Service, ::trading::execution::ActiveOrdersRequestProto, ::trading::execution::ActiveOrdersResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< ExecutionService::Service, ::trading::execution::grpc::ActiveOrdersRequestProto, ::trading::execution::grpc::ActiveOrdersResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](ExecutionService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::trading::execution::ActiveOrdersRequestProto* req,
-             ::trading::execution::ActiveOrdersResponseProto* resp) {
+             const ::trading::execution::grpc::ActiveOrdersRequestProto* req,
+             ::trading::execution::grpc::ActiveOrdersResponseProto* resp) {
                return service->GetActiveOrders(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       ExecutionService_method_names[6],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< ExecutionService::Service, ::trading::execution::HealthStatusRequestProto, ::trading::execution::HealthStatusResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< ExecutionService::Service, ::trading::execution::grpc::HealthStatusRequestProto, ::trading::execution::grpc::HealthStatusResponseProto, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](ExecutionService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::trading::execution::HealthStatusRequestProto* req,
-             ::trading::execution::HealthStatusResponseProto* resp) {
+             const ::trading::execution::grpc::HealthStatusRequestProto* req,
+             ::trading::execution::grpc::HealthStatusResponseProto* resp) {
                return service->GetHealthStatus(ctx, req, resp);
              }, this)));
 }
@@ -285,49 +286,49 @@ ExecutionService::Service::Service() {
 ExecutionService::Service::~Service() {
 }
 
-::grpc::Status ExecutionService::Service::ExecuteSignal(::grpc::ServerContext* context, const ::trading::execution::TradingSignalProto* request, ::trading::execution::ExecutionResponseProto* response) {
+::grpc::Status ExecutionService::Service::ExecuteSignal(::grpc::ServerContext* context, const ::trading::execution::grpc::TradingSignalProto* request, ::trading::execution::grpc::ExecutionResponseProto* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status ExecutionService::Service::PlaceOrder(::grpc::ServerContext* context, const ::trading::execution::OrderProto* request, ::trading::execution::ExecutionResponseProto* response) {
+::grpc::Status ExecutionService::Service::PlaceOrder(::grpc::ServerContext* context, const ::trading::execution::grpc::OrderProto* request, ::trading::execution::grpc::ExecutionResponseProto* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status ExecutionService::Service::CancelOrder(::grpc::ServerContext* context, const ::trading::execution::CancelOrderRequestProto* request, ::trading::execution::CancelResponseProto* response) {
+::grpc::Status ExecutionService::Service::CancelOrder(::grpc::ServerContext* context, const ::trading::execution::grpc::CancelOrderRequestProto* request, ::trading::execution::grpc::CancelResponseProto* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status ExecutionService::Service::CancelAllOrdersForSymbol(::grpc::ServerContext* context, const ::trading::execution::CancelAllOrdersRequestProto* request, ::trading::execution::CancelAllOrdersResponseProto* response) {
+::grpc::Status ExecutionService::Service::CancelAllOrdersForSymbol(::grpc::ServerContext* context, const ::trading::execution::grpc::CancelAllOrdersRequestProto* request, ::trading::execution::grpc::CancelAllOrdersResponseProto* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status ExecutionService::Service::GetOrderStatus(::grpc::ServerContext* context, const ::trading::execution::OrderStatusRequestProto* request, ::trading::execution::OrderStatusResponseProto* response) {
+::grpc::Status ExecutionService::Service::GetOrderStatus(::grpc::ServerContext* context, const ::trading::execution::grpc::OrderStatusRequestProto* request, ::trading::execution::grpc::OrderStatusResponseProto* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status ExecutionService::Service::GetActiveOrders(::grpc::ServerContext* context, const ::trading::execution::ActiveOrdersRequestProto* request, ::trading::execution::ActiveOrdersResponseProto* response) {
+::grpc::Status ExecutionService::Service::GetActiveOrders(::grpc::ServerContext* context, const ::trading::execution::grpc::ActiveOrdersRequestProto* request, ::trading::execution::grpc::ActiveOrdersResponseProto* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status ExecutionService::Service::GetHealthStatus(::grpc::ServerContext* context, const ::trading::execution::HealthStatusRequestProto* request, ::trading::execution::HealthStatusResponseProto* response) {
+::grpc::Status ExecutionService::Service::GetHealthStatus(::grpc::ServerContext* context, const ::trading::execution::grpc::HealthStatusRequestProto* request, ::trading::execution::grpc::HealthStatusResponseProto* response) {
   (void) context;
   (void) request;
   (void) response;
@@ -337,4 +338,5 @@ ExecutionService::Service::~Service() {
 
 }  // namespace trading
 }  // namespace execution
+}  // namespace grpc
 

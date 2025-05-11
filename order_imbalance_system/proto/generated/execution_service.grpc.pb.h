@@ -29,185 +29,186 @@
 
 namespace trading {
 namespace execution {
+namespace grpc {
 
 // Service definition
 class ExecutionService final {
  public:
   static constexpr char const* service_full_name() {
-    return "trading.execution.ExecutionService";
+    return "trading.execution.grpc.ExecutionService";
   }
   class StubInterface {
    public:
     virtual ~StubInterface() {}
     // Execute a trading signal
-    virtual ::grpc::Status ExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::TradingSignalProto& request, ::trading::execution::ExecutionResponseProto* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::ExecutionResponseProto>> AsyncExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::TradingSignalProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::ExecutionResponseProto>>(AsyncExecuteSignalRaw(context, request, cq));
+    virtual ::grpc::Status ExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::grpc::TradingSignalProto& request, ::trading::execution::grpc::ExecutionResponseProto* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::ExecutionResponseProto>> AsyncExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::grpc::TradingSignalProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::ExecutionResponseProto>>(AsyncExecuteSignalRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::ExecutionResponseProto>> PrepareAsyncExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::TradingSignalProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::ExecutionResponseProto>>(PrepareAsyncExecuteSignalRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::ExecutionResponseProto>> PrepareAsyncExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::grpc::TradingSignalProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::ExecutionResponseProto>>(PrepareAsyncExecuteSignalRaw(context, request, cq));
     }
     // Place an order directly
-    virtual ::grpc::Status PlaceOrder(::grpc::ClientContext* context, const ::trading::execution::OrderProto& request, ::trading::execution::ExecutionResponseProto* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::ExecutionResponseProto>> AsyncPlaceOrder(::grpc::ClientContext* context, const ::trading::execution::OrderProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::ExecutionResponseProto>>(AsyncPlaceOrderRaw(context, request, cq));
+    virtual ::grpc::Status PlaceOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderProto& request, ::trading::execution::grpc::ExecutionResponseProto* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::ExecutionResponseProto>> AsyncPlaceOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::ExecutionResponseProto>>(AsyncPlaceOrderRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::ExecutionResponseProto>> PrepareAsyncPlaceOrder(::grpc::ClientContext* context, const ::trading::execution::OrderProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::ExecutionResponseProto>>(PrepareAsyncPlaceOrderRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::ExecutionResponseProto>> PrepareAsyncPlaceOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::ExecutionResponseProto>>(PrepareAsyncPlaceOrderRaw(context, request, cq));
     }
     // Cancel an order
-    virtual ::grpc::Status CancelOrder(::grpc::ClientContext* context, const ::trading::execution::CancelOrderRequestProto& request, ::trading::execution::CancelResponseProto* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::CancelResponseProto>> AsyncCancelOrder(::grpc::ClientContext* context, const ::trading::execution::CancelOrderRequestProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::CancelResponseProto>>(AsyncCancelOrderRaw(context, request, cq));
+    virtual ::grpc::Status CancelOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelOrderRequestProto& request, ::trading::execution::grpc::CancelResponseProto* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::CancelResponseProto>> AsyncCancelOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelOrderRequestProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::CancelResponseProto>>(AsyncCancelOrderRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::CancelResponseProto>> PrepareAsyncCancelOrder(::grpc::ClientContext* context, const ::trading::execution::CancelOrderRequestProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::CancelResponseProto>>(PrepareAsyncCancelOrderRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::CancelResponseProto>> PrepareAsyncCancelOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelOrderRequestProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::CancelResponseProto>>(PrepareAsyncCancelOrderRaw(context, request, cq));
     }
     // Cancel all orders for a symbol
-    virtual ::grpc::Status CancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::CancelAllOrdersRequestProto& request, ::trading::execution::CancelAllOrdersResponseProto* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::CancelAllOrdersResponseProto>> AsyncCancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::CancelAllOrdersRequestProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::CancelAllOrdersResponseProto>>(AsyncCancelAllOrdersForSymbolRaw(context, request, cq));
+    virtual ::grpc::Status CancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelAllOrdersRequestProto& request, ::trading::execution::grpc::CancelAllOrdersResponseProto* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::CancelAllOrdersResponseProto>> AsyncCancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelAllOrdersRequestProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::CancelAllOrdersResponseProto>>(AsyncCancelAllOrdersForSymbolRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::CancelAllOrdersResponseProto>> PrepareAsyncCancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::CancelAllOrdersRequestProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::CancelAllOrdersResponseProto>>(PrepareAsyncCancelAllOrdersForSymbolRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::CancelAllOrdersResponseProto>> PrepareAsyncCancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelAllOrdersRequestProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::CancelAllOrdersResponseProto>>(PrepareAsyncCancelAllOrdersForSymbolRaw(context, request, cq));
     }
     // Get order status
-    virtual ::grpc::Status GetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::OrderStatusRequestProto& request, ::trading::execution::OrderStatusResponseProto* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::OrderStatusResponseProto>> AsyncGetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::OrderStatusRequestProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::OrderStatusResponseProto>>(AsyncGetOrderStatusRaw(context, request, cq));
+    virtual ::grpc::Status GetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderStatusRequestProto& request, ::trading::execution::grpc::OrderStatusResponseProto* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::OrderStatusResponseProto>> AsyncGetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderStatusRequestProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::OrderStatusResponseProto>>(AsyncGetOrderStatusRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::OrderStatusResponseProto>> PrepareAsyncGetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::OrderStatusRequestProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::OrderStatusResponseProto>>(PrepareAsyncGetOrderStatusRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::OrderStatusResponseProto>> PrepareAsyncGetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderStatusRequestProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::OrderStatusResponseProto>>(PrepareAsyncGetOrderStatusRaw(context, request, cq));
     }
     // Get active orders
-    virtual ::grpc::Status GetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::ActiveOrdersRequestProto& request, ::trading::execution::ActiveOrdersResponseProto* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::ActiveOrdersResponseProto>> AsyncGetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::ActiveOrdersRequestProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::ActiveOrdersResponseProto>>(AsyncGetActiveOrdersRaw(context, request, cq));
+    virtual ::grpc::Status GetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::grpc::ActiveOrdersRequestProto& request, ::trading::execution::grpc::ActiveOrdersResponseProto* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::ActiveOrdersResponseProto>> AsyncGetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::grpc::ActiveOrdersRequestProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::ActiveOrdersResponseProto>>(AsyncGetActiveOrdersRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::ActiveOrdersResponseProto>> PrepareAsyncGetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::ActiveOrdersRequestProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::ActiveOrdersResponseProto>>(PrepareAsyncGetActiveOrdersRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::ActiveOrdersResponseProto>> PrepareAsyncGetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::grpc::ActiveOrdersRequestProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::ActiveOrdersResponseProto>>(PrepareAsyncGetActiveOrdersRaw(context, request, cq));
     }
     // Get health status
-    virtual ::grpc::Status GetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::HealthStatusRequestProto& request, ::trading::execution::HealthStatusResponseProto* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::HealthStatusResponseProto>> AsyncGetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::HealthStatusRequestProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::HealthStatusResponseProto>>(AsyncGetHealthStatusRaw(context, request, cq));
+    virtual ::grpc::Status GetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::HealthStatusRequestProto& request, ::trading::execution::grpc::HealthStatusResponseProto* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::HealthStatusResponseProto>> AsyncGetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::HealthStatusRequestProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::HealthStatusResponseProto>>(AsyncGetHealthStatusRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::HealthStatusResponseProto>> PrepareAsyncGetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::HealthStatusRequestProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::HealthStatusResponseProto>>(PrepareAsyncGetHealthStatusRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::HealthStatusResponseProto>> PrepareAsyncGetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::HealthStatusRequestProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::HealthStatusResponseProto>>(PrepareAsyncGetHealthStatusRaw(context, request, cq));
     }
     class async_interface {
      public:
       virtual ~async_interface() {}
       // Execute a trading signal
-      virtual void ExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::TradingSignalProto* request, ::trading::execution::ExecutionResponseProto* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void ExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::TradingSignalProto* request, ::trading::execution::ExecutionResponseProto* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void ExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::grpc::TradingSignalProto* request, ::trading::execution::grpc::ExecutionResponseProto* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void ExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::grpc::TradingSignalProto* request, ::trading::execution::grpc::ExecutionResponseProto* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       // Place an order directly
-      virtual void PlaceOrder(::grpc::ClientContext* context, const ::trading::execution::OrderProto* request, ::trading::execution::ExecutionResponseProto* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void PlaceOrder(::grpc::ClientContext* context, const ::trading::execution::OrderProto* request, ::trading::execution::ExecutionResponseProto* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void PlaceOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderProto* request, ::trading::execution::grpc::ExecutionResponseProto* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void PlaceOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderProto* request, ::trading::execution::grpc::ExecutionResponseProto* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       // Cancel an order
-      virtual void CancelOrder(::grpc::ClientContext* context, const ::trading::execution::CancelOrderRequestProto* request, ::trading::execution::CancelResponseProto* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void CancelOrder(::grpc::ClientContext* context, const ::trading::execution::CancelOrderRequestProto* request, ::trading::execution::CancelResponseProto* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void CancelOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelOrderRequestProto* request, ::trading::execution::grpc::CancelResponseProto* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void CancelOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelOrderRequestProto* request, ::trading::execution::grpc::CancelResponseProto* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       // Cancel all orders for a symbol
-      virtual void CancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::CancelAllOrdersRequestProto* request, ::trading::execution::CancelAllOrdersResponseProto* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void CancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::CancelAllOrdersRequestProto* request, ::trading::execution::CancelAllOrdersResponseProto* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void CancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelAllOrdersRequestProto* request, ::trading::execution::grpc::CancelAllOrdersResponseProto* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void CancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelAllOrdersRequestProto* request, ::trading::execution::grpc::CancelAllOrdersResponseProto* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       // Get order status
-      virtual void GetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::OrderStatusRequestProto* request, ::trading::execution::OrderStatusResponseProto* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void GetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::OrderStatusRequestProto* request, ::trading::execution::OrderStatusResponseProto* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void GetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderStatusRequestProto* request, ::trading::execution::grpc::OrderStatusResponseProto* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderStatusRequestProto* request, ::trading::execution::grpc::OrderStatusResponseProto* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       // Get active orders
-      virtual void GetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::ActiveOrdersRequestProto* request, ::trading::execution::ActiveOrdersResponseProto* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void GetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::ActiveOrdersRequestProto* request, ::trading::execution::ActiveOrdersResponseProto* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void GetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::grpc::ActiveOrdersRequestProto* request, ::trading::execution::grpc::ActiveOrdersResponseProto* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::grpc::ActiveOrdersRequestProto* request, ::trading::execution::grpc::ActiveOrdersResponseProto* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       // Get health status
-      virtual void GetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::HealthStatusRequestProto* request, ::trading::execution::HealthStatusResponseProto* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void GetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::HealthStatusRequestProto* request, ::trading::execution::HealthStatusResponseProto* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void GetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::HealthStatusRequestProto* request, ::trading::execution::grpc::HealthStatusResponseProto* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::HealthStatusRequestProto* request, ::trading::execution::grpc::HealthStatusResponseProto* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
     class async_interface* experimental_async() { return async(); }
    private:
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::ExecutionResponseProto>* AsyncExecuteSignalRaw(::grpc::ClientContext* context, const ::trading::execution::TradingSignalProto& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::ExecutionResponseProto>* PrepareAsyncExecuteSignalRaw(::grpc::ClientContext* context, const ::trading::execution::TradingSignalProto& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::ExecutionResponseProto>* AsyncPlaceOrderRaw(::grpc::ClientContext* context, const ::trading::execution::OrderProto& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::ExecutionResponseProto>* PrepareAsyncPlaceOrderRaw(::grpc::ClientContext* context, const ::trading::execution::OrderProto& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::CancelResponseProto>* AsyncCancelOrderRaw(::grpc::ClientContext* context, const ::trading::execution::CancelOrderRequestProto& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::CancelResponseProto>* PrepareAsyncCancelOrderRaw(::grpc::ClientContext* context, const ::trading::execution::CancelOrderRequestProto& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::CancelAllOrdersResponseProto>* AsyncCancelAllOrdersForSymbolRaw(::grpc::ClientContext* context, const ::trading::execution::CancelAllOrdersRequestProto& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::CancelAllOrdersResponseProto>* PrepareAsyncCancelAllOrdersForSymbolRaw(::grpc::ClientContext* context, const ::trading::execution::CancelAllOrdersRequestProto& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::OrderStatusResponseProto>* AsyncGetOrderStatusRaw(::grpc::ClientContext* context, const ::trading::execution::OrderStatusRequestProto& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::OrderStatusResponseProto>* PrepareAsyncGetOrderStatusRaw(::grpc::ClientContext* context, const ::trading::execution::OrderStatusRequestProto& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::ActiveOrdersResponseProto>* AsyncGetActiveOrdersRaw(::grpc::ClientContext* context, const ::trading::execution::ActiveOrdersRequestProto& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::ActiveOrdersResponseProto>* PrepareAsyncGetActiveOrdersRaw(::grpc::ClientContext* context, const ::trading::execution::ActiveOrdersRequestProto& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::HealthStatusResponseProto>* AsyncGetHealthStatusRaw(::grpc::ClientContext* context, const ::trading::execution::HealthStatusRequestProto& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::HealthStatusResponseProto>* PrepareAsyncGetHealthStatusRaw(::grpc::ClientContext* context, const ::trading::execution::HealthStatusRequestProto& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::ExecutionResponseProto>* AsyncExecuteSignalRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::TradingSignalProto& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::ExecutionResponseProto>* PrepareAsyncExecuteSignalRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::TradingSignalProto& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::ExecutionResponseProto>* AsyncPlaceOrderRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderProto& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::ExecutionResponseProto>* PrepareAsyncPlaceOrderRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderProto& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::CancelResponseProto>* AsyncCancelOrderRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelOrderRequestProto& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::CancelResponseProto>* PrepareAsyncCancelOrderRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelOrderRequestProto& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::CancelAllOrdersResponseProto>* AsyncCancelAllOrdersForSymbolRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelAllOrdersRequestProto& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::CancelAllOrdersResponseProto>* PrepareAsyncCancelAllOrdersForSymbolRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelAllOrdersRequestProto& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::OrderStatusResponseProto>* AsyncGetOrderStatusRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderStatusRequestProto& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::OrderStatusResponseProto>* PrepareAsyncGetOrderStatusRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderStatusRequestProto& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::ActiveOrdersResponseProto>* AsyncGetActiveOrdersRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::ActiveOrdersRequestProto& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::ActiveOrdersResponseProto>* PrepareAsyncGetActiveOrdersRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::ActiveOrdersRequestProto& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::HealthStatusResponseProto>* AsyncGetHealthStatusRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::HealthStatusRequestProto& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::trading::execution::grpc::HealthStatusResponseProto>* PrepareAsyncGetHealthStatusRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::HealthStatusRequestProto& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
     Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
-    ::grpc::Status ExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::TradingSignalProto& request, ::trading::execution::ExecutionResponseProto* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::ExecutionResponseProto>> AsyncExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::TradingSignalProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::ExecutionResponseProto>>(AsyncExecuteSignalRaw(context, request, cq));
+    ::grpc::Status ExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::grpc::TradingSignalProto& request, ::trading::execution::grpc::ExecutionResponseProto* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::ExecutionResponseProto>> AsyncExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::grpc::TradingSignalProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::ExecutionResponseProto>>(AsyncExecuteSignalRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::ExecutionResponseProto>> PrepareAsyncExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::TradingSignalProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::ExecutionResponseProto>>(PrepareAsyncExecuteSignalRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::ExecutionResponseProto>> PrepareAsyncExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::grpc::TradingSignalProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::ExecutionResponseProto>>(PrepareAsyncExecuteSignalRaw(context, request, cq));
     }
-    ::grpc::Status PlaceOrder(::grpc::ClientContext* context, const ::trading::execution::OrderProto& request, ::trading::execution::ExecutionResponseProto* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::ExecutionResponseProto>> AsyncPlaceOrder(::grpc::ClientContext* context, const ::trading::execution::OrderProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::ExecutionResponseProto>>(AsyncPlaceOrderRaw(context, request, cq));
+    ::grpc::Status PlaceOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderProto& request, ::trading::execution::grpc::ExecutionResponseProto* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::ExecutionResponseProto>> AsyncPlaceOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::ExecutionResponseProto>>(AsyncPlaceOrderRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::ExecutionResponseProto>> PrepareAsyncPlaceOrder(::grpc::ClientContext* context, const ::trading::execution::OrderProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::ExecutionResponseProto>>(PrepareAsyncPlaceOrderRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::ExecutionResponseProto>> PrepareAsyncPlaceOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::ExecutionResponseProto>>(PrepareAsyncPlaceOrderRaw(context, request, cq));
     }
-    ::grpc::Status CancelOrder(::grpc::ClientContext* context, const ::trading::execution::CancelOrderRequestProto& request, ::trading::execution::CancelResponseProto* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::CancelResponseProto>> AsyncCancelOrder(::grpc::ClientContext* context, const ::trading::execution::CancelOrderRequestProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::CancelResponseProto>>(AsyncCancelOrderRaw(context, request, cq));
+    ::grpc::Status CancelOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelOrderRequestProto& request, ::trading::execution::grpc::CancelResponseProto* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::CancelResponseProto>> AsyncCancelOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelOrderRequestProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::CancelResponseProto>>(AsyncCancelOrderRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::CancelResponseProto>> PrepareAsyncCancelOrder(::grpc::ClientContext* context, const ::trading::execution::CancelOrderRequestProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::CancelResponseProto>>(PrepareAsyncCancelOrderRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::CancelResponseProto>> PrepareAsyncCancelOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelOrderRequestProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::CancelResponseProto>>(PrepareAsyncCancelOrderRaw(context, request, cq));
     }
-    ::grpc::Status CancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::CancelAllOrdersRequestProto& request, ::trading::execution::CancelAllOrdersResponseProto* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::CancelAllOrdersResponseProto>> AsyncCancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::CancelAllOrdersRequestProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::CancelAllOrdersResponseProto>>(AsyncCancelAllOrdersForSymbolRaw(context, request, cq));
+    ::grpc::Status CancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelAllOrdersRequestProto& request, ::trading::execution::grpc::CancelAllOrdersResponseProto* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::CancelAllOrdersResponseProto>> AsyncCancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelAllOrdersRequestProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::CancelAllOrdersResponseProto>>(AsyncCancelAllOrdersForSymbolRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::CancelAllOrdersResponseProto>> PrepareAsyncCancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::CancelAllOrdersRequestProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::CancelAllOrdersResponseProto>>(PrepareAsyncCancelAllOrdersForSymbolRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::CancelAllOrdersResponseProto>> PrepareAsyncCancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelAllOrdersRequestProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::CancelAllOrdersResponseProto>>(PrepareAsyncCancelAllOrdersForSymbolRaw(context, request, cq));
     }
-    ::grpc::Status GetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::OrderStatusRequestProto& request, ::trading::execution::OrderStatusResponseProto* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::OrderStatusResponseProto>> AsyncGetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::OrderStatusRequestProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::OrderStatusResponseProto>>(AsyncGetOrderStatusRaw(context, request, cq));
+    ::grpc::Status GetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderStatusRequestProto& request, ::trading::execution::grpc::OrderStatusResponseProto* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::OrderStatusResponseProto>> AsyncGetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderStatusRequestProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::OrderStatusResponseProto>>(AsyncGetOrderStatusRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::OrderStatusResponseProto>> PrepareAsyncGetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::OrderStatusRequestProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::OrderStatusResponseProto>>(PrepareAsyncGetOrderStatusRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::OrderStatusResponseProto>> PrepareAsyncGetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderStatusRequestProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::OrderStatusResponseProto>>(PrepareAsyncGetOrderStatusRaw(context, request, cq));
     }
-    ::grpc::Status GetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::ActiveOrdersRequestProto& request, ::trading::execution::ActiveOrdersResponseProto* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::ActiveOrdersResponseProto>> AsyncGetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::ActiveOrdersRequestProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::ActiveOrdersResponseProto>>(AsyncGetActiveOrdersRaw(context, request, cq));
+    ::grpc::Status GetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::grpc::ActiveOrdersRequestProto& request, ::trading::execution::grpc::ActiveOrdersResponseProto* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::ActiveOrdersResponseProto>> AsyncGetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::grpc::ActiveOrdersRequestProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::ActiveOrdersResponseProto>>(AsyncGetActiveOrdersRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::ActiveOrdersResponseProto>> PrepareAsyncGetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::ActiveOrdersRequestProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::ActiveOrdersResponseProto>>(PrepareAsyncGetActiveOrdersRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::ActiveOrdersResponseProto>> PrepareAsyncGetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::grpc::ActiveOrdersRequestProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::ActiveOrdersResponseProto>>(PrepareAsyncGetActiveOrdersRaw(context, request, cq));
     }
-    ::grpc::Status GetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::HealthStatusRequestProto& request, ::trading::execution::HealthStatusResponseProto* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::HealthStatusResponseProto>> AsyncGetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::HealthStatusRequestProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::HealthStatusResponseProto>>(AsyncGetHealthStatusRaw(context, request, cq));
+    ::grpc::Status GetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::HealthStatusRequestProto& request, ::trading::execution::grpc::HealthStatusResponseProto* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::HealthStatusResponseProto>> AsyncGetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::HealthStatusRequestProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::HealthStatusResponseProto>>(AsyncGetHealthStatusRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::HealthStatusResponseProto>> PrepareAsyncGetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::HealthStatusRequestProto& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::HealthStatusResponseProto>>(PrepareAsyncGetHealthStatusRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::HealthStatusResponseProto>> PrepareAsyncGetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::HealthStatusRequestProto& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::HealthStatusResponseProto>>(PrepareAsyncGetHealthStatusRaw(context, request, cq));
     }
     class async final :
       public StubInterface::async_interface {
      public:
-      void ExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::TradingSignalProto* request, ::trading::execution::ExecutionResponseProto* response, std::function<void(::grpc::Status)>) override;
-      void ExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::TradingSignalProto* request, ::trading::execution::ExecutionResponseProto* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void PlaceOrder(::grpc::ClientContext* context, const ::trading::execution::OrderProto* request, ::trading::execution::ExecutionResponseProto* response, std::function<void(::grpc::Status)>) override;
-      void PlaceOrder(::grpc::ClientContext* context, const ::trading::execution::OrderProto* request, ::trading::execution::ExecutionResponseProto* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void CancelOrder(::grpc::ClientContext* context, const ::trading::execution::CancelOrderRequestProto* request, ::trading::execution::CancelResponseProto* response, std::function<void(::grpc::Status)>) override;
-      void CancelOrder(::grpc::ClientContext* context, const ::trading::execution::CancelOrderRequestProto* request, ::trading::execution::CancelResponseProto* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void CancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::CancelAllOrdersRequestProto* request, ::trading::execution::CancelAllOrdersResponseProto* response, std::function<void(::grpc::Status)>) override;
-      void CancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::CancelAllOrdersRequestProto* request, ::trading::execution::CancelAllOrdersResponseProto* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void GetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::OrderStatusRequestProto* request, ::trading::execution::OrderStatusResponseProto* response, std::function<void(::grpc::Status)>) override;
-      void GetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::OrderStatusRequestProto* request, ::trading::execution::OrderStatusResponseProto* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void GetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::ActiveOrdersRequestProto* request, ::trading::execution::ActiveOrdersResponseProto* response, std::function<void(::grpc::Status)>) override;
-      void GetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::ActiveOrdersRequestProto* request, ::trading::execution::ActiveOrdersResponseProto* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void GetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::HealthStatusRequestProto* request, ::trading::execution::HealthStatusResponseProto* response, std::function<void(::grpc::Status)>) override;
-      void GetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::HealthStatusRequestProto* request, ::trading::execution::HealthStatusResponseProto* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void ExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::grpc::TradingSignalProto* request, ::trading::execution::grpc::ExecutionResponseProto* response, std::function<void(::grpc::Status)>) override;
+      void ExecuteSignal(::grpc::ClientContext* context, const ::trading::execution::grpc::TradingSignalProto* request, ::trading::execution::grpc::ExecutionResponseProto* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void PlaceOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderProto* request, ::trading::execution::grpc::ExecutionResponseProto* response, std::function<void(::grpc::Status)>) override;
+      void PlaceOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderProto* request, ::trading::execution::grpc::ExecutionResponseProto* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void CancelOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelOrderRequestProto* request, ::trading::execution::grpc::CancelResponseProto* response, std::function<void(::grpc::Status)>) override;
+      void CancelOrder(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelOrderRequestProto* request, ::trading::execution::grpc::CancelResponseProto* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void CancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelAllOrdersRequestProto* request, ::trading::execution::grpc::CancelAllOrdersResponseProto* response, std::function<void(::grpc::Status)>) override;
+      void CancelAllOrdersForSymbol(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelAllOrdersRequestProto* request, ::trading::execution::grpc::CancelAllOrdersResponseProto* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void GetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderStatusRequestProto* request, ::trading::execution::grpc::OrderStatusResponseProto* response, std::function<void(::grpc::Status)>) override;
+      void GetOrderStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderStatusRequestProto* request, ::trading::execution::grpc::OrderStatusResponseProto* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void GetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::grpc::ActiveOrdersRequestProto* request, ::trading::execution::grpc::ActiveOrdersResponseProto* response, std::function<void(::grpc::Status)>) override;
+      void GetActiveOrders(::grpc::ClientContext* context, const ::trading::execution::grpc::ActiveOrdersRequestProto* request, ::trading::execution::grpc::ActiveOrdersResponseProto* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void GetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::HealthStatusRequestProto* request, ::trading::execution::grpc::HealthStatusResponseProto* response, std::function<void(::grpc::Status)>) override;
+      void GetHealthStatus(::grpc::ClientContext* context, const ::trading::execution::grpc::HealthStatusRequestProto* request, ::trading::execution::grpc::HealthStatusResponseProto* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -219,20 +220,20 @@ class ExecutionService final {
    private:
     std::shared_ptr< ::grpc::ChannelInterface> channel_;
     class async async_stub_{this};
-    ::grpc::ClientAsyncResponseReader< ::trading::execution::ExecutionResponseProto>* AsyncExecuteSignalRaw(::grpc::ClientContext* context, const ::trading::execution::TradingSignalProto& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::trading::execution::ExecutionResponseProto>* PrepareAsyncExecuteSignalRaw(::grpc::ClientContext* context, const ::trading::execution::TradingSignalProto& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::trading::execution::ExecutionResponseProto>* AsyncPlaceOrderRaw(::grpc::ClientContext* context, const ::trading::execution::OrderProto& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::trading::execution::ExecutionResponseProto>* PrepareAsyncPlaceOrderRaw(::grpc::ClientContext* context, const ::trading::execution::OrderProto& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::trading::execution::CancelResponseProto>* AsyncCancelOrderRaw(::grpc::ClientContext* context, const ::trading::execution::CancelOrderRequestProto& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::trading::execution::CancelResponseProto>* PrepareAsyncCancelOrderRaw(::grpc::ClientContext* context, const ::trading::execution::CancelOrderRequestProto& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::trading::execution::CancelAllOrdersResponseProto>* AsyncCancelAllOrdersForSymbolRaw(::grpc::ClientContext* context, const ::trading::execution::CancelAllOrdersRequestProto& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::trading::execution::CancelAllOrdersResponseProto>* PrepareAsyncCancelAllOrdersForSymbolRaw(::grpc::ClientContext* context, const ::trading::execution::CancelAllOrdersRequestProto& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::trading::execution::OrderStatusResponseProto>* AsyncGetOrderStatusRaw(::grpc::ClientContext* context, const ::trading::execution::OrderStatusRequestProto& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::trading::execution::OrderStatusResponseProto>* PrepareAsyncGetOrderStatusRaw(::grpc::ClientContext* context, const ::trading::execution::OrderStatusRequestProto& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::trading::execution::ActiveOrdersResponseProto>* AsyncGetActiveOrdersRaw(::grpc::ClientContext* context, const ::trading::execution::ActiveOrdersRequestProto& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::trading::execution::ActiveOrdersResponseProto>* PrepareAsyncGetActiveOrdersRaw(::grpc::ClientContext* context, const ::trading::execution::ActiveOrdersRequestProto& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::trading::execution::HealthStatusResponseProto>* AsyncGetHealthStatusRaw(::grpc::ClientContext* context, const ::trading::execution::HealthStatusRequestProto& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::trading::execution::HealthStatusResponseProto>* PrepareAsyncGetHealthStatusRaw(::grpc::ClientContext* context, const ::trading::execution::HealthStatusRequestProto& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::ExecutionResponseProto>* AsyncExecuteSignalRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::TradingSignalProto& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::ExecutionResponseProto>* PrepareAsyncExecuteSignalRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::TradingSignalProto& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::ExecutionResponseProto>* AsyncPlaceOrderRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderProto& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::ExecutionResponseProto>* PrepareAsyncPlaceOrderRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderProto& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::CancelResponseProto>* AsyncCancelOrderRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelOrderRequestProto& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::CancelResponseProto>* PrepareAsyncCancelOrderRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelOrderRequestProto& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::CancelAllOrdersResponseProto>* AsyncCancelAllOrdersForSymbolRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelAllOrdersRequestProto& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::CancelAllOrdersResponseProto>* PrepareAsyncCancelAllOrdersForSymbolRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::CancelAllOrdersRequestProto& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::OrderStatusResponseProto>* AsyncGetOrderStatusRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderStatusRequestProto& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::OrderStatusResponseProto>* PrepareAsyncGetOrderStatusRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::OrderStatusRequestProto& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::ActiveOrdersResponseProto>* AsyncGetActiveOrdersRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::ActiveOrdersRequestProto& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::ActiveOrdersResponseProto>* PrepareAsyncGetActiveOrdersRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::ActiveOrdersRequestProto& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::HealthStatusResponseProto>* AsyncGetHealthStatusRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::HealthStatusRequestProto& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::trading::execution::grpc::HealthStatusResponseProto>* PrepareAsyncGetHealthStatusRaw(::grpc::ClientContext* context, const ::trading::execution::grpc::HealthStatusRequestProto& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_ExecuteSignal_;
     const ::grpc::internal::RpcMethod rpcmethod_PlaceOrder_;
     const ::grpc::internal::RpcMethod rpcmethod_CancelOrder_;
@@ -248,19 +249,19 @@ class ExecutionService final {
     Service();
     virtual ~Service();
     // Execute a trading signal
-    virtual ::grpc::Status ExecuteSignal(::grpc::ServerContext* context, const ::trading::execution::TradingSignalProto* request, ::trading::execution::ExecutionResponseProto* response);
+    virtual ::grpc::Status ExecuteSignal(::grpc::ServerContext* context, const ::trading::execution::grpc::TradingSignalProto* request, ::trading::execution::grpc::ExecutionResponseProto* response);
     // Place an order directly
-    virtual ::grpc::Status PlaceOrder(::grpc::ServerContext* context, const ::trading::execution::OrderProto* request, ::trading::execution::ExecutionResponseProto* response);
+    virtual ::grpc::Status PlaceOrder(::grpc::ServerContext* context, const ::trading::execution::grpc::OrderProto* request, ::trading::execution::grpc::ExecutionResponseProto* response);
     // Cancel an order
-    virtual ::grpc::Status CancelOrder(::grpc::ServerContext* context, const ::trading::execution::CancelOrderRequestProto* request, ::trading::execution::CancelResponseProto* response);
+    virtual ::grpc::Status CancelOrder(::grpc::ServerContext* context, const ::trading::execution::grpc::CancelOrderRequestProto* request, ::trading::execution::grpc::CancelResponseProto* response);
     // Cancel all orders for a symbol
-    virtual ::grpc::Status CancelAllOrdersForSymbol(::grpc::ServerContext* context, const ::trading::execution::CancelAllOrdersRequestProto* request, ::trading::execution::CancelAllOrdersResponseProto* response);
+    virtual ::grpc::Status CancelAllOrdersForSymbol(::grpc::ServerContext* context, const ::trading::execution::grpc::CancelAllOrdersRequestProto* request, ::trading::execution::grpc::CancelAllOrdersResponseProto* response);
     // Get order status
-    virtual ::grpc::Status GetOrderStatus(::grpc::ServerContext* context, const ::trading::execution::OrderStatusRequestProto* request, ::trading::execution::OrderStatusResponseProto* response);
+    virtual ::grpc::Status GetOrderStatus(::grpc::ServerContext* context, const ::trading::execution::grpc::OrderStatusRequestProto* request, ::trading::execution::grpc::OrderStatusResponseProto* response);
     // Get active orders
-    virtual ::grpc::Status GetActiveOrders(::grpc::ServerContext* context, const ::trading::execution::ActiveOrdersRequestProto* request, ::trading::execution::ActiveOrdersResponseProto* response);
+    virtual ::grpc::Status GetActiveOrders(::grpc::ServerContext* context, const ::trading::execution::grpc::ActiveOrdersRequestProto* request, ::trading::execution::grpc::ActiveOrdersResponseProto* response);
     // Get health status
-    virtual ::grpc::Status GetHealthStatus(::grpc::ServerContext* context, const ::trading::execution::HealthStatusRequestProto* request, ::trading::execution::HealthStatusResponseProto* response);
+    virtual ::grpc::Status GetHealthStatus(::grpc::ServerContext* context, const ::trading::execution::grpc::HealthStatusRequestProto* request, ::trading::execution::grpc::HealthStatusResponseProto* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_ExecuteSignal : public BaseClass {
@@ -274,11 +275,11 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ExecuteSignal(::grpc::ServerContext* /*context*/, const ::trading::execution::TradingSignalProto* /*request*/, ::trading::execution::ExecutionResponseProto* /*response*/) override {
+    ::grpc::Status ExecuteSignal(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::TradingSignalProto* /*request*/, ::trading::execution::grpc::ExecutionResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestExecuteSignal(::grpc::ServerContext* context, ::trading::execution::TradingSignalProto* request, ::grpc::ServerAsyncResponseWriter< ::trading::execution::ExecutionResponseProto>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestExecuteSignal(::grpc::ServerContext* context, ::trading::execution::grpc::TradingSignalProto* request, ::grpc::ServerAsyncResponseWriter< ::trading::execution::grpc::ExecutionResponseProto>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
@@ -294,11 +295,11 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status PlaceOrder(::grpc::ServerContext* /*context*/, const ::trading::execution::OrderProto* /*request*/, ::trading::execution::ExecutionResponseProto* /*response*/) override {
+    ::grpc::Status PlaceOrder(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::OrderProto* /*request*/, ::trading::execution::grpc::ExecutionResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestPlaceOrder(::grpc::ServerContext* context, ::trading::execution::OrderProto* request, ::grpc::ServerAsyncResponseWriter< ::trading::execution::ExecutionResponseProto>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestPlaceOrder(::grpc::ServerContext* context, ::trading::execution::grpc::OrderProto* request, ::grpc::ServerAsyncResponseWriter< ::trading::execution::grpc::ExecutionResponseProto>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
@@ -314,11 +315,11 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status CancelOrder(::grpc::ServerContext* /*context*/, const ::trading::execution::CancelOrderRequestProto* /*request*/, ::trading::execution::CancelResponseProto* /*response*/) override {
+    ::grpc::Status CancelOrder(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::CancelOrderRequestProto* /*request*/, ::trading::execution::grpc::CancelResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestCancelOrder(::grpc::ServerContext* context, ::trading::execution::CancelOrderRequestProto* request, ::grpc::ServerAsyncResponseWriter< ::trading::execution::CancelResponseProto>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestCancelOrder(::grpc::ServerContext* context, ::trading::execution::grpc::CancelOrderRequestProto* request, ::grpc::ServerAsyncResponseWriter< ::trading::execution::grpc::CancelResponseProto>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
@@ -334,11 +335,11 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status CancelAllOrdersForSymbol(::grpc::ServerContext* /*context*/, const ::trading::execution::CancelAllOrdersRequestProto* /*request*/, ::trading::execution::CancelAllOrdersResponseProto* /*response*/) override {
+    ::grpc::Status CancelAllOrdersForSymbol(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::CancelAllOrdersRequestProto* /*request*/, ::trading::execution::grpc::CancelAllOrdersResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestCancelAllOrdersForSymbol(::grpc::ServerContext* context, ::trading::execution::CancelAllOrdersRequestProto* request, ::grpc::ServerAsyncResponseWriter< ::trading::execution::CancelAllOrdersResponseProto>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestCancelAllOrdersForSymbol(::grpc::ServerContext* context, ::trading::execution::grpc::CancelAllOrdersRequestProto* request, ::grpc::ServerAsyncResponseWriter< ::trading::execution::grpc::CancelAllOrdersResponseProto>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
@@ -354,11 +355,11 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetOrderStatus(::grpc::ServerContext* /*context*/, const ::trading::execution::OrderStatusRequestProto* /*request*/, ::trading::execution::OrderStatusResponseProto* /*response*/) override {
+    ::grpc::Status GetOrderStatus(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::OrderStatusRequestProto* /*request*/, ::trading::execution::grpc::OrderStatusResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestGetOrderStatus(::grpc::ServerContext* context, ::trading::execution::OrderStatusRequestProto* request, ::grpc::ServerAsyncResponseWriter< ::trading::execution::OrderStatusResponseProto>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestGetOrderStatus(::grpc::ServerContext* context, ::trading::execution::grpc::OrderStatusRequestProto* request, ::grpc::ServerAsyncResponseWriter< ::trading::execution::grpc::OrderStatusResponseProto>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
@@ -374,11 +375,11 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetActiveOrders(::grpc::ServerContext* /*context*/, const ::trading::execution::ActiveOrdersRequestProto* /*request*/, ::trading::execution::ActiveOrdersResponseProto* /*response*/) override {
+    ::grpc::Status GetActiveOrders(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::ActiveOrdersRequestProto* /*request*/, ::trading::execution::grpc::ActiveOrdersResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestGetActiveOrders(::grpc::ServerContext* context, ::trading::execution::ActiveOrdersRequestProto* request, ::grpc::ServerAsyncResponseWriter< ::trading::execution::ActiveOrdersResponseProto>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestGetActiveOrders(::grpc::ServerContext* context, ::trading::execution::grpc::ActiveOrdersRequestProto* request, ::grpc::ServerAsyncResponseWriter< ::trading::execution::grpc::ActiveOrdersResponseProto>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
@@ -394,11 +395,11 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetHealthStatus(::grpc::ServerContext* /*context*/, const ::trading::execution::HealthStatusRequestProto* /*request*/, ::trading::execution::HealthStatusResponseProto* /*response*/) override {
+    ::grpc::Status GetHealthStatus(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::HealthStatusRequestProto* /*request*/, ::trading::execution::grpc::HealthStatusResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestGetHealthStatus(::grpc::ServerContext* context, ::trading::execution::HealthStatusRequestProto* request, ::grpc::ServerAsyncResponseWriter< ::trading::execution::HealthStatusResponseProto>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestGetHealthStatus(::grpc::ServerContext* context, ::trading::execution::grpc::HealthStatusRequestProto* request, ::grpc::ServerAsyncResponseWriter< ::trading::execution::grpc::HealthStatusResponseProto>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
@@ -410,25 +411,25 @@ class ExecutionService final {
    public:
     WithCallbackMethod_ExecuteSignal() {
       ::grpc::Service::MarkMethodCallback(0,
-          new ::grpc::internal::CallbackUnaryHandler< ::trading::execution::TradingSignalProto, ::trading::execution::ExecutionResponseProto>(
+          new ::grpc::internal::CallbackUnaryHandler< ::trading::execution::grpc::TradingSignalProto, ::trading::execution::grpc::ExecutionResponseProto>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::trading::execution::TradingSignalProto* request, ::trading::execution::ExecutionResponseProto* response) { return this->ExecuteSignal(context, request, response); }));}
+                   ::grpc::CallbackServerContext* context, const ::trading::execution::grpc::TradingSignalProto* request, ::trading::execution::grpc::ExecutionResponseProto* response) { return this->ExecuteSignal(context, request, response); }));}
     void SetMessageAllocatorFor_ExecuteSignal(
-        ::grpc::MessageAllocator< ::trading::execution::TradingSignalProto, ::trading::execution::ExecutionResponseProto>* allocator) {
+        ::grpc::MessageAllocator< ::trading::execution::grpc::TradingSignalProto, ::trading::execution::grpc::ExecutionResponseProto>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(0);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::trading::execution::TradingSignalProto, ::trading::execution::ExecutionResponseProto>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::trading::execution::grpc::TradingSignalProto, ::trading::execution::grpc::ExecutionResponseProto>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~WithCallbackMethod_ExecuteSignal() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ExecuteSignal(::grpc::ServerContext* /*context*/, const ::trading::execution::TradingSignalProto* /*request*/, ::trading::execution::ExecutionResponseProto* /*response*/) override {
+    ::grpc::Status ExecuteSignal(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::TradingSignalProto* /*request*/, ::trading::execution::grpc::ExecutionResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* ExecuteSignal(
-      ::grpc::CallbackServerContext* /*context*/, const ::trading::execution::TradingSignalProto* /*request*/, ::trading::execution::ExecutionResponseProto* /*response*/)  { return nullptr; }
+      ::grpc::CallbackServerContext* /*context*/, const ::trading::execution::grpc::TradingSignalProto* /*request*/, ::trading::execution::grpc::ExecutionResponseProto* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithCallbackMethod_PlaceOrder : public BaseClass {
@@ -437,25 +438,25 @@ class ExecutionService final {
    public:
     WithCallbackMethod_PlaceOrder() {
       ::grpc::Service::MarkMethodCallback(1,
-          new ::grpc::internal::CallbackUnaryHandler< ::trading::execution::OrderProto, ::trading::execution::ExecutionResponseProto>(
+          new ::grpc::internal::CallbackUnaryHandler< ::trading::execution::grpc::OrderProto, ::trading::execution::grpc::ExecutionResponseProto>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::trading::execution::OrderProto* request, ::trading::execution::ExecutionResponseProto* response) { return this->PlaceOrder(context, request, response); }));}
+                   ::grpc::CallbackServerContext* context, const ::trading::execution::grpc::OrderProto* request, ::trading::execution::grpc::ExecutionResponseProto* response) { return this->PlaceOrder(context, request, response); }));}
     void SetMessageAllocatorFor_PlaceOrder(
-        ::grpc::MessageAllocator< ::trading::execution::OrderProto, ::trading::execution::ExecutionResponseProto>* allocator) {
+        ::grpc::MessageAllocator< ::trading::execution::grpc::OrderProto, ::trading::execution::grpc::ExecutionResponseProto>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(1);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::trading::execution::OrderProto, ::trading::execution::ExecutionResponseProto>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::trading::execution::grpc::OrderProto, ::trading::execution::grpc::ExecutionResponseProto>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~WithCallbackMethod_PlaceOrder() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status PlaceOrder(::grpc::ServerContext* /*context*/, const ::trading::execution::OrderProto* /*request*/, ::trading::execution::ExecutionResponseProto* /*response*/) override {
+    ::grpc::Status PlaceOrder(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::OrderProto* /*request*/, ::trading::execution::grpc::ExecutionResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* PlaceOrder(
-      ::grpc::CallbackServerContext* /*context*/, const ::trading::execution::OrderProto* /*request*/, ::trading::execution::ExecutionResponseProto* /*response*/)  { return nullptr; }
+      ::grpc::CallbackServerContext* /*context*/, const ::trading::execution::grpc::OrderProto* /*request*/, ::trading::execution::grpc::ExecutionResponseProto* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithCallbackMethod_CancelOrder : public BaseClass {
@@ -464,25 +465,25 @@ class ExecutionService final {
    public:
     WithCallbackMethod_CancelOrder() {
       ::grpc::Service::MarkMethodCallback(2,
-          new ::grpc::internal::CallbackUnaryHandler< ::trading::execution::CancelOrderRequestProto, ::trading::execution::CancelResponseProto>(
+          new ::grpc::internal::CallbackUnaryHandler< ::trading::execution::grpc::CancelOrderRequestProto, ::trading::execution::grpc::CancelResponseProto>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::trading::execution::CancelOrderRequestProto* request, ::trading::execution::CancelResponseProto* response) { return this->CancelOrder(context, request, response); }));}
+                   ::grpc::CallbackServerContext* context, const ::trading::execution::grpc::CancelOrderRequestProto* request, ::trading::execution::grpc::CancelResponseProto* response) { return this->CancelOrder(context, request, response); }));}
     void SetMessageAllocatorFor_CancelOrder(
-        ::grpc::MessageAllocator< ::trading::execution::CancelOrderRequestProto, ::trading::execution::CancelResponseProto>* allocator) {
+        ::grpc::MessageAllocator< ::trading::execution::grpc::CancelOrderRequestProto, ::trading::execution::grpc::CancelResponseProto>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(2);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::trading::execution::CancelOrderRequestProto, ::trading::execution::CancelResponseProto>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::trading::execution::grpc::CancelOrderRequestProto, ::trading::execution::grpc::CancelResponseProto>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~WithCallbackMethod_CancelOrder() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status CancelOrder(::grpc::ServerContext* /*context*/, const ::trading::execution::CancelOrderRequestProto* /*request*/, ::trading::execution::CancelResponseProto* /*response*/) override {
+    ::grpc::Status CancelOrder(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::CancelOrderRequestProto* /*request*/, ::trading::execution::grpc::CancelResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* CancelOrder(
-      ::grpc::CallbackServerContext* /*context*/, const ::trading::execution::CancelOrderRequestProto* /*request*/, ::trading::execution::CancelResponseProto* /*response*/)  { return nullptr; }
+      ::grpc::CallbackServerContext* /*context*/, const ::trading::execution::grpc::CancelOrderRequestProto* /*request*/, ::trading::execution::grpc::CancelResponseProto* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithCallbackMethod_CancelAllOrdersForSymbol : public BaseClass {
@@ -491,25 +492,25 @@ class ExecutionService final {
    public:
     WithCallbackMethod_CancelAllOrdersForSymbol() {
       ::grpc::Service::MarkMethodCallback(3,
-          new ::grpc::internal::CallbackUnaryHandler< ::trading::execution::CancelAllOrdersRequestProto, ::trading::execution::CancelAllOrdersResponseProto>(
+          new ::grpc::internal::CallbackUnaryHandler< ::trading::execution::grpc::CancelAllOrdersRequestProto, ::trading::execution::grpc::CancelAllOrdersResponseProto>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::trading::execution::CancelAllOrdersRequestProto* request, ::trading::execution::CancelAllOrdersResponseProto* response) { return this->CancelAllOrdersForSymbol(context, request, response); }));}
+                   ::grpc::CallbackServerContext* context, const ::trading::execution::grpc::CancelAllOrdersRequestProto* request, ::trading::execution::grpc::CancelAllOrdersResponseProto* response) { return this->CancelAllOrdersForSymbol(context, request, response); }));}
     void SetMessageAllocatorFor_CancelAllOrdersForSymbol(
-        ::grpc::MessageAllocator< ::trading::execution::CancelAllOrdersRequestProto, ::trading::execution::CancelAllOrdersResponseProto>* allocator) {
+        ::grpc::MessageAllocator< ::trading::execution::grpc::CancelAllOrdersRequestProto, ::trading::execution::grpc::CancelAllOrdersResponseProto>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(3);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::trading::execution::CancelAllOrdersRequestProto, ::trading::execution::CancelAllOrdersResponseProto>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::trading::execution::grpc::CancelAllOrdersRequestProto, ::trading::execution::grpc::CancelAllOrdersResponseProto>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~WithCallbackMethod_CancelAllOrdersForSymbol() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status CancelAllOrdersForSymbol(::grpc::ServerContext* /*context*/, const ::trading::execution::CancelAllOrdersRequestProto* /*request*/, ::trading::execution::CancelAllOrdersResponseProto* /*response*/) override {
+    ::grpc::Status CancelAllOrdersForSymbol(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::CancelAllOrdersRequestProto* /*request*/, ::trading::execution::grpc::CancelAllOrdersResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* CancelAllOrdersForSymbol(
-      ::grpc::CallbackServerContext* /*context*/, const ::trading::execution::CancelAllOrdersRequestProto* /*request*/, ::trading::execution::CancelAllOrdersResponseProto* /*response*/)  { return nullptr; }
+      ::grpc::CallbackServerContext* /*context*/, const ::trading::execution::grpc::CancelAllOrdersRequestProto* /*request*/, ::trading::execution::grpc::CancelAllOrdersResponseProto* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithCallbackMethod_GetOrderStatus : public BaseClass {
@@ -518,25 +519,25 @@ class ExecutionService final {
    public:
     WithCallbackMethod_GetOrderStatus() {
       ::grpc::Service::MarkMethodCallback(4,
-          new ::grpc::internal::CallbackUnaryHandler< ::trading::execution::OrderStatusRequestProto, ::trading::execution::OrderStatusResponseProto>(
+          new ::grpc::internal::CallbackUnaryHandler< ::trading::execution::grpc::OrderStatusRequestProto, ::trading::execution::grpc::OrderStatusResponseProto>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::trading::execution::OrderStatusRequestProto* request, ::trading::execution::OrderStatusResponseProto* response) { return this->GetOrderStatus(context, request, response); }));}
+                   ::grpc::CallbackServerContext* context, const ::trading::execution::grpc::OrderStatusRequestProto* request, ::trading::execution::grpc::OrderStatusResponseProto* response) { return this->GetOrderStatus(context, request, response); }));}
     void SetMessageAllocatorFor_GetOrderStatus(
-        ::grpc::MessageAllocator< ::trading::execution::OrderStatusRequestProto, ::trading::execution::OrderStatusResponseProto>* allocator) {
+        ::grpc::MessageAllocator< ::trading::execution::grpc::OrderStatusRequestProto, ::trading::execution::grpc::OrderStatusResponseProto>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::trading::execution::OrderStatusRequestProto, ::trading::execution::OrderStatusResponseProto>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::trading::execution::grpc::OrderStatusRequestProto, ::trading::execution::grpc::OrderStatusResponseProto>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~WithCallbackMethod_GetOrderStatus() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetOrderStatus(::grpc::ServerContext* /*context*/, const ::trading::execution::OrderStatusRequestProto* /*request*/, ::trading::execution::OrderStatusResponseProto* /*response*/) override {
+    ::grpc::Status GetOrderStatus(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::OrderStatusRequestProto* /*request*/, ::trading::execution::grpc::OrderStatusResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* GetOrderStatus(
-      ::grpc::CallbackServerContext* /*context*/, const ::trading::execution::OrderStatusRequestProto* /*request*/, ::trading::execution::OrderStatusResponseProto* /*response*/)  { return nullptr; }
+      ::grpc::CallbackServerContext* /*context*/, const ::trading::execution::grpc::OrderStatusRequestProto* /*request*/, ::trading::execution::grpc::OrderStatusResponseProto* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithCallbackMethod_GetActiveOrders : public BaseClass {
@@ -545,25 +546,25 @@ class ExecutionService final {
    public:
     WithCallbackMethod_GetActiveOrders() {
       ::grpc::Service::MarkMethodCallback(5,
-          new ::grpc::internal::CallbackUnaryHandler< ::trading::execution::ActiveOrdersRequestProto, ::trading::execution::ActiveOrdersResponseProto>(
+          new ::grpc::internal::CallbackUnaryHandler< ::trading::execution::grpc::ActiveOrdersRequestProto, ::trading::execution::grpc::ActiveOrdersResponseProto>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::trading::execution::ActiveOrdersRequestProto* request, ::trading::execution::ActiveOrdersResponseProto* response) { return this->GetActiveOrders(context, request, response); }));}
+                   ::grpc::CallbackServerContext* context, const ::trading::execution::grpc::ActiveOrdersRequestProto* request, ::trading::execution::grpc::ActiveOrdersResponseProto* response) { return this->GetActiveOrders(context, request, response); }));}
     void SetMessageAllocatorFor_GetActiveOrders(
-        ::grpc::MessageAllocator< ::trading::execution::ActiveOrdersRequestProto, ::trading::execution::ActiveOrdersResponseProto>* allocator) {
+        ::grpc::MessageAllocator< ::trading::execution::grpc::ActiveOrdersRequestProto, ::trading::execution::grpc::ActiveOrdersResponseProto>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(5);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::trading::execution::ActiveOrdersRequestProto, ::trading::execution::ActiveOrdersResponseProto>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::trading::execution::grpc::ActiveOrdersRequestProto, ::trading::execution::grpc::ActiveOrdersResponseProto>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~WithCallbackMethod_GetActiveOrders() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetActiveOrders(::grpc::ServerContext* /*context*/, const ::trading::execution::ActiveOrdersRequestProto* /*request*/, ::trading::execution::ActiveOrdersResponseProto* /*response*/) override {
+    ::grpc::Status GetActiveOrders(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::ActiveOrdersRequestProto* /*request*/, ::trading::execution::grpc::ActiveOrdersResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* GetActiveOrders(
-      ::grpc::CallbackServerContext* /*context*/, const ::trading::execution::ActiveOrdersRequestProto* /*request*/, ::trading::execution::ActiveOrdersResponseProto* /*response*/)  { return nullptr; }
+      ::grpc::CallbackServerContext* /*context*/, const ::trading::execution::grpc::ActiveOrdersRequestProto* /*request*/, ::trading::execution::grpc::ActiveOrdersResponseProto* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithCallbackMethod_GetHealthStatus : public BaseClass {
@@ -572,25 +573,25 @@ class ExecutionService final {
    public:
     WithCallbackMethod_GetHealthStatus() {
       ::grpc::Service::MarkMethodCallback(6,
-          new ::grpc::internal::CallbackUnaryHandler< ::trading::execution::HealthStatusRequestProto, ::trading::execution::HealthStatusResponseProto>(
+          new ::grpc::internal::CallbackUnaryHandler< ::trading::execution::grpc::HealthStatusRequestProto, ::trading::execution::grpc::HealthStatusResponseProto>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::trading::execution::HealthStatusRequestProto* request, ::trading::execution::HealthStatusResponseProto* response) { return this->GetHealthStatus(context, request, response); }));}
+                   ::grpc::CallbackServerContext* context, const ::trading::execution::grpc::HealthStatusRequestProto* request, ::trading::execution::grpc::HealthStatusResponseProto* response) { return this->GetHealthStatus(context, request, response); }));}
     void SetMessageAllocatorFor_GetHealthStatus(
-        ::grpc::MessageAllocator< ::trading::execution::HealthStatusRequestProto, ::trading::execution::HealthStatusResponseProto>* allocator) {
+        ::grpc::MessageAllocator< ::trading::execution::grpc::HealthStatusRequestProto, ::trading::execution::grpc::HealthStatusResponseProto>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(6);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::trading::execution::HealthStatusRequestProto, ::trading::execution::HealthStatusResponseProto>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::trading::execution::grpc::HealthStatusRequestProto, ::trading::execution::grpc::HealthStatusResponseProto>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~WithCallbackMethod_GetHealthStatus() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetHealthStatus(::grpc::ServerContext* /*context*/, const ::trading::execution::HealthStatusRequestProto* /*request*/, ::trading::execution::HealthStatusResponseProto* /*response*/) override {
+    ::grpc::Status GetHealthStatus(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::HealthStatusRequestProto* /*request*/, ::trading::execution::grpc::HealthStatusResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* GetHealthStatus(
-      ::grpc::CallbackServerContext* /*context*/, const ::trading::execution::HealthStatusRequestProto* /*request*/, ::trading::execution::HealthStatusResponseProto* /*response*/)  { return nullptr; }
+      ::grpc::CallbackServerContext* /*context*/, const ::trading::execution::grpc::HealthStatusRequestProto* /*request*/, ::trading::execution::grpc::HealthStatusResponseProto* /*response*/)  { return nullptr; }
   };
   typedef WithCallbackMethod_ExecuteSignal<WithCallbackMethod_PlaceOrder<WithCallbackMethod_CancelOrder<WithCallbackMethod_CancelAllOrdersForSymbol<WithCallbackMethod_GetOrderStatus<WithCallbackMethod_GetActiveOrders<WithCallbackMethod_GetHealthStatus<Service > > > > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
@@ -606,7 +607,7 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ExecuteSignal(::grpc::ServerContext* /*context*/, const ::trading::execution::TradingSignalProto* /*request*/, ::trading::execution::ExecutionResponseProto* /*response*/) override {
+    ::grpc::Status ExecuteSignal(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::TradingSignalProto* /*request*/, ::trading::execution::grpc::ExecutionResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -623,7 +624,7 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status PlaceOrder(::grpc::ServerContext* /*context*/, const ::trading::execution::OrderProto* /*request*/, ::trading::execution::ExecutionResponseProto* /*response*/) override {
+    ::grpc::Status PlaceOrder(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::OrderProto* /*request*/, ::trading::execution::grpc::ExecutionResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -640,7 +641,7 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status CancelOrder(::grpc::ServerContext* /*context*/, const ::trading::execution::CancelOrderRequestProto* /*request*/, ::trading::execution::CancelResponseProto* /*response*/) override {
+    ::grpc::Status CancelOrder(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::CancelOrderRequestProto* /*request*/, ::trading::execution::grpc::CancelResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -657,7 +658,7 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status CancelAllOrdersForSymbol(::grpc::ServerContext* /*context*/, const ::trading::execution::CancelAllOrdersRequestProto* /*request*/, ::trading::execution::CancelAllOrdersResponseProto* /*response*/) override {
+    ::grpc::Status CancelAllOrdersForSymbol(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::CancelAllOrdersRequestProto* /*request*/, ::trading::execution::grpc::CancelAllOrdersResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -674,7 +675,7 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetOrderStatus(::grpc::ServerContext* /*context*/, const ::trading::execution::OrderStatusRequestProto* /*request*/, ::trading::execution::OrderStatusResponseProto* /*response*/) override {
+    ::grpc::Status GetOrderStatus(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::OrderStatusRequestProto* /*request*/, ::trading::execution::grpc::OrderStatusResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -691,7 +692,7 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetActiveOrders(::grpc::ServerContext* /*context*/, const ::trading::execution::ActiveOrdersRequestProto* /*request*/, ::trading::execution::ActiveOrdersResponseProto* /*response*/) override {
+    ::grpc::Status GetActiveOrders(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::ActiveOrdersRequestProto* /*request*/, ::trading::execution::grpc::ActiveOrdersResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -708,7 +709,7 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetHealthStatus(::grpc::ServerContext* /*context*/, const ::trading::execution::HealthStatusRequestProto* /*request*/, ::trading::execution::HealthStatusResponseProto* /*response*/) override {
+    ::grpc::Status GetHealthStatus(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::HealthStatusRequestProto* /*request*/, ::trading::execution::grpc::HealthStatusResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -725,7 +726,7 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ExecuteSignal(::grpc::ServerContext* /*context*/, const ::trading::execution::TradingSignalProto* /*request*/, ::trading::execution::ExecutionResponseProto* /*response*/) override {
+    ::grpc::Status ExecuteSignal(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::TradingSignalProto* /*request*/, ::trading::execution::grpc::ExecutionResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -745,7 +746,7 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status PlaceOrder(::grpc::ServerContext* /*context*/, const ::trading::execution::OrderProto* /*request*/, ::trading::execution::ExecutionResponseProto* /*response*/) override {
+    ::grpc::Status PlaceOrder(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::OrderProto* /*request*/, ::trading::execution::grpc::ExecutionResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -765,7 +766,7 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status CancelOrder(::grpc::ServerContext* /*context*/, const ::trading::execution::CancelOrderRequestProto* /*request*/, ::trading::execution::CancelResponseProto* /*response*/) override {
+    ::grpc::Status CancelOrder(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::CancelOrderRequestProto* /*request*/, ::trading::execution::grpc::CancelResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -785,7 +786,7 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status CancelAllOrdersForSymbol(::grpc::ServerContext* /*context*/, const ::trading::execution::CancelAllOrdersRequestProto* /*request*/, ::trading::execution::CancelAllOrdersResponseProto* /*response*/) override {
+    ::grpc::Status CancelAllOrdersForSymbol(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::CancelAllOrdersRequestProto* /*request*/, ::trading::execution::grpc::CancelAllOrdersResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -805,7 +806,7 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetOrderStatus(::grpc::ServerContext* /*context*/, const ::trading::execution::OrderStatusRequestProto* /*request*/, ::trading::execution::OrderStatusResponseProto* /*response*/) override {
+    ::grpc::Status GetOrderStatus(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::OrderStatusRequestProto* /*request*/, ::trading::execution::grpc::OrderStatusResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -825,7 +826,7 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetActiveOrders(::grpc::ServerContext* /*context*/, const ::trading::execution::ActiveOrdersRequestProto* /*request*/, ::trading::execution::ActiveOrdersResponseProto* /*response*/) override {
+    ::grpc::Status GetActiveOrders(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::ActiveOrdersRequestProto* /*request*/, ::trading::execution::grpc::ActiveOrdersResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -845,7 +846,7 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetHealthStatus(::grpc::ServerContext* /*context*/, const ::trading::execution::HealthStatusRequestProto* /*request*/, ::trading::execution::HealthStatusResponseProto* /*response*/) override {
+    ::grpc::Status GetHealthStatus(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::HealthStatusRequestProto* /*request*/, ::trading::execution::grpc::HealthStatusResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -868,7 +869,7 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ExecuteSignal(::grpc::ServerContext* /*context*/, const ::trading::execution::TradingSignalProto* /*request*/, ::trading::execution::ExecutionResponseProto* /*response*/) override {
+    ::grpc::Status ExecuteSignal(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::TradingSignalProto* /*request*/, ::trading::execution::grpc::ExecutionResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -890,7 +891,7 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status PlaceOrder(::grpc::ServerContext* /*context*/, const ::trading::execution::OrderProto* /*request*/, ::trading::execution::ExecutionResponseProto* /*response*/) override {
+    ::grpc::Status PlaceOrder(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::OrderProto* /*request*/, ::trading::execution::grpc::ExecutionResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -912,7 +913,7 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status CancelOrder(::grpc::ServerContext* /*context*/, const ::trading::execution::CancelOrderRequestProto* /*request*/, ::trading::execution::CancelResponseProto* /*response*/) override {
+    ::grpc::Status CancelOrder(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::CancelOrderRequestProto* /*request*/, ::trading::execution::grpc::CancelResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -934,7 +935,7 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status CancelAllOrdersForSymbol(::grpc::ServerContext* /*context*/, const ::trading::execution::CancelAllOrdersRequestProto* /*request*/, ::trading::execution::CancelAllOrdersResponseProto* /*response*/) override {
+    ::grpc::Status CancelAllOrdersForSymbol(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::CancelAllOrdersRequestProto* /*request*/, ::trading::execution::grpc::CancelAllOrdersResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -956,7 +957,7 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetOrderStatus(::grpc::ServerContext* /*context*/, const ::trading::execution::OrderStatusRequestProto* /*request*/, ::trading::execution::OrderStatusResponseProto* /*response*/) override {
+    ::grpc::Status GetOrderStatus(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::OrderStatusRequestProto* /*request*/, ::trading::execution::grpc::OrderStatusResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -978,7 +979,7 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetActiveOrders(::grpc::ServerContext* /*context*/, const ::trading::execution::ActiveOrdersRequestProto* /*request*/, ::trading::execution::ActiveOrdersResponseProto* /*response*/) override {
+    ::grpc::Status GetActiveOrders(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::ActiveOrdersRequestProto* /*request*/, ::trading::execution::grpc::ActiveOrdersResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1000,7 +1001,7 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetHealthStatus(::grpc::ServerContext* /*context*/, const ::trading::execution::HealthStatusRequestProto* /*request*/, ::trading::execution::HealthStatusResponseProto* /*response*/) override {
+    ::grpc::Status GetHealthStatus(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::HealthStatusRequestProto* /*request*/, ::trading::execution::grpc::HealthStatusResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1015,10 +1016,10 @@ class ExecutionService final {
     WithStreamedUnaryMethod_ExecuteSignal() {
       ::grpc::Service::MarkMethodStreamed(0,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::trading::execution::TradingSignalProto, ::trading::execution::ExecutionResponseProto>(
+          ::trading::execution::grpc::TradingSignalProto, ::trading::execution::grpc::ExecutionResponseProto>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::trading::execution::TradingSignalProto, ::trading::execution::ExecutionResponseProto>* streamer) {
+                     ::trading::execution::grpc::TradingSignalProto, ::trading::execution::grpc::ExecutionResponseProto>* streamer) {
                        return this->StreamedExecuteSignal(context,
                          streamer);
                   }));
@@ -1027,12 +1028,12 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status ExecuteSignal(::grpc::ServerContext* /*context*/, const ::trading::execution::TradingSignalProto* /*request*/, ::trading::execution::ExecutionResponseProto* /*response*/) override {
+    ::grpc::Status ExecuteSignal(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::TradingSignalProto* /*request*/, ::trading::execution::grpc::ExecutionResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedExecuteSignal(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::trading::execution::TradingSignalProto,::trading::execution::ExecutionResponseProto>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedExecuteSignal(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::trading::execution::grpc::TradingSignalProto,::trading::execution::grpc::ExecutionResponseProto>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_PlaceOrder : public BaseClass {
@@ -1042,10 +1043,10 @@ class ExecutionService final {
     WithStreamedUnaryMethod_PlaceOrder() {
       ::grpc::Service::MarkMethodStreamed(1,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::trading::execution::OrderProto, ::trading::execution::ExecutionResponseProto>(
+          ::trading::execution::grpc::OrderProto, ::trading::execution::grpc::ExecutionResponseProto>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::trading::execution::OrderProto, ::trading::execution::ExecutionResponseProto>* streamer) {
+                     ::trading::execution::grpc::OrderProto, ::trading::execution::grpc::ExecutionResponseProto>* streamer) {
                        return this->StreamedPlaceOrder(context,
                          streamer);
                   }));
@@ -1054,12 +1055,12 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status PlaceOrder(::grpc::ServerContext* /*context*/, const ::trading::execution::OrderProto* /*request*/, ::trading::execution::ExecutionResponseProto* /*response*/) override {
+    ::grpc::Status PlaceOrder(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::OrderProto* /*request*/, ::trading::execution::grpc::ExecutionResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedPlaceOrder(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::trading::execution::OrderProto,::trading::execution::ExecutionResponseProto>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedPlaceOrder(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::trading::execution::grpc::OrderProto,::trading::execution::grpc::ExecutionResponseProto>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_CancelOrder : public BaseClass {
@@ -1069,10 +1070,10 @@ class ExecutionService final {
     WithStreamedUnaryMethod_CancelOrder() {
       ::grpc::Service::MarkMethodStreamed(2,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::trading::execution::CancelOrderRequestProto, ::trading::execution::CancelResponseProto>(
+          ::trading::execution::grpc::CancelOrderRequestProto, ::trading::execution::grpc::CancelResponseProto>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::trading::execution::CancelOrderRequestProto, ::trading::execution::CancelResponseProto>* streamer) {
+                     ::trading::execution::grpc::CancelOrderRequestProto, ::trading::execution::grpc::CancelResponseProto>* streamer) {
                        return this->StreamedCancelOrder(context,
                          streamer);
                   }));
@@ -1081,12 +1082,12 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status CancelOrder(::grpc::ServerContext* /*context*/, const ::trading::execution::CancelOrderRequestProto* /*request*/, ::trading::execution::CancelResponseProto* /*response*/) override {
+    ::grpc::Status CancelOrder(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::CancelOrderRequestProto* /*request*/, ::trading::execution::grpc::CancelResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedCancelOrder(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::trading::execution::CancelOrderRequestProto,::trading::execution::CancelResponseProto>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedCancelOrder(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::trading::execution::grpc::CancelOrderRequestProto,::trading::execution::grpc::CancelResponseProto>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_CancelAllOrdersForSymbol : public BaseClass {
@@ -1096,10 +1097,10 @@ class ExecutionService final {
     WithStreamedUnaryMethod_CancelAllOrdersForSymbol() {
       ::grpc::Service::MarkMethodStreamed(3,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::trading::execution::CancelAllOrdersRequestProto, ::trading::execution::CancelAllOrdersResponseProto>(
+          ::trading::execution::grpc::CancelAllOrdersRequestProto, ::trading::execution::grpc::CancelAllOrdersResponseProto>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::trading::execution::CancelAllOrdersRequestProto, ::trading::execution::CancelAllOrdersResponseProto>* streamer) {
+                     ::trading::execution::grpc::CancelAllOrdersRequestProto, ::trading::execution::grpc::CancelAllOrdersResponseProto>* streamer) {
                        return this->StreamedCancelAllOrdersForSymbol(context,
                          streamer);
                   }));
@@ -1108,12 +1109,12 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status CancelAllOrdersForSymbol(::grpc::ServerContext* /*context*/, const ::trading::execution::CancelAllOrdersRequestProto* /*request*/, ::trading::execution::CancelAllOrdersResponseProto* /*response*/) override {
+    ::grpc::Status CancelAllOrdersForSymbol(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::CancelAllOrdersRequestProto* /*request*/, ::trading::execution::grpc::CancelAllOrdersResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedCancelAllOrdersForSymbol(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::trading::execution::CancelAllOrdersRequestProto,::trading::execution::CancelAllOrdersResponseProto>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedCancelAllOrdersForSymbol(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::trading::execution::grpc::CancelAllOrdersRequestProto,::trading::execution::grpc::CancelAllOrdersResponseProto>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_GetOrderStatus : public BaseClass {
@@ -1123,10 +1124,10 @@ class ExecutionService final {
     WithStreamedUnaryMethod_GetOrderStatus() {
       ::grpc::Service::MarkMethodStreamed(4,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::trading::execution::OrderStatusRequestProto, ::trading::execution::OrderStatusResponseProto>(
+          ::trading::execution::grpc::OrderStatusRequestProto, ::trading::execution::grpc::OrderStatusResponseProto>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::trading::execution::OrderStatusRequestProto, ::trading::execution::OrderStatusResponseProto>* streamer) {
+                     ::trading::execution::grpc::OrderStatusRequestProto, ::trading::execution::grpc::OrderStatusResponseProto>* streamer) {
                        return this->StreamedGetOrderStatus(context,
                          streamer);
                   }));
@@ -1135,12 +1136,12 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GetOrderStatus(::grpc::ServerContext* /*context*/, const ::trading::execution::OrderStatusRequestProto* /*request*/, ::trading::execution::OrderStatusResponseProto* /*response*/) override {
+    ::grpc::Status GetOrderStatus(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::OrderStatusRequestProto* /*request*/, ::trading::execution::grpc::OrderStatusResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedGetOrderStatus(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::trading::execution::OrderStatusRequestProto,::trading::execution::OrderStatusResponseProto>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedGetOrderStatus(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::trading::execution::grpc::OrderStatusRequestProto,::trading::execution::grpc::OrderStatusResponseProto>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_GetActiveOrders : public BaseClass {
@@ -1150,10 +1151,10 @@ class ExecutionService final {
     WithStreamedUnaryMethod_GetActiveOrders() {
       ::grpc::Service::MarkMethodStreamed(5,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::trading::execution::ActiveOrdersRequestProto, ::trading::execution::ActiveOrdersResponseProto>(
+          ::trading::execution::grpc::ActiveOrdersRequestProto, ::trading::execution::grpc::ActiveOrdersResponseProto>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::trading::execution::ActiveOrdersRequestProto, ::trading::execution::ActiveOrdersResponseProto>* streamer) {
+                     ::trading::execution::grpc::ActiveOrdersRequestProto, ::trading::execution::grpc::ActiveOrdersResponseProto>* streamer) {
                        return this->StreamedGetActiveOrders(context,
                          streamer);
                   }));
@@ -1162,12 +1163,12 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GetActiveOrders(::grpc::ServerContext* /*context*/, const ::trading::execution::ActiveOrdersRequestProto* /*request*/, ::trading::execution::ActiveOrdersResponseProto* /*response*/) override {
+    ::grpc::Status GetActiveOrders(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::ActiveOrdersRequestProto* /*request*/, ::trading::execution::grpc::ActiveOrdersResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedGetActiveOrders(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::trading::execution::ActiveOrdersRequestProto,::trading::execution::ActiveOrdersResponseProto>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedGetActiveOrders(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::trading::execution::grpc::ActiveOrdersRequestProto,::trading::execution::grpc::ActiveOrdersResponseProto>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_GetHealthStatus : public BaseClass {
@@ -1177,10 +1178,10 @@ class ExecutionService final {
     WithStreamedUnaryMethod_GetHealthStatus() {
       ::grpc::Service::MarkMethodStreamed(6,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::trading::execution::HealthStatusRequestProto, ::trading::execution::HealthStatusResponseProto>(
+          ::trading::execution::grpc::HealthStatusRequestProto, ::trading::execution::grpc::HealthStatusResponseProto>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::trading::execution::HealthStatusRequestProto, ::trading::execution::HealthStatusResponseProto>* streamer) {
+                     ::trading::execution::grpc::HealthStatusRequestProto, ::trading::execution::grpc::HealthStatusResponseProto>* streamer) {
                        return this->StreamedGetHealthStatus(context,
                          streamer);
                   }));
@@ -1189,18 +1190,19 @@ class ExecutionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GetHealthStatus(::grpc::ServerContext* /*context*/, const ::trading::execution::HealthStatusRequestProto* /*request*/, ::trading::execution::HealthStatusResponseProto* /*response*/) override {
+    ::grpc::Status GetHealthStatus(::grpc::ServerContext* /*context*/, const ::trading::execution::grpc::HealthStatusRequestProto* /*request*/, ::trading::execution::grpc::HealthStatusResponseProto* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedGetHealthStatus(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::trading::execution::HealthStatusRequestProto,::trading::execution::HealthStatusResponseProto>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedGetHealthStatus(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::trading::execution::grpc::HealthStatusRequestProto,::trading::execution::grpc::HealthStatusResponseProto>* server_unary_streamer) = 0;
   };
   typedef WithStreamedUnaryMethod_ExecuteSignal<WithStreamedUnaryMethod_PlaceOrder<WithStreamedUnaryMethod_CancelOrder<WithStreamedUnaryMethod_CancelAllOrdersForSymbol<WithStreamedUnaryMethod_GetOrderStatus<WithStreamedUnaryMethod_GetActiveOrders<WithStreamedUnaryMethod_GetHealthStatus<Service > > > > > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
   typedef WithStreamedUnaryMethod_ExecuteSignal<WithStreamedUnaryMethod_PlaceOrder<WithStreamedUnaryMethod_CancelOrder<WithStreamedUnaryMethod_CancelAllOrdersForSymbol<WithStreamedUnaryMethod_GetOrderStatus<WithStreamedUnaryMethod_GetActiveOrders<WithStreamedUnaryMethod_GetHealthStatus<Service > > > > > > > StreamedService;
 };
 
+}  // namespace grpc
 }  // namespace execution
 }  // namespace trading
 

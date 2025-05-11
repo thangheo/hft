@@ -22,6 +22,7 @@ namespace _pbi = _pb::internal;
 
 namespace trading {
 namespace execution {
+namespace grpc {
 PROTOBUF_CONSTEXPR TradingSignalProto_SignalMetricsEntry_DoNotUse::TradingSignalProto_SignalMetricsEntry_DoNotUse(
     ::_pbi::ConstantInitialized) {}
 struct TradingSignalProto_SignalMetricsEntry_DoNotUseDefaultTypeInternal {
@@ -281,6 +282,7 @@ struct ActiveOrdersResponseProtoDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ActiveOrdersResponseProtoDefaultTypeInternal _ActiveOrdersResponseProto_default_instance_;
+}  // namespace grpc
 }  // namespace execution
 }  // namespace trading
 static ::_pb::Metadata file_level_metadata_execution_5fservice_2eproto[17];
@@ -288,306 +290,310 @@ static const ::_pb::EnumDescriptor* file_level_enum_descriptors_execution_5fserv
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_execution_5fservice_2eproto = nullptr;
 
 const uint32_t TableStruct_execution_5fservice_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  PROTOBUF_FIELD_OFFSET(::trading::execution::TradingSignalProto_SignalMetricsEntry_DoNotUse, _has_bits_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::TradingSignalProto_SignalMetricsEntry_DoNotUse, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::TradingSignalProto_SignalMetricsEntry_DoNotUse, _has_bits_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::TradingSignalProto_SignalMetricsEntry_DoNotUse, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::TradingSignalProto_SignalMetricsEntry_DoNotUse, key_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::TradingSignalProto_SignalMetricsEntry_DoNotUse, value_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::TradingSignalProto_SignalMetricsEntry_DoNotUse, key_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::TradingSignalProto_SignalMetricsEntry_DoNotUse, value_),
   0,
   1,
   ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::TradingSignalProto, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::TradingSignalProto, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::TradingSignalProto, _impl_.signal_id_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::TradingSignalProto, _impl_.trading_pair_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::TradingSignalProto, _impl_.direction_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::TradingSignalProto, _impl_.strength_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::TradingSignalProto, _impl_.target_size_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::TradingSignalProto, _impl_.signal_ttl_ms_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::TradingSignalProto, _impl_.strategy_id_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::TradingSignalProto, _impl_.strategy_version_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::TradingSignalProto, _impl_.signal_metrics_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::TradingSignalProto, _impl_.signal_id_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::TradingSignalProto, _impl_.trading_pair_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::TradingSignalProto, _impl_.direction_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::TradingSignalProto, _impl_.strength_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::TradingSignalProto, _impl_.target_size_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::TradingSignalProto, _impl_.signal_ttl_ms_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::TradingSignalProto, _impl_.strategy_id_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::TradingSignalProto, _impl_.strategy_version_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::TradingSignalProto, _impl_.signal_metrics_),
   ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::ExecutionResponseProto, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::ExecutionResponseProto, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::ExecutionResponseProto, _impl_.client_order_id_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::ExecutionResponseProto, _impl_.exchange_order_id_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::ExecutionResponseProto, _impl_.success_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::ExecutionResponseProto, _impl_.error_message_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::ExecutionResponseProto, _impl_.timestamp_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::ExecutionResponseProto, _impl_.order_status_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::ExecutionResponseProto, _impl_.client_order_id_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::ExecutionResponseProto, _impl_.exchange_order_id_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::ExecutionResponseProto, _impl_.success_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::ExecutionResponseProto, _impl_.error_message_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::ExecutionResponseProto, _impl_.timestamp_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::ExecutionResponseProto, _impl_.order_status_),
   ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::CancelResponseProto, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelResponseProto, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::CancelResponseProto, _impl_.client_order_id_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::CancelResponseProto, _impl_.exchange_order_id_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::CancelResponseProto, _impl_.success_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::CancelResponseProto, _impl_.error_message_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::CancelResponseProto, _impl_.timestamp_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelResponseProto, _impl_.client_order_id_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelResponseProto, _impl_.exchange_order_id_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelResponseProto, _impl_.success_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelResponseProto, _impl_.error_message_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelResponseProto, _impl_.timestamp_),
   ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::FillProto, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::FillProto, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::FillProto, _impl_.fill_id_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::FillProto, _impl_.order_id_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::FillProto, _impl_.quantity_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::FillProto, _impl_.price_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::FillProto, _impl_.fee_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::FillProto, _impl_.fee_currency_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::FillProto, _impl_.timestamp_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto_ExtraParamsEntry_DoNotUse, _has_bits_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto_ExtraParamsEntry_DoNotUse, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::FillProto, _impl_.fill_id_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::FillProto, _impl_.order_id_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::FillProto, _impl_.quantity_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::FillProto, _impl_.price_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::FillProto, _impl_.fee_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::FillProto, _impl_.fee_currency_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::FillProto, _impl_.timestamp_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto_ExtraParamsEntry_DoNotUse, _has_bits_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto_ExtraParamsEntry_DoNotUse, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto_ExtraParamsEntry_DoNotUse, key_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto_ExtraParamsEntry_DoNotUse, value_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto_ExtraParamsEntry_DoNotUse, key_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto_ExtraParamsEntry_DoNotUse, value_),
   0,
   1,
   ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto, _impl_.order_id_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto, _impl_.client_order_id_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto, _impl_.exchange_id_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto, _impl_.exchange_order_id_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto, _impl_.trading_pair_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto, _impl_.side_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto, _impl_.type_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto, _impl_.quantity_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto, _impl_.price_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto, _impl_.stop_price_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto, _impl_.time_in_force_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto, _impl_.state_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto, _impl_.strategy_id_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto, _impl_.signal_id_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto, _impl_.created_at_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto, _impl_.updated_at_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto, _impl_.fills_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto, _impl_.filled_quantity_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto, _impl_.average_fill_price_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderProto, _impl_.extra_params_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.order_id_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.client_order_id_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.exchange_id_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.exchange_order_id_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.trading_pair_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.side_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.type_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.quantity_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.price_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.stop_price_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.time_in_force_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.state_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.strategy_id_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.signal_id_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.created_at_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.updated_at_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.fills_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.filled_quantity_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.average_fill_price_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.extra_params_),
   ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderStatusResponseProto, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderStatusResponseProto, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderStatusResponseProto, _impl_.order_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderStatusResponseProto, _impl_.found_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderStatusResponseProto, _impl_.error_message_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderStatusResponseProto, _impl_.order_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderStatusResponseProto, _impl_.found_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderStatusResponseProto, _impl_.error_message_),
   ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::HealthStatusRequestProto, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::HealthStatusResponseProto, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::HealthStatusResponseProto, _impl_.health_json_),
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::CancelOrderRequestProto, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::CancelOrderRequestProto, _impl_.client_order_id_),
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::CancelOrderByExchangeIdRequestProto, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::CancelOrderByExchangeIdRequestProto, _impl_.exchange_order_id_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::CancelOrderByExchangeIdRequestProto, _impl_.exchange_id_),
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::CancelAllOrdersRequestProto, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::CancelAllOrdersRequestProto, _impl_.trading_pair_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::CancelAllOrdersRequestProto, _impl_.exchange_id_),
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::CancelAllOrdersResponseProto, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::CancelAllOrdersResponseProto, _impl_.responses_),
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderStatusRequestProto, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::OrderStatusRequestProto, _impl_.client_order_id_),
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::ActiveOrdersRequestProto, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::HealthStatusRequestProto, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
   ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::ActiveOrdersResponseProto, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::HealthStatusResponseProto, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::ActiveOrdersResponseProto, _impl_.orders_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::HealthStatusResponseProto, _impl_.health_json_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelOrderRequestProto, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelOrderRequestProto, _impl_.client_order_id_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelOrderByExchangeIdRequestProto, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelOrderByExchangeIdRequestProto, _impl_.exchange_order_id_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelOrderByExchangeIdRequestProto, _impl_.exchange_id_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelAllOrdersRequestProto, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelAllOrdersRequestProto, _impl_.trading_pair_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelAllOrdersRequestProto, _impl_.exchange_id_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelAllOrdersResponseProto, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelAllOrdersResponseProto, _impl_.responses_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderStatusRequestProto, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderStatusRequestProto, _impl_.client_order_id_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::ActiveOrdersRequestProto, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::ActiveOrdersResponseProto, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::ActiveOrdersResponseProto, _impl_.orders_),
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, 8, -1, sizeof(::trading::execution::TradingSignalProto_SignalMetricsEntry_DoNotUse)},
-  { 10, -1, -1, sizeof(::trading::execution::TradingSignalProto)},
-  { 25, -1, -1, sizeof(::trading::execution::ExecutionResponseProto)},
-  { 37, -1, -1, sizeof(::trading::execution::CancelResponseProto)},
-  { 48, -1, -1, sizeof(::trading::execution::FillProto)},
-  { 61, 69, -1, sizeof(::trading::execution::OrderProto_ExtraParamsEntry_DoNotUse)},
-  { 71, -1, -1, sizeof(::trading::execution::OrderProto)},
-  { 97, -1, -1, sizeof(::trading::execution::OrderStatusResponseProto)},
-  { 106, -1, -1, sizeof(::trading::execution::HealthStatusRequestProto)},
-  { 112, -1, -1, sizeof(::trading::execution::HealthStatusResponseProto)},
-  { 119, -1, -1, sizeof(::trading::execution::CancelOrderRequestProto)},
-  { 126, -1, -1, sizeof(::trading::execution::CancelOrderByExchangeIdRequestProto)},
-  { 134, -1, -1, sizeof(::trading::execution::CancelAllOrdersRequestProto)},
-  { 142, -1, -1, sizeof(::trading::execution::CancelAllOrdersResponseProto)},
-  { 149, -1, -1, sizeof(::trading::execution::OrderStatusRequestProto)},
-  { 156, -1, -1, sizeof(::trading::execution::ActiveOrdersRequestProto)},
-  { 162, -1, -1, sizeof(::trading::execution::ActiveOrdersResponseProto)},
+  { 0, 8, -1, sizeof(::trading::execution::grpc::TradingSignalProto_SignalMetricsEntry_DoNotUse)},
+  { 10, -1, -1, sizeof(::trading::execution::grpc::TradingSignalProto)},
+  { 25, -1, -1, sizeof(::trading::execution::grpc::ExecutionResponseProto)},
+  { 37, -1, -1, sizeof(::trading::execution::grpc::CancelResponseProto)},
+  { 48, -1, -1, sizeof(::trading::execution::grpc::FillProto)},
+  { 61, 69, -1, sizeof(::trading::execution::grpc::OrderProto_ExtraParamsEntry_DoNotUse)},
+  { 71, -1, -1, sizeof(::trading::execution::grpc::OrderProto)},
+  { 97, -1, -1, sizeof(::trading::execution::grpc::OrderStatusResponseProto)},
+  { 106, -1, -1, sizeof(::trading::execution::grpc::HealthStatusRequestProto)},
+  { 112, -1, -1, sizeof(::trading::execution::grpc::HealthStatusResponseProto)},
+  { 119, -1, -1, sizeof(::trading::execution::grpc::CancelOrderRequestProto)},
+  { 126, -1, -1, sizeof(::trading::execution::grpc::CancelOrderByExchangeIdRequestProto)},
+  { 134, -1, -1, sizeof(::trading::execution::grpc::CancelAllOrdersRequestProto)},
+  { 142, -1, -1, sizeof(::trading::execution::grpc::CancelAllOrdersResponseProto)},
+  { 149, -1, -1, sizeof(::trading::execution::grpc::OrderStatusRequestProto)},
+  { 156, -1, -1, sizeof(::trading::execution::grpc::ActiveOrdersRequestProto)},
+  { 162, -1, -1, sizeof(::trading::execution::grpc::ActiveOrdersResponseProto)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
-  &::trading::execution::_TradingSignalProto_SignalMetricsEntry_DoNotUse_default_instance_._instance,
-  &::trading::execution::_TradingSignalProto_default_instance_._instance,
-  &::trading::execution::_ExecutionResponseProto_default_instance_._instance,
-  &::trading::execution::_CancelResponseProto_default_instance_._instance,
-  &::trading::execution::_FillProto_default_instance_._instance,
-  &::trading::execution::_OrderProto_ExtraParamsEntry_DoNotUse_default_instance_._instance,
-  &::trading::execution::_OrderProto_default_instance_._instance,
-  &::trading::execution::_OrderStatusResponseProto_default_instance_._instance,
-  &::trading::execution::_HealthStatusRequestProto_default_instance_._instance,
-  &::trading::execution::_HealthStatusResponseProto_default_instance_._instance,
-  &::trading::execution::_CancelOrderRequestProto_default_instance_._instance,
-  &::trading::execution::_CancelOrderByExchangeIdRequestProto_default_instance_._instance,
-  &::trading::execution::_CancelAllOrdersRequestProto_default_instance_._instance,
-  &::trading::execution::_CancelAllOrdersResponseProto_default_instance_._instance,
-  &::trading::execution::_OrderStatusRequestProto_default_instance_._instance,
-  &::trading::execution::_ActiveOrdersRequestProto_default_instance_._instance,
-  &::trading::execution::_ActiveOrdersResponseProto_default_instance_._instance,
+  &::trading::execution::grpc::_TradingSignalProto_SignalMetricsEntry_DoNotUse_default_instance_._instance,
+  &::trading::execution::grpc::_TradingSignalProto_default_instance_._instance,
+  &::trading::execution::grpc::_ExecutionResponseProto_default_instance_._instance,
+  &::trading::execution::grpc::_CancelResponseProto_default_instance_._instance,
+  &::trading::execution::grpc::_FillProto_default_instance_._instance,
+  &::trading::execution::grpc::_OrderProto_ExtraParamsEntry_DoNotUse_default_instance_._instance,
+  &::trading::execution::grpc::_OrderProto_default_instance_._instance,
+  &::trading::execution::grpc::_OrderStatusResponseProto_default_instance_._instance,
+  &::trading::execution::grpc::_HealthStatusRequestProto_default_instance_._instance,
+  &::trading::execution::grpc::_HealthStatusResponseProto_default_instance_._instance,
+  &::trading::execution::grpc::_CancelOrderRequestProto_default_instance_._instance,
+  &::trading::execution::grpc::_CancelOrderByExchangeIdRequestProto_default_instance_._instance,
+  &::trading::execution::grpc::_CancelAllOrdersRequestProto_default_instance_._instance,
+  &::trading::execution::grpc::_CancelAllOrdersResponseProto_default_instance_._instance,
+  &::trading::execution::grpc::_OrderStatusRequestProto_default_instance_._instance,
+  &::trading::execution::grpc::_ActiveOrdersRequestProto_default_instance_._instance,
+  &::trading::execution::grpc::_ActiveOrdersResponseProto_default_instance_._instance,
 };
 
 const char descriptor_table_protodef_execution_5fservice_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\027execution_service.proto\022\021trading.execu"
-  "tion\"\226\003\n\022TradingSignalProto\022\021\n\tsignal_id"
-  "\030\001 \001(\t\022\024\n\014trading_pair\030\002 \001(\t\022B\n\tdirectio"
-  "n\030\003 \001(\0162/.trading.execution.TradingSigna"
-  "lProto.OrderSide\022\020\n\010strength\030\004 \001(\001\022\023\n\013ta"
-  "rget_size\030\005 \001(\001\022\025\n\rsignal_ttl_ms\030\006 \001(\003\022\023"
-  "\n\013strategy_id\030\007 \001(\t\022\030\n\020strategy_version\030"
-  "\010 \001(\t\022P\n\016signal_metrics\030\t \003(\01328.trading."
-  "execution.TradingSignalProto.SignalMetri"
-  "csEntry\0324\n\022SignalMetricsEntry\022\013\n\003key\030\001 \001"
-  "(\t\022\r\n\005value\030\002 \001(\001:\0028\001\"\036\n\tOrderSide\022\007\n\003BU"
-  "Y\020\000\022\010\n\004SELL\020\001\"\235\001\n\026ExecutionResponseProto"
-  "\022\027\n\017client_order_id\030\001 \001(\t\022\031\n\021exchange_or"
-  "der_id\030\002 \001(\t\022\017\n\007success\030\003 \001(\010\022\025\n\rerror_m"
-  "essage\030\004 \001(\t\022\021\n\ttimestamp\030\005 \001(\003\022\024\n\014order"
-  "_status\030\006 \001(\t\"\204\001\n\023CancelResponseProto\022\027\n"
-  "\017client_order_id\030\001 \001(\t\022\031\n\021exchange_order"
-  "_id\030\002 \001(\t\022\017\n\007success\030\003 \001(\010\022\025\n\rerror_mess"
-  "age\030\004 \001(\t\022\021\n\ttimestamp\030\005 \001(\003\"\205\001\n\tFillPro"
-  "to\022\017\n\007fill_id\030\001 \001(\t\022\020\n\010order_id\030\002 \001(\t\022\020\n"
-  "\010quantity\030\003 \001(\001\022\r\n\005price\030\004 \001(\001\022\013\n\003fee\030\005 "
-  "\001(\001\022\024\n\014fee_currency\030\006 \001(\t\022\021\n\ttimestamp\030\007"
-  " \001(\003\"\255\007\n\nOrderProto\022\020\n\010order_id\030\001 \001(\t\022\027\n"
-  "\017client_order_id\030\002 \001(\t\022\023\n\013exchange_id\030\003 "
-  "\001(\t\022\031\n\021exchange_order_id\030\004 \001(\t\022\024\n\014tradin"
-  "g_pair\030\005 \001(\t\0225\n\004side\030\006 \001(\0162\'.trading.exe"
-  "cution.OrderProto.OrderSide\0225\n\004type\030\007 \001("
-  "\0162\'.trading.execution.OrderProto.OrderTy"
-  "pe\022\020\n\010quantity\030\010 \001(\001\022\r\n\005price\030\t \001(\001\022\022\n\ns"
-  "top_price\030\n \001(\001\022@\n\rtime_in_force\030\013 \001(\0162)"
-  ".trading.execution.OrderProto.TimeInForc"
-  "e\0221\n\005state\030\014 \001(\0162\".trading.execution.Ord"
-  "erStateProto\022\023\n\013strategy_id\030\r \001(\t\022\021\n\tsig"
-  "nal_id\030\016 \001(\t\022\022\n\ncreated_at\030\017 \001(\003\022\022\n\nupda"
-  "ted_at\030\020 \001(\003\022+\n\005fills\030\021 \003(\0132\034.trading.ex"
-  "ecution.FillProto\022\027\n\017filled_quantity\030\022 \001"
-  "(\001\022\032\n\022average_fill_price\030\023 \001(\001\022D\n\014extra_"
-  "params\030\024 \003(\0132..trading.execution.OrderPr"
-  "oto.ExtraParamsEntry\0322\n\020ExtraParamsEntry"
-  "\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\"\036\n\tOrde"
-  "rSide\022\007\n\003BUY\020\000\022\010\n\004SELL\020\001\"\226\001\n\tOrderType\022\n"
-  "\n\006MARKET\020\000\022\t\n\005LIMIT\020\001\022\010\n\004STOP\020\002\022\016\n\nSTOP_"
-  "LIMIT\020\003\022\013\n\007ICEBERG\020\004\022\021\n\rTRAILING_STOP\020\005\022"
-  "\020\n\014FILL_OR_KILL\020\006\022\027\n\023IMMEDIATE_OR_CANCEL"
-  "\020\007\022\r\n\tPOST_ONLY\020\010\"1\n\013TimeInForce\022\007\n\003GTC\020"
-  "\000\022\007\n\003IOC\020\001\022\007\n\003FOK\020\002\022\007\n\003GTD\020\003\"n\n\030OrderSta"
-  "tusResponseProto\022,\n\005order\030\001 \001(\0132\035.tradin"
-  "g.execution.OrderProto\022\r\n\005found\030\002 \001(\010\022\025\n"
-  "\rerror_message\030\003 \001(\t\"\032\n\030HealthStatusRequ"
-  "estProto\"0\n\031HealthStatusResponseProto\022\023\n"
-  "\013health_json\030\001 \001(\t\"2\n\027CancelOrderRequest"
-  "Proto\022\027\n\017client_order_id\030\001 \001(\t\"U\n#Cancel"
-  "OrderByExchangeIdRequestProto\022\031\n\021exchang"
-  "e_order_id\030\001 \001(\t\022\023\n\013exchange_id\030\002 \001(\t\"H\n"
-  "\033CancelAllOrdersRequestProto\022\024\n\014trading_"
-  "pair\030\001 \001(\t\022\023\n\013exchange_id\030\002 \001(\t\"Y\n\034Cance"
-  "lAllOrdersResponseProto\0229\n\tresponses\030\001 \003"
-  "(\0132&.trading.execution.CancelResponsePro"
-  "to\"2\n\027OrderStatusRequestProto\022\027\n\017client_"
-  "order_id\030\001 \001(\t\"\032\n\030ActiveOrdersRequestPro"
-  "to\"J\n\031ActiveOrdersResponseProto\022-\n\006order"
-  "s\030\001 \003(\0132\035.trading.execution.OrderProto*\224"
-  "\001\n\017OrderStateProto\022\013\n\007CREATED\020\000\022\013\n\007PENDI"
-  "NG\020\001\022\022\n\016PENDING_CANCEL\020\002\022\010\n\004OPEN\020\003\022\024\n\020PA"
-  "RTIALLY_FILLED\020\004\022\n\n\006FILLED\020\005\022\014\n\010CANCELED"
-  "\020\006\022\014\n\010REJECTED\020\007\022\013\n\007EXPIRED\020\0102\364\005\n\020Execut"
-  "ionService\022a\n\rExecuteSignal\022%.trading.ex"
-  "ecution.TradingSignalProto\032).trading.exe"
-  "cution.ExecutionResponseProto\022V\n\nPlaceOr"
-  "der\022\035.trading.execution.OrderProto\032).tra"
-  "ding.execution.ExecutionResponseProto\022a\n"
-  "\013CancelOrder\022*.trading.execution.CancelO"
-  "rderRequestProto\032&.trading.execution.Can"
-  "celResponseProto\022{\n\030CancelAllOrdersForSy"
-  "mbol\022..trading.execution.CancelAllOrders"
-  "RequestProto\032/.trading.execution.CancelA"
-  "llOrdersResponseProto\022i\n\016GetOrderStatus\022"
-  "*.trading.execution.OrderStatusRequestPr"
-  "oto\032+.trading.execution.OrderStatusRespo"
-  "nseProto\022l\n\017GetActiveOrders\022+.trading.ex"
-  "ecution.ActiveOrdersRequestProto\032,.tradi"
-  "ng.execution.ActiveOrdersResponseProto\022l"
-  "\n\017GetHealthStatus\022+.trading.execution.He"
-  "althStatusRequestProto\032,.trading.executi"
-  "on.HealthStatusResponseProtob\006proto3"
+  "\n\027execution_service.proto\022\026trading.execu"
+  "tion.grpc\"\240\003\n\022TradingSignalProto\022\021\n\tsign"
+  "al_id\030\001 \001(\t\022\024\n\014trading_pair\030\002 \001(\t\022G\n\tdir"
+  "ection\030\003 \001(\01624.trading.execution.grpc.Tr"
+  "adingSignalProto.OrderSide\022\020\n\010strength\030\004"
+  " \001(\001\022\023\n\013target_size\030\005 \001(\001\022\025\n\rsignal_ttl_"
+  "ms\030\006 \001(\003\022\023\n\013strategy_id\030\007 \001(\t\022\030\n\020strateg"
+  "y_version\030\010 \001(\t\022U\n\016signal_metrics\030\t \003(\0132"
+  "=.trading.execution.grpc.TradingSignalPr"
+  "oto.SignalMetricsEntry\0324\n\022SignalMetricsE"
+  "ntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\001:\0028\001\"\036\n\t"
+  "OrderSide\022\007\n\003BUY\020\000\022\010\n\004SELL\020\001\"\235\001\n\026Executi"
+  "onResponseProto\022\027\n\017client_order_id\030\001 \001(\t"
+  "\022\031\n\021exchange_order_id\030\002 \001(\t\022\017\n\007success\030\003"
+  " \001(\010\022\025\n\rerror_message\030\004 \001(\t\022\021\n\ttimestamp"
+  "\030\005 \001(\003\022\024\n\014order_status\030\006 \001(\t\"\204\001\n\023CancelR"
+  "esponseProto\022\027\n\017client_order_id\030\001 \001(\t\022\031\n"
+  "\021exchange_order_id\030\002 \001(\t\022\017\n\007success\030\003 \001("
+  "\010\022\025\n\rerror_message\030\004 \001(\t\022\021\n\ttimestamp\030\005 "
+  "\001(\003\"\205\001\n\tFillProto\022\017\n\007fill_id\030\001 \001(\t\022\020\n\010or"
+  "der_id\030\002 \001(\t\022\020\n\010quantity\030\003 \001(\001\022\r\n\005price\030"
+  "\004 \001(\001\022\013\n\003fee\030\005 \001(\001\022\024\n\014fee_currency\030\006 \001(\t"
+  "\022\021\n\ttimestamp\030\007 \001(\003\"\313\007\n\nOrderProto\022\020\n\010or"
+  "der_id\030\001 \001(\t\022\027\n\017client_order_id\030\002 \001(\t\022\023\n"
+  "\013exchange_id\030\003 \001(\t\022\031\n\021exchange_order_id\030"
+  "\004 \001(\t\022\024\n\014trading_pair\030\005 \001(\t\022:\n\004side\030\006 \001("
+  "\0162,.trading.execution.grpc.OrderProto.Or"
+  "derSide\022:\n\004type\030\007 \001(\0162,.trading.executio"
+  "n.grpc.OrderProto.OrderType\022\020\n\010quantity\030"
+  "\010 \001(\001\022\r\n\005price\030\t \001(\001\022\022\n\nstop_price\030\n \001(\001"
+  "\022E\n\rtime_in_force\030\013 \001(\0162..trading.execut"
+  "ion.grpc.OrderProto.TimeInForce\0226\n\005state"
+  "\030\014 \001(\0162\'.trading.execution.grpc.OrderSta"
+  "teProto\022\023\n\013strategy_id\030\r \001(\t\022\021\n\tsignal_i"
+  "d\030\016 \001(\t\022\022\n\ncreated_at\030\017 \001(\003\022\022\n\nupdated_a"
+  "t\030\020 \001(\003\0220\n\005fills\030\021 \003(\0132!.trading.executi"
+  "on.grpc.FillProto\022\027\n\017filled_quantity\030\022 \001"
+  "(\001\022\032\n\022average_fill_price\030\023 \001(\001\022I\n\014extra_"
+  "params\030\024 \003(\01323.trading.execution.grpc.Or"
+  "derProto.ExtraParamsEntry\0322\n\020ExtraParams"
+  "Entry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\"\036\n"
+  "\tOrderSide\022\007\n\003BUY\020\000\022\010\n\004SELL\020\001\"\226\001\n\tOrderT"
+  "ype\022\n\n\006MARKET\020\000\022\t\n\005LIMIT\020\001\022\010\n\004STOP\020\002\022\016\n\n"
+  "STOP_LIMIT\020\003\022\013\n\007ICEBERG\020\004\022\021\n\rTRAILING_ST"
+  "OP\020\005\022\020\n\014FILL_OR_KILL\020\006\022\027\n\023IMMEDIATE_OR_C"
+  "ANCEL\020\007\022\r\n\tPOST_ONLY\020\010\"1\n\013TimeInForce\022\007\n"
+  "\003GTC\020\000\022\007\n\003IOC\020\001\022\007\n\003FOK\020\002\022\007\n\003GTD\020\003\"s\n\030Ord"
+  "erStatusResponseProto\0221\n\005order\030\001 \001(\0132\".t"
+  "rading.execution.grpc.OrderProto\022\r\n\005foun"
+  "d\030\002 \001(\010\022\025\n\rerror_message\030\003 \001(\t\"\032\n\030Health"
+  "StatusRequestProto\"0\n\031HealthStatusRespon"
+  "seProto\022\023\n\013health_json\030\001 \001(\t\"2\n\027CancelOr"
+  "derRequestProto\022\027\n\017client_order_id\030\001 \001(\t"
+  "\"U\n#CancelOrderByExchangeIdRequestProto\022"
+  "\031\n\021exchange_order_id\030\001 \001(\t\022\023\n\013exchange_i"
+  "d\030\002 \001(\t\"H\n\033CancelAllOrdersRequestProto\022\024"
+  "\n\014trading_pair\030\001 \001(\t\022\023\n\013exchange_id\030\002 \001("
+  "\t\"^\n\034CancelAllOrdersResponseProto\022>\n\tres"
+  "ponses\030\001 \003(\0132+.trading.execution.grpc.Ca"
+  "ncelResponseProto\"2\n\027OrderStatusRequestP"
+  "roto\022\027\n\017client_order_id\030\001 \001(\t\"\032\n\030ActiveO"
+  "rdersRequestProto\"O\n\031ActiveOrdersRespons"
+  "eProto\0222\n\006orders\030\001 \003(\0132\".trading.executi"
+  "on.grpc.OrderProto*\224\001\n\017OrderStateProto\022\013"
+  "\n\007CREATED\020\000\022\013\n\007PENDING\020\001\022\022\n\016PENDING_CANC"
+  "EL\020\002\022\010\n\004OPEN\020\003\022\024\n\020PARTIALLY_FILLED\020\004\022\n\n\006"
+  "FILLED\020\005\022\014\n\010CANCELED\020\006\022\014\n\010REJECTED\020\007\022\013\n\007"
+  "EXPIRED\020\0102\273\006\n\020ExecutionService\022k\n\rExecut"
+  "eSignal\022*.trading.execution.grpc.Trading"
+  "SignalProto\032..trading.execution.grpc.Exe"
+  "cutionResponseProto\022`\n\nPlaceOrder\022\".trad"
+  "ing.execution.grpc.OrderProto\032..trading."
+  "execution.grpc.ExecutionResponseProto\022k\n"
+  "\013CancelOrder\022/.trading.execution.grpc.Ca"
+  "ncelOrderRequestProto\032+.trading.executio"
+  "n.grpc.CancelResponseProto\022\205\001\n\030CancelAll"
+  "OrdersForSymbol\0223.trading.execution.grpc"
+  ".CancelAllOrdersRequestProto\0324.trading.e"
+  "xecution.grpc.CancelAllOrdersResponsePro"
+  "to\022s\n\016GetOrderStatus\022/.trading.execution"
+  ".grpc.OrderStatusRequestProto\0320.trading."
+  "execution.grpc.OrderStatusResponseProto\022"
+  "v\n\017GetActiveOrders\0220.trading.execution.g"
+  "rpc.ActiveOrdersRequestProto\0321.trading.e"
+  "xecution.grpc.ActiveOrdersResponseProto\022"
+  "v\n\017GetHealthStatus\0220.trading.execution.g"
+  "rpc.HealthStatusRequestProto\0321.trading.e"
+  "xecution.grpc.HealthStatusResponseProtob"
+  "\006proto3"
   ;
 static ::_pbi::once_flag descriptor_table_execution_5fservice_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_execution_5fservice_2eproto = {
-    false, false, 3396, descriptor_table_protodef_execution_5fservice_2eproto,
+    false, false, 3527, descriptor_table_protodef_execution_5fservice_2eproto,
     "execution_service.proto",
     &descriptor_table_execution_5fservice_2eproto_once, nullptr, 0, 17,
     schemas, file_default_instances, TableStruct_execution_5fservice_2eproto::offsets,
@@ -602,6 +608,7 @@ PROTOBUF_ATTRIBUTE_WEAK const ::_pbi::DescriptorTable* descriptor_table_executio
 PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_execution_5fservice_2eproto(&descriptor_table_execution_5fservice_2eproto);
 namespace trading {
 namespace execution {
+namespace grpc {
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* TradingSignalProto_OrderSide_descriptor() {
   ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_execution_5fservice_2eproto);
   return file_level_enum_descriptors_execution_5fservice_2eproto[0];
@@ -753,7 +760,7 @@ TradingSignalProto::TradingSignalProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
   if (arena != nullptr && !is_message_owned) {
     arena->OwnCustomDestructor(this, &TradingSignalProto::ArenaDtor);
   }
-  // @@protoc_insertion_point(arena_constructor:trading.execution.TradingSignalProto)
+  // @@protoc_insertion_point(arena_constructor:trading.execution.grpc.TradingSignalProto)
 }
 TradingSignalProto::TradingSignalProto(const TradingSignalProto& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -807,7 +814,7 @@ TradingSignalProto::TradingSignalProto(const TradingSignalProto& from)
   ::memcpy(&_impl_.strength_, &from._impl_.strength_,
     static_cast<size_t>(reinterpret_cast<char*>(&_impl_.direction_) -
     reinterpret_cast<char*>(&_impl_.strength_)) + sizeof(_impl_.direction_));
-  // @@protoc_insertion_point(copy_constructor:trading.execution.TradingSignalProto)
+  // @@protoc_insertion_point(copy_constructor:trading.execution.grpc.TradingSignalProto)
 }
 
 inline void TradingSignalProto::SharedCtor(
@@ -845,7 +852,7 @@ inline void TradingSignalProto::SharedCtor(
 }
 
 TradingSignalProto::~TradingSignalProto() {
-  // @@protoc_insertion_point(destructor:trading.execution.TradingSignalProto)
+  // @@protoc_insertion_point(destructor:trading.execution.grpc.TradingSignalProto)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     ArenaDtor(this);
@@ -873,7 +880,7 @@ void TradingSignalProto::SetCachedSize(int size) const {
 }
 
 void TradingSignalProto::Clear() {
-// @@protoc_insertion_point(message_clear_start:trading.execution.TradingSignalProto)
+// @@protoc_insertion_point(message_clear_start:trading.execution.grpc.TradingSignalProto)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -901,7 +908,7 @@ const char* TradingSignalProto::_InternalParse(const char* ptr, ::_pbi::ParseCon
           auto str = _internal_mutable_signal_id();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.TradingSignalProto.signal_id"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.TradingSignalProto.signal_id"));
         } else
           goto handle_unusual;
         continue;
@@ -911,16 +918,16 @@ const char* TradingSignalProto::_InternalParse(const char* ptr, ::_pbi::ParseCon
           auto str = _internal_mutable_trading_pair();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.TradingSignalProto.trading_pair"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.TradingSignalProto.trading_pair"));
         } else
           goto handle_unusual;
         continue;
-      // .trading.execution.TradingSignalProto.OrderSide direction = 3;
+      // .trading.execution.grpc.TradingSignalProto.OrderSide direction = 3;
       case 3:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 24)) {
           uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
-          _internal_set_direction(static_cast<::trading::execution::TradingSignalProto_OrderSide>(val));
+          _internal_set_direction(static_cast<::trading::execution::grpc::TradingSignalProto_OrderSide>(val));
         } else
           goto handle_unusual;
         continue;
@@ -954,7 +961,7 @@ const char* TradingSignalProto::_InternalParse(const char* ptr, ::_pbi::ParseCon
           auto str = _internal_mutable_strategy_id();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.TradingSignalProto.strategy_id"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.TradingSignalProto.strategy_id"));
         } else
           goto handle_unusual;
         continue;
@@ -964,7 +971,7 @@ const char* TradingSignalProto::_InternalParse(const char* ptr, ::_pbi::ParseCon
           auto str = _internal_mutable_strategy_version();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.TradingSignalProto.strategy_version"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.TradingSignalProto.strategy_version"));
         } else
           goto handle_unusual;
         continue;
@@ -1006,7 +1013,7 @@ failure:
 
 uint8_t* TradingSignalProto::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.TradingSignalProto)
+  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.grpc.TradingSignalProto)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -1015,7 +1022,7 @@ uint8_t* TradingSignalProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_signal_id().data(), static_cast<int>(this->_internal_signal_id().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.TradingSignalProto.signal_id");
+      "trading.execution.grpc.TradingSignalProto.signal_id");
     target = stream->WriteStringMaybeAliased(
         1, this->_internal_signal_id(), target);
   }
@@ -1025,12 +1032,12 @@ uint8_t* TradingSignalProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_trading_pair().data(), static_cast<int>(this->_internal_trading_pair().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.TradingSignalProto.trading_pair");
+      "trading.execution.grpc.TradingSignalProto.trading_pair");
     target = stream->WriteStringMaybeAliased(
         2, this->_internal_trading_pair(), target);
   }
 
-  // .trading.execution.TradingSignalProto.OrderSide direction = 3;
+  // .trading.execution.grpc.TradingSignalProto.OrderSide direction = 3;
   if (this->_internal_direction() != 0) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteEnumToArray(
@@ -1068,7 +1075,7 @@ uint8_t* TradingSignalProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_strategy_id().data(), static_cast<int>(this->_internal_strategy_id().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.TradingSignalProto.strategy_id");
+      "trading.execution.grpc.TradingSignalProto.strategy_id");
     target = stream->WriteStringMaybeAliased(
         7, this->_internal_strategy_id(), target);
   }
@@ -1078,7 +1085,7 @@ uint8_t* TradingSignalProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_strategy_version().data(), static_cast<int>(this->_internal_strategy_version().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.TradingSignalProto.strategy_version");
+      "trading.execution.grpc.TradingSignalProto.strategy_version");
     target = stream->WriteStringMaybeAliased(
         8, this->_internal_strategy_version(), target);
   }
@@ -1093,7 +1100,7 @@ uint8_t* TradingSignalProto::_InternalSerialize(
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
         entry.first.data(), static_cast<int>(entry.first.length()),
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-        "trading.execution.TradingSignalProto.SignalMetricsEntry.key");
+        "trading.execution.grpc.TradingSignalProto.SignalMetricsEntry.key");
     };
 
     if (stream->IsSerializationDeterministic() && map_field.size() > 1) {
@@ -1113,12 +1120,12 @@ uint8_t* TradingSignalProto::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.TradingSignalProto)
+  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.grpc.TradingSignalProto)
   return target;
 }
 
 size_t TradingSignalProto::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:trading.execution.TradingSignalProto)
+// @@protoc_insertion_point(message_byte_size_start:trading.execution.grpc.TradingSignalProto)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -1185,7 +1192,7 @@ size_t TradingSignalProto::ByteSizeLong() const {
     total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(this->_internal_signal_ttl_ms());
   }
 
-  // .trading.execution.TradingSignalProto.OrderSide direction = 3;
+  // .trading.execution.grpc.TradingSignalProto.OrderSide direction = 3;
   if (this->_internal_direction() != 0) {
     total_size += 1 +
       ::_pbi::WireFormatLite::EnumSize(this->_internal_direction());
@@ -1204,7 +1211,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*TradingSignalProto::GetClassDa
 void TradingSignalProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<TradingSignalProto*>(&to_msg);
   auto& from = static_cast<const TradingSignalProto&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.TradingSignalProto)
+  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.grpc.TradingSignalProto)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -1246,7 +1253,7 @@ void TradingSignalProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, con
 }
 
 void TradingSignalProto::CopyFrom(const TradingSignalProto& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.TradingSignalProto)
+// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.grpc.TradingSignalProto)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -1302,7 +1309,7 @@ ExecutionResponseProto::ExecutionResponseProto(::PROTOBUF_NAMESPACE_ID::Arena* a
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:trading.execution.ExecutionResponseProto)
+  // @@protoc_insertion_point(arena_constructor:trading.execution.grpc.ExecutionResponseProto)
 }
 ExecutionResponseProto::ExecutionResponseProto(const ExecutionResponseProto& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -1352,7 +1359,7 @@ ExecutionResponseProto::ExecutionResponseProto(const ExecutionResponseProto& fro
   ::memcpy(&_impl_.timestamp_, &from._impl_.timestamp_,
     static_cast<size_t>(reinterpret_cast<char*>(&_impl_.success_) -
     reinterpret_cast<char*>(&_impl_.timestamp_)) + sizeof(_impl_.success_));
-  // @@protoc_insertion_point(copy_constructor:trading.execution.ExecutionResponseProto)
+  // @@protoc_insertion_point(copy_constructor:trading.execution.grpc.ExecutionResponseProto)
 }
 
 inline void ExecutionResponseProto::SharedCtor(
@@ -1387,7 +1394,7 @@ inline void ExecutionResponseProto::SharedCtor(
 }
 
 ExecutionResponseProto::~ExecutionResponseProto() {
-  // @@protoc_insertion_point(destructor:trading.execution.ExecutionResponseProto)
+  // @@protoc_insertion_point(destructor:trading.execution.grpc.ExecutionResponseProto)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -1408,7 +1415,7 @@ void ExecutionResponseProto::SetCachedSize(int size) const {
 }
 
 void ExecutionResponseProto::Clear() {
-// @@protoc_insertion_point(message_clear_start:trading.execution.ExecutionResponseProto)
+// @@protoc_insertion_point(message_clear_start:trading.execution.grpc.ExecutionResponseProto)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -1435,7 +1442,7 @@ const char* ExecutionResponseProto::_InternalParse(const char* ptr, ::_pbi::Pars
           auto str = _internal_mutable_client_order_id();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.ExecutionResponseProto.client_order_id"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.ExecutionResponseProto.client_order_id"));
         } else
           goto handle_unusual;
         continue;
@@ -1445,7 +1452,7 @@ const char* ExecutionResponseProto::_InternalParse(const char* ptr, ::_pbi::Pars
           auto str = _internal_mutable_exchange_order_id();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.ExecutionResponseProto.exchange_order_id"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.ExecutionResponseProto.exchange_order_id"));
         } else
           goto handle_unusual;
         continue;
@@ -1463,7 +1470,7 @@ const char* ExecutionResponseProto::_InternalParse(const char* ptr, ::_pbi::Pars
           auto str = _internal_mutable_error_message();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.ExecutionResponseProto.error_message"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.ExecutionResponseProto.error_message"));
         } else
           goto handle_unusual;
         continue;
@@ -1481,7 +1488,7 @@ const char* ExecutionResponseProto::_InternalParse(const char* ptr, ::_pbi::Pars
           auto str = _internal_mutable_order_status();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.ExecutionResponseProto.order_status"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.ExecutionResponseProto.order_status"));
         } else
           goto handle_unusual;
         continue;
@@ -1510,7 +1517,7 @@ failure:
 
 uint8_t* ExecutionResponseProto::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.ExecutionResponseProto)
+  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.grpc.ExecutionResponseProto)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -1519,7 +1526,7 @@ uint8_t* ExecutionResponseProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_client_order_id().data(), static_cast<int>(this->_internal_client_order_id().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.ExecutionResponseProto.client_order_id");
+      "trading.execution.grpc.ExecutionResponseProto.client_order_id");
     target = stream->WriteStringMaybeAliased(
         1, this->_internal_client_order_id(), target);
   }
@@ -1529,7 +1536,7 @@ uint8_t* ExecutionResponseProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_exchange_order_id().data(), static_cast<int>(this->_internal_exchange_order_id().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.ExecutionResponseProto.exchange_order_id");
+      "trading.execution.grpc.ExecutionResponseProto.exchange_order_id");
     target = stream->WriteStringMaybeAliased(
         2, this->_internal_exchange_order_id(), target);
   }
@@ -1545,7 +1552,7 @@ uint8_t* ExecutionResponseProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_error_message().data(), static_cast<int>(this->_internal_error_message().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.ExecutionResponseProto.error_message");
+      "trading.execution.grpc.ExecutionResponseProto.error_message");
     target = stream->WriteStringMaybeAliased(
         4, this->_internal_error_message(), target);
   }
@@ -1561,7 +1568,7 @@ uint8_t* ExecutionResponseProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_order_status().data(), static_cast<int>(this->_internal_order_status().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.ExecutionResponseProto.order_status");
+      "trading.execution.grpc.ExecutionResponseProto.order_status");
     target = stream->WriteStringMaybeAliased(
         6, this->_internal_order_status(), target);
   }
@@ -1570,12 +1577,12 @@ uint8_t* ExecutionResponseProto::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.ExecutionResponseProto)
+  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.grpc.ExecutionResponseProto)
   return target;
 }
 
 size_t ExecutionResponseProto::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:trading.execution.ExecutionResponseProto)
+// @@protoc_insertion_point(message_byte_size_start:trading.execution.grpc.ExecutionResponseProto)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -1633,7 +1640,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ExecutionResponseProto::GetCla
 void ExecutionResponseProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<ExecutionResponseProto*>(&to_msg);
   auto& from = static_cast<const ExecutionResponseProto&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.ExecutionResponseProto)
+  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.grpc.ExecutionResponseProto)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -1660,7 +1667,7 @@ void ExecutionResponseProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg,
 }
 
 void ExecutionResponseProto::CopyFrom(const ExecutionResponseProto& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.ExecutionResponseProto)
+// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.grpc.ExecutionResponseProto)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -1715,7 +1722,7 @@ CancelResponseProto::CancelResponseProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:trading.execution.CancelResponseProto)
+  // @@protoc_insertion_point(arena_constructor:trading.execution.grpc.CancelResponseProto)
 }
 CancelResponseProto::CancelResponseProto(const CancelResponseProto& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -1756,7 +1763,7 @@ CancelResponseProto::CancelResponseProto(const CancelResponseProto& from)
   ::memcpy(&_impl_.timestamp_, &from._impl_.timestamp_,
     static_cast<size_t>(reinterpret_cast<char*>(&_impl_.success_) -
     reinterpret_cast<char*>(&_impl_.timestamp_)) + sizeof(_impl_.success_));
-  // @@protoc_insertion_point(copy_constructor:trading.execution.CancelResponseProto)
+  // @@protoc_insertion_point(copy_constructor:trading.execution.grpc.CancelResponseProto)
 }
 
 inline void CancelResponseProto::SharedCtor(
@@ -1786,7 +1793,7 @@ inline void CancelResponseProto::SharedCtor(
 }
 
 CancelResponseProto::~CancelResponseProto() {
-  // @@protoc_insertion_point(destructor:trading.execution.CancelResponseProto)
+  // @@protoc_insertion_point(destructor:trading.execution.grpc.CancelResponseProto)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -1806,7 +1813,7 @@ void CancelResponseProto::SetCachedSize(int size) const {
 }
 
 void CancelResponseProto::Clear() {
-// @@protoc_insertion_point(message_clear_start:trading.execution.CancelResponseProto)
+// @@protoc_insertion_point(message_clear_start:trading.execution.grpc.CancelResponseProto)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -1832,7 +1839,7 @@ const char* CancelResponseProto::_InternalParse(const char* ptr, ::_pbi::ParseCo
           auto str = _internal_mutable_client_order_id();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.CancelResponseProto.client_order_id"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.CancelResponseProto.client_order_id"));
         } else
           goto handle_unusual;
         continue;
@@ -1842,7 +1849,7 @@ const char* CancelResponseProto::_InternalParse(const char* ptr, ::_pbi::ParseCo
           auto str = _internal_mutable_exchange_order_id();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.CancelResponseProto.exchange_order_id"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.CancelResponseProto.exchange_order_id"));
         } else
           goto handle_unusual;
         continue;
@@ -1860,7 +1867,7 @@ const char* CancelResponseProto::_InternalParse(const char* ptr, ::_pbi::ParseCo
           auto str = _internal_mutable_error_message();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.CancelResponseProto.error_message"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.CancelResponseProto.error_message"));
         } else
           goto handle_unusual;
         continue;
@@ -1897,7 +1904,7 @@ failure:
 
 uint8_t* CancelResponseProto::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.CancelResponseProto)
+  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.grpc.CancelResponseProto)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -1906,7 +1913,7 @@ uint8_t* CancelResponseProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_client_order_id().data(), static_cast<int>(this->_internal_client_order_id().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.CancelResponseProto.client_order_id");
+      "trading.execution.grpc.CancelResponseProto.client_order_id");
     target = stream->WriteStringMaybeAliased(
         1, this->_internal_client_order_id(), target);
   }
@@ -1916,7 +1923,7 @@ uint8_t* CancelResponseProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_exchange_order_id().data(), static_cast<int>(this->_internal_exchange_order_id().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.CancelResponseProto.exchange_order_id");
+      "trading.execution.grpc.CancelResponseProto.exchange_order_id");
     target = stream->WriteStringMaybeAliased(
         2, this->_internal_exchange_order_id(), target);
   }
@@ -1932,7 +1939,7 @@ uint8_t* CancelResponseProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_error_message().data(), static_cast<int>(this->_internal_error_message().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.CancelResponseProto.error_message");
+      "trading.execution.grpc.CancelResponseProto.error_message");
     target = stream->WriteStringMaybeAliased(
         4, this->_internal_error_message(), target);
   }
@@ -1947,12 +1954,12 @@ uint8_t* CancelResponseProto::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.CancelResponseProto)
+  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.grpc.CancelResponseProto)
   return target;
 }
 
 size_t CancelResponseProto::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:trading.execution.CancelResponseProto)
+// @@protoc_insertion_point(message_byte_size_start:trading.execution.grpc.CancelResponseProto)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -2003,7 +2010,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*CancelResponseProto::GetClassD
 void CancelResponseProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<CancelResponseProto*>(&to_msg);
   auto& from = static_cast<const CancelResponseProto&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.CancelResponseProto)
+  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.grpc.CancelResponseProto)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -2027,7 +2034,7 @@ void CancelResponseProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, co
 }
 
 void CancelResponseProto::CopyFrom(const CancelResponseProto& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.CancelResponseProto)
+// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.grpc.CancelResponseProto)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -2078,7 +2085,7 @@ FillProto::FillProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:trading.execution.FillProto)
+  // @@protoc_insertion_point(arena_constructor:trading.execution.grpc.FillProto)
 }
 FillProto::FillProto(const FillProto& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -2121,7 +2128,7 @@ FillProto::FillProto(const FillProto& from)
   ::memcpy(&_impl_.quantity_, &from._impl_.quantity_,
     static_cast<size_t>(reinterpret_cast<char*>(&_impl_.timestamp_) -
     reinterpret_cast<char*>(&_impl_.quantity_)) + sizeof(_impl_.timestamp_));
-  // @@protoc_insertion_point(copy_constructor:trading.execution.FillProto)
+  // @@protoc_insertion_point(copy_constructor:trading.execution.grpc.FillProto)
 }
 
 inline void FillProto::SharedCtor(
@@ -2153,7 +2160,7 @@ inline void FillProto::SharedCtor(
 }
 
 FillProto::~FillProto() {
-  // @@protoc_insertion_point(destructor:trading.execution.FillProto)
+  // @@protoc_insertion_point(destructor:trading.execution.grpc.FillProto)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -2173,7 +2180,7 @@ void FillProto::SetCachedSize(int size) const {
 }
 
 void FillProto::Clear() {
-// @@protoc_insertion_point(message_clear_start:trading.execution.FillProto)
+// @@protoc_insertion_point(message_clear_start:trading.execution.grpc.FillProto)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -2199,7 +2206,7 @@ const char* FillProto::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx
           auto str = _internal_mutable_fill_id();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.FillProto.fill_id"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.FillProto.fill_id"));
         } else
           goto handle_unusual;
         continue;
@@ -2209,7 +2216,7 @@ const char* FillProto::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx
           auto str = _internal_mutable_order_id();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.FillProto.order_id"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.FillProto.order_id"));
         } else
           goto handle_unusual;
         continue;
@@ -2243,7 +2250,7 @@ const char* FillProto::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx
           auto str = _internal_mutable_fee_currency();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.FillProto.fee_currency"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.FillProto.fee_currency"));
         } else
           goto handle_unusual;
         continue;
@@ -2280,7 +2287,7 @@ failure:
 
 uint8_t* FillProto::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.FillProto)
+  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.grpc.FillProto)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -2289,7 +2296,7 @@ uint8_t* FillProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_fill_id().data(), static_cast<int>(this->_internal_fill_id().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.FillProto.fill_id");
+      "trading.execution.grpc.FillProto.fill_id");
     target = stream->WriteStringMaybeAliased(
         1, this->_internal_fill_id(), target);
   }
@@ -2299,7 +2306,7 @@ uint8_t* FillProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_order_id().data(), static_cast<int>(this->_internal_order_id().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.FillProto.order_id");
+      "trading.execution.grpc.FillProto.order_id");
     target = stream->WriteStringMaybeAliased(
         2, this->_internal_order_id(), target);
   }
@@ -2339,7 +2346,7 @@ uint8_t* FillProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_fee_currency().data(), static_cast<int>(this->_internal_fee_currency().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.FillProto.fee_currency");
+      "trading.execution.grpc.FillProto.fee_currency");
     target = stream->WriteStringMaybeAliased(
         6, this->_internal_fee_currency(), target);
   }
@@ -2354,12 +2361,12 @@ uint8_t* FillProto::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.FillProto)
+  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.grpc.FillProto)
   return target;
 }
 
 size_t FillProto::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:trading.execution.FillProto)
+// @@protoc_insertion_point(message_byte_size_start:trading.execution.grpc.FillProto)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -2432,7 +2439,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*FillProto::GetClassData() cons
 void FillProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<FillProto*>(&to_msg);
   auto& from = static_cast<const FillProto&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.FillProto)
+  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.grpc.FillProto)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -2474,7 +2481,7 @@ void FillProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROT
 }
 
 void FillProto::CopyFrom(const FillProto& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.FillProto)
+// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.grpc.FillProto)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -2542,7 +2549,7 @@ OrderProto::OrderProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
   if (arena != nullptr && !is_message_owned) {
     arena->OwnCustomDestructor(this, &OrderProto::ArenaDtor);
   }
-  // @@protoc_insertion_point(arena_constructor:trading.execution.OrderProto)
+  // @@protoc_insertion_point(arena_constructor:trading.execution.grpc.OrderProto)
 }
 OrderProto::OrderProto(const OrderProto& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -2631,7 +2638,7 @@ OrderProto::OrderProto(const OrderProto& from)
   ::memcpy(&_impl_.side_, &from._impl_.side_,
     static_cast<size_t>(reinterpret_cast<char*>(&_impl_.average_fill_price_) -
     reinterpret_cast<char*>(&_impl_.side_)) + sizeof(_impl_.average_fill_price_));
-  // @@protoc_insertion_point(copy_constructor:trading.execution.OrderProto)
+  // @@protoc_insertion_point(copy_constructor:trading.execution.grpc.OrderProto)
 }
 
 inline void OrderProto::SharedCtor(
@@ -2692,7 +2699,7 @@ inline void OrderProto::SharedCtor(
 }
 
 OrderProto::~OrderProto() {
-  // @@protoc_insertion_point(destructor:trading.execution.OrderProto)
+  // @@protoc_insertion_point(destructor:trading.execution.grpc.OrderProto)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     ArenaDtor(this);
@@ -2724,7 +2731,7 @@ void OrderProto::SetCachedSize(int size) const {
 }
 
 void OrderProto::Clear() {
-// @@protoc_insertion_point(message_clear_start:trading.execution.OrderProto)
+// @@protoc_insertion_point(message_clear_start:trading.execution.grpc.OrderProto)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -2756,7 +2763,7 @@ const char* OrderProto::_InternalParse(const char* ptr, ::_pbi::ParseContext* ct
           auto str = _internal_mutable_order_id();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.OrderProto.order_id"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.OrderProto.order_id"));
         } else
           goto handle_unusual;
         continue;
@@ -2766,7 +2773,7 @@ const char* OrderProto::_InternalParse(const char* ptr, ::_pbi::ParseContext* ct
           auto str = _internal_mutable_client_order_id();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.OrderProto.client_order_id"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.OrderProto.client_order_id"));
         } else
           goto handle_unusual;
         continue;
@@ -2776,7 +2783,7 @@ const char* OrderProto::_InternalParse(const char* ptr, ::_pbi::ParseContext* ct
           auto str = _internal_mutable_exchange_id();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.OrderProto.exchange_id"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.OrderProto.exchange_id"));
         } else
           goto handle_unusual;
         continue;
@@ -2786,7 +2793,7 @@ const char* OrderProto::_InternalParse(const char* ptr, ::_pbi::ParseContext* ct
           auto str = _internal_mutable_exchange_order_id();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.OrderProto.exchange_order_id"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.OrderProto.exchange_order_id"));
         } else
           goto handle_unusual;
         continue;
@@ -2796,25 +2803,25 @@ const char* OrderProto::_InternalParse(const char* ptr, ::_pbi::ParseContext* ct
           auto str = _internal_mutable_trading_pair();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.OrderProto.trading_pair"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.OrderProto.trading_pair"));
         } else
           goto handle_unusual;
         continue;
-      // .trading.execution.OrderProto.OrderSide side = 6;
+      // .trading.execution.grpc.OrderProto.OrderSide side = 6;
       case 6:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 48)) {
           uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
-          _internal_set_side(static_cast<::trading::execution::OrderProto_OrderSide>(val));
+          _internal_set_side(static_cast<::trading::execution::grpc::OrderProto_OrderSide>(val));
         } else
           goto handle_unusual;
         continue;
-      // .trading.execution.OrderProto.OrderType type = 7;
+      // .trading.execution.grpc.OrderProto.OrderType type = 7;
       case 7:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 56)) {
           uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
-          _internal_set_type(static_cast<::trading::execution::OrderProto_OrderType>(val));
+          _internal_set_type(static_cast<::trading::execution::grpc::OrderProto_OrderType>(val));
         } else
           goto handle_unusual;
         continue;
@@ -2842,21 +2849,21 @@ const char* OrderProto::_InternalParse(const char* ptr, ::_pbi::ParseContext* ct
         } else
           goto handle_unusual;
         continue;
-      // .trading.execution.OrderProto.TimeInForce time_in_force = 11;
+      // .trading.execution.grpc.OrderProto.TimeInForce time_in_force = 11;
       case 11:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 88)) {
           uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
-          _internal_set_time_in_force(static_cast<::trading::execution::OrderProto_TimeInForce>(val));
+          _internal_set_time_in_force(static_cast<::trading::execution::grpc::OrderProto_TimeInForce>(val));
         } else
           goto handle_unusual;
         continue;
-      // .trading.execution.OrderStateProto state = 12;
+      // .trading.execution.grpc.OrderStateProto state = 12;
       case 12:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 96)) {
           uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
-          _internal_set_state(static_cast<::trading::execution::OrderStateProto>(val));
+          _internal_set_state(static_cast<::trading::execution::grpc::OrderStateProto>(val));
         } else
           goto handle_unusual;
         continue;
@@ -2866,7 +2873,7 @@ const char* OrderProto::_InternalParse(const char* ptr, ::_pbi::ParseContext* ct
           auto str = _internal_mutable_strategy_id();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.OrderProto.strategy_id"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.OrderProto.strategy_id"));
         } else
           goto handle_unusual;
         continue;
@@ -2876,7 +2883,7 @@ const char* OrderProto::_InternalParse(const char* ptr, ::_pbi::ParseContext* ct
           auto str = _internal_mutable_signal_id();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.OrderProto.signal_id"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.OrderProto.signal_id"));
         } else
           goto handle_unusual;
         continue;
@@ -2896,7 +2903,7 @@ const char* OrderProto::_InternalParse(const char* ptr, ::_pbi::ParseContext* ct
         } else
           goto handle_unusual;
         continue;
-      // repeated .trading.execution.FillProto fills = 17;
+      // repeated .trading.execution.grpc.FillProto fills = 17;
       case 17:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 138)) {
           ptr -= 2;
@@ -2963,7 +2970,7 @@ failure:
 
 uint8_t* OrderProto::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.OrderProto)
+  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.grpc.OrderProto)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -2972,7 +2979,7 @@ uint8_t* OrderProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_order_id().data(), static_cast<int>(this->_internal_order_id().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.OrderProto.order_id");
+      "trading.execution.grpc.OrderProto.order_id");
     target = stream->WriteStringMaybeAliased(
         1, this->_internal_order_id(), target);
   }
@@ -2982,7 +2989,7 @@ uint8_t* OrderProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_client_order_id().data(), static_cast<int>(this->_internal_client_order_id().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.OrderProto.client_order_id");
+      "trading.execution.grpc.OrderProto.client_order_id");
     target = stream->WriteStringMaybeAliased(
         2, this->_internal_client_order_id(), target);
   }
@@ -2992,7 +2999,7 @@ uint8_t* OrderProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_exchange_id().data(), static_cast<int>(this->_internal_exchange_id().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.OrderProto.exchange_id");
+      "trading.execution.grpc.OrderProto.exchange_id");
     target = stream->WriteStringMaybeAliased(
         3, this->_internal_exchange_id(), target);
   }
@@ -3002,7 +3009,7 @@ uint8_t* OrderProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_exchange_order_id().data(), static_cast<int>(this->_internal_exchange_order_id().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.OrderProto.exchange_order_id");
+      "trading.execution.grpc.OrderProto.exchange_order_id");
     target = stream->WriteStringMaybeAliased(
         4, this->_internal_exchange_order_id(), target);
   }
@@ -3012,19 +3019,19 @@ uint8_t* OrderProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_trading_pair().data(), static_cast<int>(this->_internal_trading_pair().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.OrderProto.trading_pair");
+      "trading.execution.grpc.OrderProto.trading_pair");
     target = stream->WriteStringMaybeAliased(
         5, this->_internal_trading_pair(), target);
   }
 
-  // .trading.execution.OrderProto.OrderSide side = 6;
+  // .trading.execution.grpc.OrderProto.OrderSide side = 6;
   if (this->_internal_side() != 0) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteEnumToArray(
       6, this->_internal_side(), target);
   }
 
-  // .trading.execution.OrderProto.OrderType type = 7;
+  // .trading.execution.grpc.OrderProto.OrderType type = 7;
   if (this->_internal_type() != 0) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteEnumToArray(
@@ -3061,14 +3068,14 @@ uint8_t* OrderProto::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteDoubleToArray(10, this->_internal_stop_price(), target);
   }
 
-  // .trading.execution.OrderProto.TimeInForce time_in_force = 11;
+  // .trading.execution.grpc.OrderProto.TimeInForce time_in_force = 11;
   if (this->_internal_time_in_force() != 0) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteEnumToArray(
       11, this->_internal_time_in_force(), target);
   }
 
-  // .trading.execution.OrderStateProto state = 12;
+  // .trading.execution.grpc.OrderStateProto state = 12;
   if (this->_internal_state() != 0) {
     target = stream->EnsureSpace(target);
     target = ::_pbi::WireFormatLite::WriteEnumToArray(
@@ -3080,7 +3087,7 @@ uint8_t* OrderProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_strategy_id().data(), static_cast<int>(this->_internal_strategy_id().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.OrderProto.strategy_id");
+      "trading.execution.grpc.OrderProto.strategy_id");
     target = stream->WriteStringMaybeAliased(
         13, this->_internal_strategy_id(), target);
   }
@@ -3090,7 +3097,7 @@ uint8_t* OrderProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_signal_id().data(), static_cast<int>(this->_internal_signal_id().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.OrderProto.signal_id");
+      "trading.execution.grpc.OrderProto.signal_id");
     target = stream->WriteStringMaybeAliased(
         14, this->_internal_signal_id(), target);
   }
@@ -3107,7 +3114,7 @@ uint8_t* OrderProto::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteInt64ToArray(16, this->_internal_updated_at(), target);
   }
 
-  // repeated .trading.execution.FillProto fills = 17;
+  // repeated .trading.execution.grpc.FillProto fills = 17;
   for (unsigned i = 0,
       n = static_cast<unsigned>(this->_internal_fills_size()); i < n; i++) {
     const auto& repfield = this->_internal_fills(i);
@@ -3145,11 +3152,11 @@ uint8_t* OrderProto::_InternalSerialize(
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
         entry.first.data(), static_cast<int>(entry.first.length()),
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-        "trading.execution.OrderProto.ExtraParamsEntry.key");
+        "trading.execution.grpc.OrderProto.ExtraParamsEntry.key");
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
         entry.second.data(), static_cast<int>(entry.second.length()),
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-        "trading.execution.OrderProto.ExtraParamsEntry.value");
+        "trading.execution.grpc.OrderProto.ExtraParamsEntry.value");
     };
 
     if (stream->IsSerializationDeterministic() && map_field.size() > 1) {
@@ -3169,19 +3176,19 @@ uint8_t* OrderProto::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.OrderProto)
+  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.grpc.OrderProto)
   return target;
 }
 
 size_t OrderProto::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:trading.execution.OrderProto)
+// @@protoc_insertion_point(message_byte_size_start:trading.execution.grpc.OrderProto)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // repeated .trading.execution.FillProto fills = 17;
+  // repeated .trading.execution.grpc.FillProto fills = 17;
   total_size += 2UL * this->_internal_fills_size();
   for (const auto& msg : this->_impl_.fills_) {
     total_size +=
@@ -3246,13 +3253,13 @@ size_t OrderProto::ByteSizeLong() const {
         this->_internal_signal_id());
   }
 
-  // .trading.execution.OrderProto.OrderSide side = 6;
+  // .trading.execution.grpc.OrderProto.OrderSide side = 6;
   if (this->_internal_side() != 0) {
     total_size += 1 +
       ::_pbi::WireFormatLite::EnumSize(this->_internal_side());
   }
 
-  // .trading.execution.OrderProto.OrderType type = 7;
+  // .trading.execution.grpc.OrderProto.OrderType type = 7;
   if (this->_internal_type() != 0) {
     total_size += 1 +
       ::_pbi::WireFormatLite::EnumSize(this->_internal_type());
@@ -3285,13 +3292,13 @@ size_t OrderProto::ByteSizeLong() const {
     total_size += 1 + 8;
   }
 
-  // .trading.execution.OrderProto.TimeInForce time_in_force = 11;
+  // .trading.execution.grpc.OrderProto.TimeInForce time_in_force = 11;
   if (this->_internal_time_in_force() != 0) {
     total_size += 1 +
       ::_pbi::WireFormatLite::EnumSize(this->_internal_time_in_force());
   }
 
-  // .trading.execution.OrderStateProto state = 12;
+  // .trading.execution.grpc.OrderStateProto state = 12;
   if (this->_internal_state() != 0) {
     total_size += 1 +
       ::_pbi::WireFormatLite::EnumSize(this->_internal_state());
@@ -3340,7 +3347,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*OrderProto::GetClassData() con
 void OrderProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<OrderProto*>(&to_msg);
   auto& from = static_cast<const OrderProto&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.OrderProto)
+  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.grpc.OrderProto)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -3425,7 +3432,7 @@ void OrderProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PRO
 }
 
 void OrderProto::CopyFrom(const OrderProto& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.OrderProto)
+// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.grpc.OrderProto)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -3488,10 +3495,10 @@ void OrderProto::InternalSwap(OrderProto* other) {
 
 class OrderStatusResponseProto::_Internal {
  public:
-  static const ::trading::execution::OrderProto& order(const OrderStatusResponseProto* msg);
+  static const ::trading::execution::grpc::OrderProto& order(const OrderStatusResponseProto* msg);
 };
 
-const ::trading::execution::OrderProto&
+const ::trading::execution::grpc::OrderProto&
 OrderStatusResponseProto::_Internal::order(const OrderStatusResponseProto* msg) {
   return *msg->_impl_.order_;
 }
@@ -3499,7 +3506,7 @@ OrderStatusResponseProto::OrderStatusResponseProto(::PROTOBUF_NAMESPACE_ID::Aren
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:trading.execution.OrderStatusResponseProto)
+  // @@protoc_insertion_point(arena_constructor:trading.execution.grpc.OrderStatusResponseProto)
 }
 OrderStatusResponseProto::OrderStatusResponseProto(const OrderStatusResponseProto& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -3520,10 +3527,10 @@ OrderStatusResponseProto::OrderStatusResponseProto(const OrderStatusResponseProt
       _this->GetArenaForAllocation());
   }
   if (from._internal_has_order()) {
-    _this->_impl_.order_ = new ::trading::execution::OrderProto(*from._impl_.order_);
+    _this->_impl_.order_ = new ::trading::execution::grpc::OrderProto(*from._impl_.order_);
   }
   _this->_impl_.found_ = from._impl_.found_;
-  // @@protoc_insertion_point(copy_constructor:trading.execution.OrderStatusResponseProto)
+  // @@protoc_insertion_point(copy_constructor:trading.execution.grpc.OrderStatusResponseProto)
 }
 
 inline void OrderStatusResponseProto::SharedCtor(
@@ -3543,7 +3550,7 @@ inline void OrderStatusResponseProto::SharedCtor(
 }
 
 OrderStatusResponseProto::~OrderStatusResponseProto() {
-  // @@protoc_insertion_point(destructor:trading.execution.OrderStatusResponseProto)
+  // @@protoc_insertion_point(destructor:trading.execution.grpc.OrderStatusResponseProto)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -3562,7 +3569,7 @@ void OrderStatusResponseProto::SetCachedSize(int size) const {
 }
 
 void OrderStatusResponseProto::Clear() {
-// @@protoc_insertion_point(message_clear_start:trading.execution.OrderStatusResponseProto)
+// @@protoc_insertion_point(message_clear_start:trading.execution.grpc.OrderStatusResponseProto)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -3582,7 +3589,7 @@ const char* OrderStatusResponseProto::_InternalParse(const char* ptr, ::_pbi::Pa
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // .trading.execution.OrderProto order = 1;
+      // .trading.execution.grpc.OrderProto order = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_order(), ptr);
@@ -3604,7 +3611,7 @@ const char* OrderStatusResponseProto::_InternalParse(const char* ptr, ::_pbi::Pa
           auto str = _internal_mutable_error_message();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.OrderStatusResponseProto.error_message"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.OrderStatusResponseProto.error_message"));
         } else
           goto handle_unusual;
         continue;
@@ -3633,11 +3640,11 @@ failure:
 
 uint8_t* OrderStatusResponseProto::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.OrderStatusResponseProto)
+  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.grpc.OrderStatusResponseProto)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // .trading.execution.OrderProto order = 1;
+  // .trading.execution.grpc.OrderProto order = 1;
   if (this->_internal_has_order()) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessage(1, _Internal::order(this),
@@ -3655,7 +3662,7 @@ uint8_t* OrderStatusResponseProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_error_message().data(), static_cast<int>(this->_internal_error_message().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.OrderStatusResponseProto.error_message");
+      "trading.execution.grpc.OrderStatusResponseProto.error_message");
     target = stream->WriteStringMaybeAliased(
         3, this->_internal_error_message(), target);
   }
@@ -3664,12 +3671,12 @@ uint8_t* OrderStatusResponseProto::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.OrderStatusResponseProto)
+  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.grpc.OrderStatusResponseProto)
   return target;
 }
 
 size_t OrderStatusResponseProto::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:trading.execution.OrderStatusResponseProto)
+// @@protoc_insertion_point(message_byte_size_start:trading.execution.grpc.OrderStatusResponseProto)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -3683,7 +3690,7 @@ size_t OrderStatusResponseProto::ByteSizeLong() const {
         this->_internal_error_message());
   }
 
-  // .trading.execution.OrderProto order = 1;
+  // .trading.execution.grpc.OrderProto order = 1;
   if (this->_internal_has_order()) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
@@ -3708,7 +3715,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*OrderStatusResponseProto::GetC
 void OrderStatusResponseProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<OrderStatusResponseProto*>(&to_msg);
   auto& from = static_cast<const OrderStatusResponseProto&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.OrderStatusResponseProto)
+  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.grpc.OrderStatusResponseProto)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -3717,7 +3724,7 @@ void OrderStatusResponseProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_ms
     _this->_internal_set_error_message(from._internal_error_message());
   }
   if (from._internal_has_order()) {
-    _this->_internal_mutable_order()->::trading::execution::OrderProto::MergeFrom(
+    _this->_internal_mutable_order()->::trading::execution::grpc::OrderProto::MergeFrom(
         from._internal_order());
   }
   if (from._internal_found() != 0) {
@@ -3727,7 +3734,7 @@ void OrderStatusResponseProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_ms
 }
 
 void OrderStatusResponseProto::CopyFrom(const OrderStatusResponseProto& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.OrderStatusResponseProto)
+// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.grpc.OrderStatusResponseProto)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -3769,13 +3776,13 @@ class HealthStatusRequestProto::_Internal {
 HealthStatusRequestProto::HealthStatusRequestProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase(arena, is_message_owned) {
-  // @@protoc_insertion_point(arena_constructor:trading.execution.HealthStatusRequestProto)
+  // @@protoc_insertion_point(arena_constructor:trading.execution.grpc.HealthStatusRequestProto)
 }
 HealthStatusRequestProto::HealthStatusRequestProto(const HealthStatusRequestProto& from)
   : ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase() {
   HealthStatusRequestProto* const _this = this; (void)_this;
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  // @@protoc_insertion_point(copy_constructor:trading.execution.HealthStatusRequestProto)
+  // @@protoc_insertion_point(copy_constructor:trading.execution.grpc.HealthStatusRequestProto)
 }
 
 
@@ -3810,7 +3817,7 @@ HealthStatusResponseProto::HealthStatusResponseProto(::PROTOBUF_NAMESPACE_ID::Ar
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:trading.execution.HealthStatusResponseProto)
+  // @@protoc_insertion_point(arena_constructor:trading.execution.grpc.HealthStatusResponseProto)
 }
 HealthStatusResponseProto::HealthStatusResponseProto(const HealthStatusResponseProto& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -3828,7 +3835,7 @@ HealthStatusResponseProto::HealthStatusResponseProto(const HealthStatusResponseP
     _this->_impl_.health_json_.Set(from._internal_health_json(), 
       _this->GetArenaForAllocation());
   }
-  // @@protoc_insertion_point(copy_constructor:trading.execution.HealthStatusResponseProto)
+  // @@protoc_insertion_point(copy_constructor:trading.execution.grpc.HealthStatusResponseProto)
 }
 
 inline void HealthStatusResponseProto::SharedCtor(
@@ -3846,7 +3853,7 @@ inline void HealthStatusResponseProto::SharedCtor(
 }
 
 HealthStatusResponseProto::~HealthStatusResponseProto() {
-  // @@protoc_insertion_point(destructor:trading.execution.HealthStatusResponseProto)
+  // @@protoc_insertion_point(destructor:trading.execution.grpc.HealthStatusResponseProto)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -3864,7 +3871,7 @@ void HealthStatusResponseProto::SetCachedSize(int size) const {
 }
 
 void HealthStatusResponseProto::Clear() {
-// @@protoc_insertion_point(message_clear_start:trading.execution.HealthStatusResponseProto)
+// @@protoc_insertion_point(message_clear_start:trading.execution.grpc.HealthStatusResponseProto)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -3885,7 +3892,7 @@ const char* HealthStatusResponseProto::_InternalParse(const char* ptr, ::_pbi::P
           auto str = _internal_mutable_health_json();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.HealthStatusResponseProto.health_json"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.HealthStatusResponseProto.health_json"));
         } else
           goto handle_unusual;
         continue;
@@ -3914,7 +3921,7 @@ failure:
 
 uint8_t* HealthStatusResponseProto::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.HealthStatusResponseProto)
+  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.grpc.HealthStatusResponseProto)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -3923,7 +3930,7 @@ uint8_t* HealthStatusResponseProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_health_json().data(), static_cast<int>(this->_internal_health_json().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.HealthStatusResponseProto.health_json");
+      "trading.execution.grpc.HealthStatusResponseProto.health_json");
     target = stream->WriteStringMaybeAliased(
         1, this->_internal_health_json(), target);
   }
@@ -3932,12 +3939,12 @@ uint8_t* HealthStatusResponseProto::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.HealthStatusResponseProto)
+  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.grpc.HealthStatusResponseProto)
   return target;
 }
 
 size_t HealthStatusResponseProto::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:trading.execution.HealthStatusResponseProto)
+// @@protoc_insertion_point(message_byte_size_start:trading.execution.grpc.HealthStatusResponseProto)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -3964,7 +3971,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*HealthStatusResponseProto::Get
 void HealthStatusResponseProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<HealthStatusResponseProto*>(&to_msg);
   auto& from = static_cast<const HealthStatusResponseProto&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.HealthStatusResponseProto)
+  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.grpc.HealthStatusResponseProto)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -3976,7 +3983,7 @@ void HealthStatusResponseProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_m
 }
 
 void HealthStatusResponseProto::CopyFrom(const HealthStatusResponseProto& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.HealthStatusResponseProto)
+// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.grpc.HealthStatusResponseProto)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -4013,7 +4020,7 @@ CancelOrderRequestProto::CancelOrderRequestProto(::PROTOBUF_NAMESPACE_ID::Arena*
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:trading.execution.CancelOrderRequestProto)
+  // @@protoc_insertion_point(arena_constructor:trading.execution.grpc.CancelOrderRequestProto)
 }
 CancelOrderRequestProto::CancelOrderRequestProto(const CancelOrderRequestProto& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -4031,7 +4038,7 @@ CancelOrderRequestProto::CancelOrderRequestProto(const CancelOrderRequestProto& 
     _this->_impl_.client_order_id_.Set(from._internal_client_order_id(), 
       _this->GetArenaForAllocation());
   }
-  // @@protoc_insertion_point(copy_constructor:trading.execution.CancelOrderRequestProto)
+  // @@protoc_insertion_point(copy_constructor:trading.execution.grpc.CancelOrderRequestProto)
 }
 
 inline void CancelOrderRequestProto::SharedCtor(
@@ -4049,7 +4056,7 @@ inline void CancelOrderRequestProto::SharedCtor(
 }
 
 CancelOrderRequestProto::~CancelOrderRequestProto() {
-  // @@protoc_insertion_point(destructor:trading.execution.CancelOrderRequestProto)
+  // @@protoc_insertion_point(destructor:trading.execution.grpc.CancelOrderRequestProto)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -4067,7 +4074,7 @@ void CancelOrderRequestProto::SetCachedSize(int size) const {
 }
 
 void CancelOrderRequestProto::Clear() {
-// @@protoc_insertion_point(message_clear_start:trading.execution.CancelOrderRequestProto)
+// @@protoc_insertion_point(message_clear_start:trading.execution.grpc.CancelOrderRequestProto)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -4088,7 +4095,7 @@ const char* CancelOrderRequestProto::_InternalParse(const char* ptr, ::_pbi::Par
           auto str = _internal_mutable_client_order_id();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.CancelOrderRequestProto.client_order_id"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.CancelOrderRequestProto.client_order_id"));
         } else
           goto handle_unusual;
         continue;
@@ -4117,7 +4124,7 @@ failure:
 
 uint8_t* CancelOrderRequestProto::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.CancelOrderRequestProto)
+  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.grpc.CancelOrderRequestProto)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -4126,7 +4133,7 @@ uint8_t* CancelOrderRequestProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_client_order_id().data(), static_cast<int>(this->_internal_client_order_id().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.CancelOrderRequestProto.client_order_id");
+      "trading.execution.grpc.CancelOrderRequestProto.client_order_id");
     target = stream->WriteStringMaybeAliased(
         1, this->_internal_client_order_id(), target);
   }
@@ -4135,12 +4142,12 @@ uint8_t* CancelOrderRequestProto::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.CancelOrderRequestProto)
+  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.grpc.CancelOrderRequestProto)
   return target;
 }
 
 size_t CancelOrderRequestProto::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:trading.execution.CancelOrderRequestProto)
+// @@protoc_insertion_point(message_byte_size_start:trading.execution.grpc.CancelOrderRequestProto)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -4167,7 +4174,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*CancelOrderRequestProto::GetCl
 void CancelOrderRequestProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<CancelOrderRequestProto*>(&to_msg);
   auto& from = static_cast<const CancelOrderRequestProto&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.CancelOrderRequestProto)
+  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.grpc.CancelOrderRequestProto)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -4179,7 +4186,7 @@ void CancelOrderRequestProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg
 }
 
 void CancelOrderRequestProto::CopyFrom(const CancelOrderRequestProto& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.CancelOrderRequestProto)
+// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.grpc.CancelOrderRequestProto)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -4216,7 +4223,7 @@ CancelOrderByExchangeIdRequestProto::CancelOrderByExchangeIdRequestProto(::PROTO
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:trading.execution.CancelOrderByExchangeIdRequestProto)
+  // @@protoc_insertion_point(arena_constructor:trading.execution.grpc.CancelOrderByExchangeIdRequestProto)
 }
 CancelOrderByExchangeIdRequestProto::CancelOrderByExchangeIdRequestProto(const CancelOrderByExchangeIdRequestProto& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -4243,7 +4250,7 @@ CancelOrderByExchangeIdRequestProto::CancelOrderByExchangeIdRequestProto(const C
     _this->_impl_.exchange_id_.Set(from._internal_exchange_id(), 
       _this->GetArenaForAllocation());
   }
-  // @@protoc_insertion_point(copy_constructor:trading.execution.CancelOrderByExchangeIdRequestProto)
+  // @@protoc_insertion_point(copy_constructor:trading.execution.grpc.CancelOrderByExchangeIdRequestProto)
 }
 
 inline void CancelOrderByExchangeIdRequestProto::SharedCtor(
@@ -4266,7 +4273,7 @@ inline void CancelOrderByExchangeIdRequestProto::SharedCtor(
 }
 
 CancelOrderByExchangeIdRequestProto::~CancelOrderByExchangeIdRequestProto() {
-  // @@protoc_insertion_point(destructor:trading.execution.CancelOrderByExchangeIdRequestProto)
+  // @@protoc_insertion_point(destructor:trading.execution.grpc.CancelOrderByExchangeIdRequestProto)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -4285,7 +4292,7 @@ void CancelOrderByExchangeIdRequestProto::SetCachedSize(int size) const {
 }
 
 void CancelOrderByExchangeIdRequestProto::Clear() {
-// @@protoc_insertion_point(message_clear_start:trading.execution.CancelOrderByExchangeIdRequestProto)
+// @@protoc_insertion_point(message_clear_start:trading.execution.grpc.CancelOrderByExchangeIdRequestProto)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -4307,7 +4314,7 @@ const char* CancelOrderByExchangeIdRequestProto::_InternalParse(const char* ptr,
           auto str = _internal_mutable_exchange_order_id();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.CancelOrderByExchangeIdRequestProto.exchange_order_id"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_order_id"));
         } else
           goto handle_unusual;
         continue;
@@ -4317,7 +4324,7 @@ const char* CancelOrderByExchangeIdRequestProto::_InternalParse(const char* ptr,
           auto str = _internal_mutable_exchange_id();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.CancelOrderByExchangeIdRequestProto.exchange_id"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_id"));
         } else
           goto handle_unusual;
         continue;
@@ -4346,7 +4353,7 @@ failure:
 
 uint8_t* CancelOrderByExchangeIdRequestProto::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.CancelOrderByExchangeIdRequestProto)
+  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.grpc.CancelOrderByExchangeIdRequestProto)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -4355,7 +4362,7 @@ uint8_t* CancelOrderByExchangeIdRequestProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_exchange_order_id().data(), static_cast<int>(this->_internal_exchange_order_id().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.CancelOrderByExchangeIdRequestProto.exchange_order_id");
+      "trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_order_id");
     target = stream->WriteStringMaybeAliased(
         1, this->_internal_exchange_order_id(), target);
   }
@@ -4365,7 +4372,7 @@ uint8_t* CancelOrderByExchangeIdRequestProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_exchange_id().data(), static_cast<int>(this->_internal_exchange_id().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.CancelOrderByExchangeIdRequestProto.exchange_id");
+      "trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_id");
     target = stream->WriteStringMaybeAliased(
         2, this->_internal_exchange_id(), target);
   }
@@ -4374,12 +4381,12 @@ uint8_t* CancelOrderByExchangeIdRequestProto::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.CancelOrderByExchangeIdRequestProto)
+  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.grpc.CancelOrderByExchangeIdRequestProto)
   return target;
 }
 
 size_t CancelOrderByExchangeIdRequestProto::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:trading.execution.CancelOrderByExchangeIdRequestProto)
+// @@protoc_insertion_point(message_byte_size_start:trading.execution.grpc.CancelOrderByExchangeIdRequestProto)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -4413,7 +4420,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*CancelOrderByExchangeIdRequest
 void CancelOrderByExchangeIdRequestProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<CancelOrderByExchangeIdRequestProto*>(&to_msg);
   auto& from = static_cast<const CancelOrderByExchangeIdRequestProto&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.CancelOrderByExchangeIdRequestProto)
+  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.grpc.CancelOrderByExchangeIdRequestProto)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -4428,7 +4435,7 @@ void CancelOrderByExchangeIdRequestProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Mes
 }
 
 void CancelOrderByExchangeIdRequestProto::CopyFrom(const CancelOrderByExchangeIdRequestProto& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.CancelOrderByExchangeIdRequestProto)
+// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.grpc.CancelOrderByExchangeIdRequestProto)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -4469,7 +4476,7 @@ CancelAllOrdersRequestProto::CancelAllOrdersRequestProto(::PROTOBUF_NAMESPACE_ID
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:trading.execution.CancelAllOrdersRequestProto)
+  // @@protoc_insertion_point(arena_constructor:trading.execution.grpc.CancelAllOrdersRequestProto)
 }
 CancelAllOrdersRequestProto::CancelAllOrdersRequestProto(const CancelAllOrdersRequestProto& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -4496,7 +4503,7 @@ CancelAllOrdersRequestProto::CancelAllOrdersRequestProto(const CancelAllOrdersRe
     _this->_impl_.exchange_id_.Set(from._internal_exchange_id(), 
       _this->GetArenaForAllocation());
   }
-  // @@protoc_insertion_point(copy_constructor:trading.execution.CancelAllOrdersRequestProto)
+  // @@protoc_insertion_point(copy_constructor:trading.execution.grpc.CancelAllOrdersRequestProto)
 }
 
 inline void CancelAllOrdersRequestProto::SharedCtor(
@@ -4519,7 +4526,7 @@ inline void CancelAllOrdersRequestProto::SharedCtor(
 }
 
 CancelAllOrdersRequestProto::~CancelAllOrdersRequestProto() {
-  // @@protoc_insertion_point(destructor:trading.execution.CancelAllOrdersRequestProto)
+  // @@protoc_insertion_point(destructor:trading.execution.grpc.CancelAllOrdersRequestProto)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -4538,7 +4545,7 @@ void CancelAllOrdersRequestProto::SetCachedSize(int size) const {
 }
 
 void CancelAllOrdersRequestProto::Clear() {
-// @@protoc_insertion_point(message_clear_start:trading.execution.CancelAllOrdersRequestProto)
+// @@protoc_insertion_point(message_clear_start:trading.execution.grpc.CancelAllOrdersRequestProto)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -4560,7 +4567,7 @@ const char* CancelAllOrdersRequestProto::_InternalParse(const char* ptr, ::_pbi:
           auto str = _internal_mutable_trading_pair();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.CancelAllOrdersRequestProto.trading_pair"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.CancelAllOrdersRequestProto.trading_pair"));
         } else
           goto handle_unusual;
         continue;
@@ -4570,7 +4577,7 @@ const char* CancelAllOrdersRequestProto::_InternalParse(const char* ptr, ::_pbi:
           auto str = _internal_mutable_exchange_id();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.CancelAllOrdersRequestProto.exchange_id"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.CancelAllOrdersRequestProto.exchange_id"));
         } else
           goto handle_unusual;
         continue;
@@ -4599,7 +4606,7 @@ failure:
 
 uint8_t* CancelAllOrdersRequestProto::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.CancelAllOrdersRequestProto)
+  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.grpc.CancelAllOrdersRequestProto)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -4608,7 +4615,7 @@ uint8_t* CancelAllOrdersRequestProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_trading_pair().data(), static_cast<int>(this->_internal_trading_pair().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.CancelAllOrdersRequestProto.trading_pair");
+      "trading.execution.grpc.CancelAllOrdersRequestProto.trading_pair");
     target = stream->WriteStringMaybeAliased(
         1, this->_internal_trading_pair(), target);
   }
@@ -4618,7 +4625,7 @@ uint8_t* CancelAllOrdersRequestProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_exchange_id().data(), static_cast<int>(this->_internal_exchange_id().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.CancelAllOrdersRequestProto.exchange_id");
+      "trading.execution.grpc.CancelAllOrdersRequestProto.exchange_id");
     target = stream->WriteStringMaybeAliased(
         2, this->_internal_exchange_id(), target);
   }
@@ -4627,12 +4634,12 @@ uint8_t* CancelAllOrdersRequestProto::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.CancelAllOrdersRequestProto)
+  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.grpc.CancelAllOrdersRequestProto)
   return target;
 }
 
 size_t CancelAllOrdersRequestProto::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:trading.execution.CancelAllOrdersRequestProto)
+// @@protoc_insertion_point(message_byte_size_start:trading.execution.grpc.CancelAllOrdersRequestProto)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -4666,7 +4673,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*CancelAllOrdersRequestProto::G
 void CancelAllOrdersRequestProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<CancelAllOrdersRequestProto*>(&to_msg);
   auto& from = static_cast<const CancelAllOrdersRequestProto&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.CancelAllOrdersRequestProto)
+  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.grpc.CancelAllOrdersRequestProto)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -4681,7 +4688,7 @@ void CancelAllOrdersRequestProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to
 }
 
 void CancelAllOrdersRequestProto::CopyFrom(const CancelAllOrdersRequestProto& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.CancelAllOrdersRequestProto)
+// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.grpc.CancelAllOrdersRequestProto)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -4722,7 +4729,7 @@ CancelAllOrdersResponseProto::CancelAllOrdersResponseProto(::PROTOBUF_NAMESPACE_
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:trading.execution.CancelAllOrdersResponseProto)
+  // @@protoc_insertion_point(arena_constructor:trading.execution.grpc.CancelAllOrdersResponseProto)
 }
 CancelAllOrdersResponseProto::CancelAllOrdersResponseProto(const CancelAllOrdersResponseProto& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -4732,7 +4739,7 @@ CancelAllOrdersResponseProto::CancelAllOrdersResponseProto(const CancelAllOrders
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  // @@protoc_insertion_point(copy_constructor:trading.execution.CancelAllOrdersResponseProto)
+  // @@protoc_insertion_point(copy_constructor:trading.execution.grpc.CancelAllOrdersResponseProto)
 }
 
 inline void CancelAllOrdersResponseProto::SharedCtor(
@@ -4746,7 +4753,7 @@ inline void CancelAllOrdersResponseProto::SharedCtor(
 }
 
 CancelAllOrdersResponseProto::~CancelAllOrdersResponseProto() {
-  // @@protoc_insertion_point(destructor:trading.execution.CancelAllOrdersResponseProto)
+  // @@protoc_insertion_point(destructor:trading.execution.grpc.CancelAllOrdersResponseProto)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -4764,7 +4771,7 @@ void CancelAllOrdersResponseProto::SetCachedSize(int size) const {
 }
 
 void CancelAllOrdersResponseProto::Clear() {
-// @@protoc_insertion_point(message_clear_start:trading.execution.CancelAllOrdersResponseProto)
+// @@protoc_insertion_point(message_clear_start:trading.execution.grpc.CancelAllOrdersResponseProto)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -4779,7 +4786,7 @@ const char* CancelAllOrdersResponseProto::_InternalParse(const char* ptr, ::_pbi
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // repeated .trading.execution.CancelResponseProto responses = 1;
+      // repeated .trading.execution.grpc.CancelResponseProto responses = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr -= 1;
@@ -4817,11 +4824,11 @@ failure:
 
 uint8_t* CancelAllOrdersResponseProto::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.CancelAllOrdersResponseProto)
+  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.grpc.CancelAllOrdersResponseProto)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // repeated .trading.execution.CancelResponseProto responses = 1;
+  // repeated .trading.execution.grpc.CancelResponseProto responses = 1;
   for (unsigned i = 0,
       n = static_cast<unsigned>(this->_internal_responses_size()); i < n; i++) {
     const auto& repfield = this->_internal_responses(i);
@@ -4833,19 +4840,19 @@ uint8_t* CancelAllOrdersResponseProto::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.CancelAllOrdersResponseProto)
+  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.grpc.CancelAllOrdersResponseProto)
   return target;
 }
 
 size_t CancelAllOrdersResponseProto::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:trading.execution.CancelAllOrdersResponseProto)
+// @@protoc_insertion_point(message_byte_size_start:trading.execution.grpc.CancelAllOrdersResponseProto)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // repeated .trading.execution.CancelResponseProto responses = 1;
+  // repeated .trading.execution.grpc.CancelResponseProto responses = 1;
   total_size += 1UL * this->_internal_responses_size();
   for (const auto& msg : this->_impl_.responses_) {
     total_size +=
@@ -4865,7 +4872,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*CancelAllOrdersResponseProto::
 void CancelAllOrdersResponseProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<CancelAllOrdersResponseProto*>(&to_msg);
   auto& from = static_cast<const CancelAllOrdersResponseProto&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.CancelAllOrdersResponseProto)
+  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.grpc.CancelAllOrdersResponseProto)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -4875,7 +4882,7 @@ void CancelAllOrdersResponseProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& t
 }
 
 void CancelAllOrdersResponseProto::CopyFrom(const CancelAllOrdersResponseProto& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.CancelAllOrdersResponseProto)
+// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.grpc.CancelAllOrdersResponseProto)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -4907,7 +4914,7 @@ OrderStatusRequestProto::OrderStatusRequestProto(::PROTOBUF_NAMESPACE_ID::Arena*
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:trading.execution.OrderStatusRequestProto)
+  // @@protoc_insertion_point(arena_constructor:trading.execution.grpc.OrderStatusRequestProto)
 }
 OrderStatusRequestProto::OrderStatusRequestProto(const OrderStatusRequestProto& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -4925,7 +4932,7 @@ OrderStatusRequestProto::OrderStatusRequestProto(const OrderStatusRequestProto& 
     _this->_impl_.client_order_id_.Set(from._internal_client_order_id(), 
       _this->GetArenaForAllocation());
   }
-  // @@protoc_insertion_point(copy_constructor:trading.execution.OrderStatusRequestProto)
+  // @@protoc_insertion_point(copy_constructor:trading.execution.grpc.OrderStatusRequestProto)
 }
 
 inline void OrderStatusRequestProto::SharedCtor(
@@ -4943,7 +4950,7 @@ inline void OrderStatusRequestProto::SharedCtor(
 }
 
 OrderStatusRequestProto::~OrderStatusRequestProto() {
-  // @@protoc_insertion_point(destructor:trading.execution.OrderStatusRequestProto)
+  // @@protoc_insertion_point(destructor:trading.execution.grpc.OrderStatusRequestProto)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -4961,7 +4968,7 @@ void OrderStatusRequestProto::SetCachedSize(int size) const {
 }
 
 void OrderStatusRequestProto::Clear() {
-// @@protoc_insertion_point(message_clear_start:trading.execution.OrderStatusRequestProto)
+// @@protoc_insertion_point(message_clear_start:trading.execution.grpc.OrderStatusRequestProto)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -4982,7 +4989,7 @@ const char* OrderStatusRequestProto::_InternalParse(const char* ptr, ::_pbi::Par
           auto str = _internal_mutable_client_order_id();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.OrderStatusRequestProto.client_order_id"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.OrderStatusRequestProto.client_order_id"));
         } else
           goto handle_unusual;
         continue;
@@ -5011,7 +5018,7 @@ failure:
 
 uint8_t* OrderStatusRequestProto::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.OrderStatusRequestProto)
+  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.grpc.OrderStatusRequestProto)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -5020,7 +5027,7 @@ uint8_t* OrderStatusRequestProto::_InternalSerialize(
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_client_order_id().data(), static_cast<int>(this->_internal_client_order_id().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.OrderStatusRequestProto.client_order_id");
+      "trading.execution.grpc.OrderStatusRequestProto.client_order_id");
     target = stream->WriteStringMaybeAliased(
         1, this->_internal_client_order_id(), target);
   }
@@ -5029,12 +5036,12 @@ uint8_t* OrderStatusRequestProto::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.OrderStatusRequestProto)
+  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.grpc.OrderStatusRequestProto)
   return target;
 }
 
 size_t OrderStatusRequestProto::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:trading.execution.OrderStatusRequestProto)
+// @@protoc_insertion_point(message_byte_size_start:trading.execution.grpc.OrderStatusRequestProto)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -5061,7 +5068,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*OrderStatusRequestProto::GetCl
 void OrderStatusRequestProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<OrderStatusRequestProto*>(&to_msg);
   auto& from = static_cast<const OrderStatusRequestProto&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.OrderStatusRequestProto)
+  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.grpc.OrderStatusRequestProto)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -5073,7 +5080,7 @@ void OrderStatusRequestProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg
 }
 
 void OrderStatusRequestProto::CopyFrom(const OrderStatusRequestProto& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.OrderStatusRequestProto)
+// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.grpc.OrderStatusRequestProto)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -5109,13 +5116,13 @@ class ActiveOrdersRequestProto::_Internal {
 ActiveOrdersRequestProto::ActiveOrdersRequestProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase(arena, is_message_owned) {
-  // @@protoc_insertion_point(arena_constructor:trading.execution.ActiveOrdersRequestProto)
+  // @@protoc_insertion_point(arena_constructor:trading.execution.grpc.ActiveOrdersRequestProto)
 }
 ActiveOrdersRequestProto::ActiveOrdersRequestProto(const ActiveOrdersRequestProto& from)
   : ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase() {
   ActiveOrdersRequestProto* const _this = this; (void)_this;
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  // @@protoc_insertion_point(copy_constructor:trading.execution.ActiveOrdersRequestProto)
+  // @@protoc_insertion_point(copy_constructor:trading.execution.grpc.ActiveOrdersRequestProto)
 }
 
 
@@ -5150,7 +5157,7 @@ ActiveOrdersResponseProto::ActiveOrdersResponseProto(::PROTOBUF_NAMESPACE_ID::Ar
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:trading.execution.ActiveOrdersResponseProto)
+  // @@protoc_insertion_point(arena_constructor:trading.execution.grpc.ActiveOrdersResponseProto)
 }
 ActiveOrdersResponseProto::ActiveOrdersResponseProto(const ActiveOrdersResponseProto& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -5160,7 +5167,7 @@ ActiveOrdersResponseProto::ActiveOrdersResponseProto(const ActiveOrdersResponseP
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  // @@protoc_insertion_point(copy_constructor:trading.execution.ActiveOrdersResponseProto)
+  // @@protoc_insertion_point(copy_constructor:trading.execution.grpc.ActiveOrdersResponseProto)
 }
 
 inline void ActiveOrdersResponseProto::SharedCtor(
@@ -5174,7 +5181,7 @@ inline void ActiveOrdersResponseProto::SharedCtor(
 }
 
 ActiveOrdersResponseProto::~ActiveOrdersResponseProto() {
-  // @@protoc_insertion_point(destructor:trading.execution.ActiveOrdersResponseProto)
+  // @@protoc_insertion_point(destructor:trading.execution.grpc.ActiveOrdersResponseProto)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -5192,7 +5199,7 @@ void ActiveOrdersResponseProto::SetCachedSize(int size) const {
 }
 
 void ActiveOrdersResponseProto::Clear() {
-// @@protoc_insertion_point(message_clear_start:trading.execution.ActiveOrdersResponseProto)
+// @@protoc_insertion_point(message_clear_start:trading.execution.grpc.ActiveOrdersResponseProto)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -5207,7 +5214,7 @@ const char* ActiveOrdersResponseProto::_InternalParse(const char* ptr, ::_pbi::P
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // repeated .trading.execution.OrderProto orders = 1;
+      // repeated .trading.execution.grpc.OrderProto orders = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           ptr -= 1;
@@ -5245,11 +5252,11 @@ failure:
 
 uint8_t* ActiveOrdersResponseProto::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.ActiveOrdersResponseProto)
+  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.grpc.ActiveOrdersResponseProto)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // repeated .trading.execution.OrderProto orders = 1;
+  // repeated .trading.execution.grpc.OrderProto orders = 1;
   for (unsigned i = 0,
       n = static_cast<unsigned>(this->_internal_orders_size()); i < n; i++) {
     const auto& repfield = this->_internal_orders(i);
@@ -5261,19 +5268,19 @@ uint8_t* ActiveOrdersResponseProto::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.ActiveOrdersResponseProto)
+  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.grpc.ActiveOrdersResponseProto)
   return target;
 }
 
 size_t ActiveOrdersResponseProto::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:trading.execution.ActiveOrdersResponseProto)
+// @@protoc_insertion_point(message_byte_size_start:trading.execution.grpc.ActiveOrdersResponseProto)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // repeated .trading.execution.OrderProto orders = 1;
+  // repeated .trading.execution.grpc.OrderProto orders = 1;
   total_size += 1UL * this->_internal_orders_size();
   for (const auto& msg : this->_impl_.orders_) {
     total_size +=
@@ -5293,7 +5300,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ActiveOrdersResponseProto::Get
 void ActiveOrdersResponseProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<ActiveOrdersResponseProto*>(&to_msg);
   auto& from = static_cast<const ActiveOrdersResponseProto&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.ActiveOrdersResponseProto)
+  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.grpc.ActiveOrdersResponseProto)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -5303,7 +5310,7 @@ void ActiveOrdersResponseProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_m
 }
 
 void ActiveOrdersResponseProto::CopyFrom(const ActiveOrdersResponseProto& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.ActiveOrdersResponseProto)
+// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.grpc.ActiveOrdersResponseProto)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -5326,76 +5333,77 @@ void ActiveOrdersResponseProto::InternalSwap(ActiveOrdersResponseProto* other) {
 }
 
 // @@protoc_insertion_point(namespace_scope)
+}  // namespace grpc
 }  // namespace execution
 }  // namespace trading
 PROTOBUF_NAMESPACE_OPEN
-template<> PROTOBUF_NOINLINE ::trading::execution::TradingSignalProto_SignalMetricsEntry_DoNotUse*
-Arena::CreateMaybeMessage< ::trading::execution::TradingSignalProto_SignalMetricsEntry_DoNotUse >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::trading::execution::TradingSignalProto_SignalMetricsEntry_DoNotUse >(arena);
+template<> PROTOBUF_NOINLINE ::trading::execution::grpc::TradingSignalProto_SignalMetricsEntry_DoNotUse*
+Arena::CreateMaybeMessage< ::trading::execution::grpc::TradingSignalProto_SignalMetricsEntry_DoNotUse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::trading::execution::grpc::TradingSignalProto_SignalMetricsEntry_DoNotUse >(arena);
 }
-template<> PROTOBUF_NOINLINE ::trading::execution::TradingSignalProto*
-Arena::CreateMaybeMessage< ::trading::execution::TradingSignalProto >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::trading::execution::TradingSignalProto >(arena);
+template<> PROTOBUF_NOINLINE ::trading::execution::grpc::TradingSignalProto*
+Arena::CreateMaybeMessage< ::trading::execution::grpc::TradingSignalProto >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::trading::execution::grpc::TradingSignalProto >(arena);
 }
-template<> PROTOBUF_NOINLINE ::trading::execution::ExecutionResponseProto*
-Arena::CreateMaybeMessage< ::trading::execution::ExecutionResponseProto >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::trading::execution::ExecutionResponseProto >(arena);
+template<> PROTOBUF_NOINLINE ::trading::execution::grpc::ExecutionResponseProto*
+Arena::CreateMaybeMessage< ::trading::execution::grpc::ExecutionResponseProto >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::trading::execution::grpc::ExecutionResponseProto >(arena);
 }
-template<> PROTOBUF_NOINLINE ::trading::execution::CancelResponseProto*
-Arena::CreateMaybeMessage< ::trading::execution::CancelResponseProto >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::trading::execution::CancelResponseProto >(arena);
+template<> PROTOBUF_NOINLINE ::trading::execution::grpc::CancelResponseProto*
+Arena::CreateMaybeMessage< ::trading::execution::grpc::CancelResponseProto >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::trading::execution::grpc::CancelResponseProto >(arena);
 }
-template<> PROTOBUF_NOINLINE ::trading::execution::FillProto*
-Arena::CreateMaybeMessage< ::trading::execution::FillProto >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::trading::execution::FillProto >(arena);
+template<> PROTOBUF_NOINLINE ::trading::execution::grpc::FillProto*
+Arena::CreateMaybeMessage< ::trading::execution::grpc::FillProto >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::trading::execution::grpc::FillProto >(arena);
 }
-template<> PROTOBUF_NOINLINE ::trading::execution::OrderProto_ExtraParamsEntry_DoNotUse*
-Arena::CreateMaybeMessage< ::trading::execution::OrderProto_ExtraParamsEntry_DoNotUse >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::trading::execution::OrderProto_ExtraParamsEntry_DoNotUse >(arena);
+template<> PROTOBUF_NOINLINE ::trading::execution::grpc::OrderProto_ExtraParamsEntry_DoNotUse*
+Arena::CreateMaybeMessage< ::trading::execution::grpc::OrderProto_ExtraParamsEntry_DoNotUse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::trading::execution::grpc::OrderProto_ExtraParamsEntry_DoNotUse >(arena);
 }
-template<> PROTOBUF_NOINLINE ::trading::execution::OrderProto*
-Arena::CreateMaybeMessage< ::trading::execution::OrderProto >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::trading::execution::OrderProto >(arena);
+template<> PROTOBUF_NOINLINE ::trading::execution::grpc::OrderProto*
+Arena::CreateMaybeMessage< ::trading::execution::grpc::OrderProto >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::trading::execution::grpc::OrderProto >(arena);
 }
-template<> PROTOBUF_NOINLINE ::trading::execution::OrderStatusResponseProto*
-Arena::CreateMaybeMessage< ::trading::execution::OrderStatusResponseProto >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::trading::execution::OrderStatusResponseProto >(arena);
+template<> PROTOBUF_NOINLINE ::trading::execution::grpc::OrderStatusResponseProto*
+Arena::CreateMaybeMessage< ::trading::execution::grpc::OrderStatusResponseProto >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::trading::execution::grpc::OrderStatusResponseProto >(arena);
 }
-template<> PROTOBUF_NOINLINE ::trading::execution::HealthStatusRequestProto*
-Arena::CreateMaybeMessage< ::trading::execution::HealthStatusRequestProto >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::trading::execution::HealthStatusRequestProto >(arena);
+template<> PROTOBUF_NOINLINE ::trading::execution::grpc::HealthStatusRequestProto*
+Arena::CreateMaybeMessage< ::trading::execution::grpc::HealthStatusRequestProto >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::trading::execution::grpc::HealthStatusRequestProto >(arena);
 }
-template<> PROTOBUF_NOINLINE ::trading::execution::HealthStatusResponseProto*
-Arena::CreateMaybeMessage< ::trading::execution::HealthStatusResponseProto >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::trading::execution::HealthStatusResponseProto >(arena);
+template<> PROTOBUF_NOINLINE ::trading::execution::grpc::HealthStatusResponseProto*
+Arena::CreateMaybeMessage< ::trading::execution::grpc::HealthStatusResponseProto >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::trading::execution::grpc::HealthStatusResponseProto >(arena);
 }
-template<> PROTOBUF_NOINLINE ::trading::execution::CancelOrderRequestProto*
-Arena::CreateMaybeMessage< ::trading::execution::CancelOrderRequestProto >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::trading::execution::CancelOrderRequestProto >(arena);
+template<> PROTOBUF_NOINLINE ::trading::execution::grpc::CancelOrderRequestProto*
+Arena::CreateMaybeMessage< ::trading::execution::grpc::CancelOrderRequestProto >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::trading::execution::grpc::CancelOrderRequestProto >(arena);
 }
-template<> PROTOBUF_NOINLINE ::trading::execution::CancelOrderByExchangeIdRequestProto*
-Arena::CreateMaybeMessage< ::trading::execution::CancelOrderByExchangeIdRequestProto >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::trading::execution::CancelOrderByExchangeIdRequestProto >(arena);
+template<> PROTOBUF_NOINLINE ::trading::execution::grpc::CancelOrderByExchangeIdRequestProto*
+Arena::CreateMaybeMessage< ::trading::execution::grpc::CancelOrderByExchangeIdRequestProto >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::trading::execution::grpc::CancelOrderByExchangeIdRequestProto >(arena);
 }
-template<> PROTOBUF_NOINLINE ::trading::execution::CancelAllOrdersRequestProto*
-Arena::CreateMaybeMessage< ::trading::execution::CancelAllOrdersRequestProto >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::trading::execution::CancelAllOrdersRequestProto >(arena);
+template<> PROTOBUF_NOINLINE ::trading::execution::grpc::CancelAllOrdersRequestProto*
+Arena::CreateMaybeMessage< ::trading::execution::grpc::CancelAllOrdersRequestProto >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::trading::execution::grpc::CancelAllOrdersRequestProto >(arena);
 }
-template<> PROTOBUF_NOINLINE ::trading::execution::CancelAllOrdersResponseProto*
-Arena::CreateMaybeMessage< ::trading::execution::CancelAllOrdersResponseProto >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::trading::execution::CancelAllOrdersResponseProto >(arena);
+template<> PROTOBUF_NOINLINE ::trading::execution::grpc::CancelAllOrdersResponseProto*
+Arena::CreateMaybeMessage< ::trading::execution::grpc::CancelAllOrdersResponseProto >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::trading::execution::grpc::CancelAllOrdersResponseProto >(arena);
 }
-template<> PROTOBUF_NOINLINE ::trading::execution::OrderStatusRequestProto*
-Arena::CreateMaybeMessage< ::trading::execution::OrderStatusRequestProto >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::trading::execution::OrderStatusRequestProto >(arena);
+template<> PROTOBUF_NOINLINE ::trading::execution::grpc::OrderStatusRequestProto*
+Arena::CreateMaybeMessage< ::trading::execution::grpc::OrderStatusRequestProto >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::trading::execution::grpc::OrderStatusRequestProto >(arena);
 }
-template<> PROTOBUF_NOINLINE ::trading::execution::ActiveOrdersRequestProto*
-Arena::CreateMaybeMessage< ::trading::execution::ActiveOrdersRequestProto >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::trading::execution::ActiveOrdersRequestProto >(arena);
+template<> PROTOBUF_NOINLINE ::trading::execution::grpc::ActiveOrdersRequestProto*
+Arena::CreateMaybeMessage< ::trading::execution::grpc::ActiveOrdersRequestProto >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::trading::execution::grpc::ActiveOrdersRequestProto >(arena);
 }
-template<> PROTOBUF_NOINLINE ::trading::execution::ActiveOrdersResponseProto*
-Arena::CreateMaybeMessage< ::trading::execution::ActiveOrdersResponseProto >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::trading::execution::ActiveOrdersResponseProto >(arena);
+template<> PROTOBUF_NOINLINE ::trading::execution::grpc::ActiveOrdersResponseProto*
+Arena::CreateMaybeMessage< ::trading::execution::grpc::ActiveOrdersResponseProto >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::trading::execution::grpc::ActiveOrdersResponseProto >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 

@@ -15,22 +15,23 @@ add_library(execution ${EXECUTION_SOURCES})
 # Include directories
 target_include_directories(execution
     PUBLIC
-        ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/include
     PRIVATE
-        ${CMAKE_SOURCE_DIR}/include/execution
-        ${Protobuf_INCLUDE_DIRS}
-        ${gRPC_INCLUDE_DIRS}
+    ${CMAKE_SOURCE_DIR}/include/execution
+    ${CMAKE_SOURCE_DIR}/proto/generated  # Add proto generated directory
+    ${Protobuf_INCLUDE_DIRS}
+    ${gRPC_INCLUDE_DIRS}
 )
 
 # Link libraries
 target_link_libraries(execution
     PUBLIC
-        common
-        proto_libs
+    common
     PRIVATE
-        ${Protobuf_LIBRARIES}
-        ${gRPC_LIBRARIES}
-        Boost::system
-        OpenSSL::SSL
-        OpenSSL::Crypto
+    proto_lib  # Fixed typo: proto_libs -> proto_lib
+    ${Protobuf_LIBRARIES}
+    ${gRPC_LIBRARIES}
+    Boost::system
+    OpenSSL::SSL
+    OpenSSL::Crypto
 )

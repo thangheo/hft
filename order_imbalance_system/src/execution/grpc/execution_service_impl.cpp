@@ -174,7 +174,7 @@
  // Helper methods for type conversion
  
  trading::execution::TradingSignal ExecutionServiceImpl::convertTradingSignal(
-     const ::trading::proto::TradingSignal& proto_signal) {
+    const ::trading::execution::grpc::TradingSignalProto& proto_signal) {
      
      trading::execution::TradingSignal signal;
      
@@ -202,9 +202,10 @@
      return signal;
  }
  
- trading::execution::Order ExecutionServiceImpl::convertOrderRequest(
-     const ::trading::proto::OrderRequest& proto_order) {
-     
+//  trading::execution::Order ExecutionServiceImpl::convertOrderRequest(
+//      const ::trading::proto::OrderRequest& proto_order) {
+trading::execution::models::Order ExecutionServiceImpl::convertOrderRequest(
+        const ::trading::execution::grpc::OrderProto& proto_order) {    
      trading::execution::Order order(proto_order.client_order_id());
      
      // Set basic fields
@@ -262,9 +263,10 @@
      return order;
  }
  
- ::trading::proto::ExecutionResponse ExecutionServiceImpl::createExecutionResponse(
-     const trading::execution::ExecutionResponse& internal_response) {
-     
+//  ::trading::proto::ExecutionResponse ExecutionServiceImpl::createExecutionResponse(
+//      const trading::execution::ExecutionResponse& internal_response) {
+::trading::execution::grpc::ExecutionResponseProto ExecutionServiceImpl::createExecutionResponse(
+        const trading::execution::ExecutionResponse& internal_response) {
      ::trading::proto::ExecutionResponse proto_response;
      
      // Set fields
@@ -282,9 +284,11 @@
      return proto_response;
  }
  
- ::trading::proto::CancelResponse ExecutionServiceImpl::createCancelResponse(
-     const trading::execution::CancelResponse& internal_response) {
-     
+//  ::trading::proto::CancelResponse ExecutionServiceImpl::createCancelResponse(
+//      const trading::execution::CancelResponse& internal_response) {
+ 
+::trading::execution::grpc::CancelResponseProto ExecutionServiceImpl::createCancelResponse(
+    const trading::execution::CancelResponse& internal_response) {    
      ::trading::proto::CancelResponse proto_response;
      
      // Set fields
@@ -303,7 +307,8 @@
  
  ::trading::proto::OrderStatusResponse ExecutionServiceImpl::createOrderStatusResponse(
      const trading::execution::OrderStatusResponse& internal_status) {
-     
+// ::trading::execution::grpc::OrderStatusResponseProto ExecutionServiceImpl::createOrderStatusResponse(
+//         const trading::execution::OrderStatusResponse& internal_status) {    
      ::trading::proto::OrderStatusResponse proto_response;
      
      // Set basic fields
@@ -319,9 +324,10 @@
      return proto_response;
  }
  
- ::trading::proto::Order ExecutionServiceImpl::createProtoOrder(
-     const trading::execution::Order& internal_order) {
-     
+//  ::trading::proto::Order ExecutionServiceImpl::createProtoOrder(
+//      const trading::execution::Order& internal_order) {
+::trading::execution::grpc::OrderProto ExecutionServiceImpl::createProtoOrder(
+        const trading::execution::models::Order& internal_order) {   
      ::trading::proto::Order proto_order;
      
      // Set identification fields
@@ -378,6 +384,9 @@
          case TimeInForce::GTD:
              proto_order.set_time_in_force("GTD");
              break;
+         default:
+             proto_order.set_time_in_force("GTC"); // Default to GTC
+             break;
      }
      
      // Set status
@@ -408,6 +417,9 @@
              break;
          case OrderState::EXPIRED:
              proto_order.set_status("expired");
+             break;
+         default:
+             proto_order.set_status("unknown");
              break;
      }
      
