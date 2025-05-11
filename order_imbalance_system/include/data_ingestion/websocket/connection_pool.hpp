@@ -32,7 +32,11 @@ public:
     // Pool lifecycle management
     void initialize();
     void shutdown();
+    // Connect all connections in the pool
+    bool connectAll();
     
+    // Disconnect all connections in the pool
+    void disconnectAll();
     // Get a connection from the pool (will block if none available)
     std::shared_ptr<WebSocketClientBase> acquireConnection(int timeout_ms = 5000);
     

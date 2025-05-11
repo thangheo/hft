@@ -57,17 +57,17 @@ struct Symbol {
     }
 }; 
 //simple PriceLevel with price and quantity
-struct PriceLevel {
+struct PriceLevelBase {
     double price;     // Price level
     double quantity;  // Quantity at this price level
     
-    PriceLevel(double p = 0.0, double q = 0.0) : price(p), quantity(q) {}
+    PriceLevelBase(double p = 0.0, double q = 0.0) : price(p), quantity(q) {}
     
-    bool operator==(const PriceLevel& other) const {
+    bool operator==(const PriceLevelBase& other) const {
         return price == other.price && quantity == other.quantity;
     }
     
-    bool operator<(const PriceLevel& other) const {
+    bool operator<(const PriceLevelBase& other) const {
         return price < other.price;
     }
 };

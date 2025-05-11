@@ -36,7 +36,6 @@ ExchangeManager::~ExchangeManager() {
     
     std::cout << "Exchange Manager shutdown complete" << std::endl;
 }
-
 bool ExchangeManager::initialize() {
     std::lock_guard<std::mutex> lock(mutex_);
     
@@ -44,13 +43,17 @@ bool ExchangeManager::initialize() {
         // Create the connection pool for Binance
         connection_pool_ = std::make_unique<ConnectionPool>(
             "binance",
+            // Factory function that properly creates a BinanceWebSocketClient
+            [this]() -> std::shared_ptr<WebSocketClientBase> {
+                // Using the correct constructor with host, port, and callback
+                return std::make_shared<BinanceWebSocketClient>(
+                    "stream.binance.com",  // host
+                    "443",                 // port
+                    this->data_callback_   // callback
+                );
+            },
             min_connections_,
-            max_connections_,
-            data_callback_,
-            // Factory function to create a new Binance WebSocket client
-            [](MarketDataCallback callback) -> std::shared_ptr<WebSocketClient> {
-                return std::make_shared<BinanceWebSocketClient>(callback);
-            }
+            max_connections_
         );
         
         // Start the connection monitor thread
@@ -227,9 +230,10 @@ void ExchangeManager::monitorConnections() {
                 if (is_connected_ && !active_subscriptions_.empty()) {
                     for (const auto& subscription : active_subscriptions_) {
                         // Check if we need to resubscribe
-                        if (connection_pool_->needsResubscription()) {
-                            std::cout << "Restoring subscriptions after reconnection" << std::endl;
-                            
+                        // if (connection_pool_->needsResubscription()) {
+                        if (!connection_pool_->isHealthy()) {
+                            std::cerr << "Reconnecting to Binance and restoring subscriptions" << std::endl;
+                            // std::cout << "Restoring subscriptions after reconnection" << std::endl;                            
                             // Temporarily unlock to avoid deadlock
                             mutex_.unlock();
                             subscribe(subscription.trading_pairs, subscription.data_types, subscription.depth);

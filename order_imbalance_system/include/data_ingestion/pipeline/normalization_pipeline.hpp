@@ -3,7 +3,7 @@
 
 #include "data_ingestion/orderbook/order_book_types.hpp"
 #include "data_ingestion/protocol/adapter_interface.hpp"
-#include "data_ingestion/orderbook/order_book_manager.hpp"
+// #include "data_ingestion/orderbook/order_book_manager.hpp"
 #include "data_ingestion/data_quality/data_quality.hpp"
 #include "data_ingestion/time/synchronizer.hpp"
 // #include "data_ingestion/publisher/publisher.hpp"

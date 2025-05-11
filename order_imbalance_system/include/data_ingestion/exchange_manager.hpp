@@ -5,6 +5,7 @@
 #include "data_ingestion/orderbook/order_book_types.hpp"
 #include "data_ingestion/normalization/order_book_normalizer.hpp"
 #include "data_ingestion/websocket/connection_pool.hpp"
+// #include "data_ingestion/websocket/websocket_client.h"
 #include <string>
 #include <memory>
 #include <vector>
@@ -118,14 +119,13 @@ private:
     MarketDataCallback data_callback_;
     
     // Thread safety and monitoring
-    std::atomic<bool> running_;
-    std::thread monitor_thread_;
     mutable std::mutex mutex_;
-    
+    std::thread monitor_thread_;
+    std::atomic<bool> running_;  // Make sure this comes before is_connected_
+    bool is_connected_;
     // Connection parameters
     int min_connections_;
     int max_connections_;
-    bool is_connected_;
     
     // Active subscriptions
     std::vector<SubscriptionRequest> active_subscriptions_;

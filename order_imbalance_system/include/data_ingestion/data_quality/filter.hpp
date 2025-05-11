@@ -2,6 +2,7 @@
 #pragma once
 
 #include "data_ingestion/orderbook/order_book_types.hpp"
+
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -138,17 +139,6 @@ public:
     bool filter(OrderBookUpdate& update) override;
 };
 
-// Your DataQualityControl class
-class DataQualityControl {
-    public:
-        void addFilter(std::shared_ptr<DataQualityFilter> filter);
-        // Other methods...
-        
-    private:
-        std::shared_ptr<DataQualityFilter> first_filter_;
-        std::shared_ptr<DataQualityFilter> last_filter_;
-    };
-    
     // SequenceGapFilter class
 class SequenceGapFilter : public DataQualityFilter {
 public:
@@ -158,15 +148,17 @@ private:
     int max_gap_;
     std::unordered_map<std::string, int> last_sequence_numbers_;
 };
-// PriceRangeFilter class
+// In filter.hpp
 class PriceRangeFilter : public DataQualityFilter {
-public:
-    PriceRangeFilter(const std::unordered_map<std::string, double>& max_prices);
-    bool filter(OrderBookUpdate& update) override;
-private:
-    std::unordered_map<std::string, double> max_prices_;
-    double getReasonablePriceRange(const std::string& symbol) const;
-};
-
+    public:
+        // Add a default constructor
+        PriceRangeFilter() = default;
+        // Keep existing constructor
+        PriceRangeFilter(const std::unordered_map<std::string, double>& max_prices);
+        bool filter(OrderBookUpdate& update) override;
+    private:
+        std::unordered_map<std::string, double> max_prices_;
+        double getReasonablePriceRange(const std::string& symbol) const;
+    };
 } // namespace data_ingestion
 } // namespace trading

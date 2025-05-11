@@ -59,6 +59,28 @@ void ConnectionPool::initialize() {
               << connections_.size() << " connections" << std::endl;
 }
 
+bool ConnectionPool::connectAll() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    bool all_connected = true;
+    for (auto& info : connections_) {
+        if (info.connection && !info.connection->isConnected()) {
+            if (!info.connection->connect()) {
+                all_connected = false;
+            }
+        }
+    }
+    return all_connected;
+}
+void ConnectionPool::disconnectAll() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    for (auto& info : connections_) {
+        if (info.connection && info.connection->isConnected()) {
+            info.connection->disconnect();
+        }
+    }
+}
 void ConnectionPool::shutdown() {
     {
         std::lock_guard<std::mutex> lock(mutex_);
