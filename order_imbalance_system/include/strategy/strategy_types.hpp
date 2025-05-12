@@ -321,48 +321,12 @@ struct ParameterSet {
         last_updated(std::chrono::system_clock::now()) {}
     // Get a double parameter with default value if not found
     double getDouble(const std::string& name, double default_value = 0.0) const {
-        auto it = parameters_.find(name);
-        if (it == parameters_.end()) {
-            return default_value;
-        }
-        
-        // Try to convert the parameter to double
-        try {
-            if (std::holds_alternative<double>(it->second)) {
-                return std::get<double>(it->second);
-            } else if (std::holds_alternative<int>(it->second)) {
-                return static_cast<double>(std::get<int>(it->second));
-            } else if (std::holds_alternative<std::string>(it->second)) {
-                return std::stod(std::get<std::string>(it->second));
-            } else {
-                return default_value;
-            }
-        } catch (...) {
-            return default_value;
-        }
+        return getNumericParam(name, default_value);
     }
     
     // Get an integer parameter with default value if not found
     int getInt(const std::string& name, int default_value = 0) const {
-        auto it = parameters_.find(name);
-        if (it == parameters_.end()) {
-            return default_value;
-        }
-        
-        // Try to convert the parameter to int
-        try {
-            if (std::holds_alternative<int>(it->second)) {
-                return std::get<int>(it->second);
-            } else if (std::holds_alternative<double>(it->second)) {
-                return static_cast<int>(std::get<double>(it->second));
-            } else if (std::holds_alternative<std::string>(it->second)) {
-                return std::stoi(std::get<std::string>(it->second));
-            } else {
-                return default_value;
-            }
-        } catch (...) {
-            return default_value;
-        }
+        return static_cast<int>(getNumericParam(name, static_cast<double>(default_value)));
     }
     // Parameter access methods with typed getters
     double getNumericParam(const std::string& name, double default_value = 0.0) const {

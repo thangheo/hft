@@ -19,10 +19,10 @@
  #include <mutex>
  #include <memory>
  #include <functional>
-//  #include "strategy_types.hpp"
- #include "strategy/types/types.hpp"
+ #include "strategy_types.hpp"
+//  #include "strategy/types/types.hpp"
  #include "data_ingestion/orderbook/order_book.hpp"
-//  #include "data_ingestion/types.hpp"
+ #include "data_ingestion/types.hpp"
  
  namespace trading {
  namespace strategy {

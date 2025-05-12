@@ -52,59 +52,100 @@
      current_metrics_.timestamp = std::chrono::system_clock::now();
  }
  
- void LiquidityFlowMonitor::processOrderBookDelta(const OrderBookDelta& delta) {
-     std::lock_guard<std::mutex> lock(mutex_);
+void LiquidityFlowMonitor::processOrderBookDelta(const OrderBookDelta& delta) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Store delta in history
+    delta_history_.push_back(delta);
+    
+    // Remove old deltas based on window size
+    auto cutoff_time = std::chrono::system_clock::now() - 
+                      std::chrono::seconds(history_window_seconds_);
+    
+    while (!delta_history_.empty() && delta_history_.front().timestamp < cutoff_time) {
+        delta_history_.pop_front();
+    }
+    
+    // Update metrics based on this delta
+    updateLiquidityMetrics();
+    
+    // Update timestamps and sequence number
+    last_update_time_ = delta.timestamp;
+    last_sequence_number_ = delta.sequence_number;
+}
+//  void LiquidityFlowMonitor::processOrderBookSnapshots(
+//      const data_ingestion::OrderBook& prev_book,
+//      const data_ingestion::OrderBook& curr_book) {
      
-     // Store delta in history
-     delta_history_.push_back(delta);
+//      std::lock_guard<std::mutex> lock(mutex_);
      
-     // Remove old deltas based on window size
-     auto cutoff_time = std::chrono::system_clock::now() - 
-                       std::chrono::seconds(history_window_seconds_);
+//      // Store books in history
+//      order_book_history_.push_back(curr_book);
      
-     while (!delta_history_.empty() && delta_history_.front().timestamp < cutoff_time) {
-         delta_history_.pop_front();
-     }
+//      // Remove old books based on window size
+//      auto cutoff_time = std::chrono::system_clock::now() - 
+//                        std::chrono::seconds(history_window_seconds_);
      
-     // Update metrics based on this delta
-     updateLiquidityMetrics();
+//      while (!order_book_history_.empty() && 
+//             order_book_history_.front().getTimestamp() < cutoff_time) {
+//          order_book_history_.pop_front();
+//      }
      
-     // Update timestamps and sequence number
-     last_update_time_ = delta.timestamp;
-     last_sequence_number_ = delta.sequence_number;
- }
- 
- void LiquidityFlowMonitor::processOrderBookSnapshots(
-     const data_ingestion::OrderBook& prev_book,
-     const data_ingestion::OrderBook& curr_book) {
+//      // Compute delta between the two snapshots
+//      auto delta = computeDelta(
+//          prev_book.getBids(),
+//          prev_book.getAsks(),
+//          curr_book.getBids(),
+//          curr_book.getAsks(),
+//          curr_book.getTimestamp(),
+//          curr_book.getSequenceNumber());
      
-     std::lock_guard<std::mutex> lock(mutex_);
-     
-     // Store books in history
-     order_book_history_.push_back(curr_book);
-     
-     // Remove old books based on window size
-     auto cutoff_time = std::chrono::system_clock::now() - 
-                       std::chrono::seconds(history_window_seconds_);
-     
-     while (!order_book_history_.empty() && 
-            order_book_history_.front().getTimestamp() < cutoff_time) {
-         order_book_history_.pop_front();
-     }
-     
-     // Compute delta between the two snapshots
-     auto delta = computeDelta(
-         prev_book.getBids(),
-         prev_book.getAsks(),
-         curr_book.getBids(),
-         curr_book.getAsks(),
-         curr_book.getTimestamp(),
-         curr_book.getSequenceNumber());
-     
-     // Process the computed delta
-     processOrderBookDelta(delta);
- }
- 
+//      // Process the computed delta
+//      processOrderBookDelta(delta);
+//  }
+void LiquidityFlowMonitor::processOrderBookSnapshots(
+    const data_ingestion::OrderBook& prev_book,
+    const data_ingestion::OrderBook& curr_book) {
+    
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Create a copy of the current order book using a shared pointer
+    // to avoid issues with non-copyable mutex and atomic members
+    auto curr_book_ptr = std::make_shared<data_ingestion::OrderBook>(
+        curr_book.getExchangeId(), curr_book.getSymbol());
+    
+    // Apply the current snapshot to our copy
+    auto snapshot = curr_book.getSnapshot();
+    curr_book_ptr->applySnapshot(
+        curr_book.getBids(),
+        curr_book.getAsks(),
+        curr_book.getSequenceNumber(),
+        curr_book.getTimestamp());
+    
+    // Store the copied book in history
+    order_book_history_.push_back(curr_book_ptr);
+    
+    // Remove old books based on window size
+    auto cutoff_time = std::chrono::system_clock::now() - 
+                      std::chrono::seconds(history_window_seconds_);
+    
+    while (!order_book_history_.empty() && 
+           (*order_book_history_.front()).getTimestamp() < cutoff_time) {
+        order_book_history_.pop_front();
+    }
+    
+    // Compute delta between the two snapshots
+    auto delta = computeDelta(
+        prev_book.getBids(),
+        prev_book.getAsks(),
+        curr_book.getBids(),
+        curr_book.getAsks(),
+        curr_book.getTimestamp(),
+        curr_book.getSequenceNumber());
+    
+    // Process the computed delta
+    processOrderBookDelta(delta);
+}
  LiquidityMetrics LiquidityFlowMonitor::getLiquidityMetrics() const {
      std::lock_guard<std::mutex> lock(mutex_);
      return current_metrics_;
@@ -170,44 +211,46 @@
      std::lock_guard<std::mutex> lock(mutex_);
      large_order_threshold_ = threshold;
  }
- 
  void LiquidityFlowMonitor::setHistoryWindowSize(int seconds) {
-     std::lock_guard<std::mutex> lock(mutex_);
-     history_window_seconds_ = seconds;
-     
-     // Remove old data that falls outside the new window
-     auto cutoff_time = std::chrono::system_clock::now() - 
-                       std::chrono::seconds(history_window_seconds_);
-     
-     while (!delta_history_.empty() && delta_history_.front().timestamp < cutoff_time) {
-         delta_history_.pop_front();
-     }
-     
-     while (!order_book_history_.empty() && 
-            order_book_history_.front().getTimestamp() < cutoff_time) {
-         order_book_history_.pop_front();
-     }
- }
+    std::lock_guard<std::mutex> lock(mutex_);
+    history_window_seconds_ = seconds;
+    
+    // Remove old data that falls outside the new window
+    auto cutoff_time = std::chrono::system_clock::now() - 
+                      std::chrono::seconds(history_window_seconds_);
+    
+    while (!delta_history_.empty() && delta_history_.front().timestamp < cutoff_time) {
+        delta_history_.pop_front();
+    }
+    
+    // Fix: Dereference the shared pointer before accessing getTimestamp()
+    while (!order_book_history_.empty() && 
+           (*order_book_history_.front()).getTimestamp() < cutoff_time) {
+        order_book_history_.pop_front();
+    }
+}
+
  
- void LiquidityFlowMonitor::reset() {
-     std::lock_guard<std::mutex> lock(mutex_);
-     
-     // Clear all history
-     delta_history_.clear();
-     order_book_history_.clear();
-     
-     // Reset metrics
-     current_metrics_ = LiquidityMetrics();
-     current_metrics_.exchange_id = exchange_id_;
-     current_metrics_.trading_pair = trading_pair_;
-     current_metrics_.timestamp = std::chrono::system_clock::now();
-     
-     // Reset tracked values
-     typical_order_size_ = 1.0;
-     last_update_time_ = std::chrono::system_clock::now();
-     last_sequence_number_ = 0;
- }
- 
+// Reset should also handle our shared pointers
+void LiquidityFlowMonitor::reset() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Clear all history
+    delta_history_.clear();
+    order_book_history_.clear();
+    
+    // Reset metrics
+    current_metrics_ = LiquidityMetrics();
+    current_metrics_.exchange_id = exchange_id_;
+    current_metrics_.trading_pair = trading_pair_;
+    current_metrics_.timestamp = std::chrono::system_clock::now();
+    
+    // Reset tracked values
+    typical_order_size_ = 1.0;
+    last_update_time_ = std::chrono::system_clock::now();
+    last_sequence_number_ = 0;
+}
+
  OrderBookDelta LiquidityFlowMonitor::computeDelta(
      const std::vector<PriceLevel>& prev_bids,
      const std::vector<PriceLevel>& prev_asks,
@@ -482,6 +525,57 @@ std::vector<LiquidityEvent> LiquidityFlowMonitor::detectRapidLiquidityChanges(
     return events;
 }
 
+
+// When accessing order_book_history_ items, dereference the shared pointers
+// std::vector<LiquidityEvent> LiquidityFlowMonitor::detectSpreadChanges(
+//     int window_size, double threshold) const {
+    
+//     std::vector<LiquidityEvent> events;
+    
+//     // Need enough history for detection
+//     if (order_book_history_.size() < static_cast<size_t>(window_size + 1)) {
+//         return events;
+//     }
+    
+//     // Get recent order books
+//     std::vector<std::reference_wrapper<const data_ingestion::OrderBook>> recent_books;
+    
+//     // Take the window_size + 1 most recent books
+//     for (auto it = order_book_history_.end() - std::min(order_book_history_.size(), 
+//                                                         static_cast<size_t>(window_size + 1));
+//          it != order_book_history_.end(); ++it) {
+//         recent_books.push_back(std::cref(**it));
+//     }
+    
+//     // Calculate baseline spread
+//     std::vector<double> spreads;
+//     for (size_t i = 0; i < recent_books.size() - 1; ++i) {
+//         spreads.push_back(recent_books[i].get().getSpread());
+//     }
+    
+//     // Calculate average and standard deviation of spread
+//     double avg_spread = std::accumulate(spreads.begin(), spreads.end(), 0.0) / spreads.size();
+    
+//     double variance = 0.0;
+//     for (double spread : spreads) {
+//         double diff = spread - avg_spread;
+//         variance += diff * diff;
+//     }
+//     variance /= spreads.size();
+//     double std_dev = std::sqrt(variance);
+    
+//     // Check the most recent spread change
+//     double current_spread = recent_books.back().get().getSpread();
+//     double previous_spread = recent_books[recent_books.size() - 2].get().getSpread();
+//     double spread_change = current_spread - previous_spread;
+    
+//     // Rest of the method remains the same...
+    
+//     return events;
+// }
+
+
+// 2. Fix the detectSpreadChanges method
 std::vector<LiquidityEvent> LiquidityFlowMonitor::detectSpreadChanges(
     int window_size, double threshold) const {
     
@@ -492,15 +586,21 @@ std::vector<LiquidityEvent> LiquidityFlowMonitor::detectSpreadChanges(
         return events;
     }
     
-    // Get recent order books
-    auto recent_books = std::vector<data_ingestion::OrderBook>(
-        order_book_history_.end() - std::min(order_book_history_.size(), static_cast<size_t>(window_size + 1)),
-        order_book_history_.end());
+    // Get recent order books (as references to the actual OrderBook objects through dereferencing)
+    std::vector<std::reference_wrapper<const data_ingestion::OrderBook>> recent_books;
+    
+    // Take the window_size + 1 most recent books
+    for (auto it = order_book_history_.end() - std::min(order_book_history_.size(), 
+                                                        static_cast<size_t>(window_size + 1));
+         it != order_book_history_.end(); ++it) {
+        // Dereference the shared pointer to get a reference to the OrderBook
+        recent_books.push_back(std::cref(**it));
+    }
     
     // Calculate baseline spread
     std::vector<double> spreads;
     for (size_t i = 0; i < recent_books.size() - 1; ++i) {
-        spreads.push_back(recent_books[i].getSpread());
+        spreads.push_back(recent_books[i].get().getSpread());
     }
     
     // Calculate average and standard deviation of spread
@@ -515,8 +615,8 @@ std::vector<LiquidityEvent> LiquidityFlowMonitor::detectSpreadChanges(
     double std_dev = std::sqrt(variance);
     
     // Check the most recent spread change
-    double current_spread = recent_books.back().getSpread();
-    double previous_spread = recent_books[recent_books.size() - 2].getSpread();
+    double current_spread = recent_books.back().get().getSpread();
+    double previous_spread = recent_books[recent_books.size() - 2].get().getSpread();
     double spread_change = current_spread - previous_spread;
     
     // Detect significant spread changes
@@ -540,9 +640,9 @@ std::vector<LiquidityEvent> LiquidityFlowMonitor::detectSpreadChanges(
             event_type,
             exchange_id_,
             trading_pair_,
-            recent_books.back().getTimestamp(),
+            recent_books.back().get().getTimestamp(),
             direction,
-            recent_books.back().getMidPrice(),
+            recent_books.back().get().getMidPrice(),
             std::abs(spread_change),
             significance);
     }
@@ -572,7 +672,7 @@ std::vector<LiquidityEvent> LiquidityFlowMonitor::detectLiquidityImbalances(
             trading_pair_,
             std::chrono::system_clock::now(),
             direction,
-            order_book_history_.back().getMidPrice(),
+            (*order_book_history_.back()).getMidPrice(),  // Dereferenced
             std::abs(current_metrics_.flow_imbalance),
             significance);
     }

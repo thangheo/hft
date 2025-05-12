@@ -23,7 +23,8 @@
  #include "data_ingestion/orderbook/order_book.hpp"
  #include "data_ingestion/types.hpp"
 //  #include "data_ingestion/orderbook/price_level.hpp"
- 
+   
+
  namespace trading {
  namespace strategy {
  using trading::data_ingestion::PriceLevel;
@@ -330,7 +331,9 @@
      // State
      mutable std::mutex mutex_;
      std::deque<OrderBookDelta> delta_history_;
-     std::deque<data_ingestion::OrderBook> order_book_history_;
+    //  std::deque<data_ingestion::OrderBook> order_book_history_;
+    std::deque<std::shared_ptr<data_ingestion::OrderBook>> order_book_history_;
+
      LiquidityMetrics current_metrics_;
      double typical_order_size_;
      
@@ -345,5 +348,7 @@
      const std::string& trading_pair,
      const ParameterSet& params = ParameterSet());
  
+ 
+    
  } // namespace strategy
  } // namespace trading
