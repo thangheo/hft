@@ -19,6 +19,7 @@
  #include <mutex>
  #include <memory>
  #include "strategy_types.hpp"
+//  #include "strategy/types/types.hpp"
  #include "data_ingestion/orderbook/order_book.hpp"
  #include "data_ingestion/types.hpp"
 //  #include "data_ingestion/orderbook/price_level.hpp"
@@ -43,7 +44,7 @@
      double getTotalAddedBidVolume() const {
          double total = 0.0;
          for (const auto& level : added_bids) {
-             total += level.quantity;
+             total += level.getQuantity();
          }
          return total;
      }
@@ -51,7 +52,7 @@
      double getTotalRemovedBidVolume() const {
          double total = 0.0;
          for (const auto& level : removed_bids) {
-             total += level.quantity;
+             total += level.getQuantity();
          }
          return total;
      }
@@ -59,7 +60,7 @@
      double getTotalAddedAskVolume() const {
          double total = 0.0;
          for (const auto& level : added_asks) {
-             total += level.quantity;
+             total += level.getQuantity();
          }
          return total;
      }
@@ -67,7 +68,7 @@
      double getTotalRemovedAskVolume() const {
          double total = 0.0;
          for (const auto& level : removed_asks) {
-             total += level.quantity;
+             total += level.getQuantity();
          }
          return total;
      }

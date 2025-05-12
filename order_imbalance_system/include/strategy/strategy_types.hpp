@@ -20,7 +20,7 @@
  #include <functional>
  #include <optional>
  #include "common/types.hpp"
- 
+ #include <cmath>
  namespace trading {
  namespace strategy {
  
@@ -145,10 +145,10 @@
  /**
   * Represents a trading signal generated from imbalance detection
   */
- struct SignalCallback {
-     using CallbackFunction = std::function<void(const TradingSignal&)>;
-     CallbackFunction callback;  // Function to call when a signal is generated
- };
+//  struct SignalCallback {
+//      using CallbackFunction = std::function<void(const TradingSignal&)>;
+//      CallbackFunction callback;  // Function to call when a signal is generated
+//  };
 
  /**
   * Represents a price target for a trading signal
@@ -202,7 +202,7 @@
      double strength;                                 // Signal strength (0.0-1.0)
      double confidence;                               // Confidence level (0.0-1.0)
      Timestamp generation_time;                       // When the signal was generated
-     uint64_t ttl;                                    // Time-to-live in milliseconds
+     Duration ttl;                                   // Time to live for this signal
      std::vector<PriceTarget> targets;                // Price targets
      ImbalanceType source_type;                       // Type of imbalance that generated this signal
      std::map<std::string, double> signal_metrics;    // Metrics associated with this signal
@@ -221,7 +221,7 @@
      bool isValid(Timestamp current_time) const {
          auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
              current_time - generation_time).count();
-         return elapsed < ttl;
+         return elapsed < ttl.count();
      }
  
      // Calculate remaining strength based on signal decay
@@ -303,68 +303,152 @@
          thresholds[name] = value;
      }
  };
- 
  /**
-  * Represents a set of parameters for the imbalance strategy
-  */
- struct ParameterSet {
-     std::string version;                              // Version identifier
-     std::string exchange_id;                          // Exchange these parameters apply to
-     Timestamp last_updated;                           // When parameters were last updated
-     std::map<std::string, double> numeric_params;     // Numeric parameters
-     std::map<std::string, std::string> string_params; // String parameters
-     std::map<std::string, bool> bool_params;          // Boolean parameters
-     std::map<std::string, std::vector<double>> array_params; // Array parameters
-     
-     // Parameter access helpers
-     template<typename T>
-     T getParameter(const std::string& name, T default_value) const;
-     
-     template<>
-     double getParameter(const std::string& name, double default_value) const {
-         auto it = numeric_params.find(name);
-         return (it != numeric_params.end()) ? it->second : default_value;
-     }
-     
-     template<>
-     std::string getParameter(const std::string& name, std::string default_value) const {
-         auto it = string_params.find(name);
-         return (it != string_params.end()) ? it->second : default_value;
-     }
-     
-     template<>
-     bool getParameter(const std::string& name, bool default_value) const {
-         auto it = bool_params.find(name);
-         return (it != bool_params.end()) ? it->second : default_value;
-     }
-     
-     template<>
-     std::vector<double> getParameter(const std::string& name, std::vector<double> default_value) const {
-         auto it = array_params.find(name);
-         return (it != array_params.end()) ? it->second : default_value;
-     }
-     
-     // Parameter setters
-     void setParameter(const std::string& name, double value) {
-         numeric_params[name] = value;
-         last_updated = std::chrono::system_clock::now();
-     }
-     
-     void setParameter(const std::string& name, const std::string& value) {
-         string_params[name] = value;
-         last_updated = std::chrono::system_clock::now();
-     }
-     
-     void setParameter(const std::string& name, bool value) {
-         bool_params[name] = value;
-         last_updated = std::chrono::system_clock::now();
-     }
-     
-     void setParameter(const std::string& name, const std::vector<double>& value) {
-         array_params[name] = value;
-         last_updated = std::chrono::system_clock::now();
-     }
- };
+ * Represents a set of parameters for the imbalance strategy
+ */
+struct ParameterSet {
+    std::string version;                              // Version identifier
+    std::string exchange_id;                          // Exchange these parameters apply to
+    Timestamp last_updated;                           // When parameters were last updated
+    std::map<std::string, double> numeric_params;     // Numeric parameters
+    std::map<std::string, std::string> string_params; // String parameters
+    std::map<std::string, bool> bool_params;          // Boolean parameters
+    std::map<std::string, std::vector<double>> array_params; // Array parameters
+    
+    // Constructor
+    ParameterSet() : 
+        version("1.0.0"),
+        last_updated(std::chrono::system_clock::now()) {}
+    // Get a double parameter with default value if not found
+    double getDouble(const std::string& name, double default_value = 0.0) const {
+        auto it = parameters_.find(name);
+        if (it == parameters_.end()) {
+            return default_value;
+        }
+        
+        // Try to convert the parameter to double
+        try {
+            if (std::holds_alternative<double>(it->second)) {
+                return std::get<double>(it->second);
+            } else if (std::holds_alternative<int>(it->second)) {
+                return static_cast<double>(std::get<int>(it->second));
+            } else if (std::holds_alternative<std::string>(it->second)) {
+                return std::stod(std::get<std::string>(it->second));
+            } else {
+                return default_value;
+            }
+        } catch (...) {
+            return default_value;
+        }
+    }
+    
+    // Get an integer parameter with default value if not found
+    int getInt(const std::string& name, int default_value = 0) const {
+        auto it = parameters_.find(name);
+        if (it == parameters_.end()) {
+            return default_value;
+        }
+        
+        // Try to convert the parameter to int
+        try {
+            if (std::holds_alternative<int>(it->second)) {
+                return std::get<int>(it->second);
+            } else if (std::holds_alternative<double>(it->second)) {
+                return static_cast<int>(std::get<double>(it->second));
+            } else if (std::holds_alternative<std::string>(it->second)) {
+                return std::stoi(std::get<std::string>(it->second));
+            } else {
+                return default_value;
+            }
+        } catch (...) {
+            return default_value;
+        }
+    }
+    // Parameter access methods with typed getters
+    double getNumericParam(const std::string& name, double default_value = 0.0) const {
+        auto it = numeric_params.find(name);
+        return (it != numeric_params.end()) ? it->second : default_value;
+    }
+    
+    std::string getStringParam(const std::string& name, const std::string& default_value = "") const {
+        auto it = string_params.find(name);
+        return (it != string_params.end()) ? it->second : default_value;
+    }
+    
+    bool getBoolParam(const std::string& name, bool default_value = false) const {
+        auto it = bool_params.find(name);
+        return (it != bool_params.end()) ? it->second : default_value;
+    }
+    
+    std::vector<double> getArrayParam(const std::string& name, const std::vector<double>& default_value = {}) const {
+        auto it = array_params.find(name);
+        return (it != array_params.end()) ? it->second : default_value;
+    }
+    //getDo
+    // Generic type-safe parameter getter that dispatches to the appropriate typed getter
+    template<typename T>
+    T getParam(const std::string& name, const T& default_value) const {
+        if constexpr (std::is_same_v<T, double>) {
+            return getNumericParam(name, default_value);
+        } else if constexpr (std::is_same_v<T, std::string>) {
+            return getStringParam(name, default_value);
+        } else if constexpr (std::is_same_v<T, bool>) {
+            return getBoolParam(name, default_value);
+        } else if constexpr (std::is_same_v<T, std::vector<double>>) {
+            return getArrayParam(name, default_value);
+        } else {
+            static_assert(always_false<T>::value, "Unsupported parameter type");
+            return default_value; // Never reached, just to prevent compiler warnings
+        }
+    }
+    
+    // Parameter setters
+    void setParameter(const std::string& name, double value) {
+        numeric_params[name] = value;
+        updateTimestamp();
+    }
+    
+    void setParameter(const std::string& name, const std::string& value) {
+        string_params[name] = value;
+        updateTimestamp();
+    }
+    
+    void setParameter(const std::string& name, bool value) {
+        bool_params[name] = value;
+        updateTimestamp();
+    }
+    
+    void setParameter(const std::string& name, const std::vector<double>& value) {
+        array_params[name] = value;
+        updateTimestamp();
+    }
+    
+    // Generic parameter setter
+    template<typename T>
+    void setParam(const std::string& name, const T& value) {
+        if constexpr (std::is_same_v<T, double>) {
+            setParameter(name, value);
+        } else if constexpr (std::is_same_v<T, std::string>) {
+            setParameter(name, value);
+        } else if constexpr (std::is_same_v<T, bool>) {
+            setParameter(name, value);
+        } else if constexpr (std::is_same_v<T, std::vector<double>>) {
+            setParameter(name, value);
+        } else {
+            static_assert(always_false<T>::value, "Unsupported parameter type");
+        }
+    }
+    
+    // Helper to update the timestamp
+    void updateTimestamp() {
+        last_updated = std::chrono::system_clock::now();
+    }
+
+private:
+    // Helper for compile-time type checking
+    template<typename T>
+    struct always_false : std::false_type {};
+};
  
  /**
   * Strategy variant for A/B testing
