@@ -256,7 +256,7 @@ void LiquidityFlowMonitor::reset() {
      const std::vector<PriceLevel>& prev_asks,
      const std::vector<PriceLevel>& curr_bids,
      const std::vector<PriceLevel>& curr_asks,
-     Timestamp timestamp,
+     core::Timestamp timestamp,
      uint64_t sequence_number) {
      
      OrderBookDelta delta;
@@ -435,7 +435,7 @@ std::vector<LiquidityEvent> LiquidityFlowMonitor::detectRapidLiquidityChanges(
             exchange_id_,
             trading_pair_,
             latest_delta.timestamp,
-            Direction::BUY,
+            core::Direction::BUY,
             max_add_price,
             latest_delta.getTotalAddedBidVolume(),
             significance);
@@ -462,7 +462,7 @@ std::vector<LiquidityEvent> LiquidityFlowMonitor::detectRapidLiquidityChanges(
             exchange_id_,
             trading_pair_,
             latest_delta.timestamp,
-            Direction::SELL,
+            core::Direction::SELL,
             max_add_price,
             latest_delta.getTotalAddedAskVolume(),
             significance);
@@ -489,7 +489,7 @@ std::vector<LiquidityEvent> LiquidityFlowMonitor::detectRapidLiquidityChanges(
             exchange_id_,
             trading_pair_,
             latest_delta.timestamp,
-            Direction::SELL, // Removing bids often signals selling pressure
+            core::Direction::SELL, // Removing bids often signals selling pressure
             max_remove_price,
             latest_delta.getTotalRemovedBidVolume(),
             significance);
@@ -516,7 +516,7 @@ std::vector<LiquidityEvent> LiquidityFlowMonitor::detectRapidLiquidityChanges(
             exchange_id_,
             trading_pair_,
             latest_delta.timestamp,
-            Direction::BUY, // Removing asks often signals buying pressure
+            core::Direction::BUY, // Removing asks often signals buying pressure
             max_remove_price,
             latest_delta.getTotalRemovedAskVolume(),
             significance);
@@ -622,15 +622,15 @@ std::vector<LiquidityEvent> LiquidityFlowMonitor::detectSpreadChanges(
     // Detect significant spread changes
     if (std_dev > 0 && std::abs(spread_change) > threshold * std_dev) {
         LiquidityEvent::Type event_type;
-        Direction direction;
+        core::Direction direction;
         
         if (spread_change > 0) {
             event_type = LiquidityEvent::Type::SPREAD_EXPANSION;
-            direction = Direction::NEUTRAL; // Spread expansion often indicates uncertainty
+            direction = core::Direction::NEUTRAL; // Spread expansion often indicates uncertainty
         } else {
             event_type = LiquidityEvent::Type::SPREAD_COLLAPSE;
             // Spread collapse with higher volume might indicate directional movement
-            direction = current_metrics_.flow_imbalance > 0 ? Direction::BUY : Direction::SELL;
+            direction = current_metrics_.flow_imbalance > 0 ? core::Direction::BUY : core::Direction::SELL;
         }
         
         double significance = std::abs(spread_change) / (threshold * std_dev);
@@ -662,7 +662,7 @@ std::vector<LiquidityEvent> LiquidityFlowMonitor::detectLiquidityImbalances(
     
     // Check for significant bid/ask imbalance
     if (std::abs(current_metrics_.flow_imbalance) > threshold) {
-        Direction direction = current_metrics_.flow_imbalance > 0 ? Direction::BUY : Direction::SELL;
+        core::Direction direction = current_metrics_.flow_imbalance > 0 ? core::Direction::BUY : core::Direction::SELL;
         double significance = std::abs(current_metrics_.flow_imbalance) / threshold;
         significance = std::min(1.0, significance - 0.5); // Normalize to [0, 1]
         

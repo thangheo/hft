@@ -17,7 +17,9 @@
  #include <chrono>
  #include <functional>
  #include <array>
- #include "strategy_types.hpp"
+//  #include "strategy_types.hpp"
+ #include "strategy/types/parameter_set.hpp"
+ #include "strategy/types/performance_metrics.hpp"
  
  namespace trading {
  namespace strategy {

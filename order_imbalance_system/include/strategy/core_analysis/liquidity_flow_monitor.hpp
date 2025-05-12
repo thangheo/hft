@@ -18,8 +18,7 @@
  #include <deque>
  #include <mutex>
  #include <memory>
- #include "strategy_types.hpp"
-//  #include "strategy/types/types.hpp"
+ #include "strategy/types.hpp"
  #include "data_ingestion/orderbook/order_book.hpp"
  #include "data_ingestion/types.hpp"
 //  #include "data_ingestion/orderbook/price_level.hpp"
@@ -34,7 +33,7 @@
  struct OrderBookDelta {
      std::string exchange_id;
      std::string trading_pair;
-     Timestamp timestamp;
+     core::Timestamp timestamp;
      uint64_t sequence_number;
      std::vector<PriceLevel> added_bids;
      std::vector<PriceLevel> removed_bids;
@@ -81,7 +80,7 @@
  struct LiquidityMetrics {
      std::string exchange_id;
      std::string trading_pair;
-     Timestamp timestamp;
+     core::Timestamp timestamp;
      
      // Bid-side metrics
      double bid_add_rate = 0.0;             // Rate of order additions on bid side
@@ -121,15 +120,15 @@
      Type type;
      std::string exchange_id;
      std::string trading_pair;
-     Timestamp timestamp;
-     Direction direction;          // Direction implied by this event
+     core::Timestamp timestamp;
+     core::Direction direction;          // core::Direction implied by this event
      double price_level;           // Price level where event occurred
      double quantity;              // Quantity involved
      double significance;          // Significance score (0.0-1.0)
      std::map<std::string, double> metrics;
      
      LiquidityEvent(Type t, const std::string& exchange, const std::string& pair,
-                   Timestamp ts, Direction dir, double price, double qty, double sig)
+                   core::Timestamp ts, core::Direction dir, double price, double qty, double sig)
          : type(t), exchange_id(exchange), trading_pair(pair),
            timestamp(ts), direction(dir), price_level(price),
            quantity(qty), significance(sig) {}
@@ -140,8 +139,8 @@
   */
  struct LiquidityEvents {
      std::vector<LiquidityEvent> events;
-     Timestamp start_time;
-     Timestamp end_time;
+     core::Timestamp start_time;
+     core::Timestamp end_time;
      
      bool hasSignificantEvents(double threshold = 0.7) const {
          for (const auto& event : events) {
@@ -260,7 +259,7 @@
       * @param prev_asks Previous asks
       * @param curr_bids Current bids
       * @param curr_asks Current asks
-      * @param timestamp Timestamp for the delta
+      * @param timestamp core::Timestamp for the delta
       * @param sequence_number Sequence number for the delta
       * @return Computed order book delta
       */
@@ -269,7 +268,7 @@
          const std::vector<PriceLevel>& prev_asks,
          const std::vector<PriceLevel>& curr_bids,
          const std::vector<PriceLevel>& curr_asks,
-         Timestamp timestamp,
+         core::Timestamp timestamp,
          uint64_t sequence_number);
      
      /**
@@ -338,7 +337,7 @@
      double typical_order_size_;
      
      // Last processed data
-     Timestamp last_update_time_;
+     core::Timestamp last_update_time_;
      uint64_t last_sequence_number_;
  };
  
