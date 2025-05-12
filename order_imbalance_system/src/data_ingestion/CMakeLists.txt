@@ -36,7 +36,7 @@ target_include_directories(data_ingestion
 target_link_libraries(data_ingestion
     PUBLIC
         common
-        proto_libs
+        proto_lib
         Boost::system
         Boost::filesystem
         OpenSSL::SSL
@@ -45,6 +45,5 @@ target_link_libraries(data_ingestion
         ${Protobuf_LIBRARIES}
         ${gRPC_LIBRARIES}
 )
-
 # Add websocket directory for specific build rules if needed
 add_subdirectory(websocket)
