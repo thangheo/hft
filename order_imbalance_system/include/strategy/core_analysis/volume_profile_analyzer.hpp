@@ -17,7 +17,8 @@
  #include <deque>
  #include <mutex>
  #include <memory>
- #include "strategy_types.hpp"
+ #include "strategy/types.hpp"
+
  #include "data_ingestion/orderbook/order_book.hpp"
  
  namespace trading {
@@ -212,7 +213,7 @@
       * @param is_buy True if the trade was a buy (taker bought)
       * @param timestamp Trade timestamp
       */
-     virtual void processTrade(double price, double volume, bool is_buy, Timestamp timestamp);
+     virtual void processTrade(double price, double volume, bool is_buy, core::Timestamp timestamp);
      
      /**
       * Update volume profile based on order book snapshot

@@ -35,7 +35,7 @@ This document provides instructions for transitioning to the new type system.
 
     ```cpp
     // OLD
-    #include "strategy_types.hpp"
+    #include "strategy/types.hpp"
 
     // NEW
     #include "strategy/types.hpp"

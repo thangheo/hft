@@ -6,8 +6,8 @@
  * @date May 6, 2025
  */
 
- #include "strategy/volume_profile_analyzer.hpp"
- #include "strategy/strategy_metrics.hpp"
+ #include "strategy/core_analysis/volume_profile_analyzer.hpp"    
+ #include "strategy/core_analysis/strategy_metrics.hpp"
  #include <algorithm>
  #include <numeric>
  #include <cmath>
@@ -336,7 +336,7 @@
  }
  
  void VolumeProfileAnalyzer::processTrade(
-     double price, double volume, bool is_buy, Timestamp timestamp) {
+     double price, double volume, bool is_buy, core::Timestamp timestamp) {
      
      // Find the relevant price range
      for (size_t i = 0; i < current_profile_.price_ranges.size(); ++i) {
@@ -446,7 +446,7 @@
      }
      
      // Group trades by price level (using the same ranges as the profile)
-     std::map<size_t, std::vector<std::tuple<double, double, bool, Timestamp>>> trades_by_level;
+     std::map<size_t, std::vector<std::tuple<double, double, bool, core::Timestamp>>> trades_by_level;
      
      for (const auto& trade : recent_trades_) {
          double price = std::get<0>(trade);
@@ -467,7 +467,7 @@
          }
          
          // Sort trades by timestamp
-         std::vector<std::tuple<double, double, bool, Timestamp>> sorted_trades = level_trades;
+         std::vector<std::tuple<double, double, bool, core::Timestamp>> sorted_trades = level_trades;
          std::sort(sorted_trades.begin(), sorted_trades.end(), 
              [](const auto& a, const auto& b) {
                  return std::get<3>(a) < std::get<3>(b);

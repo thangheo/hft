@@ -599,7 +599,15 @@
              z_score = 2.326;
          } else {
              // Simplified approximation of inverse normal CDF
-             z_score = std::sqrt(2.0) * std::erfinv(2.0 * confidence_level - 1.0);
+             // Using Abramowitz and Stegun approximation for inverse error function
+             double p = 2.0 * confidence_level - 1.0;
+             if (p >= 0) {
+                 double t = std::sqrt(-2.0 * std::log((1.0 - p) / 2.0));
+                 z_score = t - (2.30753 + 0.27061 * t) / (1.0 + 0.99229 * t + 0.04481 * t * t);
+             } else {
+                 double t = std::sqrt(-2.0 * std::log((1.0 + p) / 2.0));
+                 z_score = -t + (2.30753 + 0.27061 * t) / (1.0 + 0.99229 * t + 0.04481 * t * t);
+             }
          }
          
          // Calculate parametric VaR

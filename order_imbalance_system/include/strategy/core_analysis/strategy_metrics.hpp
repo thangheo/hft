@@ -17,7 +17,7 @@
  #include <chrono>
  #include <functional>
  #include <array>
-//  #include "strategy_types.hpp"
+//  #include "strategy/types.hpp"
  #include "strategy/types/parameter_set.hpp"
  #include "strategy/types/performance_metrics.hpp"
  
@@ -290,7 +290,34 @@
      static std::vector<size_t> detectChangePoints(
          const std::vector<double>& values,
          const std::string& method = "cusum");
+
+     /**
+      * Helper function to detect change points using CUSUM method
+      * 
+      * @param values Input values
+      * @return Vector of change point indices
+      */
+     static std::vector<size_t> detectChangePointsCusum(
+         const std::vector<double>& values);
+
+     /**
+      * Helper function to detect change points using binary segmentation
+      * 
+      * @param values Input values
+      * @return Vector of change point indices
+      */
+     static std::vector<size_t> detectChangePointsBinarySegmentation(
+         const std::vector<double>& values);
+
+     /**
+      * Implementation of inverse error function for use in VaR calculation
+      * 
+      * @param x Input value between -1 and 1
+      * @return Inverse error function
+      */
+     static double erfinv(double x);
  };
+
  
  } // namespace strategy
  } // namespace trading

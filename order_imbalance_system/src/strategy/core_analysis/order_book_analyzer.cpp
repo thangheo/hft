@@ -7,6 +7,7 @@
  */
 
  #include "strategy/core_analysis/order_book_analyzer.hpp"
+ #include "strategy/core_analysis/strategy_metrics.hpp" // Include for StrategyMetrics::updateEMA function
  #include <algorithm>
  #include <numeric>
  #include <cmath>
@@ -61,7 +62,8 @@
      
      // Initialize metrics with snapshot metadata
      current_metrics_.exchange_id = exchange_id_;
-     current_metrics_.trading_pair = trading_pair_;
+     // Using the appropriate method to create a Symbol from string
+     current_metrics_.trading_pair = core::Symbol::fromString(trading_pair_); // Using factory method instead of constructor
      current_metrics_.timestamp = snapshot.getTimestamp();
      current_metrics_.sequence_number = snapshot.getSequenceNumber();
      
@@ -123,7 +125,8 @@
      }
      
      // For non-depth metrics, use the getMetric method from OrderBookMetrics
-     return current_metrics_.getMetric(metric_name);
+     // Fix: Resolve ambiguous function call by specifying default value
+     return current_metrics_.getMetric(metric_name, 0.0);
  }
  
  void OrderBookAnalyzer::registerMetricsCallback(MetricsCallback callback) {
@@ -154,7 +157,8 @@
      // Reset current metrics to defaults
      current_metrics_ = OrderBookMetrics();
      current_metrics_.exchange_id = exchange_id_;
-     current_metrics_.trading_pair = trading_pair_;
+     // Using factory method to create Symbol
+     current_metrics_.trading_pair = core::Symbol::fromString(trading_pair_);
      
      // Reset timestamps
      last_update_time_ = std::chrono::system_clock::now();
@@ -198,6 +202,7 @@
      if (ema_mid_price_ == 0.0) {
          ema_mid_price_ = current_metrics_.mid_price;
      } else {
+         // Using the StrategyMetrics::updateEMA function from strategy namespace
          ema_mid_price_ = StrategyMetrics::updateEMA(
              ema_mid_price_, current_metrics_.mid_price, ema_alpha_);
      }
@@ -206,6 +211,7 @@
      if (ema_spread_ == 0.0) {
          ema_spread_ = current_metrics_.spread;
      } else {
+         // Using the StrategyMetrics::updateEMA function from strategy namespace
          ema_spread_ = StrategyMetrics::updateEMA(
              ema_spread_, current_metrics_.spread, ema_alpha_);
      }
@@ -342,6 +348,7 @@
      if (ema_volume_imbalance_ == 0.0) {
          ema_volume_imbalance_ = current_metrics_.volume_imbalance;
      } else {
+         // Using the StrategyMetrics::updateEMA function from strategy namespace
          ema_volume_imbalance_ = StrategyMetrics::updateEMA(
              ema_volume_imbalance_, current_metrics_.volume_imbalance, ema_alpha_);
      }
