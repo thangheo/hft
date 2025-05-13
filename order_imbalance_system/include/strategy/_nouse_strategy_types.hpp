@@ -40,84 +40,84 @@
  /**
   * Enum for direction of trading signals and imbalances
   */
- enum class Direction {
-     BUY,
-     SELL,
-     NEUTRAL
- };
+//  enum class Direction {
+//      BUY,
+//      SELL,
+//      NEUTRAL
+//  };
  
  /**
   * String conversion for Direction enum
   */
- inline std::string directionToString(Direction direction) {
-     switch (direction) {
-         case Direction::BUY: return "buy";
-         case Direction::SELL: return "sell";
-         case Direction::NEUTRAL: return "neutral";
-         default: return "unknown";
-     }
- }
+//  inline std::string directionToString(Direction direction) {
+//      switch (direction) {
+//          case Direction::BUY: return "buy";
+//          case Direction::SELL: return "sell";
+//          case Direction::NEUTRAL: return "neutral";
+//          default: return "unknown";
+//      }
+//  }
  
  /**
   * Enum for different types of order book imbalances
   */
- enum class ImbalanceType {
-     VOLUME_IMBALANCE,              // Significant difference between bid and ask volume
-     PRICE_LEVEL_IMBALANCE,         // Imbalance across multiple price levels
-     LIQUIDITY_REMOVAL,             // Sudden removal of liquidity from one side
-     ORDER_FLOW_IMBALANCE,          // Directional bias in order submissions
-     LARGE_ORDER_APPEARANCE,        // Large orders appearing in the book
-     LARGE_ORDER_DISAPPEARANCE,     // Large orders being removed from the book
-     PRICE_LEVEL_CONCENTRATION,     // Concentration of volume at specific price levels
-     BID_ASK_SPREAD_CHANGE,         // Significant change in the bid-ask spread
-     MARKET_DEPTH_CHANGE,           // Significant change in market depth
-     LIQUIDITY_FLOW_IMBALANCE,      // Imbalance in liquidity flow
-     ABNORMAL_SPREAD,               // Abnormal spread between bid and ask prices
-     LIQUIDITY_IMBALANCE,        // General liquidity imbalance
-     TREND_CONTINUATION,            // Continuation of a price trend
-     TREND_REVERSAL,                // Reversal of a price trend
-     CUSTOM                         // Custom imbalance type defined by strategy
- };
+//  enum class ImbalanceType {
+//      VOLUME_IMBALANCE,              // Significant difference between bid and ask volume
+//      PRICE_LEVEL_IMBALANCE,         // Imbalance across multiple price levels
+//      LIQUIDITY_REMOVAL,             // Sudden removal of liquidity from one side
+//      ORDER_FLOW_IMBALANCE,          // Directional bias in order submissions
+//      LARGE_ORDER_APPEARANCE,        // Large orders appearing in the book
+//      LARGE_ORDER_DISAPPEARANCE,     // Large orders being removed from the book
+//      PRICE_LEVEL_CONCENTRATION,     // Concentration of volume at specific price levels
+//      BID_ASK_SPREAD_CHANGE,         // Significant change in the bid-ask spread
+//      MARKET_DEPTH_CHANGE,           // Significant change in market depth
+//      LIQUIDITY_FLOW_IMBALANCE,      // Imbalance in liquidity flow
+//      ABNORMAL_SPREAD,               // Abnormal spread between bid and ask prices
+//      LIQUIDITY_IMBALANCE,        // General liquidity imbalance
+//      TREND_CONTINUATION,            // Continuation of a price trend
+//      TREND_REVERSAL,                // Reversal of a price trend
+//      CUSTOM                         // Custom imbalance type defined by strategy
+//  };
  
  /**
   * ImbalanceThreshold structure to define thresholds for different imbalance types
   */
-    struct ImbalanceThreshold {
-        double min_threshold;          // Minimum threshold for detection
-        double max_threshold;          // Maximum threshold for detection
-        double activation_threshold;   // Threshold to activate the signal  
+//     struct ImbalanceThreshold {
+//         double min_threshold;          // Minimum threshold for detection
+//         double max_threshold;          // Maximum threshold for detection
+//         double activation_threshold;   // Threshold to activate the signal  
 
-        ImbalanceThreshold(double min = 0.0, double max = 1.0, double activation = 0.5)
-            : min_threshold(min), max_threshold(max), activation_threshold(activation) {}
-    };
- /**
-  * String conversion for ImbalanceType enum
-  */
- inline std::string imbalanceTypeToString(ImbalanceType type) {
-     switch (type) {
-         case ImbalanceType::VOLUME_IMBALANCE: return "volume_imbalance";
-         case ImbalanceType::PRICE_LEVEL_IMBALANCE: return "price_level_imbalance";
-         case ImbalanceType::LIQUIDITY_REMOVAL: return "liquidity_removal";
-         case ImbalanceType::ORDER_FLOW_IMBALANCE: return "order_flow_imbalance";
-         case ImbalanceType::LARGE_ORDER_APPEARANCE: return "large_order_appearance";
-         case ImbalanceType::LARGE_ORDER_DISAPPEARANCE: return "large_order_disappearance";
-         case ImbalanceType::PRICE_LEVEL_CONCENTRATION: return "price_level_concentration";
-         case ImbalanceType::BID_ASK_SPREAD_CHANGE: return "bid_ask_spread_change";
-         case ImbalanceType::MARKET_DEPTH_CHANGE: return "market_depth_change";
-         case ImbalanceType::CUSTOM: return "custom";
-         default: return "unknown";
-     }
- }
+//         ImbalanceThreshold(double min = 0.0, double max = 1.0, double activation = 0.5)
+//             : min_threshold(min), max_threshold(max), activation_threshold(activation) {}
+//     };
+//  /**
+//   * String conversion for ImbalanceType enum
+//   */
+//  inline std::string imbalanceTypeToString(ImbalanceType type) {
+//      switch (type) {
+//          case ImbalanceType::VOLUME_IMBALANCE: return "volume_imbalance";
+//          case ImbalanceType::PRICE_LEVEL_IMBALANCE: return "price_level_imbalance";
+//          case ImbalanceType::LIQUIDITY_REMOVAL: return "liquidity_removal";
+//          case ImbalanceType::ORDER_FLOW_IMBALANCE: return "order_flow_imbalance";
+//          case ImbalanceType::LARGE_ORDER_APPEARANCE: return "large_order_appearance";
+//          case ImbalanceType::LARGE_ORDER_DISAPPEARANCE: return "large_order_disappearance";
+//          case ImbalanceType::PRICE_LEVEL_CONCENTRATION: return "price_level_concentration";
+//          case ImbalanceType::BID_ASK_SPREAD_CHANGE: return "bid_ask_spread_change";
+//          case ImbalanceType::MARKET_DEPTH_CHANGE: return "market_depth_change";
+//          case ImbalanceType::CUSTOM: return "custom";
+//          default: return "unknown";
+//      }
+//  }
  
  /**
   * Level of confidence in detected imbalance or signal
   */
- enum class ConfidenceLevel {
-     LOW,
-     MEDIUM,
-     HIGH,
-     VERY_HIGH
- };
+//  enum class ConfidenceLevel {
+//      LOW,
+//      MEDIUM,
+//      HIGH,
+//      VERY_HIGH
+//  };
 /*
 *StrategyConfig structure to hold configuration parameters
 */
@@ -147,117 +147,107 @@
      Duration expected_time;       // Expected time to reach target
  };
  /**
-  * VolatilityLevel enum for categorizing market volatility
-  */
-    enum class VolatilityLevel {
-        VERY_LOW,
-        LOW,
-        NORMAL,
-        HIGH,
-        VERY_HIGH
-    };
- /**
   * Represents an imbalance event detected in the order book
   */
- struct ImbalanceEvent {
-     ImbalanceType type;                                // Type of imbalance detected
-     Direction direction;                               // Direction of imbalance (buy/sell)
-     double strength;                                   // Normalized strength (0.0-1.0)
-     Timestamp detection_time;                          // When the imbalance was detected
-     double primary_metric;                             // Primary metric value for this imbalance
-     std::map<std::string, double> supporting_metrics;  // Additional metrics supporting the imbalance
-     uint64_t event_id;                                 // Unique identifier for this event
-     ConfidenceLevel confidence;                        // Confidence level in this imbalance
+//  struct ImbalanceEvent {
+//      ImbalanceType type;                                // Type of imbalance detected
+//      Direction direction;                               // Direction of imbalance (buy/sell)
+//      double strength;                                   // Normalized strength (0.0-1.0)
+//      Timestamp detection_time;                          // When the imbalance was detected
+//      double primary_metric;                             // Primary metric value for this imbalance
+//      std::map<std::string, double> supporting_metrics;  // Additional metrics supporting the imbalance
+//      uint64_t event_id;                                 // Unique identifier for this event
+//      ConfidenceLevel confidence;                        // Confidence level in this imbalance
  
-     // Constructor with required fields
-     ImbalanceEvent(ImbalanceType t, Direction d, double s, Timestamp dt)
-         : type(t), direction(d), strength(s), detection_time(dt),
-           primary_metric(0.0), event_id(0), confidence(ConfidenceLevel::MEDIUM) {}
+//      // Constructor with required fields
+//      ImbalanceEvent(ImbalanceType t, Direction d, double s, Timestamp dt)
+//          : type(t), direction(d), strength(s), detection_time(dt),
+//            primary_metric(0.0), event_id(0), confidence(ConfidenceLevel::MEDIUM) {}
      
-     // Default constructor
-     ImbalanceEvent() 
-         : type(ImbalanceType::VOLUME_IMBALANCE), direction(Direction::NEUTRAL),
-           strength(0.0), detection_time(Timestamp()), primary_metric(0.0),
-           event_id(0), confidence(ConfidenceLevel::MEDIUM) {}
- };
+//      // Default constructor
+//      ImbalanceEvent() 
+//          : type(ImbalanceType::VOLUME_IMBALANCE), direction(Direction::NEUTRAL),
+//            strength(0.0), detection_time(Timestamp()), primary_metric(0.0),
+//            event_id(0), confidence(ConfidenceLevel::MEDIUM) {}
+//  };
  
  /**
   * Represents a trading signal generated from imbalance detection
   */
- struct TradingSignal {
-     SignalId id;                                     // Unique identifier
-     Direction direction;                             // Buy or sell
-     double strength;                                 // Signal strength (0.0-1.0)
-     double confidence;                               // Confidence level (0.0-1.0)
-     Timestamp generation_time;                       // When the signal was generated
-     Duration ttl;                                   // Time to live for this signal
-     std::vector<PriceTarget> targets;                // Price targets
-     ImbalanceType source_type;                       // Type of imbalance that generated this signal
-     std::map<std::string, double> signal_metrics;    // Metrics associated with this signal
+//  struct TradingSignal {
+//      SignalId id;                                     // Unique identifier
+//      Direction direction;                             // Buy or sell
+//      double strength;                                 // Signal strength (0.0-1.0)
+//      double confidence;                               // Confidence level (0.0-1.0)
+//      Timestamp generation_time;                       // When the signal was generated
+//      Duration ttl;                                   // Time to live for this signal
+//      std::vector<PriceTarget> targets;                // Price targets
+//      ImbalanceType source_type;                       // Type of imbalance that generated this signal
+//      std::map<std::string, double> signal_metrics;    // Metrics associated with this signal
  
-     // Constructor with required fields
-     TradingSignal(SignalId sid, Direction d, double s, Timestamp gt)
-         : id(sid), direction(d), strength(s), confidence(0.5), 
-           generation_time(gt), ttl(0), source_type(ImbalanceType::VOLUME_IMBALANCE) {}
+//      // Constructor with required fields
+//      TradingSignal(SignalId sid, Direction d, double s, Timestamp gt)
+//          : id(sid), direction(d), strength(s), confidence(0.5), 
+//            generation_time(gt), ttl(0), source_type(ImbalanceType::VOLUME_IMBALANCE) {}
      
-     // Default constructor
-     TradingSignal()
-         : id(""), direction(Direction::NEUTRAL), strength(0.0), confidence(0.0),
-           generation_time(Timestamp()), ttl(0), source_type(ImbalanceType::VOLUME_IMBALANCE) {}
+//      // Default constructor
+//      TradingSignal()
+//          : id(""), direction(Direction::NEUTRAL), strength(0.0), confidence(0.0),
+//            generation_time(Timestamp()), ttl(0), source_type(ImbalanceType::VOLUME_IMBALANCE) {}
      
-     // Check if signal is still valid based on TTL
-     bool isValid(Timestamp current_time) const {
-         auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
-             current_time - generation_time).count();
-         return elapsed < ttl.count();
-     }
+//      // Check if signal is still valid based on TTL
+//      bool isValid(Timestamp current_time) const {
+//          auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
+//              current_time - generation_time).count();
+//          return elapsed < ttl.count();
+//      }
  
-     // Calculate remaining strength based on signal decay
-     double getRemainingStrength(Timestamp current_time, double decay_rate = 0.0) const {
-         if (decay_rate <= 0.0) {
-             return isValid(current_time) ? strength : 0.0;
-         }
+//      // Calculate remaining strength based on signal decay
+//      double getRemainingStrength(Timestamp current_time, double decay_rate = 0.0) const {
+//          if (decay_rate <= 0.0) {
+//              return isValid(current_time) ? strength : 0.0;
+//          }
          
-         auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
-             current_time - generation_time).count();
+//          auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+//              current_time - generation_time).count();
          
-         // Exponential decay formula: strength * e^(-decay_rate * elapsed_time)
-         double decay_factor = std::exp(-decay_rate * elapsed_ms / 1000.0);
-         return strength * decay_factor;
-     }
- };
+//          // Exponential decay formula: strength * e^(-decay_rate * elapsed_time)
+//          double decay_factor = std::exp(-decay_rate * elapsed_ms / 1000.0);
+//          return strength * decay_factor;
+//      }
+//  };
  
  /**
   * Represents a set of order book metrics
   */
- struct OrderBookMetrics {
-     std::string exchange_id;                       // Exchange identifier
-     std::string trading_pair;                      // Trading pair
-     Timestamp timestamp;                           // Timestamp of these metrics
-     std::map<std::string, double> metrics;         // Map of metric name to value
+//  struct OrderBookMetrics {
+//      std::string exchange_id;                       // Exchange identifier
+//      std::string trading_pair;                      // Trading pair
+//      Timestamp timestamp;                           // Timestamp of these metrics
+//      std::map<std::string, double> metrics;         // Map of metric name to value
      
-     // Helper methods to access common metrics
-     double getBidAskRatio(int depth = 10) const {
-         return getMetric("bid_ask_ratio_" + std::to_string(depth));
-     }
+//      // Helper methods to access common metrics
+//      double getBidAskRatio(int depth = 10) const {
+//          return getMetric("bid_ask_ratio_" + std::to_string(depth));
+//      }
      
-     double getBidAskImbalance(int depth = 10) const {
-         return getMetric("bid_ask_imbalance_" + std::to_string(depth));
-     }
+//      double getBidAskImbalance(int depth = 10) const {
+//          return getMetric("bid_ask_imbalance_" + std::to_string(depth));
+//      }
      
-     double getMetric(const std::string& name) const {
-         auto it = metrics.find(name);
-         return (it != metrics.end()) ? it->second : 0.0;
-     }
+//      double getMetric(const std::string& name) const {
+//          auto it = metrics.find(name);
+//          return (it != metrics.end()) ? it->second : 0.0;
+//      }
  
-     // Default constructor
-     OrderBookMetrics()
-         : exchange_id(""), trading_pair(""), timestamp(Timestamp()) {}
+//      // Default constructor
+//      OrderBookMetrics()
+//          : exchange_id(""), trading_pair(""), timestamp(Timestamp()) {}
          
-     // Constructor with exchange and trading pair
-     OrderBookMetrics(const std::string& exchange, const std::string& pair)
-         : exchange_id(exchange), trading_pair(pair), timestamp(std::chrono::system_clock::now()) {}
- };
+//      // Constructor with exchange and trading pair
+//      OrderBookMetrics(const std::string& exchange, const std::string& pair)
+//          : exchange_id(exchange), trading_pair(pair), timestamp(std::chrono::system_clock::now()) {}
+//  };
  
  /**
   * Represents a set of thresholds for imbalance detection
@@ -291,116 +281,116 @@
          thresholds[name] = value;
      }
  };
- /**
- * Represents a set of parameters for the imbalance strategy
- */
-struct ParameterSet {
-    std::string version;                              // Version identifier
-    std::string exchange_id;                          // Exchange these parameters apply to
-    Timestamp last_updated;                           // When parameters were last updated
-    std::map<std::string, double> numeric_params;     // Numeric parameters
-    std::map<std::string, std::string> string_params; // String parameters
-    std::map<std::string, bool> bool_params;          // Boolean parameters
-    std::map<std::string, std::vector<double>> array_params; // Array parameters
+//  /**
+//  * Represents a set of parameters for the imbalance strategy
+//  */
+// struct ParameterSet {
+//     std::string version;                              // Version identifier
+//     std::string exchange_id;                          // Exchange these parameters apply to
+//     Timestamp last_updated;                           // When parameters were last updated
+//     std::map<std::string, double> numeric_params;     // Numeric parameters
+//     std::map<std::string, std::string> string_params; // String parameters
+//     std::map<std::string, bool> bool_params;          // Boolean parameters
+//     std::map<std::string, std::vector<double>> array_params; // Array parameters
     
-    // Constructor
-    ParameterSet() : 
-        version("1.0.0"),
-        last_updated(std::chrono::system_clock::now()) {}
-    // Get a double parameter with default value if not found
-    double getDouble(const std::string& name, double default_value = 0.0) const {
-        return getNumericParam(name, default_value);
-    }
+//     // Constructor
+//     ParameterSet() : 
+//         version("1.0.0"),
+//         last_updated(std::chrono::system_clock::now()) {}
+//     // Get a double parameter with default value if not found
+//     double getDouble(const std::string& name, double default_value = 0.0) const {
+//         return getNumericParam(name, default_value);
+//     }
     
-    // Get an integer parameter with default value if not found
-    int getInt(const std::string& name, int default_value = 0) const {
-        return static_cast<int>(getNumericParam(name, static_cast<double>(default_value)));
-    }
-    // Parameter access methods with typed getters
-    double getNumericParam(const std::string& name, double default_value = 0.0) const {
-        auto it = numeric_params.find(name);
-        return (it != numeric_params.end()) ? it->second : default_value;
-    }
+//     // Get an integer parameter with default value if not found
+//     int getInt(const std::string& name, int default_value = 0) const {
+//         return static_cast<int>(getNumericParam(name, static_cast<double>(default_value)));
+//     }
+//     // Parameter access methods with typed getters
+//     double getNumericParam(const std::string& name, double default_value = 0.0) const {
+//         auto it = numeric_params.find(name);
+//         return (it != numeric_params.end()) ? it->second : default_value;
+//     }
     
-    std::string getStringParam(const std::string& name, const std::string& default_value = "") const {
-        auto it = string_params.find(name);
-        return (it != string_params.end()) ? it->second : default_value;
-    }
+//     std::string getStringParam(const std::string& name, const std::string& default_value = "") const {
+//         auto it = string_params.find(name);
+//         return (it != string_params.end()) ? it->second : default_value;
+//     }
     
-    bool getBoolParam(const std::string& name, bool default_value = false) const {
-        auto it = bool_params.find(name);
-        return (it != bool_params.end()) ? it->second : default_value;
-    }
+//     bool getBoolParam(const std::string& name, bool default_value = false) const {
+//         auto it = bool_params.find(name);
+//         return (it != bool_params.end()) ? it->second : default_value;
+//     }
     
-    std::vector<double> getArrayParam(const std::string& name, const std::vector<double>& default_value = {}) const {
-        auto it = array_params.find(name);
-        return (it != array_params.end()) ? it->second : default_value;
-    }
-    //getDo
-    // Generic type-safe parameter getter that dispatches to the appropriate typed getter
-    template<typename T>
-    T getParam(const std::string& name, const T& default_value) const {
-        if constexpr (std::is_same_v<T, double>) {
-            return getNumericParam(name, default_value);
-        } else if constexpr (std::is_same_v<T, std::string>) {
-            return getStringParam(name, default_value);
-        } else if constexpr (std::is_same_v<T, bool>) {
-            return getBoolParam(name, default_value);
-        } else if constexpr (std::is_same_v<T, std::vector<double>>) {
-            return getArrayParam(name, default_value);
-        } else {
-            static_assert(always_false<T>::value, "Unsupported parameter type");
-            return default_value; // Never reached, just to prevent compiler warnings
-        }
-    }
+//     std::vector<double> getArrayParam(const std::string& name, const std::vector<double>& default_value = {}) const {
+//         auto it = array_params.find(name);
+//         return (it != array_params.end()) ? it->second : default_value;
+//     }
+//     //getDo
+//     // Generic type-safe parameter getter that dispatches to the appropriate typed getter
+//     template<typename T>
+//     T getParam(const std::string& name, const T& default_value) const {
+//         if constexpr (std::is_same_v<T, double>) {
+//             return getNumericParam(name, default_value);
+//         } else if constexpr (std::is_same_v<T, std::string>) {
+//             return getStringParam(name, default_value);
+//         } else if constexpr (std::is_same_v<T, bool>) {
+//             return getBoolParam(name, default_value);
+//         } else if constexpr (std::is_same_v<T, std::vector<double>>) {
+//             return getArrayParam(name, default_value);
+//         } else {
+//             static_assert(always_false<T>::value, "Unsupported parameter type");
+//             return default_value; // Never reached, just to prevent compiler warnings
+//         }
+//     }
     
-    // Parameter setters
-    void setParameter(const std::string& name, double value) {
-        numeric_params[name] = value;
-        updateTimestamp();
-    }
+//     // Parameter setters
+//     void setParameter(const std::string& name, double value) {
+//         numeric_params[name] = value;
+//         updateTimestamp();
+//     }
     
-    void setParameter(const std::string& name, const std::string& value) {
-        string_params[name] = value;
-        updateTimestamp();
-    }
+//     void setParameter(const std::string& name, const std::string& value) {
+//         string_params[name] = value;
+//         updateTimestamp();
+//     }
     
-    void setParameter(const std::string& name, bool value) {
-        bool_params[name] = value;
-        updateTimestamp();
-    }
+//     void setParameter(const std::string& name, bool value) {
+//         bool_params[name] = value;
+//         updateTimestamp();
+//     }
     
-    void setParameter(const std::string& name, const std::vector<double>& value) {
-        array_params[name] = value;
-        updateTimestamp();
-    }
+//     void setParameter(const std::string& name, const std::vector<double>& value) {
+//         array_params[name] = value;
+//         updateTimestamp();
+//     }
     
-    // Generic parameter setter
-    template<typename T>
-    void setParam(const std::string& name, const T& value) {
-        if constexpr (std::is_same_v<T, double>) {
-            setParameter(name, value);
-        } else if constexpr (std::is_same_v<T, std::string>) {
-            setParameter(name, value);
-        } else if constexpr (std::is_same_v<T, bool>) {
-            setParameter(name, value);
-        } else if constexpr (std::is_same_v<T, std::vector<double>>) {
-            setParameter(name, value);
-        } else {
-            static_assert(always_false<T>::value, "Unsupported parameter type");
-        }
-    }
+//     // Generic parameter setter
+//     template<typename T>
+//     void setParam(const std::string& name, const T& value) {
+//         if constexpr (std::is_same_v<T, double>) {
+//             setParameter(name, value);
+//         } else if constexpr (std::is_same_v<T, std::string>) {
+//             setParameter(name, value);
+//         } else if constexpr (std::is_same_v<T, bool>) {
+//             setParameter(name, value);
+//         } else if constexpr (std::is_same_v<T, std::vector<double>>) {
+//             setParameter(name, value);
+//         } else {
+//             static_assert(always_false<T>::value, "Unsupported parameter type");
+//         }
+//     }
     
-    // Helper to update the timestamp
-    void updateTimestamp() {
-        last_updated = std::chrono::system_clock::now();
-    }
+//     // Helper to update the timestamp
+//     void updateTimestamp() {
+//         last_updated = std::chrono::system_clock::now();
+//     }
 
-private:
-    // Helper for compile-time type checking
-    template<typename T>
-    struct always_false : std::false_type {};
-};
+// private:
+//     // Helper for compile-time type checking
+//     template<typename T>
+//     struct always_false : std::false_type {};
+// };
  
  /**
   * Strategy variant for A/B testing
@@ -460,90 +450,65 @@ private:
  /**
   * Performance metrics for strategy evaluation
   */
- struct PerformanceMetrics {
-     double pnl;                         // Profit and loss
-     double sharpe_ratio;                // Sharpe ratio
-     double max_drawdown;                // Maximum drawdown
-     double win_rate;                    // Win rate (percentage)
-     double profit_factor;               // Profit factor (gross profit / gross loss)
-     int trade_count;                    // Number of trades
-     double avg_trade_pnl;               // Average P&L per trade
+//  struct PerformanceMetrics {
+//      double pnl;                         // Profit and loss
+//      double sharpe_ratio;                // Sharpe ratio
+//      double max_drawdown;                // Maximum drawdown
+//      double win_rate;                    // Win rate (percentage)
+//      double profit_factor;               // Profit factor (gross profit / gross loss)
+//      int trade_count;                    // Number of trades
+//      double avg_trade_pnl;               // Average P&L per trade
      
-     // Default constructor with zeroed metrics
-     PerformanceMetrics()
-         : pnl(0.0), sharpe_ratio(0.0), max_drawdown(0.0), 
-           win_rate(0.0), profit_factor(0.0), trade_count(0), avg_trade_pnl(0.0) {}
- };
+//      // Default constructor with zeroed metrics
+//      PerformanceMetrics()
+//          : pnl(0.0), sharpe_ratio(0.0), max_drawdown(0.0), 
+//            win_rate(0.0), profit_factor(0.0), trade_count(0), avg_trade_pnl(0.0) {}
+//  };
  
- /**
-  * Market state information
-  */
- struct MarketState {
-     std::string exchange_id;               // Exchange identifier
-     std::string trading_pair;              // Trading pair
-     Timestamp timestamp;                   // Timestamp of this state
-     double price;                          // Current price
-     double volatility;                     // Current volatility
-     double volume_24h;                     // 24-hour volume
-     double price_change_24h;               // 24-hour price change percentage
-     std::string market_regime;             // Market regime classification
-     
-     // Default constructor
-     MarketState()
-         : exchange_id(""), trading_pair(""), timestamp(std::chrono::system_clock::now()),
-           price(0.0), volatility(0.0), volume_24h(0.0), price_change_24h(0.0),
-           market_regime("unknown") {}
-     
-     // Constructor with exchange and trading pair
-     MarketState(const std::string& exchange, const std::string& pair)
-         : exchange_id(exchange), trading_pair(pair), timestamp(std::chrono::system_clock::now()),
-           price(0.0), volatility(0.0), volume_24h(0.0), price_change_24h(0.0),
-           market_regime("unknown") {}
- };
  
  /**
   * Common callbacksfor strategy components
   */
- using ImbalanceCallback = std::function<void(const ImbalanceEvent&)>;
- using SignalCallback = std::function<void(const TradingSignal&)>;
- using MetricsCallback = std::function<void(const OrderBookMetrics&)>;
+//  using ImbalanceCallback = std::function<void(const ImbalanceEvent&)>;
+//  using SignalCallback = std::function<void(const TradingSignal&)>;
+//  using MetricsCallback = std::function<void(const OrderBookMetrics&)>;
  
- // Forward declarations for important strategy classes
- class OrderBookAnalyzer;
- class ImbalanceDetectionEngine;
- class ImbalanceSignalGenerator;
- class StrategyEngine;
+//  // Forward declarations for important strategy classes
+//  class OrderBookAnalyzer;
+//  class ImbalanceDetectionEngine;
+//  class ImbalanceSignalGenerator;
+//  class StrategyEngine;
  
- // Shared pointers for strategy components
- using OrderBookAnalyzerPtr = std::shared_ptr<OrderBookAnalyzer>;
- using ImbalanceDetectionEnginePtr = std::shared_ptr<ImbalanceDetectionEngine>;
- using ImbalanceSignalGeneratorPtr = std::shared_ptr<ImbalanceSignalGenerator>;
- using StrategyEnginePtr = std::shared_ptr<StrategyEngine>;
+//  // Shared pointers for strategy components
+//  using OrderBookAnalyzerPtr = std::shared_ptr<OrderBookAnalyzer>;
+//  using ImbalanceDetectionEnginePtr = std::shared_ptr<ImbalanceDetectionEngine>;
+//  using ImbalanceSignalGeneratorPtr = std::shared_ptr<ImbalanceSignalGenerator>;
+//  using StrategyEnginePtr = std::shared_ptr<StrategyEngine>;
  
  /**
   * Constants used throughout the strategy component
   */
- namespace constants {
-     // Default thresholds
-     constexpr double DEFAULT_VOLUME_IMBALANCE_THRESHOLD = 0.7;
-     constexpr double DEFAULT_PRICE_LEVEL_IMBALANCE_THRESHOLD = 0.6;
-     constexpr double DEFAULT_LIQUIDITY_REMOVAL_THRESHOLD = 0.5;
+//  namespace constants {
+//      // Default thresholds
+//      constexpr double DEFAULT_VOLUME_IMBALANCE_THRESHOLD = 0.7;
+//      constexpr double DEFAULT_PRICE_LEVEL_IMBALANCE_THRESHOLD = 0.6;
+//      constexpr double DEFAULT_LIQUIDITY_REMOVAL_THRESHOLD = 0.5;
      
-     // Default signal parameters
-     constexpr double DEFAULT_SIGNAL_TTL_MS = 5000;  // 5 seconds
-     constexpr double DEFAULT_SIGNAL_DECAY_RATE = 0.1;
+//      // Default signal parameters
+//      constexpr double DEFAULT_SIGNAL_TTL_MS = 5000;  // 5 seconds
+//      constexpr double DEFAULT_SIGNAL_DECAY_RATE = 0.1;
      
-     // Default depth values
-     constexpr int DEFAULT_ORDER_BOOK_DEPTH = 10;
-     constexpr int MAX_ORDER_BOOK_DEPTH = 50;
+//      // Default depth values
+//      constexpr int DEFAULT_ORDER_BOOK_DEPTH = 10;
+//      constexpr int MAX_ORDER_BOOK_DEPTH = 50;
      
-     // Signal strength thresholds
-     constexpr double MIN_SIGNAL_STRENGTH = 0.1;
-     constexpr double STRONG_SIGNAL_THRESHOLD = 0.7;
+//      // Signal strength thresholds
+//      constexpr double MIN_SIGNAL_STRENGTH = 0.1;
+//      constexpr double STRONG_SIGNAL_THRESHOLD = 0.7;
      
-     // Strategy version
-     const std::string STRATEGY_VERSION = "1.0.0";
- }
+//      // Strategy version
+//      const std::string STRATEGY_VERSION = "1.0.0";
+//  }
  
  } // namespace strategy
  } // namespace trading

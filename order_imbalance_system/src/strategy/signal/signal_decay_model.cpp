@@ -19,12 +19,13 @@
      params_.step_intervals = {0.0, 0.5, 0.8, 1.0};
      params_.step_values = {1.0, 0.8, 0.4, 0.0};
      params_.min_ttl_ms = 500;  // Minimum signal life of 500ms
+     params_.min_valid_strength = 0.2;  // Minimum strength to be valid
      
      // Set default type-specific decay rates
      type_specific_decay_rates_[ImbalanceType::VOLUME_IMBALANCE] = 0.7;       // Faster decay
      type_specific_decay_rates_[ImbalanceType::PRICE_LEVEL_IMBALANCE] = 0.5;  // Medium decay
      type_specific_decay_rates_[ImbalanceType::LIQUIDITY_IMBALANCE] = 0.4;    // Slower decay
-     type_specific_decay_rates_[ImbalanceType::SPREAD_ANOMALY] = 0.8;         // Very fast decay
+     type_specific_decay_rates_[ImbalanceType::ABNORMAL_SPREAD] = 0.8;        // Very fast decay
      type_specific_decay_rates_[ImbalanceType::TREND_CONTINUATION] = 0.3;     // Very slow decay
      type_specific_decay_rates_[ImbalanceType::TREND_REVERSAL] = 0.4;         // Slow decay
      
@@ -32,7 +33,7 @@
      type_specific_ttl_[ImbalanceType::VOLUME_IMBALANCE] = 2000;        // 2 seconds
      type_specific_ttl_[ImbalanceType::PRICE_LEVEL_IMBALANCE] = 3000;   // 3 seconds
      type_specific_ttl_[ImbalanceType::LIQUIDITY_IMBALANCE] = 4000;     // 4 seconds
-     type_specific_ttl_[ImbalanceType::SPREAD_ANOMALY] = 1000;          // 1 second
+     type_specific_ttl_[ImbalanceType::ABNORMAL_SPREAD] = 1000;         // 1 second
      type_specific_ttl_[ImbalanceType::TREND_CONTINUATION] = 5000;      // 5 seconds
      type_specific_ttl_[ImbalanceType::TREND_REVERSAL] = 4000;          // 4 seconds
  }
@@ -42,13 +43,16 @@
  }
  
  double SignalDecayModel::calculateRemainingStrength(const TradingSignal& signal, uint64_t current_time) {
+     // Get timestamp values in milliseconds for proper comparison
+     auto signal_time_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(signal.generation_time)
+                               .time_since_epoch().count();
+     auto expiration_time_ms = signal_time_ms + 
+                               std::chrono::duration_cast<std::chrono::milliseconds>(signal.ttl).count();
+     
      // Check if signal has already expired based on TTL
-     if (current_time > signal.generationTime + signal.ttl) {
+     if (current_time > expiration_time_ms) {
          return 0.0;
      }
-     
-     // Calculate elapsed time
-     uint64_t elapsed_ms = current_time - signal.generationTime;
      
      // Select decay function based on model type
      switch (model_type_) {
@@ -72,8 +76,14 @@
  }
  
  bool SignalDecayModel::isSignalValid(const TradingSignal& signal, uint64_t current_time) {
+     // Get timestamp values in milliseconds for proper comparison
+     auto signal_time_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(signal.generation_time)
+                               .time_since_epoch().count();
+     auto expiration_time_ms = signal_time_ms + 
+                               std::chrono::duration_cast<std::chrono::milliseconds>(signal.ttl).count();
+     
      // Check absolute expiration based on TTL
-     if (current_time > signal.generationTime + signal.ttl) {
+     if (current_time > expiration_time_ms) {
          return false;
      }
      
@@ -134,7 +144,7 @@
      // Process historical signals
      for (const auto& outcome : signal_history) {
          const auto& signal = outcome.signal;
-         ImbalanceType type = signal.sourceType;
+         ImbalanceType type = signal.source_type;
          
          // Skip signals that didn't reach their target
          if (!outcome.reached_target) {
@@ -142,7 +152,9 @@
          }
          
          // Calculate how long it took to reach the target
-         uint64_t time_to_target_ms = outcome.outcome_time - signal.generationTime;
+         auto signal_time_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(signal.generation_time)
+                                   .time_since_epoch().count();
+         uint64_t time_to_target_ms = outcome.outcome_time - signal_time_ms;
          
          // If the signal worked, use its time to target to calibrate TTL
          if (time_to_target_ms > 0) {
@@ -192,7 +204,10 @@
  }
  
  double SignalDecayModel::exponentialDecay(const TradingSignal& signal, uint64_t current_time) {
-     uint64_t elapsed_ms = current_time - signal.generationTime;
+     // Convert timestamps to milliseconds for calculation
+     auto signal_time_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(signal.generation_time)
+                               .time_since_epoch().count();
+     uint64_t elapsed_ms = current_time - signal_time_ms;
      
      // Get type-specific decay rate
      double decay_rate = getTypeSpecificDecayRate(signal);
@@ -205,10 +220,16 @@
  }
  
  double SignalDecayModel::linearDecay(const TradingSignal& signal, uint64_t current_time) {
-     uint64_t elapsed_ms = current_time - signal.generationTime;
+     // Convert timestamps to milliseconds for calculation
+     auto signal_time_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(signal.generation_time)
+                               .time_since_epoch().count();
+     uint64_t elapsed_ms = current_time - signal_time_ms;
+     
+     // Get TTL in milliseconds
+     uint64_t ttl_ms = std::chrono::duration_cast<std::chrono::milliseconds>(signal.ttl).count();
      
      // Normalize elapsed time as a fraction of TTL
-     double elapsed_fraction = static_cast<double>(elapsed_ms) / signal.ttl;
+     double elapsed_fraction = static_cast<double>(elapsed_ms) / ttl_ms;
      
      // Ensure elapsed_fraction is between 0 and 1
      elapsed_fraction = std::min(1.0, std::max(0.0, elapsed_fraction));
@@ -218,10 +239,16 @@
  }
  
  double SignalDecayModel::stepDecay(const TradingSignal& signal, uint64_t current_time) {
-     uint64_t elapsed_ms = current_time - signal.generationTime;
+     // Convert timestamps to milliseconds for calculation
+     auto signal_time_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(signal.generation_time)
+                               .time_since_epoch().count();
+     uint64_t elapsed_ms = current_time - signal_time_ms;
+     
+     // Get TTL in milliseconds
+     uint64_t ttl_ms = std::chrono::duration_cast<std::chrono::milliseconds>(signal.ttl).count();
      
      // Normalize elapsed time as a fraction of TTL
-     double elapsed_fraction = static_cast<double>(elapsed_ms) / signal.ttl;
+     double elapsed_fraction = static_cast<double>(elapsed_ms) / ttl_ms;
      
      // Find appropriate step
      for (size_t i = 0; i < params_.step_intervals.size() - 1; ++i) {
@@ -244,10 +271,14 @@
      // Start with exponential decay as base
      double remaining_strength = exponentialDecay(signal, current_time);
      
+     // Convert signal generation time to milliseconds for comparison
+     auto signal_time_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(signal.generation_time)
+                               .time_since_epoch().count();
+     
      // Check if market events should modify decay
      for (const auto& event : recent_market_events_) {
          // Skip events that happened before signal generation
-         if (event.timestamp < signal.generationTime) {
+         if (event.timestamp < signal_time_ms) {
              continue;
          }
          
@@ -275,8 +306,8 @@
                  
              case MarketEventType::TREND_CHANGE:
                  // Trend changes can invalidate certain signal types
-                 if (signal.sourceType == ImbalanceType::TREND_CONTINUATION ||
-                     signal.sourceType == ImbalanceType::TREND_REVERSAL) {
+                 if (signal.source_type == ImbalanceType::TREND_CONTINUATION ||
+                     signal.source_type == ImbalanceType::TREND_REVERSAL) {
                      remaining_strength *= 0.3;
                  }
                  break;
@@ -291,10 +322,14 @@
  }
  
  bool SignalDecayModel::isInvalidatedByMarketEvents(const TradingSignal& signal) {
+     // Convert signal generation time to milliseconds for comparison
+     auto signal_time_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(signal.generation_time)
+                               .time_since_epoch().count();
+     
      // Check recent market events for invalidating conditions
      for (const auto& event : recent_market_events_) {
          // Skip events that happened before signal generation
-         if (event.timestamp < signal.generationTime) {
+         if (event.timestamp < signal_time_ms) {
              continue;
          }
          
@@ -334,7 +369,7 @@
                  
              case MarketEventType::TREND_CHANGE:
                  // Trend changes invalidate trend-based signals
-                 if (signal.sourceType == ImbalanceType::TREND_CONTINUATION) {
+                 if (signal.source_type == ImbalanceType::TREND_CONTINUATION) {
                      return true;
                  }
                  break;
@@ -349,7 +384,7 @@
  }
  
  double SignalDecayModel::getTypeSpecificDecayRate(const TradingSignal& signal) {
-     auto it = type_specific_decay_rates_.find(signal.sourceType);
+     auto it = type_specific_decay_rates_.find(signal.source_type);
      if (it != type_specific_decay_rates_.end()) {
          return it->second;
      }

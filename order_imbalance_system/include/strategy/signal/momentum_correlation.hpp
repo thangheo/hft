@@ -11,9 +11,11 @@
 #pragma once
 
 #include "strategy/types.hpp"
+#include "strategy/types/correlation_types.hpp"
+#include "strategy/types/order_book_metrics.hpp"
+#include "strategy/types/imbalance_event.hpp"
 #include <map>
 #include <deque>
-#include <chrono>
 #include <vector>
 
 namespace trading {
@@ -94,7 +96,7 @@ private:
     struct DataPoint {
         OrderBookMetrics metrics;
         PriceMovement price_movement;
-        Timestamp timestamp;
+        core::Timestamp timestamp;
     };
     
     std::deque<DataPoint> data_points_;

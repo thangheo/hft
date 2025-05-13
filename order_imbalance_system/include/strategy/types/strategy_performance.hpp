@@ -15,7 +15,7 @@
  
  namespace trading {
  namespace strategy {
- 
+
  /**
   * StrategyState enum for tracking the lifecycle of the strategy engine
   */

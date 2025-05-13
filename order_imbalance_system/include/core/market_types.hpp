@@ -79,7 +79,17 @@
          return quote < other.quote;
      }
  };
- 
+  /**
+  * VolatilityLevel enum for categorizing market volatility
+  */
+ enum class VolatilityLevel {
+    VERY_LOW,
+    LOW,
+    NORMAL,
+    HIGH,
+    VERY_HIGH
+};
+
  /**
   * Represents a price level in an order book
   */

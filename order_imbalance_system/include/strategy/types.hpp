@@ -29,6 +29,11 @@
  #include "strategy/types/component_types.hpp"
  #include "strategy/types/constants.hpp"
  #include "strategy/types/config_types.hpp"
+ #include "strategy/types/correlation_types.hpp"
+ #include "strategy/types/performance_metrics.hpp"
+ #include "strategy/types/trade.hpp"
+ #include "strategy/types/signal_performance.hpp"
+ 
  namespace trading {
  namespace strategy {
  
@@ -37,13 +42,23 @@
  using SignalCallback = std::function<void(const TradingSignal&)>;
  using MetricsCallback = std::function<void(const OrderBookMetrics&)>;
  
- // Additional type aliases
- struct PriceMovement {
-     core::Symbol symbol;
-     core::Timestamp timestamp;
-     double price;
-     double previousPrice;
- };
+
+using StrategyId = core::StrategyId;
+using ExchangeId = core::ExchangeId;
+using Symbol = core::Symbol;
+using Timestamp = core::Timestamp;
+using Duration = core::Duration;
+using Direction = core::Direction;
+using ConfidenceLevel = core::ConfidenceLevel;
+using SignalId = core::SignalId;
+using VolatilityLevel = core::VolatilityLevel;
+//  // Additional type aliases
+//  struct PriceMovement {
+//      core::Symbol symbol;
+//      core::Timestamp timestamp;
+//      double price;
+//      double previousPrice;
+//  };
  
  } // namespace strategy
  } // namespace trading

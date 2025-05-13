@@ -11,6 +11,7 @@
 #pragma once
 
 #include "strategy/types.hpp"
+
 #include <map>
 #include <vector>
 #include <memory>
@@ -110,7 +111,8 @@ public:
      * @return True if load was successful
      */
     bool loadThresholds(const std::string& identifier = "");
-
+    // getGlobalSensitivity
+    // double getGlobalSensitivity() ;
 private:
     ThresholdSet base_thresholds_;
     std::map<ExchangeId, ThresholdSet> exchange_thresholds_;

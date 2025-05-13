@@ -31,6 +31,60 @@ enum class DecayModelType {
 };
 
 /**
+ * @brief Outcome of a historical trading signal
+ */
+struct SignalOutcome {
+    TradingSignal signal;           // The original signal
+    bool executed;                   // Whether the signal was acted upon
+    bool reached_target;            // Whether price reached target
+    uint64_t outcome_time;          // When the outcome was determined
+    double price_movement;          // Actual price movement that occurred
+    double profit_loss;             // P&L if the signal was traded
+};
+
+/**
+ * @brief Parameters for signal decay models
+ */
+struct DecayParameters {
+    double base_decay_rate;            // Base rate of decay (per time unit)
+    uint64_t time_unit_ms;             // Milliseconds per time unit
+    std::vector<double> step_intervals; // Intervals for step decay
+    std::vector<double> step_values;    // Values for step decay
+    uint64_t min_ttl_ms;               // Minimum signal lifetime 
+    double min_valid_strength;         // Minimum strength to be considered valid
+};
+
+
+/**
+ * @brief Market event types that could affect signal validity
+ */
+enum class MarketEventType {
+    PRICE_SPIKE,      // Sudden price movement
+    LARGE_TRADE,      // Unusually large trade execution
+    LIQUIDITY_CHANGE, // Significant change in order book liquidity
+    TREND_CHANGE,     // Change in market trend
+    NEWS_RELEASE,     // Market-relevant news
+    EXCHANGE_EVENT    // Exchange-specific event (maintenance, etc.)
+};
+
+/**
+ * @brief Market event data
+ */
+using MarketEventData = std::map<std::string, double>;
+
+/**
+ * @brief Market event information
+ */
+struct MarketEvent {
+    MarketEventType type;         // Event type
+    MarketEventData data;         // Event data
+    uint64_t timestamp;           // Event timestamp
+    std::string exchange_id;      // Exchange identifier
+    std::string trading_pair;     // Trading pair
+};
+
+
+/**
  * @class SignalDecayModel
  * @brief Models how trading signals lose strength over time
  */

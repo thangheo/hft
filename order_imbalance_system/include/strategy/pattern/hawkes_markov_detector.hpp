@@ -47,11 +47,11 @@ struct OrderBookEvent {
  * @struct MarketState
  * @brief Represents the current state of the market for the Markov model
  */
-struct MarketState {
-    uint32_t stateId;           // Unique state identifier
-    double timestamp;           // State timestamp
-    std::unordered_map<std::string, double> features; // State features
-};
+// struct MarketState {
+//     uint32_t stateId;           // Unique state identifier
+//     double timestamp;           // State timestamp
+//     std::unordered_map<std::string, double> features; // State features
+// };
 
 /**
  * @struct HawkesSignal

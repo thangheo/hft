@@ -18,44 +18,44 @@
  
  ThresholdManager::ThresholdManager() {
      // Initialize with default base thresholds
-     base_thresholds_.globalSensitivity = 1.0;
+     base_thresholds_.global_sensitivity = 1.0;
      
      // Default imbalance type thresholds
      ImbalanceThreshold volume_imbalance;
      volume_imbalance.min_threshold = 0.2;
      volume_imbalance.max_threshold = 0.8;
      volume_imbalance.activation_threshold = 0.3;
-     base_thresholds_.typeThresholds[ImbalanceType::VOLUME_IMBALANCE] = volume_imbalance;
+     base_thresholds_.type_thresholds[ImbalanceType::VOLUME_IMBALANCE] = volume_imbalance;
      
      ImbalanceThreshold price_level_imbalance;
      price_level_imbalance.min_threshold = 0.15;
      price_level_imbalance.max_threshold = 0.7;
      price_level_imbalance.activation_threshold = 0.25;
-     base_thresholds_.typeThresholds[ImbalanceType::PRICE_LEVEL_IMBALANCE] = price_level_imbalance;
+     base_thresholds_.type_thresholds[ImbalanceType::PRICE_LEVEL_IMBALANCE] = price_level_imbalance;
      
      ImbalanceThreshold liquidity_imbalance;
      liquidity_imbalance.min_threshold = 0.25;
      liquidity_imbalance.max_threshold = 0.9;
      liquidity_imbalance.activation_threshold = 0.35;
-     base_thresholds_.typeThresholds[ImbalanceType::LIQUIDITY_IMBALANCE] = liquidity_imbalance;
+     base_thresholds_.type_thresholds[ImbalanceType::LIQUIDITY_IMBALANCE] = liquidity_imbalance;
      
      ImbalanceThreshold spread_anomaly;
      spread_anomaly.min_threshold = 0.3;
      spread_anomaly.max_threshold = 0.8;
      spread_anomaly.activation_threshold = 0.4;
-     base_thresholds_.typeThresholds[ImbalanceType::ABNORMAL_SPREAD] = spread_anomaly;
+     base_thresholds_.type_thresholds[ImbalanceType::ABNORMAL_SPREAD] = spread_anomaly;
      
      ImbalanceThreshold trend_continuation;
      trend_continuation.min_threshold = 0.15;
      trend_continuation.max_threshold = 0.7;
      trend_continuation.activation_threshold = 0.25;
-     base_thresholds_.typeThresholds[ImbalanceType::TREND_CONTINUATION] = trend_continuation;
+     base_thresholds_.type_thresholds[ImbalanceType::TREND_CONTINUATION] = trend_continuation;
      
      ImbalanceThreshold trend_reversal;
      trend_reversal.min_threshold = 0.25;
      trend_reversal.max_threshold = 0.85;
      trend_reversal.activation_threshold = 0.35;
-     base_thresholds_.typeThresholds[ImbalanceType::TREND_REVERSAL] = trend_reversal;
+     base_thresholds_.type_thresholds[ImbalanceType::TREND_REVERSAL] = trend_reversal;
      
      // Initialize default volatility adjustment factors
      volatility_factors_[VolatilityLevel::VERY_LOW] = 0.7;    // Lower thresholds in very low volatility
@@ -193,18 +193,18 @@
          double factor = performance_adjustment_factors_[accuracy_key];
          
          // Apply adjustment to base thresholds for this type
-         auto it = base_thresholds_.typeThresholds.find(type);
-         if (it != base_thresholds_.typeThresholds.end()) {
+         auto it = base_thresholds_.type_thresholds.find(type);
+         if (it != base_thresholds_.type_thresholds.end()) {
              // Gradually adjust thresholds (20% new value, 80% existing)
              it->second.activation_threshold = 0.8 * it->second.activation_threshold + 
                                               0.2 * it->second.activation_threshold * factor;
              
              // Also adjust min/max thresholds proportionally
              double ratio = it->second.activation_threshold / 
-                           (base_thresholds_.typeThresholds[type].activation_threshold);
+                           (base_thresholds_.type_thresholds[type].activation_threshold);
              
-             it->second.min_threshold = base_thresholds_.typeThresholds[type].min_threshold * ratio;
-             it->second.max_threshold = base_thresholds_.typeThresholds[type].max_threshold * ratio;
+             it->second.min_threshold = base_thresholds_.type_thresholds[type].min_threshold * ratio;
+             it->second.max_threshold = base_thresholds_.type_thresholds[type].max_threshold * ratio;
          }
      }
      
@@ -230,10 +230,10 @@
          nlohmann::json json_data;
          
          // Add base thresholds
-         json_data["base_thresholds"]["global_sensitivity"] = base_thresholds_.globalSensitivity;
+         json_data["base_thresholds"]["global_sensitivity"] = base_thresholds_.global_sensitivity;
          
          // Add type thresholds
-         for (const auto& [type, threshold] : base_thresholds_.typeThresholds) {
+         for (const auto& [type, threshold] : base_thresholds_.type_thresholds) {
              std::string type_name = ImbalanceTypeToString(type);
              
              json_data["base_thresholds"]["type_thresholds"][type_name]["min_threshold"] = threshold.min_threshold;
@@ -245,9 +245,9 @@
          for (const auto& [exchange_id, thresholds] : exchange_thresholds_) {
              std::string exchange_name = std::to_string(static_cast<int>(exchange_id));  // Convert ID to string
              
-             json_data["exchange_thresholds"][exchange_name]["global_sensitivity"] = thresholds.globalSensitivity;
+             json_data["exchange_thresholds"][exchange_name]["global_sensitivity"] = thresholds.global_sensitivity;
              
-             for (const auto& [type, threshold] : thresholds.typeThresholds) {
+             for (const auto& [type, threshold] : thresholds.type_thresholds) {
                  std::string type_name = ImbalanceTypeToString(type);
                  
                  json_data["exchange_thresholds"][exchange_name]["type_thresholds"][type_name]["min_threshold"] = threshold.min_threshold;
@@ -278,7 +278,9 @@
          return false;
      }
  }
- 
+//  //getGlobalSensitivity
+//  double getGlobalSensitivity() 
+     
  bool ThresholdManager::loadThresholds(const std::string& identifier) {
      try {
          // Read from file
@@ -300,19 +302,19 @@
              const auto& base = json_data["base_thresholds"];
              
              if (base.contains("global_sensitivity")) {
-                 base_thresholds_.globalSensitivity = base["global_sensitivity"];
+                 base_thresholds_.global_sensitivity = base["global_sensitivity"];
              }
              
              if (base.contains("type_thresholds")) {
                  for (const auto& [type_name, threshold_json] : base["type_thresholds"].items()) {
-                     ImbalanceType type = ImbalanceTypeFromString(type_name);
+                     ImbalanceType type = imbalanceTypeFromString(type_name);
                      
                      ImbalanceThreshold threshold;
                      threshold.min_threshold = threshold_json["min_threshold"];
                      threshold.max_threshold = threshold_json["max_threshold"];
                      threshold.activation_threshold = threshold_json["activation_threshold"];
                      
-                     base_thresholds_.typeThresholds[type] = threshold;
+                     base_thresholds_.type_thresholds[type] = threshold;
                  }
              }
          }
@@ -326,12 +328,12 @@
                  ThresholdSet exchange_thresholds;
                  
                  if (exchange_json.contains("global_sensitivity")) {
-                     exchange_thresholds.globalSensitivity = exchange_json["global_sensitivity"];
+                     exchange_thresholds.global_sensitivity = exchange_json["global_sensitivity"];
                  }
                  
                  if (exchange_json.contains("type_thresholds")) {
                      for (const auto& [type_name, threshold_json] : exchange_json["type_thresholds"].items()) {
-                         ImbalanceType type = ImbalanceTypeFromString(type_name);
+                         ImbalanceType type = imbalanceTypeFromString(type_name);
                          
                          ImbalanceThreshold threshold;
                         //  threshold.min_threshold = threshold_json["min_threshold"];
@@ -339,7 +341,7 @@
                         threshold.max_threshold = threshold_json["max_threshold"];
                         threshold.activation_threshold = threshold_json["activation_threshold"];
                         
-                        exchange_thresholds.typeThresholds[type] = threshold;
+                        exchange_thresholds.type_thresholds[type] = threshold;
                     }
                 }
                 
@@ -371,10 +373,10 @@ ThresholdSet ThresholdManager::applyVolatilityAdjustment(const ThresholdSet& thr
     double factor = it->second;
     
     // Apply adjustment to global sensitivity
-    adjusted.globalSensitivity *= factor;
+    adjusted.global_sensitivity *= factor;
     
     // Apply to each imbalance type threshold
-    for (auto& [type, threshold] : adjusted.typeThresholds) {
+    for (auto& [type, threshold] : adjusted.type_thresholds) {
         threshold.activation_threshold *= factor;
         
         // Adjust min/max thresholds proportionally, but ensure they stay in order
@@ -392,10 +394,10 @@ ThresholdSet ThresholdManager::applyTimeOfDayAdjustment(const ThresholdSet& thre
     double factor = getCurrentTimeFactor();
     
     // Apply adjustment to global sensitivity
-    adjusted.globalSensitivity *= factor;
+    adjusted.global_sensitivity *= factor;
     
     // Apply to each imbalance type threshold
-    for (auto& [type, threshold] : adjusted.typeThresholds) {
+    for (auto& [type, threshold] : adjusted.type_thresholds) {
         threshold.activation_threshold *= factor;
         
         // Adjust min/max thresholds proportionally
@@ -415,10 +417,10 @@ ThresholdSet ThresholdManager::enforceSafeBounds(const ThresholdSet& thresholds)
     ThresholdSet safe = thresholds;
     
     // Enforce bounds on global sensitivity
-    safe.globalSensitivity = std::max(0.5, std::min(2.0, safe.globalSensitivity));
+    safe.global_sensitivity = std::max(0.5, std::min(2.0, safe.global_sensitivity));
     
     // Enforce bounds on each threshold
-    for (auto& [type, threshold] : safe.typeThresholds) {
+    for (auto& [type, threshold] : safe.type_thresholds) {
         // Ensure min_threshold is between 0.05 and 0.5
         threshold.min_threshold = std::max(0.05, std::min(0.5, threshold.min_threshold));
         
