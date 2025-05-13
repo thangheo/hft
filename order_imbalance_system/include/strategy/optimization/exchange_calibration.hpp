@@ -1,7 +1,7 @@
 // exchange_calibration.hpp
 #pragma once
 
-#include "strategy/strategy_types.hpp"
+#include "strategy/types.hpp"
 #include "data_ingestion/types.hpp"
 #include "data_ingestion/orderbook/order_book.hpp"
 #include <memory>

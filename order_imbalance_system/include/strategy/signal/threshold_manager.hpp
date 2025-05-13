@@ -10,7 +10,7 @@
  */
 #pragma once
 
-#include "strategy/strategy_types.hpp"
+#include "strategy/types.hpp"
 #include <map>
 #include <vector>
 #include <memory>

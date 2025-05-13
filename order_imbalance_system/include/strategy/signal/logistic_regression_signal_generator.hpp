@@ -2,7 +2,7 @@
 #pragma once
 
 #include "strategy/signal/imbalance_signal_generator.hpp"
-#include "strategy/strategy_types.hpp"
+#include "strategy/types.hpp"
 #include <vector>
 #include <memory>
 

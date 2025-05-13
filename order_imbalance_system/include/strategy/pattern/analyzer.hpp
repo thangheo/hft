@@ -1,43 +1,4 @@
-// #pragma once
-
-// #include <vector>
-// #include <string>
-// #include "common/types.hpp"
-// #include "data_ingestion/orderbook/order_book.hpp"
-
-// namespace strategy {
-
-// class Analyzer {
-// public:
-//     Analyzer(const nlohmann::json& config);
-//     ~Analyzer();
-    
-//     // Analyze the order book and calculate imbalance metrics
-//     common::ImbalanceMetrics analyze(const data_ingestion::OrderBook& orderBook);
-    
-//     // Calculate volume imbalance ratio
-//     double calculateBidAskRatio(const std::vector<common::PriceLevel>& bids,
-//                                const std::vector<common::PriceLevel>& asks) const;
-    
-//     // Calculate price pressure
-//     double calculatePricePressure(const std::vector<common::PriceLevel>& bids,
-//                                  const std::vector<common::PriceLevel>& asks,
-//                                  double midPrice) const;
-    
-//     // Calculate order flow acceleration
-//     double calculateAcceleration(const std::string& instrument) const;
-
-// private:
-//     // Configuration parameters
-//     size_t depth_;
-//     double weight_decay_;
-    
-//     // Historical metrics for acceleration calculation
-//     std::unordered_map<std::string, std::vector<double>> historical_ratios_;
-// };
-
-// } // namespace strategy
-/**
+/* * @file order_imbalance_system/include/strategy/pattern/analyzer.hpp
  * @file analyzer.hpp
  * @brief Base interface for all analyzer components in the strategy engine
  * 
@@ -46,12 +7,13 @@
  * Analyzers are responsible for processing order book data and extracting 
  * meaningful metrics and patterns.
  * 
- * Created on: May 5, 2025
+ * Created on: May 5, 2023
+ * Author: Trading System Team
  */
 #pragma once
 
 #include "data_ingestion/orderbook/order_book.hpp"
-#include "strategy/strategy_types.hpp"
+#include "strategy/types.hpp"
 #include <string>
 #include <memory>
 

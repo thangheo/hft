@@ -13,7 +13,7 @@
 #pragma once
 
 #include "strategy/pattern/analyzer.hpp"
-#include "strategy/strategy_types.hpp"
+#include "strategy/types.hpp"
 #include "data_ingestion/orderbook/order_book.hpp"
 #include <vector>
 #include <memory>

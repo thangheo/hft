@@ -1,7 +1,7 @@
 // imbalance_parameter_tuner.hpp
 #pragma once
 
-#include "strategy/strategy_types.hpp"
+#include "strategy/types.hpp"
 #include <memory>
 #include <vector>
 #include <functional>

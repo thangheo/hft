@@ -1,7 +1,7 @@
 // adaptive_mechanism.hpp
 #pragma once
 
-#include "strategy/strategy_types.hpp"
+#include "strategy/types.hpp"
 #include <memory>
 #include <vector>
 #include <map>

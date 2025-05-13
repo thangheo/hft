@@ -6,7 +6,7 @@
  * to simplify imports.
  * 
  * @author Trading System Team
- * @date May 12, 2025
+ * @date May 13, 2025
  */
 
  #pragma once
@@ -25,6 +25,8 @@
  #include "strategy/types/trading_signal.hpp"
  #include "strategy/types/parameter_set.hpp"
  #include "strategy/types/order_book_metrics.hpp"
+ #include "strategy/types/strategy_performance.hpp"
+ #include "strategy/types/component_types.hpp"
  #include "strategy/types/constants.hpp"
  
  namespace trading {
@@ -35,17 +37,13 @@
  using SignalCallback = std::function<void(const TradingSignal&)>;
  using MetricsCallback = std::function<void(const OrderBookMetrics&)>;
  
- // Forward declarations for important strategy classes
- class OrderBookAnalyzer;
- class ImbalanceDetectionEngine;
- class ImbalanceSignalGenerator;
- class StrategyEngine;
- 
- // Shared pointers for strategy components
- using OrderBookAnalyzerPtr = std::shared_ptr<OrderBookAnalyzer>;
- using ImbalanceDetectionEnginePtr = std::shared_ptr<ImbalanceDetectionEngine>;
- using ImbalanceSignalGeneratorPtr = std::shared_ptr<ImbalanceSignalGenerator>;
- using StrategyEnginePtr = std::shared_ptr<StrategyEngine>;
+ // Additional type aliases
+ struct PriceMovement {
+     core::Symbol symbol;
+     core::Timestamp timestamp;
+     double price;
+     double previousPrice;
+ };
  
  } // namespace strategy
  } // namespace trading

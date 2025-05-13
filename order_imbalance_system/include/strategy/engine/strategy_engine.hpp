@@ -7,7 +7,7 @@
  * It orchestrates the flow of order book data through various analyzers, imbalance detection,
  * signal generation, and optimization components to produce actionable trading signals.
  * 
- * Created on: May 5, 2025
+ * Created on: May 13, 2025
  */
 #pragma once
 
@@ -21,7 +21,7 @@
 #include "strategy/signal/signal_decay_model.hpp"
 #include "strategy/optimization/exchange_calibration.hpp"
 #include "strategy/optimization/adaptive_mechanism.hpp"
-#include "strategy/strategy_types.hpp"
+#include "strategy/types.hpp"
 #include "data_ingestion/orderbook/order_book.hpp"
 #include "common/logger.hpp"
 #include "strategy/signal/logistic_regression_signal_generator.hpp"
@@ -52,9 +52,14 @@ public:
      * @param strategyId Unique identifier for this strategy instance
      */
     explicit StrategyEngine(const std::string& strategyId);
-    // Add method to register your signal generator
+    
+    /**
+     * @brief Register a logistic regression signal generator
+     * @param generator The signal generator to register
+     */
     void registerLogisticRegressionSignalGenerator(
         std::shared_ptr<LogisticRegressionSignalGenerator> generator);
+    
     /**
      * @brief Destructor
      */
@@ -198,13 +203,14 @@ private:
     
     // Trading pair management
     std::map<std::string, TradingPairState> tradingPairStates_;
-    bool initializeTradingPair(const std::string& symbol, ExchangeId exchangeId);
+    bool initializeTradingPair(const std::string& symbol, core::ExchangeId exchangeId);
     void updateTradingPairState(const std::string& symbol, TradingPairState state);
     
     // Performance tracking
     void updatePerformanceMetrics(const SignalExecutionResult& result);
     void recordSignalPerformance(const std::string& signalId, const SignalExecutionResult& result);
-    //
+    
+    // Additional components
     std::shared_ptr<LogisticRegressionSignalGenerator> logistic_regression_signal_generator_;
 };
 

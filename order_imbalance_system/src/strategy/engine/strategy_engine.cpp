@@ -27,7 +27,7 @@
        lastUpdateTime_(std::chrono::system_clock::now()) {
      
      // Initialize with empty components - will be properly set up in initialize()
-     TRADING_LOG_INFO("Strategy Engine created: {}", strategyId_);
+     LOG_INFO("Strategy Engine created: {}", strategyId_);
  }
  
  // Destructor
@@ -36,7 +36,7 @@
      if (state_ == StrategyState::RUNNING) {
          stop();
      }
-     TRADING_LOG_INFO("Strategy Engine destroyed: {}", strategyId_);
+     LOG_INFO("Strategy Engine destroyed: {}", strategyId_);
  }
  
  // Initialize the strategy engine with configuration
@@ -44,7 +44,7 @@
      std::lock_guard<std::mutex> lock(mutex_);
      
      if (state_ != StrategyState::CREATED && state_ != StrategyState::STOPPED) {
-         TRADING_LOG_ERROR("Cannot initialize strategy engine in current state: {}", 
+         LOG_ERROR("Cannot initialize strategy engine in current state: {}", 
                           static_cast<int>(state_.load()));
          return false;
      }
@@ -72,7 +72,7 @@
          // Initialize trading pairs
          for (const auto& pair : config_.tradingPairs) {
              if (!initializeTradingPair(pair.first, pair.second)) {
-                 TRADING_LOG_WARN("Failed to initialize trading pair: {} on exchange: {}", 
+                LOG_WARN("Failed to initialize trading pair: {} on exchange: {}", 
                                 pair.first, static_cast<int>(pair.second));
              }
          }
@@ -81,10 +81,10 @@
          loadDefaultParameters();
          
          state_ = StrategyState::INITIALIZED;
-         TRADING_LOG_INFO("Strategy Engine initialized: {}", strategyId_);
+         LOG_INFO("Strategy Engine initialized: {}", strategyId_);
          return true;
      } catch (const std::exception& e) {
-         TRADING_LOG_ERROR("Exception during strategy initialization: {}", e.what());
+         LOG_ERROR("Exception during strategy initialization: {}", e.what());
          return false;
      }
  }
@@ -94,7 +94,7 @@
      std::lock_guard<std::mutex> lock(mutex_);
      
      if (state_ != StrategyState::INITIALIZED && state_ != StrategyState::STOPPED) {
-         TRADING_LOG_ERROR("Cannot start strategy engine in current state: {}", 
+         LOG_ERROR("Cannot start strategy engine in current state: {}", 
                           static_cast<int>(state_.load()));
          return false;
      }
@@ -105,10 +105,10 @@
          signalMaintenanceThread_ = std::make_unique<std::thread>(&StrategyEngine::signalMaintenanceWorker, this);
          
          state_ = StrategyState::RUNNING;
-         TRADING_LOG_INFO("Strategy Engine started: {}", strategyId_);
+         LOG_INFO("Strategy Engine started: {}", strategyId_);
          return true;
      } catch (const std::exception& e) {
-         TRADING_LOG_ERROR("Exception during strategy start: {}", e.what());
+         LOG_ERROR("Exception during strategy start: {}", e.what());
          return false;
      }
  }
@@ -119,7 +119,7 @@
          std::lock_guard<std::mutex> lock(mutex_);
          
          if (state_ != StrategyState::RUNNING) {
-             TRADING_LOG_ERROR("Cannot stop strategy engine in current state: {}", 
+             LOG_ERROR("Cannot stop strategy engine in current state: {}", 
                              static_cast<int>(state_.load()));
              return false;
          }
@@ -136,7 +136,7 @@
      {
          std::lock_guard<std::mutex> lock(mutex_);
          state_ = StrategyState::STOPPED;
-         TRADING_LOG_INFO("Strategy Engine stopped: {}", strategyId_);
+         LOG_INFO("Strategy Engine stopped: {}", strategyId_);
      }
      
      return true;
@@ -208,7 +208,7 @@
          
          return true;
      } catch (const std::exception& e) {
-         TRADING_LOG_ERROR("Exception processing order book for {}: {}", 
+         LOG_ERROR("Exception processing order book for {}: {}", 
                           orderBook.getSymbol(), e.what());
          return false;
      }
@@ -269,10 +269,10 @@
          thresholdManager_->updateParameters(params);
          signalDecayModel_->updateParameters(params);
          
-         TRADING_LOG_INFO("Strategy parameters updated: {}", strategyId_);
+         LOG_INFO("Strategy parameters updated: {}", strategyId_);
          return true;
      } catch (const std::exception& e) {
-         TRADING_LOG_ERROR("Exception updating parameters: {}", e.what());
+         LOG_ERROR("Exception updating parameters: {}", e.what());
          return false;
      }
  }
@@ -336,7 +336,7 @@
  // Manually trigger signal evaluation
  bool StrategyEngine::triggerSignalEvaluation() {
      if (state_ != StrategyState::RUNNING) {
-         TRADING_LOG_ERROR("Cannot trigger signal evaluation in current state: {}", 
+         LOG_ERROR("Cannot trigger signal evaluation in current state: {}", 
                           static_cast<int>(state_.load()));
          return false;
      }
@@ -357,7 +357,7 @@
          
          return true;
      } catch (const std::exception& e) {
-         TRADING_LOG_ERROR("Exception during signal evaluation: {}", e.what());
+         LOG_ERROR("Exception during signal evaluation: {}", e.what());
          return false;
      }
  }
@@ -370,7 +370,7 @@
          // Find the signal
          auto it = activeSignals_.find(signalId);
          if (it == activeSignals_.end()) {
-             TRADING_LOG_WARN("Received result for unknown signal: {}", signalId);
+            LOG_WARN("Received result for unknown signal: {}", signalId);
              return false;
          }
          
@@ -399,11 +399,11 @@
              }
          }
          
-         TRADING_LOG_INFO("Recorded result for signal {}: status={}, pnl={}", 
+         LOG_INFO("Recorded result for signal {}: status={}, pnl={}", 
                          signalId, static_cast<int>(result.status), result.pnl);
          return true;
      } catch (const std::exception& e) {
-         TRADING_LOG_ERROR("Exception recording signal result: {}", e.what());
+         LOG_ERROR("Exception recording signal result: {}", e.what());
          return false;
      }
  }
@@ -445,14 +445,14 @@
                      (performance_.averageSignalStrength * (performance_.signalsGenerated - 1) + signal.strength) / 
                      performance_.signalsGenerated;
                  
-                 TRADING_LOG_INFO("Generated new trading signal: id={}, direction={}, strength={}, pair={}", 
+                 LOG_INFO("Generated new trading signal: id={}, direction={}, strength={}, pair={}", 
                                signal.id, 
                                signal.direction == Direction::BUY ? "BUY" : "SELL", 
                                signal.strength, 
                                signal.symbol);
              }
          } catch (const std::exception& e) {
-             TRADING_LOG_ERROR("Exception processing imbalance event: {}", e.what());
+             LOG_ERROR("Exception processing imbalance event: {}", e.what());
          }
      }
  }
@@ -484,7 +484,7 @@
          try {
              callback(signal);
          } catch (const std::exception& e) {
-             TRADING_LOG_ERROR("Exception in signal callback: {}", e.what());
+             LOG_ERROR("Exception in signal callback: {}", e.what());
          }
      }
  }
@@ -505,7 +505,7 @@
  }
  
  void StrategyEngine::signalMaintenanceWorker() {
-     TRADING_LOG_INFO("Signal maintenance thread started for strategy: {}", strategyId_);
+     LOG_INFO("Signal maintenance thread started for strategy: {}", strategyId_);
      
      while (runMaintenanceThread_) {
          try {
@@ -518,11 +518,11 @@
              // Sleep for a bit
              std::this_thread::sleep_for(100ms);
          } catch (const std::exception& e) {
-             TRADING_LOG_ERROR("Exception in signal maintenance thread: {}", e.what());
+             LOG_ERROR("Exception in signal maintenance thread: {}", e.what());
          }
      }
      
-     TRADING_LOG_INFO("Signal maintenance thread stopped for strategy: {}", strategyId_);
+     LOG_INFO("Signal maintenance thread stopped for strategy: {}", strategyId_);
  }
  
  void StrategyEngine::pruneExpiredSignals() {
@@ -533,7 +533,7 @@
          
          // Check if signal has expired
          if (!signalDecayModel_->isSignalValid(signal, now)) {
-             TRADING_LOG_INFO("Signal expired: {}", signal.id);
+             LOG_INFO("Signal expired: {}", signal.id);
              
              // Remove the signal
              it = activeSignals_.erase(it);
@@ -589,11 +589,11 @@
              thresholdManager_->updateParameters(parameters_);
              signalDecayModel_->updateParameters(parameters_);
              
-             TRADING_LOG_INFO("Applied {} adaptive adjustments to strategy {}", 
+             LOG_INFO("Applied {} adaptive adjustments to strategy {}", 
                            adjustments.size(), strategyId_);
          }
      } catch (const std::exception& e) {
-         TRADING_LOG_ERROR("Exception during adaptive adjustments: {}", e.what());
+         LOG_ERROR("Exception during adaptive adjustments: {}", e.what());
      }
  }
  
@@ -617,7 +617,7 @@
      // Store in our map
      tradingPairStates_[pairId] = state;
      
-     TRADING_LOG_INFO("Initialized trading pair: {} on exchange: {}", 
+     LOG_INFO("Initialized trading pair: {} on exchange: {}", 
                     symbol, static_cast<int>(exchangeId));
      return true;
  }
