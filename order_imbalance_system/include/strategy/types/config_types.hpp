@@ -27,18 +27,60 @@
      OrderBookAnalyzerConfig() = default;
  };
  
- /**
-  * Configuration for ImbalanceDetectionEngine
-  */
- struct ImbalanceDetectionConfig {
-     double volumeImbalanceThreshold = 0.7;     // Threshold for volume imbalance detection
-     double priceLevelImbalanceThreshold = 0.6; // Threshold for price level imbalance
-     double liquidityRemovalThreshold = 0.5;    // Threshold for liquidity removal detection
-     int detectionWindowMs = 1000;              // Detection window in milliseconds
-     
-     ImbalanceDetectionConfig() = default;
- };
- 
+/**
+ * Configuration for ImbalanceDetection
+ */
+struct ImbalanceDetectionConfig {
+    // Strategy identification
+    std::string strategy_id;                     // Unique identifier for the strategy
+    std::string version = "1.0";                 // Version of the strategy
+    
+    // Core thresholds with defaults
+    double volumeImbalanceThreshold = 0.7;       // Threshold for volume imbalance detection
+    double priceLevelImbalanceThreshold = 0.6;   // Threshold for price level imbalance
+    double liquidityRemovalThreshold = 0.5;      // Threshold for liquidity removal detection
+    
+    // Window and history settings
+    int detectionWindowMs = 1000;                // Detection window in milliseconds
+    int maxHistorySize = 1000;                   // Maximum history size for metrics
+    
+    // Advanced configuration
+    double global_sensitivity = 1.0;             // Global sensitivity for all thresholds
+    
+    // Dynamic configuration maps
+    std::map<std::string, double> thresholds;    // Thresholds for different imbalance types   
+    std::map<std::string, double> parameters;    // General parameters for the strategy
+    std::map<std::string, std::string> string_parameters; // String parameters
+    
+    ImbalanceDetectionConfig() = default;
+    
+    // Helper method to get threshold with global sensitivity applied
+    double getAdjustedThreshold(const std::string& name, double default_value) const {
+        auto it = thresholds.find(name);
+        if (it != thresholds.end()) {
+            return it->second * global_sensitivity;
+        }
+        return default_value * global_sensitivity;
+    }
+    
+    // Helper to get parameter
+    double getParameter(const std::string& name, double default_value) const {
+        auto it = parameters.find(name);
+        if (it != parameters.end()) {
+            return it->second;
+        }
+        return default_value;
+    }
+    
+    // Helper to get string parameter
+    std::string getStringParameter(const std::string& name, const std::string& default_value) const {
+        auto it = string_parameters.find(name);
+        if (it != string_parameters.end()) {
+            return it->second;
+        }
+        return default_value;
+    }
+};
  /**
   * Configuration for LiquidityFlowMonitor
   */
@@ -149,5 +191,15 @@
          : StrategyConfig(baseConfig) {}
  };
  
+  //AnalyzerConfig 
+    // struct AnalyzerConfig {
+    //     std::string analyzer_id;                // Unique identifier for the analyzer
+    //     std::string version = "1.0";            // Version of the analyzer
+    //     int depth = 10;                         // Depth to analyze
+    //     int historySize = 1000;                 // Size of history to maintain
+    //     double priceWeightFactor = 0.5;         // Weight factor for price-weighted metrics
+        
+    //     AnalyzerConfig() = default;
+    // };
  } // namespace strategy
  } // namespace trading

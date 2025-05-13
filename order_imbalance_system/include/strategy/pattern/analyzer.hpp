@@ -14,6 +14,7 @@
 
 #include "data_ingestion/orderbook/order_book.hpp"
 #include "strategy/types.hpp"
+#include "analyzer_types.hpp"
 #include <string>
 #include <memory>
 

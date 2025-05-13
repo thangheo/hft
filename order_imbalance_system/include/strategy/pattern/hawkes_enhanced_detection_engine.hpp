@@ -13,6 +13,7 @@
 
 #include "strategy/pattern/imbalance_detection_engine.hpp"
 #include "strategy/pattern/hawkes_markov_detector.hpp"
+#include "data_ingestion/orderbook/order_book_types.hpp"
 #include <memory>
 
 namespace trading {
@@ -80,7 +81,7 @@ private:
     std::vector<OrderBookEvent> recentTrades_;
     
     // Event transformation methods
-    OrderBookEvent convertToHawkesEvent(const OrderBookUpdate& update);
+    OrderBookEvent convertToHawkesEvent(const data_ingestion::OrderBookUpdate& update);
     ImbalanceEvent enhanceWithHawkes(const ImbalanceEvent& event, const HawkesSignal& signal);
     
     // Signal callback from Hawkes model

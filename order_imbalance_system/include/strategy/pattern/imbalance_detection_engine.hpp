@@ -138,8 +138,8 @@ private:
     
     // Imbalance evaluation
     double calculateImbalanceStrength(ImbalanceType type, const OrderBookMetrics& metrics);
-    Direction determineImbalanceDirection(ImbalanceType type, const OrderBookMetrics& metrics);
-    void createImbalanceEvent(ImbalanceType type, double strength, Direction direction, const OrderBookMetrics& metrics);
+    core::Direction determineImbalanceDirection(ImbalanceType type, const OrderBookMetrics& metrics);
+    void createImbalanceEvent(ImbalanceType type, double strength, core::Direction direction, const OrderBookMetrics& metrics);
     
     // Callback management
     std::map<size_t, ImbalanceCallback> callbacks_;

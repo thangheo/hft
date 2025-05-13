@@ -57,19 +57,7 @@
          default: return "unknown";
      }
  }
- /**
- *ImbalanceDetectionConfig structure to hold configuration parameters
-  **/
-    struct ImbalanceDetectionConfig {
-        std::string strategy_id;                // Unique identifier for the strategy
-        std::string version;                    // Version of the strategy
-        int maxHistorySize = 1000;                // Maximum history size for metrics
-        int detectionWindowMs;                // Detection window in milliseconds
-        double global_sensitivity;              // Global sensitivity for all thresholds
-        std::map<std::string, double> thresholds; // Thresholds for different imbalance types   
-        std::map<std::string, double> parameters; // General parameters for the strategy
-        std::map<std::string, std::string> string_parameters; // String parameters for the strategy
-    };
+ 
  /**
   * Enum for different types of order book imbalances
   */

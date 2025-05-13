@@ -28,7 +28,7 @@
  #include "strategy/types/strategy_performance.hpp"
  #include "strategy/types/component_types.hpp"
  #include "strategy/types/constants.hpp"
- 
+ #include "strategy/types/config_types.hpp"
  namespace trading {
  namespace strategy {
  

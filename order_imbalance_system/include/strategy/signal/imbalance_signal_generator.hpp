@@ -1,22 +1,34 @@
 /**
  * @file imbalance_signal_generator.hpp
- * @brief Generates trading signals from detected order book imbalances
+ * @brief Generator for trading signals based on detected order book imbalances
  * 
  * @details
- * This component is responsible for converting detected imbalance patterns
- * into actionable trading signals with direction, strength, and confidence levels.
+ * The Imbalance Signal Generator converts detected order book imbalances
+ * into actionable trading signals. It evaluates the strength, direction,
+ * and confidence of imbalance events to generate signals with appropriate
+ * parameters for trading decisions.
  * 
- * Created on: May 6, 2025
+ * Created on: May 13, 2025
  */
 #pragma once
 
-#include "strategy/types.hpp"
+#include "strategy/types/imbalance_event.hpp"
+#include "strategy/types/trading_signal.hpp"
+#include "strategy/types/config_types.hpp"
+#include "strategy/signal/momentum_correlation.hpp"
+#include "strategy/signal/threshold_manager.hpp"
 #include <vector>
-#include <functional>
 #include <memory>
+#include <map>
+#include <mutex>
+#include <functional>
+#include <atomic>
 
 namespace trading {
 namespace strategy {
+
+// Callback type for signal generation events
+using SignalCallback = std::function<void(const TradingSignal&)>;
 
 /**
  * @class ImbalanceSignalGenerator
@@ -35,95 +47,107 @@ public:
     virtual ~ImbalanceSignalGenerator() = default;
     
     /**
+     * @brief Initialize the signal generator with configuration
+     * @param config Signal generator configuration
+     * @return True if initialization successful, false otherwise
+     */
+    bool initialize(const SignalGeneratorConfig& config);
+    
+    /**
      * @brief Process newly detected imbalances
      * @param imbalances Vector of imbalance events to process
+     * @return Number of signals generated
      */
-    virtual void processImbalances(const std::vector<ImbalanceEvent>& imbalances);
+    int processImbalances(const std::vector<ImbalanceEvent>& imbalances);
+    
+    /**
+     * @brief Process a single imbalance event
+     * @param imbalance Imbalance event to process
+     * @return True if signal was generated, false otherwise
+     */
+    bool processImbalance(const ImbalanceEvent& imbalance);
     
     /**
      * @brief Generate trading signals from processed imbalances
-     * @return Vector of trading signals
+     * @return Vector of generated trading signals
      */
-    virtual std::vector<TradingSignal> generateSignals();
+    std::vector<TradingSignal> generateSignals();
     
     /**
      * @brief Configure signal generation parameters
      * @param params Signal generation parameters
      */
-    virtual void configureSignalParameters(const SignalParameters& params);
+    void configureSignalParameters(const SignalGeneratorConfig& params);
     
     /**
-     * @brief Register a callback for new signals
-     * @param callback Function to call when new signals are generated
+     * @brief Register a callback for signal generation
+     * @param callback Function to call when signal is generated
+     * @return Callback ID that can be used to unregister
      */
-    virtual void registerSignalCallback(const SignalCallback& callback);
+    size_t registerSignalCallback(const SignalCallback& callback);
     
     /**
-     * @brief Clear existing imbalance data
+     * @brief Unregister a previously registered callback
+     * @param callbackId ID of the callback to unregister
+     * @return True if callback was found and unregistered, false otherwise
      */
-    virtual void clear();
+    bool unregisterSignalCallback(size_t callbackId);
     
     /**
-     * @brief Set the momentum correlation component for enhanced signals
+     * @brief Clear existing imbalance data and pending signals
+     */
+    void clear();
+    
+    /**
+     * @brief Get the total count of signals generated
+     * @return Count of signals generated since initialization
+     */
+    uint64_t getSignalCount() const;
+    
+    /**
+     * @brief Set the momentum correlation component for signal enhancement
      * @param momentum_correlation Pointer to momentum correlation component
      */
-    void setMomentumCorrelation(std::shared_ptr<class MomentumCorrelation> momentum_correlation);
+    void setMomentumCorrelation(MomentumCorrelationPtr momentum_correlation);
     
     /**
-     * @brief Set the threshold manager for dynamic signal adjustment
+     * @brief Set the threshold manager for adaptive thresholding
      * @param threshold_manager Pointer to threshold manager component
      */
-    void setThresholdManager(std::shared_ptr<class ThresholdManager> threshold_manager);
-    
-    /**
-     * @brief Set the signal decay model for time-based signal adjustment
-     * @param signal_decay_model Pointer to signal decay model
-     */
-    void setSignalDecayModel(std::shared_ptr<class SignalDecayModel> signal_decay_model);
+    void setThresholdManager(ThresholdManagerPtr threshold_manager);
 
 private:
-    std::vector<ImbalanceEvent> pending_imbalances_;
-    SignalParameters signal_params_;
-    SignalCallback signal_callback_;
-    std::shared_ptr<class MomentumCorrelation> momentum_correlation_;
-    std::shared_ptr<class ThresholdManager> threshold_manager_;
-    std::shared_ptr<class SignalDecayModel> signal_decay_model_;
+    // Configuration
+    SignalGeneratorConfig config_;
     
-    /**
-     * @brief Convert an imbalance event to a trading signal
-     * @param event The imbalance event to convert
-     * @return The generated trading signal
-     */
-    TradingSignal createSignalFromImbalance(const ImbalanceEvent& event);
+    // State
+    std::vector<ImbalanceEvent> pendingImbalances_;
+    std::vector<TradingSignal> generatedSignals_;
+    std::atomic<uint64_t> signalCount_;
     
-    /**
-     * @brief Calculate signal strength based on imbalance metrics
-     * @param event The imbalance event
-     * @return Signal strength value between 0.0 and 1.0
-     */
-    double calculateSignalStrength(const ImbalanceEvent& event);
+    // Associated components
+    MomentumCorrelationPtr momentumCorrelation_;
+    ThresholdManagerPtr thresholdManager_;
     
-    /**
-     * @brief Calculate signal confidence based on historical accuracy
-     * @param event The imbalance event
-     * @return Confidence level between 0.0 and 1.0
-     */
-    double calculateConfidence(const ImbalanceEvent& event);
+    // Signal generation methods
+    TradingSignal createSignalFromImbalance(const ImbalanceEvent& imbalance);
+    bool passesSignalFilters(const ImbalanceEvent& imbalance) const;
+    double calculateSignalStrength(const ImbalanceEvent& imbalance) const;
+    std::vector<PriceTarget> generatePriceTargets(const ImbalanceEvent& imbalance) const;
+    core::SignalId generateSignalId() const;
     
-    /**
-     * @brief Determine appropriate time-to-live for the signal
-     * @param event The imbalance event
-     * @return Time-to-live in milliseconds
-     */
-    uint64_t determineSignalTTL(const ImbalanceEvent& event);
+    // Callback management
+    std::map<size_t, SignalCallback> callbacks_;
+    size_t nextCallbackId_;
+    void notifySignalCallbacks(const TradingSignal& signal);
     
-    /**
-     * @brief Resolve conflicts between contrary signals
-     * @param signals Vector of potentially conflicting signals
-     * @return Vector of resolved signals
-     */
-    std::vector<TradingSignal> resolveSignalConflicts(const std::vector<TradingSignal>& signals);
+    // Thread safety
+    mutable std::mutex mutex_;
 };
+
+// Type alias
+using ImbalanceSignalGeneratorPtr = std::shared_ptr<ImbalanceSignalGenerator>;
+using ImbalanceSignalGeneratorConstPtr = std::shared_ptr<const ImbalanceSignalGenerator>;
 
 } // namespace strategy
 } // namespace trading

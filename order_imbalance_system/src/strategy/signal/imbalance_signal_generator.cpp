@@ -1,393 +1,366 @@
 /**
  * @file imbalance_signal_generator.cpp
- * @brief Implementation of trading signal generation from order book imbalances
+ * @brief Implementation of the imbalance signal generator
+ * 
+ * @details
+ * Implements the generation of trading signals from detected imbalance events.
+ * 
+ * Created on: May 13, 2025
  */
 
  #include "strategy/signal/imbalance_signal_generator.hpp"
- #include "strategy/signal/momentum_correlation.hpp"
- #include "strategy/signal/threshold_manager.hpp"
- #include "strategy/signal/signal_decay_model.hpp"
+ #include "strategy/types/constants.hpp"
  #include <algorithm>
- #include <chrono>
  #include <cmath>
+ #include <iostream>
+ #include <chrono>
  #include <sstream>
+ #include <iomanip>
  #include <random>
  
-//  using namespace trading::strategy;
  namespace trading {
  namespace strategy {
  
- ImbalanceSignalGenerator::ImbalanceSignalGenerator() {
-     // Initialize with default signal parameters
-     signal_params_.min_strength_threshold = 0.3;
-     signal_params_.min_confidence_threshold = 0.4;
-     signal_params_.conflict_resolution_strategy = ConflictResolutionStrategy::STRENGTH_WEIGHTED;
-     signal_params_.default_ttl_ms = 5000; // 5 seconds default TTL
+ // Constructor
+ ImbalanceSignalGenerator::ImbalanceSignalGenerator()
+     : signalCount_(0), nextCallbackId_(0) {
  }
  
- void ImbalanceSignalGenerator::processImbalances(const std::vector<ImbalanceEvent>& imbalances) {
-     if (imbalances.empty()) {
-         return;
-     }
+ // Initialize the signal generator with configuration
+ bool ImbalanceSignalGenerator::initialize(const SignalGeneratorConfig& config) {
+     std::lock_guard<std::mutex> lock(mutex_);
+     config_ = config;
      
-     // Add new imbalances to pending processing queue
-     pending_imbalances_.insert(pending_imbalances_.end(), imbalances.begin(), imbalances.end());
+     // Clear any existing state
+     clear();
      
-     // Optionally limit the queue size to prevent memory growth
-     constexpr size_t MAX_PENDING_EVENTS = 1000;
-     if (pending_imbalances_.size() > MAX_PENDING_EVENTS) {
-         pending_imbalances_.erase(pending_imbalances_.begin(), 
-                                   pending_imbalances_.begin() + 
-                                   (pending_imbalances_.size() - MAX_PENDING_EVENTS));
-     }
+     return true;
  }
  
+ // Process newly detected imbalances
+ int ImbalanceSignalGenerator::processImbalances(const std::vector<ImbalanceEvent>& imbalances) {
+     std::lock_guard<std::mutex> lock(mutex_);
+     int signalsGenerated = 0;
+     
+     for (const auto& imbalance : imbalances) {
+         if (processImbalance(imbalance)) {
+             signalsGenerated++;
+         }
+     }
+     
+     return signalsGenerated;
+ }
+ 
+ // Process a single imbalance event
+ bool ImbalanceSignalGenerator::processImbalance(const ImbalanceEvent& imbalance) {
+     // Check if imbalance passes filtering criteria
+     if (!passesSignalFilters(imbalance)) {
+         return false;
+     }
+     
+     // Store the imbalance for signal generation
+     pendingImbalances_.push_back(imbalance);
+     
+     // Create and emit signal immediately
+     TradingSignal signal = createSignalFromImbalance(imbalance);
+     generatedSignals_.push_back(signal);
+     
+     // Notify callbacks
+     notifySignalCallbacks(signal);
+     
+     // Update signal count
+     signalCount_++;
+     
+     return true;
+ }
+ 
+ // Generate trading signals from processed imbalances
  std::vector<TradingSignal> ImbalanceSignalGenerator::generateSignals() {
-     if (pending_imbalances_.empty()) {
-         return {};
-     }
+     std::lock_guard<std::mutex> lock(mutex_);
      
-     std::vector<TradingSignal> signals;
-     signals.reserve(pending_imbalances_.size());
-     
-     // Convert each imbalance event to a trading signal
-     for (const auto& event : pending_imbalances_) {
-         // Skip weak imbalances
-         if (event.strength < signal_params_.min_strength_threshold) {
-             continue;
-         }
-         
-         TradingSignal signal = createSignalFromImbalance(event);
-         
-         // Apply minimum confidence threshold
-         if (signal.confidence >= signal_params_.min_confidence_threshold) {
-             signals.push_back(std::move(signal));
-         }
-     }
-     
-     // Clear pending imbalances after processing
-     pending_imbalances_.clear();
-     
-     // Resolve any conflicting signals
-     signals = resolveSignalConflicts(signals);
-     
-     // Notify callback if registered
-     if (!signals.empty() && signal_callback_) {
-         signal_callback_(signals);
-     }
-     
-     return signals;
+     // Just return the already generated signals
+     // (signals are generated immediately in processImbalance)
+     return generatedSignals_;
  }
  
- void ImbalanceSignalGenerator::configureSignalParameters(const SignalParameters& params) {
-     signal_params_ = params;
+ // Configure signal generation parameters
+ void ImbalanceSignalGenerator::configureSignalParameters(const SignalGeneratorConfig& params) {
+     std::lock_guard<std::mutex> lock(mutex_);
+     config_ = params;
  }
  
- void ImbalanceSignalGenerator::registerSignalCallback(const SignalCallback& callback) {
-     signal_callback_ = callback;
+ // Register a callback for signal generation
+ size_t ImbalanceSignalGenerator::registerSignalCallback(const SignalCallback& callback) {
+     std::lock_guard<std::mutex> lock(mutex_);
+     size_t id = nextCallbackId_++;
+     callbacks_[id] = callback;
+     return id;
  }
  
+ // Unregister a previously registered callback
+ bool ImbalanceSignalGenerator::unregisterSignalCallback(size_t callbackId) {
+     std::lock_guard<std::mutex> lock(mutex_);
+     auto it = callbacks_.find(callbackId);
+     if (it != callbacks_.end()) {
+         callbacks_.erase(it);
+         return true;
+     }
+     return false;
+ }
+ 
+ // Clear existing imbalance data and pending signals
  void ImbalanceSignalGenerator::clear() {
-     pending_imbalances_.clear();
+     pendingImbalances_.clear();
+     generatedSignals_.clear();
  }
  
- void ImbalanceSignalGenerator::setMomentumCorrelation(std::shared_ptr<MomentumCorrelation> momentum_correlation) {
-     momentum_correlation_ = momentum_correlation;
+ // Get the total count of signals generated
+ uint64_t ImbalanceSignalGenerator::getSignalCount() const {
+     return signalCount_.load();
  }
  
- void ImbalanceSignalGenerator::setThresholdManager(std::shared_ptr<ThresholdManager> threshold_manager) {
-     threshold_manager_ = threshold_manager;
+ // Set the momentum correlation component for signal enhancement
+ void ImbalanceSignalGenerator::setMomentumCorrelation(MomentumCorrelationPtr momentum_correlation) {
+     std::lock_guard<std::mutex> lock(mutex_);
+     momentumCorrelation_ = momentum_correlation;
  }
  
- void ImbalanceSignalGenerator::setSignalDecayModel(std::shared_ptr<SignalDecayModel> signal_decay_model) {
-     signal_decay_model_ = signal_decay_model;
+ // Set the threshold manager for adaptive thresholding
+ void ImbalanceSignalGenerator::setThresholdManager(ThresholdManagerPtr threshold_manager) {
+     std::lock_guard<std::mutex> lock(mutex_);
+     thresholdManager_ = threshold_manager;
  }
  
- TradingSignal ImbalanceSignalGenerator::createSignalFromImbalance(const ImbalanceEvent& event) {
+ // PRIVATE METHODS
+ 
+ // Create a trading signal from an imbalance event
+ TradingSignal ImbalanceSignalGenerator::createSignalFromImbalance(const ImbalanceEvent& imbalance) {
      TradingSignal signal;
      
-     // Generate a unique signal ID using a combination of timestamp and event ID
-     std::stringstream ss;
-     ss << "SIG-" << std::chrono::system_clock::now().time_since_epoch().count() 
-        << "-" << event.eventId;
-     signal.id = ss.str();
+     // Basic signal properties
+     signal.id = generateSignalId();
+     signal.direction = imbalance.direction;
+     signal.strength = calculateSignalStrength(imbalance);
+     signal.confidence = static_cast<double>(imbalance.confidence) / 100.0; // Convert from enum to 0-1 range
+     signal.generation_time = std::chrono::system_clock::now();
+     signal.ttl = std::chrono::milliseconds(config_.signalTtlMs);
+     signal.source_type = imbalance.type;
+     signal.symbol = imbalance.symbol;
+     signal.exchange = imbalance.exchange_id;
      
-     // Set basic signal properties from event
-     signal.direction = event.direction;
-     signal.sourceType = event.type;
-     signal.generationTime = std::chrono::system_clock::now().time_since_epoch().count();
+     // Generate price targets
+     signal.targets = generatePriceTargets(imbalance);
      
-     // Calculate signal strength based on imbalance metrics
-     signal.strength = calculateSignalStrength(event);
+     // Copy relevant metrics
+     for (const auto& metric : imbalance.supporting_metrics) {
+         signal.setMetric(metric.first, metric.second);
+     }
      
-     // Calculate confidence level
-     signal.confidence = calculateConfidence(event);
+     // Apply momentum correlation if available
+     if (momentumCorrelation_) {
+         double predictedMove = momentumCorrelation_->predictPriceMovement(imbalance);
+         double correlation = momentumCorrelation_->getCorrelationCoefficient(imbalance.type);
+         
+         signal.setMetric("predicted_price_move", predictedMove);
+         signal.setMetric("momentum_correlation", correlation);
+         
+         // Adjust confidence based on correlation
+         if (correlation > 0.5) {
+             signal.confidence = std::min(1.0, signal.confidence * (1.0 + (correlation - 0.5)));
+         } else if (correlation < 0.3) {
+             signal.confidence = signal.confidence * (correlation / 0.3);
+         }
+     }
      
-     // Determine signal time-to-live
-     signal.ttl = determineSignalTTL(event);
-     
-     // Add signal metrics
-     signal.signalMetrics = event.supportingMetrics;
-     signal.signalMetrics["primary_metric"] = event.primaryMetric;
-     signal.signalMetrics["detection_time_ms"] = static_cast<double>(
-         event.detectionTime - signal.generationTime);
-     
-     // Add price targets if momentum correlation is available
-     if (momentum_correlation_) {
-         double expectedMove = momentum_correlation_->predictPriceMovement(event);
-         if (std::abs(expectedMove) > 0.0001) {
-             PriceTarget target;
-             target.price = expectedMove;
-             target.confidence = signal.confidence * 0.8; // Slightly lower confidence for the price target
-             target.timeframeMs = signal.ttl;
-             signal.targets.push_back(target);
+     // Apply threshold adjustments if available
+     if (thresholdManager_) {
+         double sensitivity = thresholdManager_->getGlobalSensitivity();
+         signal.setMetric("threshold_sensitivity", sensitivity);
+         
+         // Adjust strength based on sensitivity
+         if (sensitivity != 1.0) {
+             signal.strength = std::min(1.0, signal.strength * sensitivity);
          }
      }
      
      return signal;
  }
  
- double ImbalanceSignalGenerator::calculateSignalStrength(const ImbalanceEvent& event) {
-     // Start with the raw imbalance strength
-     double strength = event.strength;
-     
-     // Apply momentum correlation boost if available
-     if (momentum_correlation_) {
-         // Get correlation coefficient for this type of imbalance
-         double correlation = momentum_correlation_->getCorrelationCoefficient(
-             ImbalanceTypeToString(event.type));
-         
-         // Boost or reduce strength based on correlation
-         strength *= (1.0 + std::abs(correlation) * 0.5);
-         
-         // If correlation is negative and contradicts event direction, reduce strength
-         if ((correlation < 0 && event.direction == Direction::BUY) ||
-             (correlation > 0 && event.direction == Direction::SELL)) {
-             strength *= 0.5;
-         }
+ // Check if an imbalance event passes signal generation filters
+ bool ImbalanceSignalGenerator::passesSignalFilters(const ImbalanceEvent& imbalance) const {
+     // Check minimum strength
+     if (imbalance.strength < config_.minSignalStrength) {
+         return false;
      }
      
-     // Apply threshold manager adjustments if available
-     if (threshold_manager_) {
-         ThresholdSet thresholds = threshold_manager_->getCurrentThresholds();
-         
-         // Find threshold for this imbalance type
-         auto it = thresholds.typeThresholds.find(event.type);
-         if (it != thresholds.typeThresholds.end()) {
-             // Scale strength relative to the threshold
-             strength = std::max(0.0, strength - it->second.min_threshold) / 
-                       (it->second.max_threshold - it->second.min_threshold);
-         }
+     // Check minimum confidence
+     if (static_cast<double>(imbalance.confidence) / 100.0 < config_.confidenceThreshold) {
+         return false;
      }
      
-     // Clamp strength to valid range
-     return std::max(0.0, std::min(1.0, strength));
+     // Check if direction is neutral
+     if (imbalance.direction == core::Direction::NEUTRAL) {
+         return false;
+     }
+     
+     // Additional filters can be added here
+     
+     return true;
  }
  
- double ImbalanceSignalGenerator::calculateConfidence(const ImbalanceEvent& event) {
-     // Start with event confidence
-     double confidence = event.confidence;
+ // Calculate signal strength based on imbalance
+ double ImbalanceSignalGenerator::calculateSignalStrength(const ImbalanceEvent& imbalance) const {
+     double baseStrength = imbalance.strength;
      
-     // Adjust based on recent performance if available in signal parameters
-     auto it = signal_params_.typePerformance.find(event.type);
-     if (it != signal_params_.typePerformance.end()) {
-         const auto& performance = it->second;
-         
-         // Adjust confidence based on historical accuracy
-         confidence *= (0.5 + 0.5 * performance.accuracy);
-         
-         // Reduce confidence for signals that have been inconsistent
-         confidence *= (1.0 - 0.3 * performance.volatility);
-     }
-     
-     // Adjust confidence based on market regime if momentum correlation available
-     if (momentum_correlation_) {
-         MarketRegime regime = momentum_correlation_->detectMarketRegime();
-         
-         // Reduce confidence in high volatility regimes
-         if (regime == MarketRegime::HIGH_VOLATILITY) {
-             confidence *= 0.8;
-         }
-         // Reduce confidence in range-bound markets for trend signals
-         else if (regime == MarketRegime::RANGE_BOUND && 
-                 (event.type == ImbalanceType::TREND_CONTINUATION || 
-                  event.type == ImbalanceType::TREND_REVERSAL)) {
-             confidence *= 0.7;
-         }
-     }
-     
-     // Clamp confidence to valid range
-     return std::max(0.0, std::min(1.0, confidence));
- }
- 
- uint64_t ImbalanceSignalGenerator::determineSignalTTL(const ImbalanceEvent& event) {
-     // Start with default TTL from parameters
-     uint64_t ttl = signal_params_.default_ttl_ms;
-     
-     // Adjust based on imbalance type
-     switch (event.type) {
+     // Apply type-specific scaling
+     switch (imbalance.type) {
          case ImbalanceType::VOLUME_IMBALANCE:
-             // Volume imbalances tend to resolve more quickly
-             ttl = static_cast<uint64_t>(ttl * 0.8);
+             // Volume imbalance is already well-normalized
              break;
-         case ImbalanceType::LIQUIDITY_IMBALANCE:
-             // Liquidity imbalances can persist longer
-             ttl = static_cast<uint64_t>(ttl * 1.2);
+             
+         case ImbalanceType::PRICE_LEVEL_IMBALANCE:
+             // Price level imbalance might need scaling down
+             baseStrength = std::min(1.0, baseStrength * 0.8);
+             break;
+             
+         case ImbalanceType::LIQUIDITY_REMOVAL:
+             // Liquidity removal might be more significant
+             baseStrength = std::min(1.0, baseStrength * 1.2);
+             break;
+             
+         case ImbalanceType::ABNORMAL_SPREAD:
+             // Abnormal spread signals might need scaling down
+             baseStrength = std::min(1.0, baseStrength * 0.7);
+             break;
+             
+         default:
+             // Default scaling
+             break;
+     }
+     
+     // Apply confidence scaling
+     double confidenceFactor = static_cast<double>(imbalance.confidence) / 100.0;
+     baseStrength = baseStrength * (0.7 + (0.3 * confidenceFactor));
+     
+     // Ensure strength is in [0, 1] range
+     return std::max(0.0, std::min(1.0, baseStrength));
+ }
+ 
+ // Generate price targets based on imbalance event
+ std::vector<PriceTarget> ImbalanceSignalGenerator::generatePriceTargets(const ImbalanceEvent& imbalance) const {
+     std::vector<PriceTarget> targets;
+     
+     // Get mid price from supporting metrics
+     auto midPriceIt = imbalance.supporting_metrics.find("mid_price");
+     if (midPriceIt == imbalance.supporting_metrics.end()) {
+         return targets; // Can't generate targets without price
+     }
+     
+     double midPrice = midPriceIt->second;
+     
+     // Get volatility if available
+     double volatility = 0.001; // Default 0.1% volatility
+     auto volatilityIt = imbalance.supporting_metrics.find("volatility");
+     if (volatilityIt != imbalance.supporting_metrics.end()) {
+         volatility = volatilityIt->second;
+     }
+     
+     // Calculate expected price impact based on imbalance strength and type
+     double basePriceImpact = volatility * 5.0; // Base impact is 5x volatility
+     double strengthScaling = 0.5 + (imbalance.strength * 1.5); // Scale from 0.5x to 2.0x
+     
+     double priceImpact = basePriceImpact * strengthScaling;
+     
+     // Adjust for imbalance type
+     switch (imbalance.type) {
+         case ImbalanceType::VOLUME_IMBALANCE:
+             priceImpact *= 1.0;
              break;
          case ImbalanceType::PRICE_LEVEL_IMBALANCE:
-             // Price level imbalances have average persistence
+             priceImpact *= 0.8;
              break;
-         case ImbalanceType::SPREAD_ANOMALY:
-             // Spread anomalies can resolve very quickly
-             ttl = static_cast<uint64_t>(ttl * 0.5);
+         case ImbalanceType::LIQUIDITY_REMOVAL:
+             priceImpact *= 1.2;
              break;
-         case ImbalanceType::TREND_CONTINUATION:
-         case ImbalanceType::TREND_REVERSAL:
-             // Trend signals may last longer
-             ttl = static_cast<uint64_t>(ttl * 1.5);
+         case ImbalanceType::ABNORMAL_SPREAD:
+             priceImpact *= 0.7;
              break;
          default:
-             // Use default TTL for other types
              break;
      }
      
-     // Scale TTL by signal strength - stronger signals may persist longer
-     ttl = static_cast<uint64_t>(ttl * (0.8 + 0.4 * event.strength));
-     
-     // If signal decay model is available, use it to adjust TTL
-     if (signal_decay_model_) {
-         // Create a temporary signal to evaluate decay
-         TradingSignal tempSignal;
-         tempSignal.sourceType = event.type;
-         tempSignal.strength = event.strength;
-         
-         // Get decay model type
-         DecayModelType modelType = signal_decay_model_->getModelType();
-         
-         // Adjust TTL based on decay model type
-         if (modelType == DecayModelType::EXPONENTIAL) {
-             // Exponential decay means the signal becomes insignificant more quickly
-             ttl = static_cast<uint64_t>(ttl * 0.9);
-         } else if (modelType == DecayModelType::STEP) {
-             // Step decay can extend effective TTL
-             ttl = static_cast<uint64_t>(ttl * 1.1);
-         }
+     // Adjust direction
+     if (imbalance.direction == core::Direction::SELL) {
+         priceImpact = -priceImpact;
      }
      
-     return ttl;
+     // Create three targets with different probabilities and time horizons
+     
+     // Short-term target (high probability)
+     PriceTarget shortTarget;
+     shortTarget.price = midPrice * (1.0 + (priceImpact * 0.3));
+     shortTarget.probability = 0.7;
+     shortTarget.expected_time = std::chrono::milliseconds(5000); // 5 seconds
+     targets.push_back(shortTarget);
+     
+     // Medium-term target (medium probability)
+     PriceTarget mediumTarget;
+     mediumTarget.price = midPrice * (1.0 + (priceImpact * 0.7));
+     mediumTarget.probability = 0.5;
+     mediumTarget.expected_time = std::chrono::milliseconds(15000); // 15 seconds
+     targets.push_back(mediumTarget);
+     
+     // Long-term target (low probability)
+     PriceTarget longTarget;
+     longTarget.price = midPrice * (1.0 + priceImpact);
+     longTarget.probability = 0.3;
+     longTarget.expected_time = std::chrono::milliseconds(30000); // 30 seconds
+     targets.push_back(longTarget);
+     
+     return targets;
  }
  
- std::vector<TradingSignal> ImbalanceSignalGenerator::resolveSignalConflicts(
-     const std::vector<TradingSignal>& signals) {
+ // Generate a unique signal ID
+ core::SignalId ImbalanceSignalGenerator::generateSignalId() const {
+     // Create a unique ID based on timestamp and counter
+     std::ostringstream oss;
      
-     if (signals.size() <= 1) {
-         return signals;
+     // Get current time with microsecond precision
+     auto now = std::chrono::system_clock::now();
+     auto now_us = std::chrono::time_point_cast<std::chrono::microseconds>(now);
+     auto epoch = now_us.time_since_epoch();
+     auto us_count = std::chrono::duration_cast<std::chrono::microseconds>(epoch).count();
+     
+     // Format ID as timestamp-count-random
+     oss << std::hex << std::setfill('0') << std::setw(12) << us_count << "-";
+     oss << std::setw(8) << signalCount_.load() << "-";
+     
+     // Add some randomness
+     std::random_device rd;
+     std::mt19937 gen(rd());
+     std::uniform_int_distribution<> distrib(0, 0xFFFF);
+     oss << std::setw(4) << distrib(gen);
+     
+     return core::SignalId(oss.str());
+ }
+ 
+ // Notify all registered callbacks about a new signal
+ void ImbalanceSignalGenerator::notifySignalCallbacks(const TradingSignal& signal) {
+     // Copy callbacks to prevent deadlocks if callback registers/unregisters another callback
+     std::map<size_t, SignalCallback> callbacksCopy;
+     {
+         std::lock_guard<std::mutex> lock(mutex_);
+         callbacksCopy = callbacks_;
      }
      
-     // Group signals by trading pair
-     std::map<std::string, std::vector<TradingSignal>> signalsByPair;
-     for (const auto& signal : signals) {
-         // Extract trading pair from signal metrics or ID
-         std::string tradingPair = "UNKNOWN";
-         auto it = signal.signalMetrics.find("trading_pair");
-         if (it != signal.signalMetrics.end()) {
-             tradingPair = it->second;
-         }
-         signalsByPair[tradingPair].push_back(signal);
-     }
-     
-     std::vector<TradingSignal> resolvedSignals;
-     
-     // Process each group of signals
-     for (auto& [pair, pairSignals] : signalsByPair) {
-         // Check for conflicting directions
-         bool hasConflicts = false;
-         Direction firstDirection = pairSignals[0].direction;
-         
-         for (size_t i = 1; i < pairSignals.size(); ++i) {
-             if (pairSignals[i].direction != firstDirection) {
-                 hasConflicts = true;
-                 break;
-             }
-         }
-         
-         if (!hasConflicts) {
-             // No conflicts, keep all signals
-             resolvedSignals.insert(resolvedSignals.end(), pairSignals.begin(), pairSignals.end());
-             continue;
-         }
-         
-         // Handle conflicts based on strategy
-         switch (signal_params_.conflict_resolution_strategy) {
-             case ConflictResolutionStrategy::STRONGEST_ONLY: {
-                 // Find the strongest signal
-                 auto strongestIt = std::max_element(pairSignals.begin(), pairSignals.end(),
-                     [](const TradingSignal& a, const TradingSignal& b) {
-                         return a.strength < b.strength;
-                     });
-                 resolvedSignals.push_back(*strongestIt);
-                 break;
-             }
-             
-             case ConflictResolutionStrategy::HIGHEST_CONFIDENCE: {
-                 // Find the signal with highest confidence
-                 auto highestConfIt = std::max_element(pairSignals.begin(), pairSignals.end(),
-                     [](const TradingSignal& a, const TradingSignal& b) {
-                         return a.confidence < b.confidence;
-                     });
-                 resolvedSignals.push_back(*highestConfIt);
-                 break;
-             }
-             
-             case ConflictResolutionStrategy::STRENGTH_WEIGHTED: {
-                 // Calculate net signal by weighting all signals
-                 double buyStrength = 0.0;
-                 double sellStrength = 0.0;
-                 
-                 for (const auto& signal : pairSignals) {
-                     double weight = signal.strength * signal.confidence;
-                     if (signal.direction == Direction::BUY) {
-                         buyStrength += weight;
-                     } else {
-                         sellStrength += weight;
-                     }
-                 }
-                 
-                 // Only generate a signal if there's a clear winner
-                 if (std::abs(buyStrength - sellStrength) > 0.2) {
-                     // Create a new composite signal
-                     TradingSignal compositeSignal = pairSignals[0]; // Start with first signal as template
-                     
-                     // Set new ID
-                     std::stringstream ss;
-                     ss << "COMP-" << std::chrono::system_clock::now().time_since_epoch().count();
-                     compositeSignal.id = ss.str();
-                     
-                     // Update direction, strength, and confidence
-                     if (buyStrength > sellStrength) {
-                         compositeSignal.direction = Direction::BUY;
-                         compositeSignal.strength = buyStrength / (buyStrength + sellStrength);
-                     } else {
-                         compositeSignal.direction = Direction::SELL;
-                         compositeSignal.strength = sellStrength / (buyStrength + sellStrength);
-                     }
-                     
-                     // Average confidence is reduced due to conflicting signals
-                     compositeSignal.confidence = (buyStrength + sellStrength) / pairSignals.size() * 0.8;
-                     
-                     // Add to resolved signals
-                     resolvedSignals.push_back(compositeSignal);
-                 }
-                 break;
-             }
-             
-             case ConflictResolutionStrategy::CANCEL_ALL:
-                 // In case of conflict, generate no signals
-                 break;
+     // Notify all callbacks
+     for (const auto& cb : callbacksCopy) {
+         try {
+             cb.second(signal);
+         } catch (const std::exception& e) {
+             std::cerr << "Exception in signal callback: " << e.what() << std::endl;
          }
      }
-     
-     return resolvedSignals;
  }
  
  } // namespace strategy
