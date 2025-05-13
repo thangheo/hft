@@ -6,7 +6,7 @@
  * to identify significant accumulation patterns and anomalies.
  * 
  * @author Trading System Team
- * @date May 6, 2025
+ * @date May 13, 2025
  */
 
  #pragma once
@@ -18,7 +18,7 @@
  #include <mutex>
  #include <memory>
  #include "strategy/types.hpp"
-
+ #include "strategy/types/trade.hpp"
  #include "data_ingestion/orderbook/order_book.hpp"
  
  namespace trading {
@@ -87,6 +87,13 @@
      double highest_volume_price = 0.0;
      double vwap = 0.0;
      
+     // Default constructor
+     VolumeProfile()
+         : exchange_id(""), trading_pair(""),
+           start_time(std::chrono::system_clock::now()),
+           end_time(std::chrono::system_clock::now()) {}
+     
+     // Constructor with exchange and pair
      VolumeProfile(const std::string& exchange, const std::string& pair)
          : exchange_id(exchange), trading_pair(pair),
            start_time(std::chrono::system_clock::now()),
@@ -222,7 +229,14 @@
       * @param asks Ask price levels
       */
      virtual void updateFromOrderBook(const std::vector<core::PriceLevel>& bids, 
-                                    const std::vector<core::PriceLevel>& asks);
+                                     const std::vector<core::PriceLevel>& asks);
+     
+     /**
+      * Update profiles for multiple timeframes
+      * 
+      * @param trades Recent trades to process for timeframe profiles
+      */
+     virtual void updateMultiTimeframeProfiles(const std::vector<Trade>& trades);
      
      /**
       * Calculate accumulation rates

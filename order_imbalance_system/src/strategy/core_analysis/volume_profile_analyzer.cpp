@@ -3,11 +3,12 @@
  * @brief Implementation of volume distribution analysis
  * 
  * @author Trading System Team
- * @date May 6, 2025
+ * @date May 13, 2025
  */
 
  #include "strategy/core_analysis/volume_profile_analyzer.hpp"    
  #include "strategy/core_analysis/strategy_metrics.hpp"
+ #include "strategy/utils/type_adapters.hpp"
  #include <algorithm>
  #include <numeric>
  #include <cmath>
@@ -74,10 +75,15 @@
          processTrade(trade.price, trade.quantity, trade.is_buy, trade.timestamp);
      }
      
-     // Update from order book
-     auto bids = orderbook.getBids();
-     auto asks = orderbook.getAsks();
-     updateFromOrderBook(bids, asks);
+     // Update from order book - convert data_ingestion::PriceLevel to core::PriceLevel
+     auto data_bids = orderbook.getBids();
+     auto data_asks = orderbook.getAsks();
+     
+     // Convert price levels using the utility functions
+     auto core_bids = utils::convertPriceLevels(data_bids);
+     auto core_asks = utils::convertPriceLevels(data_asks);
+     
+     updateFromOrderBook(core_bids, core_asks);
      
      // Update timestamp for profile
      current_profile_.end_time = std::chrono::system_clock::now();
@@ -370,8 +376,8 @@
  }
  
  void VolumeProfileAnalyzer::updateFromOrderBook(
-     const std::vector<PriceLevel>& bids, 
-     const std::vector<PriceLevel>& asks) {
+     const std::vector<core::PriceLevel>& bids, 
+     const std::vector<core::PriceLevel>& asks) {
      
      // Use order book to refine volume profile
      // This is a heuristic since we don't know how much of the order book
@@ -382,8 +388,8 @@
      
      // Process bids
      for (const auto& bid : bids) {
-         double price = bid.getPrice();
-         double quantity = bid.getQuantity() * bid_influence;
+         double price = bid.price;
+         double quantity = bid.quantity * bid_influence;
          
          // Find the relevant price range
          for (size_t i = 0; i < current_profile_.price_ranges.size(); ++i) {
@@ -398,8 +404,8 @@
      
      // Process asks
      for (const auto& ask : asks) {
-         double price = ask.getPrice();
-         double quantity = ask.getQuantity() * ask_influence;
+         double price = ask.price;
+         double quantity = ask.quantity * ask_influence;
          
          // Find the relevant price range
          for (size_t i = 0; i < current_profile_.price_ranges.size(); ++i) {
