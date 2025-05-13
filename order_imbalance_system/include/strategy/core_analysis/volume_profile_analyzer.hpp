@@ -79,8 +79,8 @@
  struct VolumeProfile {
      std::string exchange_id;
      std::string trading_pair;
-     Timestamp start_time;
-     Timestamp end_time;
+     core::Timestamp start_time;
+     core::Timestamp end_time;
      std::vector<PriceRange> price_ranges;
      std::vector<VolumeData> volume_data;
      double total_volume = 0.0;
@@ -221,8 +221,8 @@
       * @param bids Bid price levels
       * @param asks Ask price levels
       */
-     virtual void updateFromOrderBook(const std::vector<PriceLevel>& bids, 
-                                    const std::vector<PriceLevel>& asks);
+     virtual void updateFromOrderBook(const std::vector<core::PriceLevel>& bids, 
+                                    const std::vector<core::PriceLevel>& asks);
      
      /**
       * Calculate accumulation rates
@@ -269,13 +269,13 @@
      std::map<std::string, VolumeProfile> timeframe_profiles_;
      
      // Historical trade data
-     std::deque<std::tuple<double, double, bool, Timestamp>> recent_trades_;
+     std::deque<std::tuple<double, double, bool, core::Timestamp>> recent_trades_;
      
      // Thread safety
      mutable std::mutex mutex_;
      
      // Last update time
-     Timestamp last_update_time_;
+     core::Timestamp last_update_time_;
  };
  
  // Factory function to create VolumeProfileAnalyzer instances
