@@ -50,8 +50,8 @@ public:
     //getSnapshot
     OrderBookUpdate getSnapshot(int depth = 0) const;
     std::string exchangeIdToString(ExchangeId id) const {
-        // Implementation depends on your ExchangeId type
-        return std::to_string(static_cast<int>(id));
+        // Since ExchangeId is already a std::string, just return it
+        return id;
     }
     // Query methods
     std::vector<PriceLevel> getBids(int depth = 0) const;

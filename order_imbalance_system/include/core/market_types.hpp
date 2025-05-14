@@ -1,5 +1,5 @@
 /**
- * @file market_types.hpp
+ * @file core/market_types.hpp
  * @brief Core market-related types and utilities
  * 
  * This file defines common market structures used across all components
@@ -158,15 +158,19 @@
  inline std::ostream& operator<<(std::ostream& os, const Symbol& symbol) {
      return os << symbol.toString();
  }
- // Add to market_types.hpp
+
+// Add to market_types.hpp (replace the existing functions)
 inline std::string exchangeIdToString(const ExchangeId& exchange_id) {
-    return exchangeToString(exchange_id);
+    // ExchangeId is already a string, so just return it
+    return exchange_id;
 }
 
 inline ExchangeId exchangeIdFromString(const std::string& str) {
-    return exchangeFromString(str);
+    // ExchangeId is a string, so just return the input
+    return str;
 }
- /**
+
+/**
   * VolatilityLevel enum for categorizing market volatility
   */
  enum class VolatilityLevel {

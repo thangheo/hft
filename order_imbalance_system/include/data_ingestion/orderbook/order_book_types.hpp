@@ -28,18 +28,19 @@ struct OrderBookKey {
 };
  
  // Define the hash function for OrderBookKey
+// Fix for OrderBookKeyHash in order_book_types.hpp
+
+// Replace the existing OrderBookKeyHash with this implementation
 struct OrderBookKeyHash {
     std::size_t operator()(const OrderBookKey& key) const {
-        // Handle ExchangeId correctly - convert to string or use appropriate hash
-        // std::size_t h1 = std::hash<std::string>()(key.exchange);
-        std::size_t h1 = std::hash<int>()(static_cast<int>(key.exchange));
-        // For Symbol, use the toString() method or hash its components
+        // Hash the exchange ID directly as a string
+        std::size_t h1 = std::hash<std::string>()(key.exchange);
+        // For Symbol, use the toString() method
         std::size_t h2 = std::hash<std::string>()(key.symbol.toString());
         
         return h1 ^ (h2 << 1);
     }
-}; 
-
+};
 
 // Raw market data from an exchange
 struct MarketDataUpdate {

@@ -25,20 +25,10 @@ OrderBook::OrderBook(ExchangeId exchange, const Symbol& symbol, OrderBookCallbac
       callback_(std::move(callback)) {
 }
 OrderBook::OrderBook(const std::string& exchange_id, const std::string& trading_pair, OrderBookCallback callback)
-    : callback_(std::move(callback)),
-        sequence_number_(0),
+    : exchange_id_(exchange_id),  // Directly assign the string exchange_id
+      callback_(std::move(callback)),
+      sequence_number_(0),
       is_valid_(false) {
-    
-    // Convert exchange_id string to enum
-    if (exchange_id == "binance") {
-        exchange_id_ = ExchangeId::BINANCE;
-    } else if (exchange_id == "coinbase") {
-        exchange_id_ = ExchangeId::COINBASE;
-    } else if (exchange_id == "ftx") {
-        exchange_id_ = ExchangeId::FTX;
-    } else {
-        exchange_id_ = ExchangeId::UNKNOWN;
-    }
     
     // Parse trading pair
     size_t separator = trading_pair.find('/');
@@ -50,6 +40,7 @@ OrderBook::OrderBook(const std::string& exchange_id, const std::string& trading_
         symbol_.quote = "";
     }
 }
+
 bool OrderBook::applySnapshot(const std::vector<PriceLevel>& bids, 
                             const std::vector<PriceLevel>& asks,
                             uint64_t sequence_number,
@@ -86,7 +77,7 @@ bool OrderBook::applySnapshot(const std::vector<PriceLevel>& bids,
     return true;
 }
 
-bool OrderBook::applyUpdate(const std::vector<PriceLevel>& bids, 
+bool OrderBook::applyUpdate(const std::vector<PriceLevel>& bids,
                           const std::vector<PriceLevel>& asks,
                           uint64_t sequence_number,
                           Timestamp timestamp) {
@@ -99,10 +90,10 @@ bool OrderBook::applyUpdate(const std::vector<PriceLevel>& bids,
     if (is_valid_ && sequence_number > sequence_number_ + 1) {
         // We missed some updates, invalidate the book
         is_valid_ = false;
-        std::cerr << "Sequence gap detected for " 
-                  << static_cast<int>(exchange_id_) << ":" 
+        std::cerr << "Sequence gap detected for "
+                  << exchange_id_ << ":" // Now using string directly
                   << symbol_.base << "/" << symbol_.quote
-                  << " (" << sequence_number_ 
+                  << " (" << sequence_number_
                   << " -> " << sequence_number << ")" << std::endl;
         return false;
     }
@@ -125,9 +116,9 @@ bool OrderBook::applyUpdate(const std::vector<PriceLevel>& bids,
     
     // Notify subscribers
     notifyCallback();
-    
     return true;
 }
+
 //getSnapshot
 OrderBookUpdate OrderBook::getSnapshot(int depth) const {
     std::lock_guard<std::mutex> lock(mutex_);

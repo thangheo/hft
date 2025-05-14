@@ -219,17 +219,16 @@
      
      return order_book->isValid();
  }
- 
  bool OrderBookReconstructor::requestSnapshot(ExchangeId exchange, const Symbol& symbol) {
-     // In a real implementation, this would send a request to the exchange API
-     // For now, we'll just log the request
-     std::cout << "Requesting snapshot for " 
-               << static_cast<int>(exchange) << ":" 
-               << symbol.base << "/" << symbol.quote << std::endl;
-     
-     // Return true to indicate request was sent
-     return true;
- }
+    // In a real implementation, this would send a request to the exchange API
+    // For now, we'll just log the request
+    std::cout << "Requesting snapshot for "
+              << exchange << ":" // Using string directly without casting
+              << symbol.base << "/" << symbol.quote << std::endl;
+    
+    // Return true to indicate request was sent
+    return true;
+}
  
 void OrderBookReconstructor::publishOrderBook(const std::shared_ptr<OrderBook>& order_book) {
      if (!publisher_ || !order_book) {

@@ -103,7 +103,55 @@ void OrderBookNormalizer::processMarketData(const MarketDataUpdate& update) {
     }
 }
 
-std::shared_ptr<OrderBook> OrderBookNormalizer::getOrCreateOrderBook(const std::string& exchange_id, 
+// std::shared_ptr<OrderBook> OrderBookNormalizer::getOrCreateOrderBook(const std::string& exchange_id, 
+//     const std::string& trading_pair) {
+//     // Create a key for the map
+//     std::string key = createOrderBookKey(exchange_id, trading_pair);
+
+//     // Check if the order book exists
+//     auto it = order_books_.find(key);
+//     if (it != order_books_.end()) {
+//         return it->second;
+//     }
+
+//     // Create a new order book
+//     std::cout << "Creating new order book for " << exchange_id << ":" << trading_pair << std::endl;
+
+//     // Parse trading pair into base/quote (assuming format like "BTC/USDT")
+//     Symbol symbol;
+//     size_t slash_pos = trading_pair.find('/');
+//     if (slash_pos != std::string::npos) {
+//         symbol.base = trading_pair.substr(0, slash_pos);
+//         symbol.quote = trading_pair.substr(slash_pos + 1);
+//     } else {
+//         // Handle case where there's no slash
+//         symbol.base = trading_pair;
+//         symbol.quote = "";
+//     }
+
+//     // Convert exchange_id string to ExchangeId enum
+//     trading::core::Exchange exchange_enum = trading::core::Exchange::UNKNOWN;
+//     if (exchange_id == "binance") exchange_enum = trading::core::Exchange::BINANCE;
+//     else if (exchange_id == "ftx") exchange_enum = trading::core::Exchange::FTX;
+//     else if (exchange_id == "coinbase") exchange_enum = trading::core::Exchange::COINBASE;
+
+//     // Create OrderBook with proper callback that forwards updated order book data
+//     auto order_book = std::make_shared<OrderBook>(
+//         exchange_enum, 
+//         symbol,
+//         [this](const OrderBook& book) {
+//         // Get snapshot from the updated order book and forward to callback
+//         OrderBookUpdate update = book.getSnapshot();
+//         callback_(update);
+//         }
+//     );
+
+//     order_books_[key] = order_book;
+//     return order_book;
+// }
+// Modified version of getOrCreateOrderBook method
+std::shared_ptr<OrderBook> OrderBookNormalizer::getOrCreateOrderBook(
+    const std::string& exchange_id, 
     const std::string& trading_pair) {
     // Create a key for the map
     std::string key = createOrderBookKey(exchange_id, trading_pair);
@@ -129,20 +177,14 @@ std::shared_ptr<OrderBook> OrderBookNormalizer::getOrCreateOrderBook(const std::
         symbol.quote = "";
     }
 
-    // Convert exchange_id string to ExchangeId enum
-    ExchangeId exchange_enum = ExchangeId::UNKNOWN;
-    if (exchange_id == "binance") exchange_enum = ExchangeId::BINANCE;
-    else if (exchange_id == "ftx") exchange_enum = ExchangeId::FTX;
-    else if (exchange_id == "coinbase") exchange_enum = ExchangeId::COINBASE;
-
     // Create OrderBook with proper callback that forwards updated order book data
     auto order_book = std::make_shared<OrderBook>(
-        exchange_enum, 
+        exchange_id,  // Now using the string exchange_id directly
         symbol,
         [this](const OrderBook& book) {
-        // Get snapshot from the updated order book and forward to callback
-        OrderBookUpdate update = book.getSnapshot();
-        callback_(update);
+            // Get snapshot from the updated order book and forward to callback
+            OrderBookUpdate update = book.getSnapshot();
+            callback_(update);
         }
     );
 
