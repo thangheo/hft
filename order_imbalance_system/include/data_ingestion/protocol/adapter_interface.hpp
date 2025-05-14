@@ -14,7 +14,7 @@
 #include <string>
 #include <memory>
 #include <nlohmann/json.hpp>
-#include "data_ingestion/types.hpp"
+#include "core/market_types.hpp"
 #include "data_ingestion/orderbook/order_book_types.hpp"
 
 using json = nlohmann::json;

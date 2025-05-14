@@ -8,7 +8,7 @@
 #include <chrono>
 #include <atomic>
 #include <unordered_map>
-#include "data_ingestion/types.hpp"
+#include "core/market_types.hpp"
 #include "data_ingestion/orderbook/price_level.hpp"
 namespace trading {
 namespace data_ingestion {

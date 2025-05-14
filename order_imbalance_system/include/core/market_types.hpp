@@ -15,8 +15,82 @@
  #include <cmath>
  #include <vector>
  #include <algorithm>
+ #include <chrono>
+ #include <map>
+ #include <optional>
+ #include <cstdint>
+ #include <memory>
+ #include <functional>
+ #include <unordered_map>
+ #include <ostream>
+ 
  namespace trading {
  namespace core {
+ 
+ // Common timestamp definition
+ using Timestamp = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
+ 
+ /**
+  * Represents a cryptocurrency exchange
+  */
+ enum class Exchange {
+     BINANCE,
+     COINBASE,
+     FTX,
+     KRAKEN,
+     HUOBI,
+     UNKNOWN
+ };
+ 
+ /**
+  * Converts Exchange enum to string
+  */
+ inline std::string exchangeToString(Exchange exchange) {
+     switch (exchange) {
+         case Exchange::BINANCE:  return "binance";
+         case Exchange::COINBASE: return "coinbase";
+         case Exchange::FTX:      return "ftx";
+         case Exchange::KRAKEN:   return "kraken";
+         case Exchange::HUOBI:    return "huobi";
+         case Exchange::UNKNOWN:  return "unknown";
+         default:                 return "unknown";
+     }
+ }
+ 
+ /**
+  * Converts string to Exchange enum
+  */
+ inline Exchange exchangeFromString(const std::string& str) {
+     auto lower = str;
+     std::transform(lower.begin(), lower.end(), lower.begin(), 
+         [](unsigned char c) { return std::tolower(c); });
+     
+     if (lower == "binance")  return Exchange::BINANCE;
+     if (lower == "coinbase") return Exchange::COINBASE;
+     if (lower == "ftx")      return Exchange::FTX;
+     if (lower == "kraken")   return Exchange::KRAKEN;
+     if (lower == "huobi")    return Exchange::HUOBI;
+     return Exchange::UNKNOWN;
+ }
+ 
+ // Using Exchange as the universal exchange identifier to replace data_ingestion::ExchangeId
+ using ExchangeId = Exchange;
+ 
+ /**
+  * @struct ExchangeData
+  * @brief Represents raw data received from an exchange
+  */
+ struct ExchangeData {
+     std::string exchangeId;        // Identifier for the exchange (e.g., "binance")
+     std::string symbol;            // Trading pair symbol (e.g., "BTCUSDT")
+     std::string data;              // Raw data received (e.g., JSON string)
+     uint64_t receivedTime;         // Timestamp when data was received
+     std::string dataType;          // Type of data (e.g., "orderbook", "trade")
+     
+     // Other potentially useful fields
+     bool isSnapshot{false};        // Whether this is a full snapshot or an update
+     std::string sourceType;        // "websocket" or "rest"
+ };
  
  /**
   * Represents a trading symbol (trading pair)
@@ -79,17 +153,23 @@
          return quote < other.quote;
      }
  };
-  /**
+ 
+ // Stream operator for Symbol
+ inline std::ostream& operator<<(std::ostream& os, const Symbol& symbol) {
+     return os << symbol.toString();
+ }
+ 
+ /**
   * VolatilityLevel enum for categorizing market volatility
   */
  enum class VolatilityLevel {
-    VERY_LOW,
-    LOW,
-    NORMAL,
-    HIGH,
-    VERY_HIGH
-};
-
+     VERY_LOW,
+     LOW,
+     NORMAL,
+     HIGH,
+     VERY_HIGH
+ };
+ 
  /**
   * Represents a price level in an order book
   */
@@ -120,48 +200,22 @@
      }
  };
  
- /**
-  * Represents a cryptocurrency exchange
-  */
- enum class Exchange {
-     BINANCE,
-     COINBASE,
-     FTX,
-     KRAKEN,
-     HUOBI,
-     UNKNOWN
+ // Update type for order book
+ enum class UpdateType {
+     SNAPSHOT,
+     UPDATE,
+     TRADE,
+     TICKER
  };
  
- /**
-  * Converts Exchange enum to string
-  */
- inline std::string exchangeToString(Exchange exchange) {
-     switch (exchange) {
-         case Exchange::BINANCE:  return "binance";
-         case Exchange::COINBASE: return "coinbase";
-         case Exchange::FTX:      return "ftx";
-         case Exchange::KRAKEN:   return "kraken";
-         case Exchange::HUOBI:    return "huobi";
-         case Exchange::UNKNOWN:  return "unknown";
-         default:                 return "unknown";
-     }
- }
- 
- /**
-  * Converts string to Exchange enum
-  */
- inline Exchange exchangeFromString(const std::string& str) {
-     auto lower = str;
-     std::transform(lower.begin(), lower.end(), lower.begin(), 
-         [](unsigned char c) { return std::tolower(c); });
-     
-     if (lower == "binance")  return Exchange::BINANCE;
-     if (lower == "coinbase") return Exchange::COINBASE;
-     if (lower == "ftx")      return Exchange::FTX;
-     if (lower == "kraken")   return Exchange::KRAKEN;
-     if (lower == "huobi")    return Exchange::HUOBI;
-     return Exchange::UNKNOWN;
- }
+ // Connection status
+ enum class ConnectionStatus {
+     CONNECTED,
+     CONNECTING,
+     DISCONNECTED,
+     RECONNECTING,
+     ERROR
+ };
  
  /**
   * Common identifiers for strategy, signals, and other components
@@ -172,4 +226,16 @@
  using OrderId = std::string;
  
  } // namespace core
+ 
+ // Add a namespace alias to maintain compatibility with existing code
+ namespace data_ingestion {
+     using Symbol = core::Symbol;
+     using ExchangeId = core::ExchangeId;
+     using PriceLevelBase = core::PriceLevel;
+     using Timestamp = core::Timestamp;
+     using UpdateType = core::UpdateType;
+     using ConnectionStatus = core::ConnectionStatus;
+     using ExchangeData = core::ExchangeData;
+ } // namespace data_ingestion
+ 
  } // namespace trading

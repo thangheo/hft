@@ -1,9 +1,10 @@
-// include/common/logger.h
+// include/common/logger.hpp
 #pragma once
 
 #include <string>
 #include <memory>
 #include <sstream>
+#include <type_traits>
 
 namespace trading {
 namespace common {
@@ -24,6 +25,18 @@ enum class LogLevel {
     CRITICAL,
     OFF
 };
+
+// Helper template for converting values to strings
+template<typename T>
+std::string toString(const T& value) {
+    if constexpr (std::is_convertible_v<T, std::string>) {
+        return value;
+    } else {
+        std::ostringstream ss;
+        ss << value;
+        return ss.str();
+    }
+}
 
 // Logger interface
 class Logger {
@@ -122,7 +135,7 @@ protected:
         }
         
         ss << format.substr(pos, next_pos - pos);
-        ss << arg;
+        ss << toString(std::forward<T>(arg)); // Use toString helper
         
         pos = next_pos + 2;  // Skip {}
         next_pos = format.find('{}', pos);

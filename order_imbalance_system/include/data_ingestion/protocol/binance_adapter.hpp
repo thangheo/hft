@@ -13,7 +13,7 @@
  #define BINANCE_ADAPTER_HPP
  
  #include "data_ingestion/protocol/adapter_interface.hpp"
- #include "data_ingestion/types.hpp"
+ #include "core/market_types.hpp"
  
  /**
   * @class BinanceAdapter

@@ -14,7 +14,8 @@
 #include <map>
 #include <vector>
 #include <memory>
-#include "data_ingestion/types.hpp"
+// #include "core/market_types.hpp"
+#include "core/market_types.hpp"
 namespace trading {
 namespace data_ingestion {
 

@@ -33,6 +33,7 @@
  #include "strategy/types/performance_metrics.hpp"
  #include "strategy/types/trade.hpp"
  #include "strategy/types/signal_performance.hpp"
+ #include "strategy/types/exchange_metrics.hpp"
  
  namespace trading {
  namespace strategy {

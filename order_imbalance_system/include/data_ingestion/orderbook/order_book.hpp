@@ -9,7 +9,7 @@
  */
 #pragma once
 
-#include "data_ingestion/types.hpp"
+#include "core/market_types.hpp"
 #include "data_ingestion/orderbook/order_book_types.hpp"
 #include <map>
 #include <vector>

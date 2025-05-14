@@ -4,7 +4,7 @@
  */
 
  #include "strategy/signal/threshold_manager.hpp"
- #include "data_ingestion/types.hpp"
+ #include "core/market_types.hpp"
  #include <algorithm>
  #include <chrono>
  #include <cmath>

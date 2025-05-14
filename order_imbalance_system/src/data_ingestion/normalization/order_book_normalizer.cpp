@@ -1,7 +1,7 @@
 // src/data_ingestion/order_book_normalizer.cpp
 #include "data_ingestion/normalization/order_book_normalizer.hpp"
 #include "data_ingestion/protocol/adapter_interface.hpp"
-#include "data_ingestion/types.hpp"
+#include "core/market_types.hpp"
 #include <iostream>
 #include <sstream>
 #include <nlohmann/json.hpp>

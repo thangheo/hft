@@ -2,7 +2,7 @@
 #pragma once
 
 #include "strategy/types.hpp"
-#include "data_ingestion/types.hpp"
+#include "core/market_types.hpp"
 #include "data_ingestion/orderbook/order_book.hpp"
 #include <memory>
 #include <map>

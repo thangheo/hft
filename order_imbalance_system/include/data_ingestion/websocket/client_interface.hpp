@@ -12,7 +12,7 @@
 #include <string>
 #include <functional>
 #include <vector>
-#include "data_ingestion/types.hpp"
+#include "core/market_types.hpp"
 
 namespace trading {
 namespace data_ingestion {
