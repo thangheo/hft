@@ -74,8 +74,8 @@
  }
  
  // Using Exchange as the universal exchange identifier to replace data_ingestion::ExchangeId
- using ExchangeId = Exchange;
- 
+//  using ExchangeId = Exchange;
+ using ExchangeId = std::string;
  /**
   * @struct ExchangeData
   * @brief Represents raw data received from an exchange
@@ -158,7 +158,14 @@
  inline std::ostream& operator<<(std::ostream& os, const Symbol& symbol) {
      return os << symbol.toString();
  }
- 
+ // Add to market_types.hpp
+inline std::string exchangeIdToString(const ExchangeId& exchange_id) {
+    return exchangeToString(exchange_id);
+}
+
+inline ExchangeId exchangeIdFromString(const std::string& str) {
+    return exchangeFromString(str);
+}
  /**
   * VolatilityLevel enum for categorizing market volatility
   */
