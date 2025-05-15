@@ -279,8 +279,28 @@
      }
  }
 //  //getGlobalSensitivity
-//  double getGlobalSensitivity() 
+ double ThresholdManager::getGlobalSensitivity() const {
+     std::lock_guard<std::mutex> lock(mutex_);
+     return base_thresholds_.global_sensitivity;
+ }
+ //updateParameters
+ void ThresholdManager::updateParameters(const ParameterSet& params) {
+     std::lock_guard<std::mutex> lock(mutex_);
      
+     // Update parameters as needed
+     // For example, update thresholds or other configurations
+     if (params.has("global_sensitivity")) {
+         base_thresholds_.global_sensitivity = params.get<double>("global_sensitivity");
+     }
+     
+     if (params.has("volatility_factors")) {
+         volatility_factors_ = params.get<std::map<VolatilityLevel, double>>("volatility_factors");
+     }
+     
+     if (params.has("time_of_day_factors")) {
+         time_of_day_factors_ = params.get<std::map<int, double>>("time_of_day_factors");
+     }
+ }    
  bool ThresholdManager::loadThresholds(const std::string& identifier) {
      try {
          // Read from file

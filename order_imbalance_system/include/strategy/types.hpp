@@ -17,7 +17,7 @@
  #include "core/direction.hpp"
  #include "core/confidence.hpp"
  #include "core/market_types.hpp"
- 
+
  // Include strategy-specific types
  #include "strategy/types/imbalance_type.hpp"
  #include "strategy/types/imbalance_threshold.hpp"
@@ -35,6 +35,7 @@
  #include "strategy/types/signal_performance.hpp"
  #include "strategy/types/exchange_metrics.hpp"
  #include "strategy/types/adaptation_rules.hpp"
+
  namespace trading {
  namespace strategy {
  

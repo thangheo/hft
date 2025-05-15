@@ -153,7 +153,12 @@ public:
      * @param signal_history Vector of historical signals with outcomes
      */
     void calibrateFromHistory(const std::vector<SignalOutcome>& signal_history);
-
+    // updateParameters
+    /**
+     * @brief Update parameters for the decay model
+     * @param params New parameters
+     */
+    void updateParameters(const DecayParameters& params);
 private:
     DecayModelType model_type_;
     DecayParameters params_;

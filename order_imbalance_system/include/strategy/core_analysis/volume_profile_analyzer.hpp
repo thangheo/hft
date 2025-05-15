@@ -203,7 +203,13 @@
       * @return Trading pair
       */
      const std::string& getTradingPair() const { return trading_pair_; }
-     
+     //updateParameters(parameters)
+        /**
+        * Update parameters for the analyzer
+        * 
+        * @param params New parameters
+        */
+        virtual void updateParameters(const ParameterSet& params);
  protected:
      /**
       * Initialize price ranges based on current price and parameters

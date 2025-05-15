@@ -202,7 +202,10 @@
              0.8 * type_specific_ttl_[type] + 0.2 * median_ttl);
      }
  }
- 
+//  updateParameters
+    void SignalDecayModel::updateParameters(const DecayParameters& params) {
+        params_ = params;
+    }
  double SignalDecayModel::exponentialDecay(const TradingSignal& signal, uint64_t current_time) {
      // Convert timestamps to milliseconds for calculation
      auto signal_time_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(signal.generation_time)

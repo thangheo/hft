@@ -4,6 +4,7 @@
  */
 
  #include "strategy/signal/momentum_correlation.hpp"
+    #include "strategy/types/constants.hpp"
  #include <algorithm>
  #include <cmath>
  #include <numeric>
@@ -99,7 +100,11 @@
  std::map<std::string, double> MomentumCorrelation::getFeatureImportance() const {
      return feature_importance_;
  }
- 
+//  updateParameters
+    void MomentumCorrelation::updateParameters(const CorrelationParameters& params) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        params_ = params;
+    }
  void MomentumCorrelation::calculateCorrelations() {
      // Extract key metrics for correlation
      std::map<std::string, std::vector<double>> metricValues;

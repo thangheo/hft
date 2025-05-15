@@ -250,7 +250,7 @@ void LiquidityFlowMonitor::reset() {
     last_update_time_ = std::chrono::system_clock::now();
     last_sequence_number_ = 0;
 }
-
+ 
  OrderBookDelta LiquidityFlowMonitor::computeDelta(
      const std::vector<PriceLevel>& prev_bids,
      const std::vector<PriceLevel>& prev_asks,
@@ -356,6 +356,17 @@ void LiquidityFlowMonitor::reset() {
     }
     
     return delta;
+}
+// //  updateParameters
+void LiquidityFlowMonitor::updateParameters(const ParameterSet& params) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Update parameters
+    large_order_threshold_ = params.getDouble("large_order_threshold", large_order_threshold_);
+    history_window_seconds_ = params.getInt("history_window_seconds", history_window_seconds_);
+    
+    // Reset the monitor state if necessary
+    reset();
 }
 
 std::vector<PriceLevel> LiquidityFlowMonitor::identifyLargeOrders(

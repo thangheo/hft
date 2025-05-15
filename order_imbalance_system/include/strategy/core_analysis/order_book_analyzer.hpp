@@ -122,7 +122,45 @@
       * @return Trading pair
       */
      const std::string& getTradingPair() const { return trading_pair_; }
+    //  updateParameters function
+     virtual void updateParameters(const ParameterSet& params);
      
+     /**
+      * Get the current parameters
+      * @return Current parameters
+      */
+     const ParameterSet& getParameters() const { return params_; }
+     
+     /**
+      * Get the last update time
+      * @return Last update time
+      */
+     core::Timestamp getLastUpdateTime() const { return last_update_time_; }
+     
+     /**
+      * Get the historical mid prices
+      * @return Historical mid prices
+      */
+     const std::vector<double>& getHistoricalMidPrices() const { return historical_mid_prices_; }
+     
+     /**
+      * Get the historical spreads
+      * @return Historical spreads
+      */
+     const std::vector<double>& getHistoricalSpreads() const { return historical_spreads_; }
+     
+     /**
+      * Get the historical volumes
+      * @return Historical volumes
+      */
+     const std::vector<double>& getHistoricalVolumes() const { return historical_volumes_; }
+     
+     /**
+      * Get the historical imbalances
+      * @return Historical imbalances
+      */
+     const std::vector<double>& getHistoricalImbalances() const { return historical_imbalances_; }
+
  protected:
      /**
       * Calculate basic price metrics
@@ -268,6 +306,9 @@
      double ema_spread_ = 0.0;
      double ema_volume_imbalance_ = 0.0;
      double ema_alpha_ = 0.2;              // Smoothing factor for EMAs
+
+        // Parameters
+        ParameterSet params_;
  };
  
  // Factory function to create OrderBookAnalyzer instances

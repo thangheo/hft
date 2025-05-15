@@ -27,60 +27,61 @@
      OrderBookAnalyzerConfig() = default;
  };
  
-/**
- * Configuration for ImbalanceDetection
- */
-struct ImbalanceDetectionConfig {
-    // Strategy identification
-    std::string strategy_id;                     // Unique identifier for the strategy
-    std::string version = "1.0";                 // Version of the strategy
-    
-    // Core thresholds with defaults
-    double volumeImbalanceThreshold = 0.7;       // Threshold for volume imbalance detection
-    double priceLevelImbalanceThreshold = 0.6;   // Threshold for price level imbalance
-    double liquidityRemovalThreshold = 0.5;      // Threshold for liquidity removal detection
-    
-    // Window and history settings
-    int detectionWindowMs = 1000;                // Detection window in milliseconds
-    int maxHistorySize = 1000;                   // Maximum history size for metrics
-    
-    // Advanced configuration
-    double global_sensitivity = 1.0;             // Global sensitivity for all thresholds
-    
-    // Dynamic configuration maps
-    std::map<std::string, double> thresholds;    // Thresholds for different imbalance types   
-    std::map<std::string, double> parameters;    // General parameters for the strategy
-    std::map<std::string, std::string> string_parameters; // String parameters
-    
-    ImbalanceDetectionConfig() = default;
-    
-    // Helper method to get threshold with global sensitivity applied
-    double getAdjustedThreshold(const std::string& name, double default_value) const {
-        auto it = thresholds.find(name);
-        if (it != thresholds.end()) {
-            return it->second * global_sensitivity;
-        }
-        return default_value * global_sensitivity;
-    }
-    
-    // Helper to get parameter
-    double getParameter(const std::string& name, double default_value) const {
-        auto it = parameters.find(name);
-        if (it != parameters.end()) {
-            return it->second;
-        }
-        return default_value;
-    }
-    
-    // Helper to get string parameter
-    std::string getStringParameter(const std::string& name, const std::string& default_value) const {
-        auto it = string_parameters.find(name);
-        if (it != string_parameters.end()) {
-            return it->second;
-        }
-        return default_value;
-    }
-};
+ /**
+  * Configuration for ImbalanceDetection
+  */
+ struct ImbalanceDetectionConfig {
+     // Strategy identification
+     std::string strategy_id;                     // Unique identifier for the strategy
+     std::string version = "1.0";                 // Version of the strategy
+     
+     // Core thresholds with defaults
+     double volumeImbalanceThreshold = 0.7;       // Threshold for volume imbalance detection
+     double priceLevelImbalanceThreshold = 0.6;   // Threshold for price level imbalance
+     double liquidityRemovalThreshold = 0.5;      // Threshold for liquidity removal detection
+     
+     // Window and history settings
+     int detectionWindowMs = 1000;                // Detection window in milliseconds
+     int maxHistorySize = 1000;                   // Maximum history size for metrics
+     
+     // Advanced configuration
+     double global_sensitivity = 1.0;             // Global sensitivity for all thresholds
+     
+     // Dynamic configuration maps
+     std::map<std::string, double> thresholds;    // Thresholds for different imbalance types   
+     std::map<std::string, double> parameters;    // General parameters for the strategy
+     std::map<std::string, std::string> string_parameters; // String parameters
+     
+     ImbalanceDetectionConfig() = default;
+     
+     // Helper method to get threshold with global sensitivity applied
+     double getAdjustedThreshold(const std::string& name, double default_value) const {
+         auto it = thresholds.find(name);
+         if (it != thresholds.end()) {
+             return it->second * global_sensitivity;
+         }
+         return default_value * global_sensitivity;
+     }
+     
+     // Helper to get parameter
+     double getParameter(const std::string& name, double default_value) const {
+         auto it = parameters.find(name);
+         if (it != parameters.end()) {
+             return it->second;
+         }
+         return default_value;
+     }
+     
+     // Helper to get string parameter
+     std::string getStringParameter(const std::string& name, const std::string& default_value) const {
+         auto it = string_parameters.find(name);
+         if (it != string_parameters.end()) {
+             return it->second;
+         }
+         return default_value;
+     }
+ };
+ 
  /**
   * Configuration for LiquidityFlowMonitor
   */
@@ -163,10 +164,13 @@ struct ImbalanceDetectionConfig {
      AdaptiveMechanismConfig() = default;
  };
  
- /**
-  * Extended StrategyConfig with component-specific configurations
-  */
- struct ExtendedStrategyConfig : public StrategyConfig {
+ // The main StrategyConfig should have these fields:
+ struct StrategyConfig {
+     core::StrategyId strategy_id;                      // Unique identifier for the strategy
+     std::string version;                               // Version of the strategy
+     ParameterSet defaultParameters;                    // Default parameters
+     
+     // Component configurations
      OrderBookAnalyzerConfig orderBookAnalyzerConfig;
      ImbalanceDetectionConfig imbalanceDetectionConfig;
      LiquidityFlowConfig liquidityFlowConfig;
@@ -181,25 +185,29 @@ struct ImbalanceDetectionConfig {
      // Map of trading pairs to monitor (symbol -> exchange ID)
      std::map<std::string, core::ExchangeId> tradingPairs;
      
-     // Default parameters for strategy
-     ParameterSet defaultParameters;
+     // Constructor
+     StrategyConfig() : strategy_id(""), version("1.0.0") {}
      
+     StrategyConfig(const core::StrategyId& id, const std::string& ver = "1.0.0")
+         : strategy_id(id), version(ver) {}
+ };
+ 
+ /**
+  * Extended StrategyConfig with component-specific configurations
+  * This can be removed as the StrategyConfig now contains all needed fields
+  */
+ /*
+ struct ExtendedStrategyConfig : public StrategyConfig {
      ExtendedStrategyConfig() = default;
      
      // Constructor that takes base StrategyConfig
      ExtendedStrategyConfig(const StrategyConfig& baseConfig) 
          : StrategyConfig(baseConfig) {}
  };
+ */
  
-  //AnalyzerConfig 
-    // struct AnalyzerConfig {
-    //     std::string analyzer_id;                // Unique identifier for the analyzer
-    //     std::string version = "1.0";            // Version of the analyzer
-    //     int depth = 10;                         // Depth to analyze
-    //     int historySize = 1000;                 // Size of history to maintain
-    //     double priceWeightFactor = 0.5;         // Weight factor for price-weighted metrics
-        
-    //     AnalyzerConfig() = default;
-    // };
+ // Remove this since the main StrategyConfig now has all the needed fields
+ // No need for an extended version that adds the same fields
+ 
  } // namespace strategy
  } // namespace trading

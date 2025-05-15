@@ -115,7 +115,24 @@ public:
      * @param threshold_manager Pointer to threshold manager component
      */
     void setThresholdManager(ThresholdManagerPtr threshold_manager);
-
+  //updateParameters
+    /**
+     * @brief Update parameters for the signal generator
+     * @param params New parameters to apply
+     */
+    void updateParameters(const ParameterSet& params);
+    
+    /**
+     * @brief Get the current configuration of the signal generator
+     * @return Current configuration
+     */
+    const SignalGeneratorConfig& getConfig() const;
+    
+    /**
+     * @brief Get the current state of the signal generator
+     * @return Current state
+     */
+    std::string getState() const;
 private:
     // Configuration
     SignalGeneratorConfig config_;

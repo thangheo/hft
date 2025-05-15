@@ -14,6 +14,7 @@
 
 #include "strategy/pattern/analyzer.hpp"
 #include "strategy/types.hpp"
+
 #include "data_ingestion/orderbook/order_book.hpp"
 #include <vector>
 #include <memory>
@@ -114,9 +115,9 @@ public:
      * Add these to the imbalance_detection_engine.cpp file
      */
 
-    // Additional methods for the ImbalanceDetectionEngine class
+    //updateParameters
+    virtual void updateParameters(const ParameterSet& params);
 
-    // Add this to the private declarations in the header file:
 private:
     // Additional private methods
     uint64_t generateEventId();

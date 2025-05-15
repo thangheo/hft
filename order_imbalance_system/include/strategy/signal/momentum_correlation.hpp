@@ -11,9 +11,7 @@
 #pragma once
 
 #include "strategy/types.hpp"
-#include "strategy/types/correlation_types.hpp"
-#include "strategy/types/order_book_metrics.hpp"
-#include "strategy/types/imbalance_event.hpp"
+
 #include <map>
 #include <deque>
 #include <vector>
@@ -87,7 +85,18 @@ public:
      * @return Map of metric names to importance scores
      */
     std::map<std::string, double> getFeatureImportance() const;
-
+   //updateParameters
+    /**
+     * @brief Update parameters for the correlation model
+     * @param params New parameters
+     */
+    void updateParameters(const CorrelationParameters& params);
+    
+    /**
+     * @brief Get the number of data points used in correlation analysis
+     * @return Number of data points
+     */
+    size_t getDataPointCount() const;
 private:
     size_t window_size_;
     CorrelationParameters params_;

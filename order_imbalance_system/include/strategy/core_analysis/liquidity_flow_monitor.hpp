@@ -250,7 +250,13 @@
       * Reset the monitor state
       */
      virtual void reset();
-     
+     //updateParameters(parameters)
+     /**
+      * Update parameters for the monitor
+      * 
+      * @param params New parameters
+      */
+     virtual void updateParameters(const ParameterSet& params);
  protected:
      /**
       * Compute order book delta between two snapshots

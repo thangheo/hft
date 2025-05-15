@@ -340,7 +340,20 @@
      current_profile_.start_time = std::chrono::system_clock::now();
      current_profile_.end_time = std::chrono::system_clock::now();
  }
- 
+  //updateParameters
+    void VolumeProfileAnalyzer::updateParameters(const ParameterSet& params) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        
+        // Update parameters
+        num_price_ranges_ = params.getInt("num_price_ranges", num_price_ranges_);
+        range_size_percent_ = params.getDouble("range_size_percent", range_size_percent_);
+        time_frame_minutes_ = params.getInt("time_frame_minutes", time_frame_minutes_);
+        
+        // Reinitialize price ranges
+        if (!current_profile_.price_ranges.empty()) {
+            initializePriceRanges(current_profile_.price_ranges[0].lower_bound);
+        }
+    }
  void VolumeProfileAnalyzer::processTrade(
      double price, double volume, bool is_buy, core::Timestamp timestamp) {
      

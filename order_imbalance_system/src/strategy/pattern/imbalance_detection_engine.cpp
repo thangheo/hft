@@ -153,7 +153,25 @@
      
      return status;
  }
- 
+    // Update parameters
+    void ImbalanceDetectionEngine::updateParameters(const ParameterSet& params) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        
+        // Update thresholds
+        if (params.numeric_params.find("volume_imbalance_threshold") != params.numeric_params.end()) {
+            thresholds_[ImbalanceType::VOLUME_IMBALANCE] = params.getDouble("volume_imbalance_threshold");
+        }
+        if (params.numeric_params.find("price_level_imbalance_threshold") != params.numeric_params.end()) {
+            thresholds_[ImbalanceType::PRICE_LEVEL_IMBALANCE] = params.getDouble("price_level_imbalance_threshold");
+        }
+        if (params.numeric_params.find("liquidity_flow_imbalance_threshold") != params.numeric_params.end()) {
+            thresholds_[ImbalanceType::LIQUIDITY_FLOW_IMBALANCE] = params.getDouble("liquidity_flow_imbalance_threshold");
+        }
+        if (params.numeric_params.find("abnormal_spread_threshold") != params.numeric_params.end()) {
+            thresholds_[ImbalanceType::ABNORMAL_SPREAD] = params.getDouble("abnormal_spread_threshold");
+        }
+    }
+
  // PRIVATE METHODS
  
  // Detect volume imbalance

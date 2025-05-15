@@ -112,7 +112,13 @@ public:
      */
     bool loadThresholds(const std::string& identifier = "");
     // getGlobalSensitivity
-    // double getGlobalSensitivity() ;
+    double getGlobalSensitivity() const;
+    // updateParameters
+    /**
+     * @brief Update parameters for the threshold manager
+     * @param params New parameters
+     */
+    void updateParameters(const ParameterSet& params);
 private:
     ThresholdSet base_thresholds_;
     std::map<ExchangeId, ThresholdSet> exchange_thresholds_;

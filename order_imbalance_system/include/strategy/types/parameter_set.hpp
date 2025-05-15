@@ -95,18 +95,18 @@
  /**
   * Strategy configuration combining parameters and thresholds
   */
- struct StrategyConfig {
-     core::StrategyId strategy_id;                      // Unique identifier for the strategy
-     std::string version;                               // Version of the strategy
-     ParameterSet parameters;                           // Strategy parameters
-     int detection_window_ms = 1000;                    // Detection window in milliseconds
-     int max_history_size = 1000;                       // Maximum history size for metrics
+//  struct StrategyConfig {
+//      core::StrategyId strategy_id;                      // Unique identifier for the strategy
+//      std::string version;                               // Version of the strategy
+//      ParameterSet parameters;                           // Strategy parameters
+//      int detection_window_ms = 1000;                    // Detection window in milliseconds
+//      int max_history_size = 1000;                       // Maximum history size for metrics
      
-     StrategyConfig() : strategy_id(""), version("1.0.0") {}
+//      StrategyConfig() : strategy_id(""), version("1.0.0") {}
      
-     StrategyConfig(const core::StrategyId& id, const std::string& ver = "1.0.0")
-         : strategy_id(id), version(ver) {}
- };
+//      StrategyConfig(const core::StrategyId& id, const std::string& ver = "1.0.0")
+//          : strategy_id(id), version(ver) {}
+//  };
  
  } // namespace strategy
  } // namespace trading

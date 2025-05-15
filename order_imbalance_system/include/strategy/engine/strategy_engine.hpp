@@ -10,21 +10,9 @@
  * Created on: May 13, 2025
  */
 #pragma once
-
-#include "strategy/pattern/imbalance_detection_engine.hpp"
-#include "strategy/core_analysis/order_book_analyzer.hpp"
-#include "strategy/core_analysis/liquidity_flow_monitor.hpp"
-#include "strategy/core_analysis/volume_profile_analyzer.hpp"
-#include "strategy/signal/imbalance_signal_generator.hpp"
-#include "strategy/signal/momentum_correlation.hpp"
-#include "strategy/signal/threshold_manager.hpp"
-#include "strategy/signal/signal_decay_model.hpp"
-#include "strategy/optimization/exchange_calibration.hpp"
-#include "strategy/optimization/adaptive_mechanism.hpp"
 #include "strategy/types.hpp"
-#include "data_ingestion/orderbook/order_book.hpp"
-#include "common/logger.hpp"
-#include "strategy/signal/logistic_regression_signal_generator.hpp"
+
+// #include "strategy/signal/logistic_regression_signal_generator.hpp"
 #include <string>
 #include <memory>
 #include <vector>
@@ -57,8 +45,8 @@ public:
      * @brief Register a logistic regression signal generator
      * @param generator The signal generator to register
      */
-    void registerLogisticRegressionSignalGenerator(
-        std::shared_ptr<LogisticRegressionSignalGenerator> generator);
+    // void registerLogisticRegressionSignalGenerator(
+    //     std::shared_ptr<LogisticRegressionSignalGenerator> generator);
     
     /**
      * @brief Destructor
@@ -211,7 +199,7 @@ private:
     void recordSignalPerformance(const std::string& signalId, const SignalExecutionResult& result);
     
     // Additional components
-    std::shared_ptr<LogisticRegressionSignalGenerator> logistic_regression_signal_generator_;
+    // std::shared_ptr<LogisticRegressionSignalGenerator> logistic_regression_signal_generator_;
 };
 
 // Type aliases

@@ -641,6 +641,20 @@
      
      return std::make_shared<OrderBookAnalyzer>(exchange_id, trading_pair, params);
  }
- 
+ //updateParameters function
+void OrderBookAnalyzer::updateParameters(const ParameterSet& params) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    params_ = params;
+    
+    // Update parameters in the analyzer
+    depth_levels_ = params_.getInt("depth_levels", depth_levels_);
+    price_grouping_factor_ = params_.getDouble("price_grouping_factor", price_grouping_factor_);
+    min_samples_for_stability_ = params_.getInt("min_samples_for_stability", min_samples_for_stability_);
+    ema_alpha_ = params_.getDouble("ema_alpha", 0.1); // Default EMA alpha
+    // Update other parameters as needed
+    // Notify callbacks about parameter update
+    notifyMetricsUpdated();
+}
+
  } // namespace strategy
  } // namespace trading

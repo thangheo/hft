@@ -130,7 +130,17 @@
      std::lock_guard<std::mutex> lock(mutex_);
      thresholdManager_ = threshold_manager;
  }
- 
+ //    void updateParameters(const ParameterSet& params);
+    void ImbalanceSignalGenerator::updateParameters(const ParameterSet& params) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        // Update parameters as needed
+        // For example, update thresholds or other configurations
+        if (thresholdManager_) {
+            // thresholdManager_->updateMarketConditions(params.getMarketState());
+            // thresholdManager_->updateMarketConditions(
+        }
+    }
+    
  // PRIVATE METHODS
  
  // Create a trading signal from an imbalance event
@@ -146,7 +156,7 @@
      signal.ttl = std::chrono::milliseconds(config_.signalTtlMs);
      signal.source_type = imbalance.type;
      signal.symbol = imbalance.symbol;
-     signal.exchange = imbalance.exchange_id;
+     signal.exchange = imbalance.getExchangeFromExchangeId(imbalance.exchange_id);
      
      // Generate price targets
      signal.targets = generatePriceTargets(imbalance);
@@ -159,7 +169,8 @@
      // Apply momentum correlation if available
      if (momentumCorrelation_) {
          double predictedMove = momentumCorrelation_->predictPriceMovement(imbalance);
-         double correlation = momentumCorrelation_->getCorrelationCoefficient(imbalance.type);
+         std::string imbalanceTypeStr = imbalanceTypeToString(imbalance.type);
+         double correlation = momentumCorrelation_->getCorrelationCoefficient(imbalanceTypeStr);
          
          signal.setMetric("predicted_price_move", predictedMove);
          signal.setMetric("momentum_correlation", correlation);
