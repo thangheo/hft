@@ -173,11 +173,11 @@ void AdaptiveMechanism::applyParameterDrift() {
     size_t halfPoint = performanceHistory_.size() / 2;
     
     for (size_t i = halfPoint; i < performanceHistory_.size(); ++i) {
-        recentSharpeAvg += performanceHistory_[i].sharpeRatio;
+        recentSharpeAvg += performanceHistory_[i].sharpe_ratio;
     }
     
     for (size_t i = 0; i < halfPoint; ++i) {
-        olderSharpeAvg += performanceHistory_[i].sharpeRatio;
+        olderSharpeAvg += performanceHistory_[i].sharpe_ratio;
     }
     
     recentSharpeAvg /= (performanceHistory_.size() - halfPoint);
@@ -190,24 +190,24 @@ void AdaptiveMechanism::applyParameterDrift() {
     std::map<std::string, double> attribution = attributePerformance();
     
     // Apply drift to parameters
-    for (auto& param : adaptedParameters_) {
+    for (auto it = adaptedParameters_.numeric_params.begin(); it != adaptedParameters_.numeric_params.end(); ++it) {
         // Check if we have attribution for this parameter
-        if (attribution.find(param.first) != attribution.end()) {
+        if (attribution.find(it->first) != attribution.end()) {
             // Drift rate depends on performance attribution
-            double driftRate = 0.01 * attribution[param.first] * performanceTrend;
+            double driftRate = 0.01 * attribution[it->first] * performanceTrend;
             
             // Apply drift
-            double oldValue = param.second;
-            param.second *= (1.0 + driftRate);
+            double oldValue = it->second;
+            it->second *= (1.0 + driftRate);
             
             // Ensure parameter stays within bounds
-            if (parameterBounds_.find(param.first) != parameterBounds_.end()) {
-                param.second = std::max(parameterBounds_[param.first].first, 
-                                      std::min(parameterBounds_[param.first].second, param.second));
+            if (parameterBounds_.find(it->first) != parameterBounds_.end()) {
+                it->second = std::max(parameterBounds_[it->first].first, 
+                                      std::min(parameterBounds_[it->first].second, it->second));
             }
             
             // Record change
-            status_.parameterChanges[param.first] = param.second - oldValue;
+            status_.parameterChanges[it->first] = it->second - oldValue;
         }
     }
 }
@@ -236,21 +236,25 @@ void AdaptiveMechanism::applyMarketRegimeAdaptation() {
                 std::string paramName = paramAdjustment.first;
                 double adjustmentFactor = paramAdjustment.second;
                 
-                if (adaptedParameters_.find(paramName) != adaptedParameters_.end()) {
-                    double oldValue = adaptedParameters_[paramName];
+                auto it = adaptedParameters_.numeric_params.find(paramName);
+                if (it != adaptedParameters_.numeric_params.end()) {
+                    double oldValue = it->second;
                     
                     // Apply adjustment
-                    adaptedParameters_[paramName] = baseParameters_[paramName] * adjustmentFactor;
-                    
-                    // Ensure parameter stays within bounds
-                    if (parameterBounds_.find(paramName) != parameterBounds_.end()) {
-                        adaptedParameters_[paramName] = std::max(parameterBounds_[paramName].first, 
-                                                             std::min(parameterBounds_[paramName].second, 
-                                                                    adaptedParameters_[paramName]));
+                    auto baseIt = baseParameters_.numeric_params.find(paramName);
+                    if (baseIt != baseParameters_.numeric_params.end()) {
+                        it->second = baseIt->second * adjustmentFactor;
+                        
+                        // Ensure parameter stays within bounds
+                        if (parameterBounds_.find(paramName) != parameterBounds_.end()) {
+                            it->second = std::max(parameterBounds_[paramName].first, 
+                                                 std::min(parameterBounds_[paramName].second, 
+                                                        it->second));
+                        }
+                        
+                        // Record change
+                        status_.parameterChanges[paramName] = it->second - oldValue;
                     }
-                    
-                    // Record change
-                    status_.parameterChanges[paramName] = adaptedParameters_[paramName] - oldValue;
                 }
             }
         }
@@ -289,19 +293,20 @@ void AdaptiveMechanism::applyParameterBlending() {
         weight.second /= totalWeight;
     }
     
-    // Apply blending
-    ParameterSet blendedParams = adaptedParameters_;  // Start with current adapted parameters
-    
-    for (auto& param : blendedParams) {
+    // Apply blending to numeric parameters
+    for (auto& param : adaptedParameters_.numeric_params) {
         double blendedValue = 0.0;
         
         for (const auto& source : rules_.blendingSources) {
             // Get parameter value from this source
             double sourceValue = 0.0;
-            if (source.second.find(param.first) != source.second.end()) {
-                sourceValue = source.second.at(param.first);
+            auto sourceParamIt = source.second.find(param.first);
+            if (sourceParamIt != source.second.end()) {
+                sourceValue = sourceParamIt->second;  // Directly use the value if it's already numeric
             } else {
-                sourceValue = baseParameters_[param.first];  // Fallback to base parameter
+                auto baseIt = baseParameters_.numeric_params.find(param.first);
+                sourceValue = (baseIt != baseParameters_.numeric_params.end()) ? 
+                              baseIt->second : 0.0;  // Fallback to base parameter
             }
             
             // Add weighted value
@@ -309,17 +314,17 @@ void AdaptiveMechanism::applyParameterBlending() {
         }
         
         // Record change
-        double oldValue = adaptedParameters_[param.first];
-        adaptedParameters_[param.first] = blendedValue;
+        double oldValue = param.second;
+        param.second = blendedValue;
         
         // Ensure parameter stays within bounds
         if (parameterBounds_.find(param.first) != parameterBounds_.end()) {
-            adaptedParameters_[param.first] = std::max(parameterBounds_[param.first].first, 
-                                                   std::min(parameterBounds_[param.first].second, 
-                                                          adaptedParameters_[param.first]));
+            param.second = std::max(parameterBounds_[param.first].first, 
+                                   std::min(parameterBounds_[param.first].second, 
+                                          param.second));
         }
         
-        status_.parameterChanges[param.first] = adaptedParameters_[param.first] - oldValue;
+        status_.parameterChanges[param.first] = param.second - oldValue;
     }
 }
 
@@ -335,13 +340,13 @@ void AdaptiveMechanism::applyAntiFragility() {
     
     double meanSharpe = 0.0;
     for (const auto& perf : performanceHistory_) {
-        meanSharpe += perf.sharpeRatio;
+        meanSharpe += perf.sharpe_ratio;
     }
     meanSharpe /= performanceHistory_.size();
     
     double varianceSharpe = 0.0;
     for (const auto& perf : performanceHistory_) {
-        double diff = perf.sharpeRatio - meanSharpe;
+        double diff = perf.sharpe_ratio - meanSharpe;
         varianceSharpe += diff * diff;
     }
     varianceSharpe /= performanceHistory_.size();
@@ -349,7 +354,7 @@ void AdaptiveMechanism::applyAntiFragility() {
     double stdDevSharpe = std::sqrt(varianceSharpe);
     
     // Adjust parameters to reduce sensitivity to volatile conditions
-    for (auto& param : adaptedParameters_) {
+    for (auto& param : adaptedParameters_.numeric_params) {
         // Check if this parameter affects sensitivity
         bool isSensitivityParameter = false;
         for (const auto& rule : rules_.antifragilityRules) {
@@ -394,7 +399,7 @@ std::map<std::string, double> AdaptiveMechanism::attributePerformance() const {
     
     double totalAttribution = 0.0;
     
-    for (const auto& param : adaptedParameters_) {
+    for (const auto& param : adaptedParameters_.numeric_params) {
         double randAttribution = dist(gen);
         attribution[param.first] = randAttribution;
         totalAttribution += randAttribution;
@@ -435,11 +440,11 @@ bool AdaptiveMechanism::isAdaptationNeeded() const {
         size_t halfPoint = performanceHistory_.size() / 2;
         
         for (size_t i = halfPoint; i < performanceHistory_.size(); ++i) {
-            recentPerf += performanceHistory_[i].sharpeRatio;
+            recentPerf += performanceHistory_[i].sharpe_ratio;
         }
         
         for (size_t i = 0; i < halfPoint; ++i) {
-            earlierPerf += performanceHistory_[i].sharpeRatio;
+            earlierPerf += performanceHistory_[i].sharpe_ratio;
         }
         
         recentPerf /= (performanceHistory_.size() - halfPoint);
@@ -478,13 +483,13 @@ void AdaptiveMechanism::checkForFailedAdaptation() {
     std::vector<double> afterSharpe;
     
     for (const auto& perf : performanceHistory_) {
-        auto perfTime = std::chrono::system_clock::time_point(
-            std::chrono::milliseconds(perf.timestamp));
+        // Convert timestamp to time_point
+        auto perfTime = std::chrono::system_clock::from_time_t(perf.timestamp);
         
         if (perfTime < status_.lastAdaptationTime) {
-            beforeSharpe.push_back(perf.sharpeRatio);
+            beforeSharpe.push_back(perf.sharpe_ratio);
         } else {
-            afterSharpe.push_back(perf.sharpeRatio);
+            afterSharpe.push_back(perf.sharpe_ratio);
         }
     }
     
@@ -517,8 +522,11 @@ void AdaptiveMechanism::revertToSafeParameters() {
     // Revert to safer parameters if adaptation failed
     
     // Simple approach: revert halfway back to base parameters
-    for (auto& param : adaptedParameters_) {
-        param.second = (param.second + baseParameters_[param.first]) / 2.0;
+    for (auto& param : adaptedParameters_.numeric_params) {
+        auto baseIt = baseParameters_.numeric_params.find(param.first);
+        if (baseIt != baseParameters_.numeric_params.end()) {
+            param.second = (param.second + baseIt->second) / 2.0;
+        }
     }
     
     // Update status

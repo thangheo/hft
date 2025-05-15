@@ -1,6 +1,9 @@
 // adaptive_mechanism.hpp
 #pragma once
 
+// #include "adaptation_rules.hpp"
+// #include "strategy/types/parameter_set.hpp"
+// #include "strategy/types/performance_metrics.hpp"
 #include "strategy/types.hpp"
 #include <memory>
 #include <vector>

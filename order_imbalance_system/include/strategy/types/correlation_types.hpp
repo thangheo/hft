@@ -37,6 +37,8 @@
     std::string exchange_id;               // Exchange identifier
     std::string trading_pair;              // Trading pair
     core::Timestamp timestamp;                   // Timestamp of this state
+    double trendStrength;                // Trend strength (0-1)
+    // double volume_ratio;                 // Volume ratio compared to average
     double price;                          // Current price
     double volatility;                     // Current volatility
     double volume_24h;                     // 24-hour volume
