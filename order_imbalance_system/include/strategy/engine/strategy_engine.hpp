@@ -11,8 +11,8 @@
  */
 #pragma once
 #include "strategy/types.hpp"
+#include "data_ingestion/orderbook/order_book.hpp"
 
-// #include "strategy/signal/logistic_regression_signal_generator.hpp"
 #include <string>
 #include <memory>
 #include <vector>

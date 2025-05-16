@@ -17,71 +17,58 @@
 #include <mutex>
 #include <atomic>
 #include <functional>
+#include <deque>  // Added for delta history
 
 namespace trading {
 namespace data_ingestion {
 
+/**
+ * Represents an order book delta (change)
+ */
+struct OrderBookDelta {
+    std::string exchange_id;
+    std::string trading_pair;
+    core::Timestamp timestamp;
+    uint64_t sequence_number;
+    std::vector<PriceLevel> added_bids = {};
+    std::vector<PriceLevel> removed_bids = {};
+    std::vector<PriceLevel> added_asks = {};
+    std::vector<PriceLevel> removed_asks= {};
+    
+    // Calculate total added and removed volume
+    double getTotalAddedBidVolume() const;
+    double getTotalRemovedBidVolume() const;
+    double getTotalAddedAskVolume() const;
+    double getTotalRemovedAskVolume() const;
+    
+    // Calculate net volume change
+    double getNetBidVolumeChange() const {
+        return getTotalAddedBidVolume() - getTotalRemovedBidVolume();
+    }
+    
+    double getNetAskVolumeChange() const {
+        return getTotalAddedAskVolume() - getTotalRemovedAskVolume();
+    }
+    
+    // Is the delta empty?
+    bool isEmpty() const {
+        return added_bids.empty() && removed_bids.empty() && 
+               added_asks.empty() && removed_asks.empty();
+    }
+};
 // Forward declarations
 class OrderBook;
 
 // Callback for order book updates
 using OrderBookCallback = std::function<void(const OrderBook&)>;
- /**
-  * Represents an order book delta (change)
-  */
- struct OrderBookDelta {
-    std::string exchange_id;
-    std::string trading_pair;
-    core::Timestamp timestamp;
-    uint64_t sequence_number;
-    std::vector<PriceLevel> added_bids;
-    std::vector<PriceLevel> removed_bids;
-    std::vector<PriceLevel> added_asks;
-    std::vector<PriceLevel> removed_asks;
-    
-    // Calculate total added and removed volume
-    double getTotalAddedBidVolume() const {
-        double total = 0.0;
-        for (const auto& level : added_bids) {
-            total += level.getQuantity();
-        }
-        return total;
-    }
-    
-    double getTotalRemovedBidVolume() const {
-        double total = 0.0;
-        for (const auto& level : removed_bids) {
-            total += level.getQuantity();
-        }
-        return total;
-    }
-    
-    double getTotalAddedAskVolume() const {
-        double total = 0.0;
-        for (const auto& level : added_asks) {
-            total += level.getQuantity();
-        }
-        return total;
-    }
-    
-    double getTotalRemovedAskVolume() const {
-        double total = 0.0;
-        for (const auto& level : removed_asks) {
-            total += level.getQuantity();
-        }
-        return total;
-    }
-};
+using OrderBookDeltaCallback = std::function<void(const OrderBookDelta&)>;
 
 
 // Order book class
 class OrderBook {
 public:
     OrderBook(ExchangeId exchange, const Symbol& symbol, OrderBookCallback callback = nullptr);
-        
-    // Constructor taking string representations (convenience constructor)
     OrderBook(const std::string& exchange_id, const std::string& trading_pair, OrderBookCallback callback = nullptr);
-
     ~OrderBook() = default;
     
     // Update methods
@@ -94,12 +81,25 @@ public:
                     const std::vector<PriceLevel>& asks,
                     uint64_t sequence_number,
                     Timestamp timestamp);
-    //getSnapshot
+    
+    // Snapshot and delta methods
     OrderBookUpdate getSnapshot(int depth = 0) const;
+    // OrderBookDelta getOrderBookDelta(Timestamp previous_timestamp = 0) const;
+    OrderBookDelta getOrderBookDelta(Timestamp previous_timestamp = Timestamp{}) const;
+    // Set callbacks
+    void setOrderBookCallback(OrderBookCallback callback) {
+        callback_ = std::move(callback);
+    }
+    
+    void setDeltaCallback(OrderBookDeltaCallback callback) {
+        delta_callback_ = std::move(callback);
+    }
+    
+    // Helper method for exchange ID conversion
     std::string exchangeIdToString(ExchangeId id) const {
-        // Since ExchangeId is already a std::string, just return it
         return id;
     }
+    
     // Query methods
     std::vector<PriceLevel> getBids(int depth = 0) const;
     std::vector<PriceLevel> getAsks(int depth = 0) const;
@@ -125,32 +125,47 @@ public:
     
     // Calculate checksum for validation
     std::string calculateChecksum() const;
-    //orderbook delta
-    OrderBookDelta getOrderBookDelta(Timestamp previous_timestamp) const;
+    
 private:
+    // Core order book data
     ExchangeId exchange_id_;
     Symbol symbol_;
-    OrderBookCallback callback_;
-    //last_update_time_
     Timestamp last_update_time_;
+    uint64_t sequence_number_ = 0;
+    Timestamp timestamp_;
+    std::atomic<bool> is_valid_{false};
+    std::atomic<bool> is_snapshot_{false};  
+    
     // Order book state
     std::map<double, PriceLevel, std::greater<double>> bids_;  // Descending order for bids
     std::map<double, PriceLevel, std::less<double>> asks_;     // Ascending order for asks
     
-    // Metadata
-    uint64_t sequence_number_ = 0;
-    Timestamp timestamp_;
-    std::atomic<bool> is_valid_{false};
+    // Previous state for delta tracking
+    std::map<double, PriceLevel, std::greater<double>> previous_bids_;  
+    std::map<double, PriceLevel, std::less<double>> previous_asks_;
+    
+    // Delta history for more accurate delta retrieval
+    static constexpr size_t MAX_DELTA_HISTORY = 100;
+    std::deque<OrderBookDelta> recent_deltas_;
+    
+    // Callbacks
+    OrderBookCallback callback_;
+    OrderBookDeltaCallback delta_callback_;
     
     // Thread safety
     mutable std::mutex mutex_;
     
-    // Update price levels
+    // Helper methods
     void updateBidLevel(const PriceLevel& level);
     void updateAskLevel(const PriceLevel& level);
-    
-    // Notify subscribers about updates
     void notifyCallback();
+    void notifyDeltaCallback(const OrderBookDelta& delta);
+    
+    // Delta tracking
+    void trackBidDelta(const PriceLevel& level, OrderBookDelta& delta);
+    void trackAskDelta(const PriceLevel& level, OrderBookDelta& delta);
+    void storeDelta(const OrderBookDelta& delta);
+    void captureOrderBookState();
 };
  
 } // namespace data_ingestion

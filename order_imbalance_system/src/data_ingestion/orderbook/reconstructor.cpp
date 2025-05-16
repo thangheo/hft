@@ -105,48 +105,109 @@
      
      return true;
  }
- 
- bool OrderBookReconstructor::processUpdate(
-     ExchangeId exchange,
-     const Symbol& symbol,
-     const std::vector<PriceLevel>& bids,
-     const std::vector<PriceLevel>& asks,
-     uint64_t sequence_number,
-     Timestamp timestamp) {
+ // In reconstructor.cpp
+
+bool OrderBookReconstructor::processUpdate(
+    ExchangeId exchange,
+    const Symbol& symbol,
+    const std::vector<PriceLevel>& bids,
+    const std::vector<PriceLevel>& asks,
+    uint64_t sequence_number,
+    Timestamp timestamp) {
+    
+    if (!initialized_) {
+        std::cerr << "Error: OrderBookReconstructor not initialized" << std::endl;
+        return false;
+    }
+    
+    // Find order book
+    std::shared_ptr<OrderBook> order_book;
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        
+        OrderBookKey key{exchange, symbol};
+        auto it = order_books_.find(key);
+        
+        if (it == order_books_.end()) {
+            // Order book not found, cannot apply update
+            std::cerr << "Error: Order book not found for update" << std::endl;
+            return false;
+        }
+        
+        order_book = it->second;
+    }
+    
+    // Apply update to order book
+    if (!order_book->applyUpdate(bids, asks, sequence_number, timestamp)) {
+        std::cerr << "Error: Failed to apply update to order book" << std::endl;
+        
+        // If there's a sequence gap, request a snapshot
+        if (order_book->getSequenceNumber() + 1 < sequence_number) {
+            requestSnapshot(exchange, symbol);
+        }
+        
+        return false;
+    }
+    
+    // Publish updated order book
+    publishOrderBook(order_book);
+    
+    return true;
+}
+
+void OrderBookReconstructor::registerLiquidityFlowMonitor(
+    std::shared_ptr<strategy::LiquidityFlowMonitor> monitor) {
+    
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Register the monitor with all order books
+    for (auto& [key, order_book] : order_books_) {
+        order_book->setDeltaCallback([monitor](const OrderBookDelta& delta) {
+            monitor->processOrderBookDelta(delta);
+        });
+    }
+}
+//  bool OrderBookReconstructor::processUpdate(
+//      ExchangeId exchange,
+//      const Symbol& symbol,
+//      const std::vector<PriceLevel>& bids,
+//      const std::vector<PriceLevel>& asks,
+//      uint64_t sequence_number,
+//      Timestamp timestamp) {
      
-     if (!initialized_) {
-         std::cerr << "Error: OrderBookReconstructor not initialized" << std::endl;
-         return false;
-     }
+//      if (!initialized_) {
+//          std::cerr << "Error: OrderBookReconstructor not initialized" << std::endl;
+//          return false;
+//      }
      
-     // Find order book
-     std::shared_ptr<OrderBook> order_book;
-     {
-         std::lock_guard<std::mutex> lock(mutex_);
+//      // Find order book
+//      std::shared_ptr<OrderBook> order_book;
+//      {
+//          std::lock_guard<std::mutex> lock(mutex_);
          
-         OrderBookKey key{exchange, symbol};
-         auto it = order_books_.find(key);
+//          OrderBookKey key{exchange, symbol};
+//          auto it = order_books_.find(key);
          
-         if (it == order_books_.end()) {
-             // Order book not found, cannot apply update
-             std::cerr << "Error: Order book not found for update" << std::endl;
-             return false;
-         }
+//          if (it == order_books_.end()) {
+//              // Order book not found, cannot apply update
+//              std::cerr << "Error: Order book not found for update" << std::endl;
+//              return false;
+//          }
          
-         order_book = it->second;
-     }
+//          order_book = it->second;
+//      }
      
-     // Apply update to order book
-     if (!order_book->applyUpdate(bids, asks, sequence_number, timestamp)) {
-         std::cerr << "Error: Failed to apply update to order book" << std::endl;
-         return false;
-     }
+//      // Apply update to order book
+//      if (!order_book->applyUpdate(bids, asks, sequence_number, timestamp)) {
+//          std::cerr << "Error: Failed to apply update to order book" << std::endl;
+//          return false;
+//      }
      
-     // Publish updated order book
-     publishOrderBook(order_book);
+//      // Publish updated order book
+//      publishOrderBook(order_book);
      
-     return true;
- }
+//      return true;
+//  }
  
  std::shared_ptr<OrderBook> OrderBookReconstructor::getOrderBook(
      ExchangeId exchange, const Symbol& symbol) const {

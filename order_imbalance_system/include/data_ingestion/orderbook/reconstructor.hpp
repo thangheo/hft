@@ -20,6 +20,7 @@
 #include "data_ingestion/orderbook/order_book.hpp"
 #include "data_ingestion/publisher/zeromq_publisher.hpp"
 #include "data_ingestion/orderbook/order_book_types.hpp"
+#include "strategy/core_analysis/liquidity_flow_monitor.hpp"
 // #include "data_ingestion/orderbook/level.hpp"
 
 namespace trading {
@@ -106,7 +107,10 @@ namespace data_ingestion {
          const std::vector<PriceLevel>& asks,
          uint64_t sequence_number,
          Timestamp timestamp);
-     
+     //registerLiquidityFlowMonitor
+     void registerLiquidityFlowMonitor(
+        std::shared_ptr<strategy::LiquidityFlowMonitor> monitor) ;
+    
      /**
       * @brief Get an order book
       * 
@@ -172,7 +176,7 @@ namespace data_ingestion {
       * @return true if request sent, false otherwise
       */
      bool requestSnapshot(ExchangeId exchange, const Symbol& symbol);
- 
+    
  private:
      /**
       * @brief Construct a new Order Book Reconstructor object (private for singleton)

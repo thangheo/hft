@@ -15,17 +15,54 @@
 #include <cmath>
 #include <boost/crc.hpp> // for crc_32_type
 #include <boost/functional/hash.hpp>
+
 namespace trading {
 namespace data_ingestion {
-// namespace orderbook {
 
+// OrderBookDelta methods
+double OrderBookDelta::getTotalAddedBidVolume() const {
+    double total = 0.0;
+    for (const auto& level : added_bids) {
+        total += level.getQuantity();
+    }
+    return total;
+}
+
+double OrderBookDelta::getTotalRemovedBidVolume() const {
+    double total = 0.0;
+    for (const auto& level : removed_bids) {
+        total += level.getQuantity();
+    }
+    return total;
+}
+
+double OrderBookDelta::getTotalAddedAskVolume() const {
+    double total = 0.0;
+    for (const auto& level : added_asks) {
+        total += level.getQuantity();
+    }
+    return total;
+}
+
+double OrderBookDelta::getTotalRemovedAskVolume() const {
+    double total = 0.0;
+    for (const auto& level : removed_asks) {
+        total += level.getQuantity();
+    }
+    return total;
+}
+
+// OrderBook constructors
 OrderBook::OrderBook(ExchangeId exchange, const Symbol& symbol, OrderBookCallback callback)
     : exchange_id_(exchange),
       symbol_(symbol),
-      callback_(std::move(callback)) {
+      callback_(std::move(callback)),
+      sequence_number_(0),
+      is_valid_(false) {
 }
+
 OrderBook::OrderBook(const std::string& exchange_id, const std::string& trading_pair, OrderBookCallback callback)
-    : exchange_id_(exchange_id),  // Directly assign the string exchange_id
+    : exchange_id_(exchange_id),
       callback_(std::move(callback)),
       sequence_number_(0),
       is_valid_(false) {
@@ -52,18 +89,39 @@ bool OrderBook::applySnapshot(const std::vector<PriceLevel>& bids,
     
     std::lock_guard<std::mutex> lock(mutex_);
     
+    // Store the current state for delta calculation
+    captureOrderBookState();
+    
+    // Initialize a delta for this snapshot
+    OrderBookDelta delta{
+        .exchange_id = exchangeIdToString(exchange_id_),
+        .trading_pair = symbol_.toString(),
+        .timestamp = timestamp,
+        .sequence_number = sequence_number
+    };
+    
     // Clear existing book
+    for (const auto& [price, level] : bids_) {
+        delta.removed_bids.push_back(level);
+    }
+    
+    for (const auto& [price, level] : asks_) {
+        delta.removed_asks.push_back(level);
+    }
+    
     bids_.clear();
     asks_.clear();
     
     // Add all bid levels
     for (const auto& bid : bids) {
         updateBidLevel(bid);
+        delta.added_bids.push_back(bid);
     }
     
     // Add all ask levels
     for (const auto& ask : asks) {
         updateAskLevel(ask);
+        delta.added_asks.push_back(ask);
     }
     
     // Update metadata
@@ -71,8 +129,12 @@ bool OrderBook::applySnapshot(const std::vector<PriceLevel>& bids,
     timestamp_ = timestamp;
     is_valid_ = true;
     
+    // Store this delta
+    storeDelta(delta);
+    
     // Notify subscribers
     notifyCallback();
+    notifyDeltaCallback(delta);
     
     return true;
 }
@@ -91,7 +153,7 @@ bool OrderBook::applyUpdate(const std::vector<PriceLevel>& bids,
         // We missed some updates, invalidate the book
         is_valid_ = false;
         std::cerr << "Sequence gap detected for "
-                  << exchange_id_ << ":" // Now using string directly
+                  << exchange_id_ << ":"
                   << symbol_.base << "/" << symbol_.quote
                   << " (" << sequence_number_
                   << " -> " << sequence_number << ")" << std::endl;
@@ -100,13 +162,26 @@ bool OrderBook::applyUpdate(const std::vector<PriceLevel>& bids,
     
     std::lock_guard<std::mutex> lock(mutex_);
     
-    // Apply bid updates
+    // Store the current state for delta calculation
+    captureOrderBookState();
+    
+    // Initialize a delta for this update
+    OrderBookDelta delta{
+        .exchange_id = exchangeIdToString(exchange_id_),
+        .trading_pair = symbol_.toString(),
+        .timestamp = timestamp,
+        .sequence_number = sequence_number
+    };
+    
+    // Apply bid updates and track deltas
     for (const auto& bid : bids) {
+        trackBidDelta(bid, delta);
         updateBidLevel(bid);
     }
     
-    // Apply ask updates
+    // Apply ask updates and track deltas
     for (const auto& ask : asks) {
+        trackAskDelta(ask, delta);
         updateAskLevel(ask);
     }
     
@@ -114,12 +189,187 @@ bool OrderBook::applyUpdate(const std::vector<PriceLevel>& bids,
     sequence_number_ = sequence_number;
     timestamp_ = timestamp;
     
+    // Store this delta if it's not empty
+    if (!delta.isEmpty()) {
+        storeDelta(delta);
+        notifyDeltaCallback(delta);
+    }
+    
     // Notify subscribers
     notifyCallback();
+    
     return true;
 }
 
-//getSnapshot
+void OrderBook::trackBidDelta(const PriceLevel& level, OrderBookDelta& delta) {
+    double price = level.getPrice();
+    double quantity = level.getQuantity();
+    
+    auto it = bids_.find(price);
+    
+    if (quantity <= 0.0) {
+        // Level is being removed
+        if (it != bids_.end()) {
+            delta.removed_bids.push_back(it->second);
+        }
+    } else {
+        // Level is being added or modified
+        if (it == bids_.end()) {
+            // New level
+            delta.added_bids.push_back(level);
+        } else {
+            // Modified level - remove old and add new
+            delta.removed_bids.push_back(it->second);
+            delta.added_bids.push_back(level);
+        }
+    }
+}
+
+void OrderBook::trackAskDelta(const PriceLevel& level, OrderBookDelta& delta) {
+    double price = level.getPrice();
+    double quantity = level.getQuantity();
+    
+    auto it = asks_.find(price);
+    
+    if (quantity <= 0.0) {
+        // Level is being removed
+        if (it != asks_.end()) {
+            delta.removed_asks.push_back(it->second);
+        }
+    } else {
+        // Level is being added or modified
+        if (it == asks_.end()) {
+            // New level
+            delta.added_asks.push_back(level);
+        } else {
+            // Modified level - remove old and add new
+            delta.removed_asks.push_back(it->second);
+            delta.added_asks.push_back(level);
+        }
+    }
+}
+
+void OrderBook::updateBidLevel(const PriceLevel& level) {
+    double price = level.getPrice();
+    
+    if (level.getQuantity() <= 0.0) {
+        // Remove the level if quantity is zero or negative
+        bids_.erase(price);
+    } else {
+        // Update or add the level
+        bids_[price] = level;
+    }
+    
+    // Update timestamp
+    last_update_time_ = std::chrono::system_clock::now();
+}
+
+void OrderBook::updateAskLevel(const PriceLevel& level) {
+    double price = level.getPrice();
+    
+    if (level.getQuantity() <= 0.0) {
+        // Remove the level if quantity is zero or negative
+        asks_.erase(price);
+    } else {
+        // Update or add the level
+        asks_[price] = level;
+    }
+    
+    // Update timestamp
+    last_update_time_ = std::chrono::system_clock::now();
+}
+
+void OrderBook::captureOrderBookState() {
+    // Copy current state for delta calculations
+    previous_bids_ = bids_;
+    previous_asks_ = asks_;
+}
+
+void OrderBook::storeDelta(const OrderBookDelta& delta) {
+    // Store delta in history
+    recent_deltas_.push_back(delta);
+    
+    // Maintain maximum history size
+    if (recent_deltas_.size() > MAX_DELTA_HISTORY) {
+        recent_deltas_.pop_front();
+    }
+}
+
+OrderBookDelta OrderBook::getOrderBookDelta(Timestamp previous_timestamp) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Initialize the delta result
+    OrderBookDelta result{
+        .exchange_id = exchangeIdToString(exchange_id_),
+        .trading_pair = symbol_.toString(),
+        .timestamp = timestamp_,
+        .sequence_number = sequence_number_
+    };
+    
+    // If timestamp is 0 or very old, return the entire current book as added
+    if (previous_timestamp == Timestamp{}) {
+        // Add all current bids
+        for (const auto& [price, level] : bids_) {
+            result.added_bids.push_back(level);
+        }
+        
+        // Add all current asks
+        for (const auto& [price, level] : asks_) {
+            result.added_asks.push_back(level);
+        }
+        
+        return result;
+    }
+    
+    // Try to find deltas in our history that occurred after the requested timestamp
+    bool found_relevant_deltas = false;
+    
+    // Iterate through recent deltas from newest to oldest
+    for (auto it = recent_deltas_.rbegin(); it != recent_deltas_.rend(); ++it) {
+        const auto& delta = *it;
+        
+        // If this delta is newer than the requested timestamp, include its changes
+        if (delta.timestamp > previous_timestamp) {
+            found_relevant_deltas = true;
+            
+            // Add the changes to our result
+            result.added_bids.insert(result.added_bids.end(), 
+                                    delta.added_bids.begin(), 
+                                    delta.added_bids.end());
+            
+            result.removed_bids.insert(result.removed_bids.end(), 
+                                      delta.removed_bids.begin(), 
+                                      delta.removed_bids.end());
+            
+            result.added_asks.insert(result.added_asks.end(), 
+                                    delta.added_asks.begin(), 
+                                    delta.added_asks.end());
+            
+            result.removed_asks.insert(result.removed_asks.end(), 
+                                      delta.removed_asks.begin(), 
+                                      delta.removed_asks.end());
+        } else {
+            // We've reached deltas older than the requested timestamp
+            break;
+        }
+    }
+    
+    // If we couldn't find any relevant deltas, return the current state
+    if (!found_relevant_deltas) {
+        // Add all current bids
+        for (const auto& [price, level] : bids_) {
+            result.added_bids.push_back(level);
+        }
+        
+        // Add all current asks
+        for (const auto& [price, level] : asks_) {
+            result.added_asks.push_back(level);
+        }
+    }
+    
+    return result;
+}
+
 OrderBookUpdate OrderBook::getSnapshot(int depth) const {
     std::lock_guard<std::mutex> lock(mutex_);
     
@@ -153,35 +403,6 @@ OrderBookUpdate OrderBook::getSnapshot(int depth) const {
     return update;
 }
 
-void OrderBook::updateBidLevel(const PriceLevel& level) {
-    double price = level.getPrice();
-    
-    if (level.getQuantity() <= 0.0) {
-        // Remove the level if quantity is zero or negative
-        bids_.erase(price);
-    } else {
-        // Update or add the level
-        bids_[price] = level;
-    }
-    
-    // Update timestamp
-    last_update_time_ = std::chrono::system_clock::now();
-}
-
-void OrderBook::updateAskLevel(const PriceLevel& level) {
-    double price = level.getPrice();
-    
-    if (level.getQuantity() <= 0.0) {
-        // Remove the level if quantity is zero or negative
-        asks_.erase(price);
-    } else {
-        // Update or add the level
-        asks_[price] = level;
-    }
-    
-    // Update timestamp
-    last_update_time_ = std::chrono::system_clock::now();
-}
 std::vector<PriceLevel> OrderBook::getBids(int depth) const {
     std::lock_guard<std::mutex> lock(mutex_);
     
@@ -276,11 +497,13 @@ double OrderBook::getSpreadPercent() const {
     return (best_ask - best_bid) / mid_price * 100.0;
 }
 
-double OrderBook::getBidVolume(int levels) const {
+double OrderBook::getBidVolume(int depth) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
     double volume = 0.0;
     int count = 0;
     
-    for (auto it = bids_.begin(); it != bids_.end() && (levels == 0 || count < levels); ++it, ++count) {
+    for (auto it = bids_.begin(); it != bids_.end() && (depth == 0 || count < depth); ++it, ++count) {
         const auto& level = it->second;
         volume += level.getQuantity();
     }
@@ -288,13 +511,13 @@ double OrderBook::getBidVolume(int levels) const {
     return volume;
 }
 
-
-
-double OrderBook::getAskVolume(int levels) const {
+double OrderBook::getAskVolume(int depth) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
     double volume = 0.0;
     int count = 0;
     
-    for (auto it = asks_.begin(); it != asks_.end() && (levels == 0 || count < levels); ++it, ++count) {
+    for (auto it = asks_.begin(); it != asks_.end() && (depth == 0 || count < depth); ++it, ++count) {
         const auto& level = it->second;
         volume += level.getQuantity();
     }
@@ -315,6 +538,7 @@ double OrderBook::getVolumeImbalance(int depth) const {
     
     return (bid_volume - ask_volume) / total_volume;
 }
+
 std::string OrderBook::calculateChecksum() const {
     std::stringstream ss;
     
@@ -363,30 +587,6 @@ std::string OrderBook::calculateChecksum() const {
     return checksum.str();
 }
 
-// OrderBookDelta OrderBook::getOrderBookDelta(Timestamp previous_timestamp) const {
-//     std::lock_guard<std::mutex> lock(mutex_);
-    
-//     // Initialize the delta object
-//     OrderBookDelta delta{
-//         .exchange_id = exchangeIdToString(exchange_id_),
-//         .trading_pair = symbol_.toString(),
-//         .timestamp = timestamp_.time_since_epoch().count(),
-//         .sequence_number = sequence_number_
-//     };
-
-//     // Populate added bids and asks
-//     auto populateDelta = [](const auto& levels, auto& delta_levels) {
-//         for (const auto& [price, level] : levels) {
-//             delta_levels.push_back(level);
-//         }
-//     };
-
-//     populateDelta(bids_, delta.added_bids);
-//     populateDelta(asks_, delta.added_asks);
-
-//     return delta;
-// }
-
 void OrderBook::notifyCallback() {
     if (!callback_) {
         return;
@@ -396,6 +596,14 @@ void OrderBook::notifyCallback() {
     callback_(*this);
 }
 
-// } // namespace orderbook
+void OrderBook::notifyDeltaCallback(const OrderBookDelta& delta) {
+    if (!delta_callback_) {
+        return;
+    }
+    
+    // Invoke delta callback with this delta
+    delta_callback_(delta);
+}
+
 } // namespace data_ingestion
 } // namespace trading
