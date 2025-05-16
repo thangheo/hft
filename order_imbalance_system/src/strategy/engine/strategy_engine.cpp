@@ -176,7 +176,8 @@
          auto metrics = orderBookAnalyzer_->getMetrics();
          
          // Update the liquidity flow monitor
-         liquidityMonitor_->processOrderBook(orderBook);
+        //  liquidityMonitor_->processOrderBook(orderBook);
+            liquidityMonitor_->processOrderBookDelta(orderBook.
          
          // Update the volume profile analyzer
          volumeProfileAnalyzer_->updateVolumeProfile(orderBook);
@@ -195,7 +196,8 @@
          // Update momentum correlation with this data point
          auto symbol = orderBook.getSymbol();
          ExchangeId exchangeId = orderBook.getExchangeId();
-         std::string pairId = symbol + ":" + std::to_string(static_cast<int>(exchangeId));
+        //  std::string pairId = symbol + ":" + std::to_string(static_cast<int>(exchangeId));
+        std::string pairId = orderBook.getExchangeId() + ":" + orderBook.getSymbol().toString();
          
          // Update the trading pair state
          auto it = tradingPairStates_.find(pairId);
@@ -206,13 +208,14 @@
              // Record price movement for correlation analysis
              PriceMovement movement;
              movement.symbol = symbol;
-             movement.timestamp = orderBook.getTimestamp();
-             movement.price = orderBook.getMidPrice();
-             movement.previousPrice = it->second.previousPrice;
-             it->second.previousPrice = movement.price;
+             movement.time_start = it->second.lastUpdateTime;
+             movement.time_end = std::chrono::system_clock::now();
+             movement.price_before = it->second.previousPrice;
+             movement.price_after = orderBook.getMidPrice();
+             movement.absolute_change = movement.price_after - movement.price_before;
              
              // Update momentum correlation if we have a valid previous price
-             if (movement.previousPrice > 0) {
+             if (movement.price_before > 0.0) {
                  momentumCorrelator_->updateCorrelationModel(metrics, movement);
              }
          }

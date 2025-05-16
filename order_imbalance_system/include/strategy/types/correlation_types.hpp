@@ -100,6 +100,7 @@
      core::Timestamp time_start; // Start time of movement
      core::Timestamp time_end;   // End time of movement
      core::Duration duration;    // Duration of movement
+     Symbol symbol;          // Trading pair symbol
      
      // Default constructor
      PriceMovement()

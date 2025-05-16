@@ -362,6 +362,31 @@ std::string OrderBook::calculateChecksum() const {
     
     return checksum.str();
 }
+
+// OrderBookDelta OrderBook::getOrderBookDelta(Timestamp previous_timestamp) const {
+//     std::lock_guard<std::mutex> lock(mutex_);
+    
+//     // Initialize the delta object
+//     OrderBookDelta delta{
+//         .exchange_id = exchangeIdToString(exchange_id_),
+//         .trading_pair = symbol_.toString(),
+//         .timestamp = timestamp_.time_since_epoch().count(),
+//         .sequence_number = sequence_number_
+//     };
+
+//     // Populate added bids and asks
+//     auto populateDelta = [](const auto& levels, auto& delta_levels) {
+//         for (const auto& [price, level] : levels) {
+//             delta_levels.push_back(level);
+//         }
+//     };
+
+//     populateDelta(bids_, delta.added_bids);
+//     populateDelta(asks_, delta.added_asks);
+
+//     return delta;
+// }
+
 void OrderBook::notifyCallback() {
     if (!callback_) {
         return;

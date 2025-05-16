@@ -26,6 +26,53 @@ class OrderBook;
 
 // Callback for order book updates
 using OrderBookCallback = std::function<void(const OrderBook&)>;
+ /**
+  * Represents an order book delta (change)
+  */
+ struct OrderBookDelta {
+    std::string exchange_id;
+    std::string trading_pair;
+    core::Timestamp timestamp;
+    uint64_t sequence_number;
+    std::vector<PriceLevel> added_bids;
+    std::vector<PriceLevel> removed_bids;
+    std::vector<PriceLevel> added_asks;
+    std::vector<PriceLevel> removed_asks;
+    
+    // Calculate total added and removed volume
+    double getTotalAddedBidVolume() const {
+        double total = 0.0;
+        for (const auto& level : added_bids) {
+            total += level.getQuantity();
+        }
+        return total;
+    }
+    
+    double getTotalRemovedBidVolume() const {
+        double total = 0.0;
+        for (const auto& level : removed_bids) {
+            total += level.getQuantity();
+        }
+        return total;
+    }
+    
+    double getTotalAddedAskVolume() const {
+        double total = 0.0;
+        for (const auto& level : added_asks) {
+            total += level.getQuantity();
+        }
+        return total;
+    }
+    
+    double getTotalRemovedAskVolume() const {
+        double total = 0.0;
+        for (const auto& level : removed_asks) {
+            total += level.getQuantity();
+        }
+        return total;
+    }
+};
+
 
 // Order book class
 class OrderBook {
@@ -78,7 +125,8 @@ public:
     
     // Calculate checksum for validation
     std::string calculateChecksum() const;
-    
+    //orderbook delta
+    OrderBookDelta getOrderBookDelta(Timestamp previous_timestamp) const;
 private:
     ExchangeId exchange_id_;
     Symbol symbol_;
