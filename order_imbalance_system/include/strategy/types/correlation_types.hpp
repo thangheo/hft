@@ -80,14 +80,36 @@
      double significance_threshold;    // Statistical significance threshold (p-value)
      double correlation_decay_rate;    // Decay rate for smoothing correlation values
      size_t regime_detection_window;   // Window size for market regime detection
-     
+     double time_decay_factor;         // Factor for time decay in correlation calculation
+     double min_stddev_threshold;      // Minimum standard deviation threshold for correlation
+     double  strong_correlation_threshold; // Threshold for strong correlation
+     size_t max_level_depth;                // Maximum depth for level-specific metrics
+     size_t top_metrics_count;             // Number of top metrics to consider for correlation~
      // Constructor with defaults
      CorrelationParameters() 
          : min_data_points(10),
            significance_threshold(0.05),
            correlation_decay_rate(0.95),
-           regime_detection_window(20) {}
- };
+           regime_detection_window(20),
+            time_decay_factor(0.1),
+           min_stddev_threshold(1e-6),
+           strong_correlation_threshold(0.7),
+            max_level_depth(10) ,
+            top_metrics_count(5) {}
+        // Constructor with custom values
+        CorrelationParameters(size_t min_points, double significance, double decay_rate,
+                            size_t window, double time_decay, double min_stddev, double strong_correlation, size_t max_depth,
+                            size_t top_metrics)
+            : min_data_points(min_points),
+            significance_threshold(significance),
+            correlation_decay_rate(decay_rate),
+            regime_detection_window(window),
+            time_decay_factor(time_decay),
+            min_stddev_threshold(min_stddev) ,
+            strong_correlation_threshold(strong_correlation),
+            max_level_depth(max_depth) ,
+            top_metrics_count(top_metrics) {}
+    };
  
  /**
   * Represents price movement information

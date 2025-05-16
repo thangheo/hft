@@ -11,6 +11,16 @@
  */
 #pragma once
 #include "strategy/types.hpp"
+#include "strategy/signal/signal_decay_model.hpp"
+#include "strategy/pattern/imbalance_detection_engine.hpp"
+#include "strategy/core_analysis/order_book_analyzer.hpp"
+#include "strategy/core_analysis/liquidity_flow_monitor.hpp"
+#include "strategy/core_analysis/volume_profile_analyzer.hpp"
+#include "strategy/signal/imbalance_signal_generator.hpp"
+#include "strategy/signal/momentum_correlation.hpp"
+#include "strategy/signal/threshold_manager.hpp"
+#include "strategy/optimization/exchange_calibration.hpp"
+#include "strategy/optimization/adaptive_mechanism.hpp"
 #include "data_ingestion/orderbook/order_book.hpp"
 
 #include <string>
@@ -142,7 +152,7 @@ private:
     // Strategy identification
     std::string strategyId_;
     std::string strategyVersion_;
-    
+    //
     // Component instances
     OrderBookAnalyzerPtr orderBookAnalyzer_;
     ImbalanceDetectionEnginePtr imbalanceDetector_;
@@ -170,7 +180,8 @@ private:
     // Thread safety
     mutable std::mutex mutex_;
     std::mutex callbackMutex_;
-    
+    //previousOrderBook_
+    // data_ingestion::OrderBook previousOrderBook_;
     // Periodic processing
     std::unique_ptr<std::thread> signalMaintenanceThread_;
     std::atomic<bool> runMaintenanceThread_{false};

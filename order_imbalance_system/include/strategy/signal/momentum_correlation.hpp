@@ -90,17 +90,42 @@ public:
      * @brief Update parameters for the correlation model
      * @param params New parameters
      */
-    void updateParameters(const CorrelationParameters& params);
+    // void updateParameters(const CorrelationParameters& params);
+    void updateParameters(const ParameterSet& params);
+    
     
     /**
      * @brief Get the number of data points used in correlation analysis
      * @return Number of data points
      */
     size_t getDataPointCount() const;
+    /**
+     * @brief Get the current market regime
+     * @return Current market regime
+     */
+    MarketRegime getCurrentMarketRegime() const;
+    /**
+     * @brief Get the current correlation parameters
+     * @return Current correlation parameters
+     */
+    CorrelationParameters getCurrentParameters() const;
+    /**
+     * @brief Get the current correlation coefficients
+     * @return Map of metric names to correlation coefficients
+     */
+    // updateHighestCorrelatedMetrics
+    void updateHighestCorrelatedMetrics();
 private:
     size_t window_size_;
     CorrelationParameters params_;
-    
+    //mutex correlation_mutex_;
+    // Mutex for thread safety
+    mutable std::mutex mutex_;
+    // Mutex for thread safety
+    // Mutex for thread safety
+    mutable std::mutex correlation_mutex_;
+    // highest_correlated_metrics_
+    std::vector<std::pair<std::string, double>> highest_correlated_metrics_;
     // Data storage for correlation analysis
     struct DataPoint {
         OrderBookMetrics metrics;
@@ -110,6 +135,8 @@ private:
     
     std::deque<DataPoint> data_points_;
     std::map<std::string, double> correlation_coefficients_;
+    // correlation_strengths_
+    std::map<std::string, double> correlation_strengths_;
     std::map<std::string, double> feature_importance_;
     MarketRegime current_regime_ = MarketRegime::NORMAL;
     

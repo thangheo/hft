@@ -7,18 +7,6 @@
 #include "strategy/engine/strategy_engine.hpp"
 
 #include "common/logger.hpp"
-#include "strategy/engine/strategy_engine.hpp"
-#include "strategy/pattern/imbalance_detection_engine.hpp"
-#include "strategy/core_analysis/order_book_analyzer.hpp"
-#include "strategy/core_analysis/liquidity_flow_monitor.hpp"
-#include "strategy/core_analysis/volume_profile_analyzer.hpp"
-#include "strategy/signal/imbalance_signal_generator.hpp"
-#include "strategy/signal/momentum_correlation.hpp"
-#include "strategy/signal/threshold_manager.hpp"
-#include "strategy/signal/signal_decay_model.hpp"
-#include "strategy/optimization/exchange_calibration.hpp"
-#include "strategy/optimization/adaptive_mechanism.hpp"
-#include "data_ingestion/orderbook/order_book.hpp"
 
  #include <nlohmann/json.hpp>
  #include <fstream>
@@ -55,54 +43,60 @@
  
  // Initialize the strategy engine with configuration
  bool StrategyEngine::initialize(const StrategyConfig& config) {
-     std::lock_guard<std::mutex> lock(mutex_);
-     
-     if (state_ != StrategyState::CREATED && state_ != StrategyState::STOPPED) {
-         LOG_ERROR("Cannot initialize strategy engine in current state: {}", 
-                          static_cast<int>(state_.load()));
-         return false;
-     }
-     
-     try {
-         config_ = config;
-         
-         // Initialize components
-         orderBookAnalyzer_ = std::make_shared<OrderBookAnalyzer>(config_.orderBookAnalyzerConfig);
-         imbalanceDetector_ = std::make_shared<ImbalanceDetectionEngine>(config_.imbalanceDetectionConfig);
-         liquidityMonitor_ = std::make_shared<LiquidityFlowMonitor>(config_.liquidityFlowConfig);
-         volumeProfileAnalyzer_ = std::make_shared<VolumeProfileAnalyzer>(config_.volumeProfileConfig);
-         signalGenerator_ = std::make_shared<ImbalanceSignalGenerator>(config_.signalGeneratorConfig);
-         momentumCorrelator_ = std::make_shared<MomentumCorrelation>(config_.momentumCorrelationConfig);
-         thresholdManager_ = std::make_shared<ThresholdManager>(config_.thresholdManagerConfig);
-         signalDecayModel_ = std::make_shared<SignalDecayModel>(config_.signalDecayConfig);
-         exchangeCalibration_ = std::make_shared<ExchangeCalibration>(config_.exchangeCalibrationConfig);
-         adaptiveMechanism_ = std::make_shared<AdaptiveMechanism>(config_.adaptiveMechanismConfig);
-         
-         // Register callbacks between components
-         signalGenerator_->registerImbalanceCallback([this](const ImbalanceEvent& event) {
-             this->processImbalanceEvents({event});
-         });
-         
-         // Initialize trading pairs
-         for (const auto& pair : config_.tradingPairs) {
-             if (!initializeTradingPair(pair.first, pair.second)) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    if (state_ != StrategyState::CREATED && state_ != StrategyState::STOPPED) {
+        LOG_ERROR("Cannot initialize strategy engine in current state: {}", 
+                  static_cast<int>(state_.load()));
+        return false;
+    }
+    
+    try {
+        config_ = config;
+        
+        // Initialize components
+        orderBookAnalyzer_ = std::make_shared<OrderBookAnalyzer>(config_.orderBookAnalyzerConfig);
+        imbalanceDetector_ = std::make_shared<ImbalanceDetectionEngine>(config_.imbalanceDetectionConfig);
+        liquidityMonitor_ = std::make_shared<LiquidityFlowMonitor>(config_.liquidityFlowConfig);
+        volumeProfileAnalyzer_ = std::make_shared<VolumeProfileAnalyzer>(config_.volumeProfileConfig);
+        signalGenerator_ = std::make_shared<ImbalanceSignalGenerator>(config_.signalGeneratorConfig);
+        momentumCorrelator_ = std::make_shared<MomentumCorrelation>(config_.momentumCorrelationConfig);
+        thresholdManager_ = std::make_shared<ThresholdManager>(config_.thresholdManagerConfig);
+        signalDecayModel_ = std::make_shared<SignalDecayModel>(config_.signalDecayConfig);
+        exchangeCalibration_ = std::make_shared<ExchangeCalibration>(config_.exchangeCalibrationConfig);
+        adaptiveMechanism_ = std::make_shared<AdaptiveMechanism>(config_.adaptiveMechanismConfig);
+        
+        // Set up component dependencies
+        signalGenerator_->setMomentumCorrelation(momentumCorrelator_);
+        signalGenerator_->setThresholdManager(thresholdManager_);
+        
+        // Register callbacks between components
+        size_t callbackId = signalGenerator_->registerSignalCallback([this](const TradingSignal& signal) {
+            this->notifySignalCallbacks(signal);
+            this->activeSignals_[signal.id] = signal;
+        });
+        
+        // Initialize trading pairs
+        for (const auto& pair : config_.tradingPairs) {
+            if (!initializeTradingPair(pair.first, pair.second)) {
                 LOG_WARN("Failed to initialize trading pair: {} on exchange: {}", 
-                                pair.first, static_cast<int>(pair.second));
-             }
-         }
-         
-         // Load default parameters
-         loadDefaultParameters();
-         
-         state_ = StrategyState::INITIALIZED;
-         LOG_INFO("Strategy Engine initialized: {}", strategyId_);
-         return true;
-     } catch (const std::exception& e) {
-         LOG_ERROR("Exception during strategy initialization: {}", e.what());
-         return false;
-     }
- }
- 
+                         pair.first, pair.second);
+                continue;
+            }
+        }
+        
+        // Load default parameters
+        loadDefaultParameters();
+        
+        state_ = StrategyState::INITIALIZED;
+        LOG_INFO("Strategy Engine initialized: {}", strategyId_);
+        return true;
+    } catch (const std::exception& e) {
+        LOG_ERROR("Exception during strategy initialization: {}", e.what());
+        return false;
+    }
+}
+
  // Start the strategy engine
  bool StrategyEngine::start() {
      std::lock_guard<std::mutex> lock(mutex_);
@@ -175,15 +169,19 @@
          // Get the metrics from the analyzer
          auto metrics = orderBookAnalyzer_->getMetrics();
          
-         // Update the liquidity flow monitor
-        //  liquidityMonitor_->processOrderBook(orderBook);
-            liquidityMonitor_->processOrderBookDelta(orderBook.
-         
+        // Update the liquidity flow monitor
+        // option 1: use the order book directly
+        // Process the order book delta
+        // auto delta = orderBook.getOrderBookDelta();
+        OrderBookDelta delta = orderBook.getOrderBookDelta();
+        if (!delta.isEmpty()) {
+            liquidityMonitor_->processOrderBookDelta(delta);
+        }
          // Update the volume profile analyzer
-         volumeProfileAnalyzer_->updateVolumeProfile(orderBook);
+         volumeProfileAnalyzer_->updateVolumeProfile(orderBook, {});
          
          // Detect imbalances
-         imbalanceDetector_->analyzeMetrics(metrics, liquidityMonitor_->getLiquidityMetrics());
+         imbalanceDetector_->analyzeMetrics(metrics);
          
          // Get detected imbalances
          auto imbalances = imbalanceDetector_->getDetectedImbalances();
@@ -364,8 +362,7 @@
          auto liquidityMetrics = liquidityMonitor_->getLiquidityMetrics();
          
          // Detect imbalances
-         imbalanceDetector_->analyzeMetrics(metrics, liquidityMetrics);
-         
+         imbalanceDetector_->analyzeMetrics(metrics);
          // Get detected imbalances
          auto imbalances = imbalanceDetector_->getDetectedImbalances();
          
@@ -450,7 +447,10 @@
                  signal.expectedPriceImpact = expectedPriceImpact;
                  
                  // Apply signal decay model
-                 signal.decayRate = signalDecayModel_->calculateDecayRate(signal);
+                 signal.decayRate = signalDecayModel_->calculateDecayRate(event.type);
+                 signal.expirationTime = std::chrono::system_clock::now() + 
+                     std::chrono::seconds(signalDecayModel_->getSignalTTL(event.type));
+
                  
                  // Store and notify
                  activeSignals_[signal.id] = signal;
@@ -458,10 +458,15 @@
                  
                  // Update performance tracking
                  performance_.signalsGenerated++;
-                 performance_.averageSignalStrength = 
-                     (performance_.averageSignalStrength * (performance_.signalsGenerated - 1) + signal.strength) / 
-                     performance_.signalsGenerated;
-                 
+                //  performance_.averageSignalStrength = 
+                //      (performance_.averageSignalStrength * (performance_.signalsGenerated - 1) + signal.strength) / 
+                //      performance_.signalsGenerated;
+                if (performance_.signalsGenerated == 1) {
+                    performance_.averageSignalStrength = signal.strength;
+                } else {
+                    performance_.averageSignalStrength += 
+                        (signal.strength - performance_.averageSignalStrength) / performance_.signalsGenerated;
+                }
                  LOG_INFO("Generated new trading signal: id={}, direction={}, strength={}, pair={}", 
                                signal.id, 
                                signal.direction == Direction::BUY ? "BUY" : "SELL", 
@@ -515,8 +520,7 @@
      // Validate that the order book is for a trading pair we're interested in
      auto symbol = orderBook.getSymbol();
      ExchangeId exchangeId = orderBook.getExchangeId();
-     std::string pairId = symbol + ":" + std::to_string(static_cast<int>(exchangeId));
-     
+     std::string pairId = orderBook.exchangeIdToString(exchangeId) + ":" + symbol.toString();
      // Check if we're tracking this pair
      return tradingPairStates_.find(pairId) != tradingPairStates_.end();
  }
@@ -614,8 +618,8 @@
      }
  }
  
- bool StrategyEngine::initializeTradingPair(const std::string& symbol, ExchangeId exchangeId) {
-     std::string pairId = symbol + ":" + std::to_string(static_cast<int>(exchangeId));
+bool StrategyEngine::initializeTradingPair(const std::string& symbol, ExchangeId exchangeId) {
+    std::string pairId = exchangeId + ":" + symbol;    
      
      // Check if already initialized
      if (tradingPairStates_.find(pairId) != tradingPairStates_.end()) {
@@ -635,7 +639,7 @@
      tradingPairStates_[pairId] = state;
      
      LOG_INFO("Initialized trading pair: {} on exchange: {}", 
-                    symbol, static_cast<int>(exchangeId));
+                    symbol, exchangeId);
      return true;
  }
  

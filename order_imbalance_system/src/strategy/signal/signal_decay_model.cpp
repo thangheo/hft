@@ -203,8 +203,32 @@
      }
  }
 //  updateParameters
-    void SignalDecayModel::updateParameters(const DecayParameters& params) {
-        params_ = params;
+    void SignalDecayModel::updateParameters(const ParameterSet& params) {
+        // params_ = params;
+        // Update decay parameters
+        params_.base_decay_rate = params.getDouble("base_decay_rate", 0.5);
+        params_.time_unit_ms = params.getInt("time_unit_ms", 1000);
+        params_.min_ttl_ms = params.getInt("min_ttl_ms", 500);
+        params_.min_valid_strength = params.getDouble("min_valid_strength", 0.2);
+        params_.step_intervals = params.getArrayParam("step_intervals", {0.0, 0.5, 0.8, 1.0});
+        params_.step_values = params.getArrayParam("step_values", {1.0, 0.8, 0.4, 0.0});
+        
+    }
+    // calculateDecayRate
+    double SignalDecayModel::calculateDecayRate(ImbalanceType imbalance_type) const {
+        auto it = type_specific_decay_rates_.find(imbalance_type);
+        if (it != type_specific_decay_rates_.end()) {
+            return it->second;
+        }
+        return params_.base_decay_rate;  // Default decay rate
+    }
+    // getSignalTTL
+    uint64_t SignalDecayModel::getSignalTTL(ImbalanceType imbalance_type) const {
+        auto it = type_specific_ttl_.find(imbalance_type);
+        if (it != type_specific_ttl_.end()) {
+            return it->second;
+        }
+        return params_.min_ttl_ms;  // Default TTL
     }
  double SignalDecayModel::exponentialDecay(const TradingSignal& signal, uint64_t current_time) {
      // Convert timestamps to milliseconds for calculation

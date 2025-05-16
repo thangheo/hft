@@ -3,12 +3,15 @@
  * @brief Implementation of order book imbalance to price movement correlation
  */
 
- #include "strategy/signal/momentum_correlation.hpp"
-    #include "strategy/types/constants.hpp"
- #include <algorithm>
- #include <cmath>
- #include <numeric>
- #include <iostream>
+#include "strategy/signal/momentum_correlation.hpp"
+#include "strategy/types/constants.hpp"
+#include "common/logger.hpp"
+#include <algorithm>
+#include <cmath>
+#include <numeric>
+#include <iostream>
+#include <thread>
+#include <mutex>
  
  namespace trading {
  namespace strategy {
@@ -101,92 +104,205 @@
      return feature_importance_;
  }
 //  updateParameters
-    void MomentumCorrelation::updateParameters(const CorrelationParameters& params) {
-        std::lock_guard<std::mutex> lock(mutex_);
-        params_ = params;
+void MomentumCorrelation::updateParameters(const ParameterSet& params) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    // Update parameters based on the provided ParameterSet
+    params_.min_data_points = params.getInt("min_data_points", params_.min_data_points);
+    params_.significance_threshold = params.getDouble("significance_threshold", params_.significance_threshold);
+    params_.correlation_decay_rate = params.getDouble("correlation_decay_rate", params_.correlation_decay_rate);
+    params_.regime_detection_window = params.getInt("regime_detection_window", params_.regime_detection_window);
+    params_.time_decay_factor = params.getDouble("time_decay_factor", params_.time_decay_factor);
+    params_.min_stddev_threshold = params.getDouble("min_stddev_threshold", params_.min_stddev_threshold);
+    params_.strong_correlation_threshold = params.getDouble("strong_correlation_threshold", params_.strong_correlation_threshold);
+    params_.max_level_depth = params.getInt("max_level_depth", params_.max_level_depth);
+    params_.top_metrics_count = params.getInt("top_metrics_count", params_.top_metrics_count);
+    // Update the timestamp to reflect the last update
+}
+void MomentumCorrelation::calculateCorrelations() {
+    // Check if we have enough data points
+    if (data_points_.size() < params_.min_data_points) {
+        LOG_WARN("Not enough data points for correlation calculation. Have {} but need at least {}", 
+                data_points_.size(), params_.min_data_points);
+        return;
     }
- void MomentumCorrelation::calculateCorrelations() {
-     // Extract key metrics for correlation
-     std::map<std::string, std::vector<double>> metricValues;
-     std::vector<double> priceMovements;
-     
-     for (const auto& dataPoint : data_points_) {
-         // Add price movement
-         priceMovements.push_back(dataPoint.price_movement.percent_change);
-         
-         // Extract and store key metrics
-         // Bid/Ask ratio
-         metricValues["bid_ask_ratio"].push_back(
-             dataPoint.metrics.bid_volume / std::max(0.00001, dataPoint.metrics.ask_volume));
-         
-         // Volume imbalance
-         metricValues["volume_imbalance"].push_back(
-             (dataPoint.metrics.bid_volume - dataPoint.metrics.ask_volume) / 
-             (dataPoint.metrics.bid_volume + dataPoint.metrics.ask_volume));
-         
-         // Spread and spread percent
-         metricValues["spread"].push_back(dataPoint.metrics.spread);
-         metricValues["spread_percent"].push_back(dataPoint.metrics.spread_percent);
-         
-         // Price level imbalance metrics
-         for (size_t level = 1; level <= 5; ++level) {
-             std::string levelKey = "level_" + std::to_string(level) + "_imbalance";
-             if (dataPoint.metrics.level_imbalances.count(level) > 0) {
-                 metricValues[levelKey].push_back(dataPoint.metrics.level_imbalances.at(level));
-             }
-         }
-         
-         // Add custom metrics if available
-         for (const auto& [key, value] : dataPoint.metrics.custom_metrics) {
-             metricValues[key].push_back(value);
-         }
-     }
-     
-     // Calculate correlation coefficient for each metric
-     for (auto& [metric, values] : metricValues) {
-         // Skip if we don't have enough data points
-         if (values.size() != priceMovements.size() || values.size() < 3) {
-             correlation_coefficients_[metric] = 0.0;
-             continue;
-         }
-         
-         // Calculate means
-         double meanMetric = std::accumulate(values.begin(), values.end(), 0.0) / values.size();
-         double meanPrice = std::accumulate(priceMovements.begin(), priceMovements.end(), 0.0) / priceMovements.size();
-         
-         // Calculate covariance and variances
-         double covariance = 0.0;
-         double varianceMetric = 0.0;
-         double variancePrice = 0.0;
-         
-         for (size_t i = 0; i < values.size(); ++i) {
-             double metricDiff = values[i] - meanMetric;
-             double priceDiff = priceMovements[i] - meanPrice;
-             
-             covariance += metricDiff * priceDiff;
-             varianceMetric += metricDiff * metricDiff;
-             variancePrice += priceDiff * priceDiff;
-         }
-         
-         // Avoid division by zero
-         if (varianceMetric < 1e-10 || variancePrice < 1e-10) {
-             correlation_coefficients_[metric] = 0.0;
-             continue;
-         }
-         
-         // Calculate Pearson correlation coefficient
-         double correlation = covariance / (std::sqrt(varianceMetric) * std::sqrt(variancePrice));
-         
-         // Decay existing correlation value if it exists
-         if (correlation_coefficients_.count(metric) > 0) {
-             correlation = params_.correlation_decay_rate * correlation_coefficients_[metric] + 
-                           (1 - params_.correlation_decay_rate) * correlation;
-         }
-         
-         correlation_coefficients_[metric] = correlation;
-     }
- }
- 
+
+    // Extract key metrics for correlation
+    std::map<std::string, std::vector<double>> metricValues;
+    std::vector<double> priceMovements;
+    std::vector<double> timeWeights;  // For time-weighted correlation
+    
+    // Get current time for time weighting
+    auto currentTime = std::chrono::system_clock::now();
+    
+    for (const auto& dataPoint : data_points_) {
+        // Add price movement
+        priceMovements.push_back(dataPoint.price_movement.percent_change);
+        
+        // Calculate time weight (newer points have higher weight)
+        auto timeDiff = std::chrono::duration_cast<std::chrono::seconds>(
+            currentTime - dataPoint.timestamp).count();
+        double timeWeight = std::exp(-params_.time_decay_factor * timeDiff / 3600.0); // decay per hour
+        timeWeights.push_back(timeWeight);
+        
+        // Extract and store key metrics from OrderBookMetrics
+        // Directly access all relevant metrics using the OrderBookMetrics struct
+        metricValues["bid_ask_ratio"].push_back(dataPoint.metrics.bid_ask_volume_ratio);
+        metricValues["volume_imbalance"].push_back(dataPoint.metrics.volume_imbalance);
+        metricValues["weighted_volume_imbalance"].push_back(dataPoint.metrics.weighted_volume_imbalance);
+        metricValues["depth_imbalance"].push_back(dataPoint.metrics.depth_imbalance);
+        metricValues["pressure_imbalance"].push_back(dataPoint.metrics.pressure_imbalance);
+        metricValues["spread"].push_back(dataPoint.metrics.spread);
+        metricValues["spread_percent"].push_back(dataPoint.metrics.spread_percent);
+        metricValues["price_level_imbalance"].push_back(dataPoint.metrics.price_level_imbalance);
+        metricValues["market_directional_coefficient"].push_back(dataPoint.metrics.market_directional_coefficient);
+        metricValues["liquidity_profile_score"].push_back(dataPoint.metrics.liquidity_profile_score);
+        
+        // Add time-based metrics if they exist
+        if (dataPoint.metrics.price_velocity != 0.0) {
+            metricValues["price_velocity"].push_back(dataPoint.metrics.price_velocity);
+        }
+        if (dataPoint.metrics.volume_velocity != 0.0) {
+            metricValues["volume_velocity"].push_back(dataPoint.metrics.volume_velocity);
+        }
+        if (dataPoint.metrics.spread_velocity != 0.0) {
+            metricValues["spread_velocity"].push_back(dataPoint.metrics.spread_velocity);
+        }
+        
+        // Process level-specific metrics from time_series_metrics if available
+        for (size_t level = 1; level <= params_.max_level_depth; ++level) {
+            std::string levelKey = "level_" + std::to_string(level) + "_imbalance";
+            // Check if we have level-specific imbalance data
+            auto levelData = dataPoint.metrics.time_series_metrics.find("level_imbalances");
+            if (levelData != dataPoint.metrics.time_series_metrics.end() && 
+                level <= levelData->second.size()) {
+                metricValues[levelKey].push_back(levelData->second[level-1]);
+            }
+        }
+        
+        // Add any other metrics from the metrics map
+        for (const auto& [key, value] : dataPoint.metrics.toMap()) {
+            if (metricValues.find(key) == metricValues.end()) {
+                metricValues[key].push_back(value);
+            }
+        }
+    }
+
+    // Calculate time-weighted correlation coefficients for each metric
+    for (auto& [metric, values] : metricValues) {
+        // Skip if we don't have enough data points or sizes don't match
+        if (values.size() != priceMovements.size() || values.size() < params_.min_data_points) {
+            LOG_WARN("Skipping correlation for metric {} due to insufficient or mismatched data", metric);
+            correlation_coefficients_[metric] = 0.0;
+            continue;
+        }
+        
+        try {
+            // Normalize the metric values to improve correlation quality
+            std::vector<double> normalizedValues;
+            normalizedValues.reserve(values.size());
+            
+            // Calculate mean and stddev for normalization
+            double sum = 0.0;
+            for (size_t i = 0; i < values.size(); ++i) {
+                sum += values[i] * timeWeights[i];
+            }
+            double weightSum = std::accumulate(timeWeights.begin(), timeWeights.end(), 0.0);
+            double mean = weightSum > 0 ? sum / weightSum : 0.0;
+            
+            double varianceSum = 0.0;
+            for (size_t i = 0; i < values.size(); ++i) {
+                double diff = values[i] - mean;
+                varianceSum += diff * diff * timeWeights[i];
+            }
+            double stddev = weightSum > 0 ? std::sqrt(varianceSum / weightSum) : 1.0;
+            stddev = std::max(stddev, params_.min_stddev_threshold); // Avoid division by very small numbers
+            
+            // Normalize values
+            for (double val : values) {
+                normalizedValues.push_back((val - mean) / stddev);
+            }
+            
+            // Also normalize price movements
+            double priceMean = 0.0;
+            double priceWeightSum = 0.0;
+            for (size_t i = 0; i < priceMovements.size(); ++i) {
+                priceMean += priceMovements[i] * timeWeights[i];
+                priceWeightSum += timeWeights[i];
+            }
+            priceMean = priceWeightSum > 0 ? priceMean / priceWeightSum : 0.0;
+            
+            double priceVarianceSum = 0.0;
+            for (size_t i = 0; i < priceMovements.size(); ++i) {
+                double diff = priceMovements[i] - priceMean;
+                priceVarianceSum += diff * diff * timeWeights[i];
+            }
+            double priceStddev = priceWeightSum > 0 ? std::sqrt(priceVarianceSum / priceWeightSum) : 1.0;
+            priceStddev = std::max(priceStddev, params_.min_stddev_threshold);
+            
+            std::vector<double> normalizedPrices;
+            normalizedPrices.reserve(priceMovements.size());
+            for (double val : priceMovements) {
+                normalizedPrices.push_back((val - priceMean) / priceStddev);
+            }
+            
+            // Calculate time-weighted correlation
+            double covariance = 0.0;
+            for (size_t i = 0; i < normalizedValues.size(); ++i) {
+                covariance += normalizedValues[i] * normalizedPrices[i] * timeWeights[i];
+            }
+            
+            // The normalization simplifies the correlation formula since variances are now 1.0
+            double correlation = weightSum > 0 ? covariance / weightSum : 0.0;
+            
+            // Clamp correlation to valid range [-1, 1]
+            correlation = std::max(-1.0, std::min(1.0, correlation));
+            
+            // Apply exponential decay to smooth correlation over time
+            if (correlation_coefficients_.count(metric) > 0) {
+                correlation = params_.correlation_decay_rate * correlation_coefficients_[metric] +
+                                (1.0 - params_.correlation_decay_rate) * correlation;
+            }
+            
+            // Store the result
+            correlation_coefficients_[metric] = correlation;
+            
+            // Store correlation strength (absolute value) for sorting
+            correlation_strengths_[metric] = std::abs(correlation);
+            
+            // Log strong correlations for debugging
+            if (std::abs(correlation) > params_.strong_correlation_threshold) {
+                LOG_DEBUG("Strong correlation detected: {} = {:.4f}", metric, correlation);
+            }
+        }
+        catch (const std::exception& e) {
+            LOG_ERROR("Error calculating correlation for metric {}: {}", metric, e.what());
+            correlation_coefficients_[metric] = 0.0;
+        }
+    }
+    
+    // Update highest correlated metrics list
+    updateHighestCorrelatedMetrics();
+}
+void MomentumCorrelation::updateHighestCorrelatedMetrics() {
+    // Sort metrics by correlation strength
+    std::vector<std::pair<std::string, double>> sortedMetrics;
+    for (const auto& [metric, strength] : correlation_strengths_) {
+        sortedMetrics.push_back({metric, strength});
+    }
+    
+    // Sort in descending order of correlation strength
+    std::sort(sortedMetrics.begin(), sortedMetrics.end(), 
+              [](const auto& a, const auto& b) { return a.second > b.second; });
+    
+    // Take top N metrics
+    highest_correlated_metrics_.clear();
+    for (size_t i = 0; i < std::min(params_.top_metrics_count, sortedMetrics.size()); ++i) {
+        highest_correlated_metrics_.push_back({
+            sortedMetrics[i].first, 
+            correlation_coefficients_[sortedMetrics[i].first]
+        });
+    }
+}
  void MomentumCorrelation::calculateFeatureImportance() {
      // Simple feature importance calculation based on correlation magnitude
      // In a more sophisticated implementation, this could be based on 
@@ -303,7 +419,7 @@
      double totalWeight = 0.0;
      
      // Use imbalance metrics and their correlations to predict price movement
-     for (const auto& [metric, value] : event.supportingMetrics) {
+     for (const auto& [metric, value] : event.supporting_metrics) {
          // Skip metrics without correlation data
          if (correlation_coefficients_.count(metric) == 0 || feature_importance_.count(metric) == 0) {
              continue;
@@ -329,7 +445,7 @@
          double importance = feature_importance_.at(primaryMetricName);
          double weight = std::abs(correlation) * importance * 1.5; // Extra weight for primary metric
          
-         prediction += event.primaryMetric * correlation * weight;
+         prediction += event.primary_metric * correlation * weight;
          totalWeight += weight;
      }
      

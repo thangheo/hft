@@ -158,7 +158,21 @@ public:
      * @brief Update parameters for the decay model
      * @param params New parameters
      */
-    void updateParameters(const DecayParameters& params);
+    void updateParameters(const ParameterSet& params);
+    // calculateDecayRate
+    /**
+     * @brief Calculate decay rate for a specific imbalance type
+     * @param imbalance_type The type of imbalance
+     * @return Decay rate for this type of signal
+     */
+    double calculateDecayRate(ImbalanceType imbalance_type) const;
+    // getSignalTTL
+    /**
+     * @brief Get the time-to-live (TTL) for a specific imbalance type
+     * @param imbalance_type The type of imbalance
+     * @return TTL in milliseconds
+     */
+    uint64_t getSignalTTL(ImbalanceType imbalance_type) const;
 private:
     DecayModelType model_type_;
     DecayParameters params_;

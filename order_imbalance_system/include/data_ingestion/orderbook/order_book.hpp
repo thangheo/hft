@@ -40,7 +40,7 @@ struct OrderBookDelta {
     double getTotalRemovedBidVolume() const;
     double getTotalAddedAskVolume() const;
     double getTotalRemovedAskVolume() const;
-    
+
     // Calculate net volume change
     double getNetBidVolumeChange() const {
         return getTotalAddedBidVolume() - getTotalRemovedBidVolume();
