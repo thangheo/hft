@@ -36,7 +36,23 @@
      timeframe_profiles_["4h"] = VolumeProfile(exchange_id, trading_pair);
      timeframe_profiles_["1d"] = VolumeProfile(exchange_id, trading_pair);
  }
- 
+
+ VolumeProfileAnalyzer::VolumeProfileAnalyzer(const VolumeProfileConfig& config)
+    : VolumeProfileAnalyzer(config.exchange_id, config.trading_pair, config.params) // or use other fields as needed
+{
+    // Initialize with config
+    num_price_ranges_ = config.num_price_ranges;
+    range_size_percent_ = config.range_size_percent;
+    time_frame_minutes_ = config.time_frame_minutes;
+    
+    // Initialize multi-timeframe profiles
+    timeframe_profiles_["1m"] = VolumeProfile(config.exchange_id, config.trading_pair);
+    timeframe_profiles_["5m"] = VolumeProfile(config.exchange_id, config.trading_pair);
+    timeframe_profiles_["15m"] = VolumeProfile(config.exchange_id, config.trading_pair);
+    timeframe_profiles_["1h"] = VolumeProfile(config.exchange_id, config.trading_pair);
+    timeframe_profiles_["4h"] = VolumeProfile(config.exchange_id, config.trading_pair);
+    timeframe_profiles_["1d"] = VolumeProfile(config.exchange_id, config.trading_pair);
+}
  VolumeProfileAnalyzer::VolumeProfileAnalyzer(
      const std::string& exchange_id, 
      const std::string& trading_pair, 

@@ -52,7 +52,10 @@
       */
      OrderBookAnalyzer(const std::string& exchange_id, const std::string& trading_pair, 
                       int depth_levels, double price_grouping_factor);
-     
+    OrderBookAnalyzer(const OrderBookAnalyzerConfig& config);
+
+
+
      virtual ~OrderBookAnalyzer() = default;
      
      /**

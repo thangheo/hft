@@ -40,6 +40,8 @@ public:
      * @brief Constructor
      */
     ImbalanceSignalGenerator();
+    ImbalanceSignalGenerator(const SignalGeneratorConfig& config);
+    // ImbalanceSignalGenerator(const ImbalanceSignalGeneratorConfig& config);
     
     /**
      * @brief Destructor

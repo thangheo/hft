@@ -127,7 +127,8 @@
       */
      LiquidityFlowMonitor(const std::string& exchange_id, const std::string& trading_pair, 
                           const ParameterSet& params = ParameterSet());
-     
+     LiquidityFlowMonitor(const LiquidityFlowConfig& config);
+
      /**
       * Creates a liquidity flow monitor with parameters explicitly specified
       */

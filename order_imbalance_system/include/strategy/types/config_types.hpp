@@ -24,7 +24,11 @@
      int depth = 10;                        // Default depth to analyze
      int historySize = 1000;                // Size of history to maintain
      double priceWeightFactor = 0.5;        // Weight factor for price-weighted metrics
-     
+     // Default price weight factor
+        double volumeWeightFactor = 0.5;       // Weight factor for volume-weighted metrics
+        double imbalanceThreshold = 0.6;       // Threshold for imbalance detection
+        double liquidityPressureThreshold = 0.7; // Threshold for liquidity pressure detection
+        double orderFlowThreshold = 0.5;       // Threshold for order flow detection
      OrderBookAnalyzerConfig() = default;
  };
  
@@ -89,7 +93,26 @@
  struct LiquidityFlowConfig {
      int historySize = 1000;                // Size of history to maintain
      double flowImbalanceThreshold = 0.6;   // Threshold for flow imbalance detection
-     
+     std::string exchange_id;             // Exchange ID
+    std::string trading_pair;             // Trading pair
+        double largeOrderThreshold = 5.0;     // Threshold for large orders
+        int historyWindowSeconds = 60;       // Window size for historical analysis
+        double largeOrderVolume = 0.0;       // Volume of large orders
+        double cancellationRatio = 0.0;     // Ratio of cancellations
+        double pressureIndex = 0.0;         // Pressure index for liquidity flow
+        double flowImbalance = 0.0;         // Flow imbalance metric
+        double typicalOrderSize = 1.0;      // Typical order size for calculations
+        std::chrono::system_clock::time_point lastUpdateTime; // Last update time
+        uint64_t lastSequenceNumber = 0;   // Last sequence number for order book updates
+        // std::deque<OrderBookDelta> deltaHistory; // History of order book deltas
+        // std::deque<std::shared_ptr<data_ingestion::OrderBook>> orderBookHistory; // History of order books
+        // std::deque<std::tuple<double, double, bool, core::Timestamp>> recentTrades; // Recent trades
+        // std::vector<LiquidityEvent> events; // Detected liquidity events
+        // std::vector<LiquidityMetrics> metricsHistory; // History of liquidity metrics
+        // std::vector<PriceLevel> addedBids; // Added bid levels
+        //params
+        ParameterSet params;             // Parameters for liquidity flow analysis
+        // large_order_threshold
      LiquidityFlowConfig() = default;
  };
  
@@ -99,6 +122,19 @@
  struct VolumeProfileConfig {
      int timeWindowMs = 60000;              // Time window for volume profile in milliseconds
      int priceLevels = 20;                  // Number of price levels to track
+    //  exchange_id
+        std::string exchange_id;               // Exchange ID
+        std::string trading_pair;               // Trading pair
+        double range_size_percent = 0.01;        // Size of each price range as percentage of price
+        // time_frame_minutes
+        int time_frame_minutes = 60;            // Time frame in minutes
+
+        // params
+        ParameterSet params;                  // Parameters for volume profile analysis
+        //num_price_ranges  
+        int num_price_ranges = 20;            // Number of price ranges to track
+        // price_ranges
+        // std::vector<PriceRange> price_ranges; // Price ranges for volume profile
      
      VolumeProfileConfig() = default;
  };

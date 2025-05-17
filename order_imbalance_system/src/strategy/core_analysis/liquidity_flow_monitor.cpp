@@ -32,7 +32,18 @@
      current_metrics_.trading_pair = trading_pair;
      current_metrics_.timestamp = std::chrono::system_clock::now();
  }
- 
+ LiquidityFlowMonitor::LiquidityFlowMonitor(const LiquidityFlowConfig& config)
+    : LiquidityFlowMonitor(config.exchange_id, config.trading_pair, config.params)
+{
+    // Initialize with config
+    large_order_threshold_ = config.largeOrderThreshold;
+    history_window_seconds_ = config.historyWindowSeconds;
+    
+    // Initialize metrics
+    current_metrics_.exchange_id = config.exchange_id;
+    current_metrics_.trading_pair = config.trading_pair;
+    current_metrics_.timestamp = std::chrono::system_clock::now();
+}
  LiquidityFlowMonitor::LiquidityFlowMonitor(
      const std::string& exchange_id, 
      const std::string& trading_pair, 

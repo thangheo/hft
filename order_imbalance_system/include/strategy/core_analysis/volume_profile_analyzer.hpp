@@ -18,7 +18,6 @@
  #include <mutex>
  #include <memory>
  #include "strategy/types.hpp"
- #include "strategy/types/trade.hpp"
  #include "data_ingestion/orderbook/order_book.hpp"
  
  namespace trading {
@@ -126,7 +125,8 @@
       */
      VolumeProfileAnalyzer(const std::string& exchange_id, const std::string& trading_pair, 
                            const ParameterSet& params = ParameterSet());
-     
+    VolumeProfileAnalyzer(const VolumeProfileConfig& config);
+
      /**
       * Creates a volume profile analyzer with parameters explicitly specified
       */

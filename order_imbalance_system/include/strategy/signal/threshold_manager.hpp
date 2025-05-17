@@ -30,7 +30,7 @@ public:
      * @brief Constructor
      */
     ThresholdManager();
-    
+    ThresholdManager(const ThresholdManagerConfig& config);
     /**
      * @brief Destructor
      */

@@ -95,7 +95,8 @@ public:
      * @param model_type The type of decay model to use
      */
     explicit SignalDecayModel(DecayModelType model_type = DecayModelType::EXPONENTIAL);
-    
+    SignalDecayModel(const SignalDecayConfig& config); 
+
     /**
      * @brief Destructor
      */
