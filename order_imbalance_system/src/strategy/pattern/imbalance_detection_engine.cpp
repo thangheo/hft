@@ -10,6 +10,7 @@
  */
 
  #include "strategy/pattern/imbalance_detection_engine.hpp"
+ 
  #include <algorithm>
  #include <cmath>
  #include <iostream>

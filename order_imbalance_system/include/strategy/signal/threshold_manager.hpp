@@ -11,7 +11,7 @@
 #pragma once
 
 #include "strategy/types.hpp"
-
+#include "core/types.hpp"
 #include <map>
 #include <vector>
 #include <memory>
@@ -40,7 +40,7 @@ public:
      * @brief Update market conditions used for threshold adjustments
      * @param state Current market state
      */
-    virtual void updateMarketConditions(const MarketState& state);
+    virtual void updateMarketConditions(const core::MarketState& state);
     
     /**
      * @brief Get the current set of thresholds
@@ -122,7 +122,7 @@ public:
 private:
     ThresholdSet base_thresholds_;
     std::map<ExchangeId, ThresholdSet> exchange_thresholds_;
-    MarketState current_market_state_;
+    core::MarketState current_market_state_;
     std::map<VolatilityLevel, double> volatility_factors_;
     std::map<int, double> time_of_day_factors_;
     std::map<std::string, double> performance_adjustment_factors_;

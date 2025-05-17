@@ -21,7 +21,25 @@ AdaptiveMechanism::AdaptiveMechanism() {
     status_.adaptationConfidence = 0.0;
     status_.currentRegime = "UNKNOWN";
 }
+AdaptiveMechanism::AdaptiveMechanism(const AdaptiveMechanismConfig& config)
+    : config_(config) {
 
+    // Initialize with all adaptation types enabled
+    enabledTypes_[AdaptationType::PARAMETER_DRIFT] = true;
+    enabledTypes_[AdaptationType::MARKET_REGIME] = true;
+    enabledTypes_[AdaptationType::PARAMETER_BLENDING] = true;
+    enabledTypes_[AdaptationType::ANTI_FRAGILITY] = true;
+    
+    // Initialize status
+    status_.active = false;
+    status_.lastAdaptationTime = std::chrono::system_clock::now();
+    status_.adaptationConfidence = 0.0;
+    status_.currentRegime = "UNKNOWN";
+    // Initialize base parameters
+    // baseParameters_ = config_.baseParameters;
+    adaptedParameters_ = baseParameters_;
+    // Initialize performance history
+}
 void AdaptiveMechanism::updatePerformanceMetrics(const PerformanceMetrics& metrics) {
     std::lock_guard<std::mutex> lock(mutex_);
     
@@ -108,7 +126,13 @@ ParameterSet AdaptiveMechanism::getAdaptedParameters() const {
     std::lock_guard<std::mutex> lock(mutex_);
     return adaptedParameters_;
 }
-
+// getAdjustmentRecommendations
+std::map<std::string, double> AdaptiveMechanism::getAdjustmentRecommendations() const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Return the parameter changes made during adaptation
+    return status_.parameterChanges;
+}
 void AdaptiveMechanism::reset() {
     std::lock_guard<std::mutex> lock(mutex_);
     
@@ -131,7 +155,7 @@ void AdaptiveMechanism::registerAdaptationCallback(AdaptationCallback callback) 
     adaptationCallback_ = callback;
 }
 
-std::string AdaptiveMechanism::detectMarketRegime(const MarketState& state) const {
+std::string AdaptiveMechanism::detectMarketRegime(const core::MarketState& state) const {
     // Simple market regime detection based on volatility and trend
     
     // Check volatility level
@@ -156,6 +180,19 @@ std::string AdaptiveMechanism::detectMarketRegime(const MarketState& state) cons
     
     // Combine regimes
     return volatilityRegime + "_" + trendRegime;
+}
+void AdaptiveMechanism::updateSignalResult(const std::string& signalId, const SignalExecutionResult& result) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Update performance metrics based on signal result
+    if (result.status == SignalExecutionStatus::COMPLETED) {
+        status_.adaptationConfidence += result.pnl;  // Example of using PnL as confidence
+    } else if (result.status == SignalExecutionStatus::FAILED) {
+        status_.adaptationConfidence -= result.pnl;  // Penalize for failures
+    }
+    
+    // Update current regime based on market state
+    status_.currentRegime = detectMarketRegime(result.marketState);
 }
 
 void AdaptiveMechanism::applyParameterDrift() {

@@ -40,7 +40,7 @@ public:
      * @brief Constructor
      */
     ImbalanceDetectionEngine();
-    
+    ImbalanceDetectionEngine(const ImbalanceDetectionConfig& config); 
     /**
      * @brief Destructor
      */

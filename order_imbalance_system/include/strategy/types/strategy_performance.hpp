@@ -12,7 +12,8 @@
 
  #include <chrono>
  #include <string>
- 
+ #include "core/types.hpp"
+ #include "execution/models/order.hpp"
  namespace trading {
  namespace strategy {
 
@@ -46,6 +47,16 @@
  struct SignalExecutionResult {
      std::string signal_id;                             // ID of the signal
      SignalExecutionStatus status;                      // Status of execution
+    core::Direction direction;                         // Direction of the signal
+        double signalStrength;                             // Strength of the signal
+        core::ConfidenceLevel confidenceLevel;             // Confidence level of the signal
+        core::ExchangeId exchangeId;                       // Exchange identifier
+        core::Symbol symbol;                               // Trading pair symbol
+        trading::execution::models::OrderType orderType;                         // Type of order (e.g., market, limit)
+        double orderPrice;                                 // Price at which order was executed
+        double orderQuantity;                              // Quantity of asset to be traded
+    //  marketState
+    core::MarketState marketState;                     // Market state at execution
      double pnl;                                        // Profit and loss
      std::chrono::system_clock::time_point startTime;   // When execution started
      std::chrono::system_clock::time_point completionTime; // When execution completed

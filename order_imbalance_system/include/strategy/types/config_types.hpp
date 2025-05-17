@@ -11,6 +11,7 @@
  #pragma once
 
  #include "types.hpp"
+#include "core/types.hpp"
  #include <string>
  
  namespace trading {
@@ -146,13 +147,31 @@
  /**
   * Configuration for ExchangeCalibration
   */
+//  struct ExchangeCalibrationConfig {
+//      bool enableAutoCalibration = true;     // Enable automatic calibration
+//      int calibrationIntervalMs = 3600000;   // Calibration interval in milliseconds (1 hour)
+//      // Calibration threshold for parameter transfer
+//         double calibrationThreshold = 0.7;     // Threshold for parameter transfer
+//         // Calibration parameters
+//         std::map<std::string, double> calibrationParameters; // Parameters to calibrate
+//         // Calibration history
+//         std::map<std::string, std::chrono::system_clock::time_point> calibrationHistory; // History of calibrations
+//         // baseParameters
+//         ParameterSet baseParameters;          // Base parameters for calibration
+//         // config.exchanges for     std::map<ExchangeId, ExchangeMetrics> exchangeProfiles_;
+//         std::map<core::ExchangeId, core::ExchangeMetrics> exchanges; // Exchanges to calibrate
+//      ExchangeCalibrationConfig() = default;
+//  };
  struct ExchangeCalibrationConfig {
-     bool enableAutoCalibration = true;     // Enable automatic calibration
-     int calibrationIntervalMs = 3600000;   // Calibration interval in milliseconds (1 hour)
-     
-     ExchangeCalibrationConfig() = default;
- };
- 
+    bool enableAutoCalibration = true;
+    int calibrationIntervalMs = 3600000;
+    double calibrationThreshold = 0.7;
+    std::map<std::string, double> calibrationParameters;
+    std::map<std::string, std::chrono::system_clock::time_point> calibrationHistory;
+    ParameterSet baseParameters;
+    std::vector<core::ExchangeId> exchanges; // exchangeID just a std::string
+    ExchangeCalibrationConfig() = default;
+};
  /**
   * Configuration for AdaptiveMechanism
   */

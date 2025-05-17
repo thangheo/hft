@@ -66,19 +66,6 @@ struct AdaptationRules {
     double maxParameterChangePercent = 10.0;
 };
 
-/**
- * Structure to represent market state
- */
-// struct MarketState {
-//     double volatility;           // Market volatility measure
-//     double trendStrength;        // Trend strength (-1 to 1, negative means downtrend)
-//     double volumeRatio;          // Volume ratio compared to average
-//     double spreadPercentage;     // Spread as percentage of price
-//     double marketImpact;         // Estimated market impact of orders
-    
-//     MarketState() : volatility(0.0), trendStrength(0.0), volumeRatio(1.0), 
-//                     spreadPercentage(0.0), marketImpact(0.0) {}
-// };
 
 } // namespace strategy
 } // namespace trading

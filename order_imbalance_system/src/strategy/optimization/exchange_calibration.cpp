@@ -13,6 +13,23 @@ namespace strategy {
 ExchangeCalibration::ExchangeCalibration() {
     // Initialize with empty parameters
 }
+ExchangeCalibration::ExchangeCalibration(const ExchangeCalibrationConfig& config) {
+    // Initialize with configuration
+    initialize(config);
+}
+bool ExchangeCalibration::initialize(const ExchangeCalibrationConfig& config) {
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    baseParameters_ = config.baseParameters;
+
+    for (const auto& exchange : config.exchanges) {
+        exchangeProfiles_[exchange] = ExchangeMetrics();
+        exchangeParameters_[exchange] = baseParameters_;
+        calibrationTimes_[exchange] = std::chrono::system_clock::now();
+    }
+
+    return true;
+}
 
 void ExchangeCalibration::updateExchangeProfile(const ExchangeId& exchange, const ExchangeMetrics& metrics) {
     std::lock_guard<std::mutex> lock(mutex_);

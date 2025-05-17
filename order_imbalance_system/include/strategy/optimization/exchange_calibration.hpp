@@ -23,7 +23,11 @@ public:
     // Constructor
     ExchangeCalibration();
     ~ExchangeCalibration() = default;
-    
+    // /usr/include/c++/13/bits/stl_construct.h:119:7: error: no matching function for call to ‘trading::strategy::ExchangeCalibration::ExchangeCalibration(trading::strategy::ExchangeCalibrationConfig&)’
+    // Constructor with configuration
+    ExchangeCalibration(const ExchangeCalibrationConfig& config);
+    // Initialize the calibration engine with configuration
+    bool initialize(const ExchangeCalibrationConfig& config);
     // Update exchange behavior profile
     void updateExchangeProfile(const ExchangeId& exchange, const ExchangeMetrics& metrics);
     

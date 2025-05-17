@@ -30,6 +30,37 @@
  // Common timestamp definition
  using Timestamp = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
  
+
+
+ /**
+  * Market state information
+  */
+ struct MarketState {
+    std::string exchange_id;               // Exchange identifier
+    std::string trading_pair;              // Trading pair
+    core::Timestamp timestamp;                   // Timestamp of this state
+    double trendStrength;                // Trend strength (0-1)
+    // double volume_ratio;                 // Volume ratio compared to average
+    double price;                          // Current price
+    double volatility;                     // Current volatility
+    double volume_24h;                     // 24-hour volume
+    double price_change_24h;               // 24-hour price change percentage
+    std::string market_regime;             // Market regime classification
+    
+    // Default constructor
+    MarketState()
+        : exchange_id(""), trading_pair(""), timestamp(std::chrono::system_clock::now()),
+          price(0.0), volatility(0.0), volume_24h(0.0), price_change_24h(0.0),
+          market_regime("unknown") {}
+    
+    // Constructor with exchange and trading pair
+    MarketState(const std::string& exchange, const std::string& pair)
+        : exchange_id(exchange), trading_pair(pair), timestamp(std::chrono::system_clock::now()),
+          price(0.0), volatility(0.0), volume_24h(0.0), price_change_24h(0.0),
+          market_regime("unknown") {}
+};
+
+
  /**
   * Represents a cryptocurrency exchange
   */
@@ -236,6 +267,7 @@ inline ExchangeId exchangeIdFromString(const std::string& str) {
  using ExperimentId = std::string;
  using OrderId = std::string;
  
+
  } // namespace core
  
  // Add a namespace alias to maintain compatibility with existing code

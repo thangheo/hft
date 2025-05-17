@@ -483,10 +483,11 @@
      std::lock_guard<std::mutex> lock(mutex_);
      
      auto now = std::chrono::system_clock::now();
-     
+    //  convert now to uint64_t
+    uint64_t now_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
      // Apply signal decay
      for (auto& [id, signal] : activeSignals_) {
-         double decayedStrength = signalDecayModel_->calculateRemainingStrength(signal, now);
+         double decayedStrength = signalDecayModel_->calculateRemainingStrength(signal, now_ms);
          signal.strength = decayedStrength;
      }
      
@@ -548,12 +549,13 @@
  
  void StrategyEngine::pruneExpiredSignals() {
      auto now = std::chrono::system_clock::now();
+    uint64_t now_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
      
      for (auto it = activeSignals_.begin(); it != activeSignals_.end(); ) {
          const auto& signal = it->second;
          
          // Check if signal has expired
-         if (!signalDecayModel_->isSignalValid(signal, now)) {
+         if (!signalDecayModel_->isSignalValid(signal, now_ms)) {
              LOG_INFO("Signal expired: {}", signal.id);
              
              // Remove the signal
@@ -595,8 +597,8 @@
                  auto paramValue = adjustment.second;
                  
                  // Update our parameter set
-                 if (parameters_.numericParams.find(paramName) != parameters_.numericParams.end()) {
-                     parameters_.numericParams[paramName] = paramValue;
+                 if (parameters_.numeric_params.find(paramName) != parameters_.numeric_params.end()) {
+                     parameters_.numeric_params[paramName] = paramValue;
                  }
              }
              
@@ -664,9 +666,25 @@ bool StrategyEngine::initializeTradingPair(const std::string& symbol, ExchangeId
      
      // Update average signal duration
      auto signalDuration = result.completionTime - result.startTime;
-     performance_.averageSignalDuration = 
-         (performance_.averageSignalDuration * (performance_.signalsExecuted - 1) + signalDuration) / 
-         performance_.signalsExecuted;
+    //  performance_.averageSignalDuration =
+    //      (performance_.averageSignalDuration * (performance_.signalsExecuted - 1) + signalDuration) / 
+    //      performance_.signalsExecuted;
+        if (performance_.signalsExecuted == 1) {
+            performance_.averageSignalDuration = std::chrono::duration_cast<std::chrono::milliseconds>(signalDuration);
+        } else {
+            performance_.averageSignalDuration += 
+                std::chrono::duration_cast<std::chrono::milliseconds>(signalDuration - performance_.averageSignalDuration) / performance_.signalsExecuted;
+        }
+        
+        // Update average signal strength
+        if (result.signalStrength > 0.0) {
+            performance_.averageSignalStrength = 
+                (performance_.averageSignalStrength * (performance_.signalsExecuted - 1) + result.signalStrength) / 
+                performance_.signalsExecuted;
+        }
+        
+        LOG_INFO("Updated performance metrics: totalPnl={}, successfulSignals={}, failedSignals={}", 
+                        performance_.totalPnl, performance_.successfulSignals, performance_.failedSignals);
  }
  
  void StrategyEngine::recordSignalPerformance(const std::string& signalId, const SignalExecutionResult& result) {

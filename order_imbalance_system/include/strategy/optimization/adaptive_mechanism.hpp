@@ -5,6 +5,7 @@
 // #include "strategy/types/parameter_set.hpp"
 // #include "strategy/types/performance_metrics.hpp"
 #include "strategy/types.hpp"
+#include "core/types.hpp"
 #include <memory>
 #include <vector>
 #include <map>
@@ -47,7 +48,7 @@ public:
     // Constructor
     AdaptiveMechanism();
     ~AdaptiveMechanism() = default;
-    
+    AdaptiveMechanism(const AdaptiveMechanismConfig& config); 
     // Update performance metrics to inform adaptation
     void updatePerformanceMetrics(const PerformanceMetrics& metrics);
     
@@ -71,18 +72,19 @@ public:
     
     // Reset adaptation state
     void reset();
-    
+    //getAdjustmentRecommendations
+    std::map<std::string, double> getAdjustmentRecommendations() const;
     // Register callbacks
     using AdaptationCallback = std::function<void(const ParameterSet&)>;
     void registerAdaptationCallback(AdaptationCallback callback);
     
     // Market regime detection
-    std::string detectMarketRegime(const MarketState& state) const;
-    
+    std::string detectMarketRegime(const core::MarketState& state) const;
+    //updateSignalResult
+    void updateSignalResult(const std::string& signalId, const SignalExecutionResult& result);
 private:
     // Adaptation rules
     AdaptationRules rules_;
-    
     // Base and adapted parameters
     ParameterSet baseParameters_;
     ParameterSet adaptedParameters_;
@@ -120,6 +122,8 @@ private:
     
     // Thread safety
     mutable std::mutex mutex_;
+    //config_
+    AdaptiveMechanismConfig config_;
 };
 
 } // namespace strategy
