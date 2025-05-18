@@ -419,7 +419,7 @@ void MomentumCorrelation::updateHighestCorrelatedMetrics() {
      double totalWeight = 0.0;
      
      // Use imbalance metrics and their correlations to predict price movement
-     for (const auto& [metric, value] : event.supporting_metrics) {
+     for (const auto& [metric, value] : event.supportingMetrics) {
          // Skip metrics without correlation data
          if (correlation_coefficients_.count(metric) == 0 || feature_importance_.count(metric) == 0) {
              continue;

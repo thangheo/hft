@@ -53,6 +53,8 @@ using Direction = core::Direction;
 using ConfidenceLevel = core::ConfidenceLevel;
 using SignalId = core::SignalId;
 using VolatilityLevel = core::VolatilityLevel;
+using MarketState = core::MarketState;
+
 //  // Additional type aliases
 //  struct PriceMovement {
 //      core::Symbol symbol;

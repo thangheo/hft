@@ -285,7 +285,7 @@
      discrepancy.expected_price = 50000.0;
      discrepancy.actual_price = 50000.0;
      discrepancy.discrepancy_type = "QUANTITY";
-     discrepancy.detection_time = std::chrono::system_clock::now();
+     discrepancy.detectionTime = std::chrono::system_clock::now();
      
      // Convert to string
      std::string str = discrepancy.toString();

@@ -162,7 +162,7 @@
      signal.targets = generatePriceTargets(imbalance);
      
      // Copy relevant metrics
-     for (const auto& metric : imbalance.supporting_metrics) {
+     for (const auto& metric : imbalance.supportingMetrics) {
          signal.setMetric(metric.first, metric.second);
      }
      
@@ -262,8 +262,8 @@
      std::vector<PriceTarget> targets;
      
      // Get mid price from supporting metrics
-     auto midPriceIt = imbalance.supporting_metrics.find("mid_price");
-     if (midPriceIt == imbalance.supporting_metrics.end()) {
+     auto midPriceIt = imbalance.supportingMetrics.find("mid_price");
+     if (midPriceIt == imbalance.supportingMetrics.end()) {
          return targets; // Can't generate targets without price
      }
      
@@ -271,8 +271,8 @@
      
      // Get volatility if available
      double volatility = 0.001; // Default 0.1% volatility
-     auto volatilityIt = imbalance.supporting_metrics.find("volatility");
-     if (volatilityIt != imbalance.supporting_metrics.end()) {
+     auto volatilityIt = imbalance.supportingMetrics.find("volatility");
+     if (volatilityIt != imbalance.supportingMetrics.end()) {
          volatility = volatilityIt->second;
      }
      

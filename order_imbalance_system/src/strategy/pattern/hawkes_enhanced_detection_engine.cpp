@@ -7,6 +7,7 @@
 
  #include "strategy/pattern/hawkes_enhanced_detection_engine.hpp"
  #include <iostream>
+ #include <algorithm>
  
  namespace trading {
  namespace strategy {
@@ -53,7 +54,7 @@
      // Make trading decision based on current price
      double currentPrice = (orderBook.getMidPrice() > 0) ? 
                           orderBook.getMidPrice() : 
-                          (orderBook.getBestBid().price + orderBook.getBestAsk().price) / 2.0;
+                          (orderBook.getBestBid().getPrice() + orderBook.getBestAsk().getPrice()) / 2.0;
      
      // Get current timestamp
      double currentTime = std::chrono::duration_cast<std::chrono::duration<double>>(
@@ -66,7 +67,7 @@
  }
  
  // Convert order book update to Hawkes event
- OrderBookEvent HawkesEnhancedDetectionEngine::convertToHawkesEvent(const OrderBookUpdate& update) {
+ OrderBookEvent HawkesEnhancedDetectionEngine::convertToHawkesEvent(const data_ingestion::OrderBookUpdate& update) {
      OrderBookEvent event;
      
      // Determine event type based on order book state
@@ -79,11 +80,11 @@
      double askVolume = 0.0;
      
      for (const auto& level : bids) {
-         bidVolume += level.quantity;
+         bidVolume += level.getQuantity();
      }
      
      for (const auto& level : asks) {
-         askVolume += level.quantity;
+         askVolume += level.getQuantity();
      }
      
      // Determine event type based on imbalance
@@ -121,7 +122,8 @@
          (event.direction == Direction::SELL && signal.direction == Direction::SELL)) {
          
          // Boost confidence based on Hawkes signal
-         enhanced.confidence = std::min(0.95, event.confidence + 0.1 * signal.strength);
+         double newConfidenceValue = std::min(0.95, core::confidenceLevelToValue(event.confidence) + 0.1 * signal.strength);
+         enhanced.confidence = core::valueToConfidenceLevel(newConfidenceValue);
          
          // Boost strength
          enhanced.strength = std::min(event.strength * 1.2, event.strength + signal.strength * 0.5);
@@ -172,7 +174,8 @@
              newEvent.type = ImbalanceType::VOLUME_IMBALANCE;  // Default type
              newEvent.direction = signal.direction;
              newEvent.strength = signal.strength;
-             newEvent.confidence = signal.confidence;
+            //  newEvent.confidence = signal.confidence;
+             newEvent.confidence = core::valueToConfidenceLevel(signal.confidence);
              newEvent.detectionTime = std::chrono::system_clock::now();
              newEvent.eventId = 0;  // To be assigned
              newEvent.supportingMetrics["hawkes_origin"] = 1.0;

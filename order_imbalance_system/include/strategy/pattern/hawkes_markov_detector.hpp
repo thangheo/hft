@@ -40,7 +40,7 @@ struct OrderBookEvent {
     double timestamp;           // Event timestamp in seconds
     double volume;              // Event volume
     std::string exchangeId;     // Exchange ID
-    std::string symbol;         // Trading pair symbol
+    core::Symbol symbol;         // Trading pair symbol
 };
 
 /**

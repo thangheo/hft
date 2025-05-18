@@ -78,6 +78,9 @@ private:
     // Thread safety
     mutable std::mutex mutex_;
 };
-
+// struct ExchangeCalibrationConfig {
+//     ParameterSet baseParameters;
+//     std::vector<ExchangeId> exchanges;
+// };
 } // namespace strategy
 } // namespace trading

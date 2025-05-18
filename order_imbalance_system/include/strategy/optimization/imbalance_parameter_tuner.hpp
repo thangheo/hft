@@ -13,6 +13,10 @@
 namespace trading {
 namespace strategy {
 
+// Define ParameterSpace
+using ParameterSpace = std::map<std::string, std::vector<double>>;
+
+
 /**
  * Optimization method to use for parameter tuning
  */
@@ -64,8 +68,12 @@ private:
     // Parameter space definition
     ParameterSpace parameterSpace_;
     
-    // Evaluation results
-    std::map<ParameterSet, PerformanceMetrics> evaluationResults_;
+    // Create a string key from a ParameterSet for use in maps
+    std::string createParameterKey(const ParameterSet& params) const;
+    
+    // Evaluation results - using string keys instead of ParameterSet objects
+    std::map<std::string, PerformanceMetrics> evaluationResults_;
+    std::map<std::string, ParameterSet> parameterSets_;  // Store actual parameter sets by key
     
     // Best parameters found
     ParameterSet bestParameters_;

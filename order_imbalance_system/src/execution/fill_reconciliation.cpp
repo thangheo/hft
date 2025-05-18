@@ -38,7 +38,7 @@
          ss << "  Unexpected fill received (quantity: " << actual_quantity << ", price: " << actual_price << ")\n";
      }
      
-     auto time_t = std::chrono::system_clock::to_time_t(detection_time);
+     auto time_t = std::chrono::system_clock::to_time_t(detectionTime);
      ss << "  Detected at: " << std::ctime(&time_t);
      
      return ss.str();
@@ -119,7 +119,7 @@
          discrepancy.actual_price = actual_fill.price;
          discrepancy.expected_quantity = 0.0;  // Will be filled if we find a close match
          discrepancy.expected_price = 0.0;     // Will be filled if we find a close match
-         discrepancy.detection_time = std::chrono::system_clock::now();
+         discrepancy.detectionTime = std::chrono::system_clock::now();
          
          // Try to find a close match to determine the type of discrepancy
          bool close_match_found = false;
@@ -188,7 +188,7 @@
                  discrepancy.actual_quantity = 0.0;
                  discrepancy.actual_price = 0.0;
                  discrepancy.discrepancy_type = "MISSING";
-                 discrepancy.detection_time = now;
+                 discrepancy.detectionTime = now;
                  
                  discrepancies.push_back(discrepancy);
                  
@@ -226,7 +226,7 @@
              discrepancy.actual_quantity = act_record.fill.quantity;
              discrepancy.actual_price = act_record.fill.price;
              discrepancy.discrepancy_type = "EXTRA";
-             discrepancy.detection_time = std::chrono::system_clock::now();
+             discrepancy.detectionTime = std::chrono::system_clock::now();
              
              discrepancies.push_back(discrepancy);
              

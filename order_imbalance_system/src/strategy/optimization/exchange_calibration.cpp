@@ -13,10 +13,12 @@ namespace strategy {
 ExchangeCalibration::ExchangeCalibration() {
     // Initialize with empty parameters
 }
+
 ExchangeCalibration::ExchangeCalibration(const ExchangeCalibrationConfig& config) {
     // Initialize with configuration
     initialize(config);
 }
+
 bool ExchangeCalibration::initialize(const ExchangeCalibrationConfig& config) {
     std::lock_guard<std::mutex> lock(mutex_);
 
@@ -126,10 +128,11 @@ bool ExchangeCalibration::transferCalibration(const ExchangeId& source, const Ex
     ParameterSet targetParams = sourceParamsIt->second;
     
     // Apply adjustments based on differences between exchanges
-    for (auto& param : targetParams) {
+    // Iterate through the numeric_params map in the parameter set
+    for (auto& paramPair : targetParams.numeric_params) {
         // In a real implementation, this would be more sophisticated
         // Here we'll apply a simple scaling based on similarity
-        param.second = param.second * (0.7 + 0.3 * similarity);
+        paramPair.second = paramPair.second * (0.7 + 0.3 * similarity);
     }
     
     // Store calibrated parameters for target
@@ -149,25 +152,72 @@ bool ExchangeCalibration::saveCalibration(const std::string& filename) const {
         
         // Save base parameters
         j["baseParameters"] = nlohmann::json::object();
-        for (const auto& param : baseParameters_) {
-            j["baseParameters"][param.first] = param.second;
+        j["baseParameters"]["version"] = baseParameters_.version;
+        j["baseParameters"]["exchangeId"] = baseParameters_.exchangeId;
+        
+        // Save numeric parameters
+        j["baseParameters"]["numeric_params"] = nlohmann::json::object();
+        for (const auto& param : baseParameters_.numeric_params) {
+            j["baseParameters"]["numeric_params"][param.first] = param.second;
+        }
+        
+        // Save string parameters
+        j["baseParameters"]["string_params"] = nlohmann::json::object();
+        for (const auto& param : baseParameters_.string_params) {
+            j["baseParameters"]["string_params"][param.first] = param.second;
+        }
+        
+        // Save boolean parameters
+        j["baseParameters"]["bool_params"] = nlohmann::json::object();
+        for (const auto& param : baseParameters_.bool_params) {
+            j["baseParameters"]["bool_params"][param.first] = param.second;
+        }
+        
+        // Save array parameters
+        j["baseParameters"]["array_params"] = nlohmann::json::object();
+        for (const auto& param : baseParameters_.array_params) {
+            j["baseParameters"]["array_params"][param.first] = param.second;
         }
         
         // Save exchange parameters
         j["exchangeParameters"] = nlohmann::json::object();
         for (const auto& exchange : exchangeParameters_) {
-            std::string exchangeStr = std::to_string(static_cast<int>(exchange.first));
+            std::string exchangeStr = exchange.first;
             j["exchangeParameters"][exchangeStr] = nlohmann::json::object();
             
-            for (const auto& param : exchange.second) {
-                j["exchangeParameters"][exchangeStr][param.first] = param.second;
+            const auto& params = exchange.second;
+            j["exchangeParameters"][exchangeStr]["version"] = params.version;
+            j["exchangeParameters"][exchangeStr]["exchangeId"] = params.exchangeId;
+            
+            // Save numeric parameters
+            j["exchangeParameters"][exchangeStr]["numeric_params"] = nlohmann::json::object();
+            for (const auto& param : params.numeric_params) {
+                j["exchangeParameters"][exchangeStr]["numeric_params"][param.first] = param.second;
+            }
+            
+            // Save string parameters
+            j["exchangeParameters"][exchangeStr]["string_params"] = nlohmann::json::object();
+            for (const auto& param : params.string_params) {
+                j["exchangeParameters"][exchangeStr]["string_params"][param.first] = param.second;
+            }
+            
+            // Save boolean parameters
+            j["exchangeParameters"][exchangeStr]["bool_params"] = nlohmann::json::object();
+            for (const auto& param : params.bool_params) {
+                j["exchangeParameters"][exchangeStr]["bool_params"][param.first] = param.second;
+            }
+            
+            // Save array parameters
+            j["exchangeParameters"][exchangeStr]["array_params"] = nlohmann::json::object();
+            for (const auto& param : params.array_params) {
+                j["exchangeParameters"][exchangeStr]["array_params"][param.first] = param.second;
             }
         }
         
         // Save calibration times
         j["calibrationTimes"] = nlohmann::json::object();
         for (const auto& time : calibrationTimes_) {
-            std::string exchangeStr = std::to_string(static_cast<int>(time.first));
+            std::string exchangeStr = time.first;
             // Convert time_point to time_t
             auto time_t_val = std::chrono::system_clock::to_time_t(time.second);
             j["calibrationTimes"][exchangeStr] = time_t_val;
@@ -201,10 +251,40 @@ bool ExchangeCalibration::loadCalibration(const std::string& filename) {
         file >> j;
         
         // Load base parameters
-        baseParameters_.clear();
         if (j.contains("baseParameters") && j["baseParameters"].is_object()) {
-            for (auto it = j["baseParameters"].begin(); it != j["baseParameters"].end(); ++it) {
-                baseParameters_[it.key()] = it.value().get<double>();
+            baseParameters_.version = j["baseParameters"].value("version", "1.0.0");
+            baseParameters_.exchangeId = j["baseParameters"].value("exchangeId", "");
+            
+            // Load numeric parameters
+            if (j["baseParameters"].contains("numeric_params") && j["baseParameters"]["numeric_params"].is_object()) {
+                baseParameters_.numeric_params.clear();
+                for (auto it = j["baseParameters"]["numeric_params"].begin(); it != j["baseParameters"]["numeric_params"].end(); ++it) {
+                    baseParameters_.numeric_params[it.key()] = it.value().get<double>();
+                }
+            }
+            
+            // Load string parameters
+            if (j["baseParameters"].contains("string_params") && j["baseParameters"]["string_params"].is_object()) {
+                baseParameters_.string_params.clear();
+                for (auto it = j["baseParameters"]["string_params"].begin(); it != j["baseParameters"]["string_params"].end(); ++it) {
+                    baseParameters_.string_params[it.key()] = it.value().get<std::string>();
+                }
+            }
+            
+            // Load boolean parameters
+            if (j["baseParameters"].contains("bool_params") && j["baseParameters"]["bool_params"].is_object()) {
+                baseParameters_.bool_params.clear();
+                for (auto it = j["baseParameters"]["bool_params"].begin(); it != j["baseParameters"]["bool_params"].end(); ++it) {
+                    baseParameters_.bool_params[it.key()] = it.value().get<bool>();
+                }
+            }
+            
+            // Load array parameters
+            if (j["baseParameters"].contains("array_params") && j["baseParameters"]["array_params"].is_object()) {
+                baseParameters_.array_params.clear();
+                for (auto it = j["baseParameters"]["array_params"].begin(); it != j["baseParameters"]["array_params"].end(); ++it) {
+                    baseParameters_.array_params[it.key()] = it.value().get<std::vector<double>>();
+                }
             }
         }
         
@@ -212,13 +292,41 @@ bool ExchangeCalibration::loadCalibration(const std::string& filename) {
         exchangeParameters_.clear();
         if (j.contains("exchangeParameters") && j["exchangeParameters"].is_object()) {
             for (auto exchangeIt = j["exchangeParameters"].begin(); exchangeIt != j["exchangeParameters"].end(); ++exchangeIt) {
-                ExchangeId exchangeId = static_cast<ExchangeId>(std::stoi(exchangeIt.key()));
+                ExchangeId exchangeId = exchangeIt.key();
                 
                 if (exchangeIt.value().is_object()) {
                     ParameterSet params;
-                    for (auto paramIt = exchangeIt.value().begin(); paramIt != exchangeIt.value().end(); ++paramIt) {
-                        params[paramIt.key()] = paramIt.value().get<double>();
+                    params.version = exchangeIt.value().value("version", "1.0.0");
+                    params.exchangeId = exchangeIt.value().value("exchangeId", "");
+                    
+                    // Load numeric parameters
+                    if (exchangeIt.value().contains("numeric_params") && exchangeIt.value()["numeric_params"].is_object()) {
+                        for (auto paramIt = exchangeIt.value()["numeric_params"].begin(); paramIt != exchangeIt.value()["numeric_params"].end(); ++paramIt) {
+                            params.numeric_params[paramIt.key()] = paramIt.value().get<double>();
+                        }
                     }
+                    
+                    // Load string parameters
+                    if (exchangeIt.value().contains("string_params") && exchangeIt.value()["string_params"].is_object()) {
+                        for (auto paramIt = exchangeIt.value()["string_params"].begin(); paramIt != exchangeIt.value()["string_params"].end(); ++paramIt) {
+                            params.string_params[paramIt.key()] = paramIt.value().get<std::string>();
+                        }
+                    }
+                    
+                    // Load boolean parameters
+                    if (exchangeIt.value().contains("bool_params") && exchangeIt.value()["bool_params"].is_object()) {
+                        for (auto paramIt = exchangeIt.value()["bool_params"].begin(); paramIt != exchangeIt.value()["bool_params"].end(); ++paramIt) {
+                            params.bool_params[paramIt.key()] = paramIt.value().get<bool>();
+                        }
+                    }
+                    
+                    // Load array parameters
+                    if (exchangeIt.value().contains("array_params") && exchangeIt.value()["array_params"].is_object()) {
+                        for (auto paramIt = exchangeIt.value()["array_params"].begin(); paramIt != exchangeIt.value()["array_params"].end(); ++paramIt) {
+                            params.array_params[paramIt.key()] = paramIt.value().get<std::vector<double>>();
+                        }
+                    }
+                    
                     exchangeParameters_[exchangeId] = params;
                 }
             }
@@ -228,7 +336,7 @@ bool ExchangeCalibration::loadCalibration(const std::string& filename) {
         calibrationTimes_.clear();
         if (j.contains("calibrationTimes") && j["calibrationTimes"].is_object()) {
             for (auto timeIt = j["calibrationTimes"].begin(); timeIt != j["calibrationTimes"].end(); ++timeIt) {
-                ExchangeId exchangeId = static_cast<ExchangeId>(std::stoi(timeIt.key()));
+                ExchangeId exchangeId = timeIt.key();
                 std::time_t time_t_val = timeIt.value().get<std::time_t>();
                 calibrationTimes_[exchangeId] = std::chrono::system_clock::from_time_t(time_t_val);
             }
@@ -291,27 +399,27 @@ ParameterSet ExchangeCalibration::applyExchangeAdjustments(const ParameterSet& b
     
     // Adjust imbalance threshold based on update frequency
     // More frequent updates may need higher thresholds to avoid noise
-    if (adjusted.find("imbalanceThreshold") != adjusted.end()) {
+    if (adjusted.numeric_params.find("imbalanceThreshold") != adjusted.numeric_params.end()) {
         double frequencyFactor = std::sqrt(100.0 / std::max(1.0, metrics.updateFrequency));
-        adjusted["imbalanceThreshold"] *= frequencyFactor;
+        adjusted.numeric_params["imbalanceThreshold"] *= frequencyFactor;
     }
     
     // Adjust volume threshold based on exchange liquidity
-    if (adjusted.find("volumeThreshold") != adjusted.end()) {
+    if (adjusted.numeric_params.find("volumeThreshold") != adjusted.numeric_params.end()) {
         double liquidityFactor = std::log10(metrics.averageLiquidity) / 6.0;  // Normalize to ~0.5-1.5 range
-        adjusted["volumeThreshold"] *= liquidityFactor;
+        adjusted.numeric_params["volumeThreshold"] *= liquidityFactor;
     }
     
     // Adjust signal duration based on market impact model
-    if (adjusted.find("signalDuration") != adjusted.end()) {
+    if (adjusted.numeric_params.find("signalDuration") != adjusted.numeric_params.end()) {
         double impactFactor = 1.0 + (metrics.marketImpact - 0.5) * 0.5;  // Scale by market impact
-        adjusted["signalDuration"] *= impactFactor;
+        adjusted.numeric_params["signalDuration"] *= impactFactor;
     }
     
     // Adjust depth consideration based on book depth
-    if (adjusted.find("considerationDepth") != adjusted.end()) {
+    if (adjusted.numeric_params.find("considerationDepth") != adjusted.numeric_params.end()) {
         double depthFactor = std::min(1.5, std::max(0.5, metrics.bookDepth / 20.0));
-        adjusted["considerationDepth"] *= depthFactor;
+        adjusted.numeric_params["considerationDepth"] *= depthFactor;
     }
     
     return adjusted;

@@ -81,7 +81,9 @@ private:
     std::vector<OrderBookEvent> recentTrades_;
     
     // Event transformation methods
+    // convertToHawkesEvent
     OrderBookEvent convertToHawkesEvent(const data_ingestion::OrderBookUpdate& update);
+
     ImbalanceEvent enhanceWithHawkes(const ImbalanceEvent& event, const HawkesSignal& signal);
     
     // Signal callback from Hawkes model
@@ -89,7 +91,8 @@ private:
     
     // Last signals from each component
     std::vector<ImbalanceEvent> combinedImbalances_;
-    std::mutex mutex_;
+    std::vector<HawkesSignal> hawkesSignals_;
+    mutable std::mutex mutex_;
 };
 
 // Type alias for convenience

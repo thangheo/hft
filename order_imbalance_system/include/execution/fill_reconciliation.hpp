@@ -36,7 +36,7 @@ struct FillDiscrepancy {
     double expected_price;
     double actual_price;
     std::string discrepancy_type;  // "PRICE", "QUANTITY", "MISSING", "EXTRA"
-    std::chrono::system_clock::time_point detection_time;
+    std::chrono::system_clock::time_point detectionTime;
     
     std::string toString() const;
 };

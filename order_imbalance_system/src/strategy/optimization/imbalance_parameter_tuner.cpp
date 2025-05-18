@@ -5,6 +5,8 @@
 #include <thread>
 #include <iostream>
 #include <cmath>
+#include <sstream>
+#include <iomanip>
 
 namespace trading {
 namespace strategy {
@@ -19,11 +21,36 @@ void ImbalanceParameterTuner::defineParameterSpace(const ParameterSpace& space) 
     parameterSpace_ = space;
 }
 
+std::string ImbalanceParameterTuner::createParameterKey(const ParameterSet& params) const {
+    // Create a unique key based on parameter values
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(6);
+    
+    // Use numeric parameters to create a unique key
+    std::vector<std::pair<std::string, double>> sortedParams;
+    for (const auto& pair : params.numeric_params) {
+        sortedParams.push_back(pair);
+    }
+    
+    // Sort for consistent keys
+    std::sort(sortedParams.begin(), sortedParams.end());
+    
+    for (const auto& pair : sortedParams) {
+        ss << pair.first << "=" << pair.second << ";";
+    }
+    
+    return ss.str();
+}
+
 void ImbalanceParameterTuner::evaluateParameterSet(const ParameterSet& params, const PerformanceMetrics& metrics) {
     std::lock_guard<std::mutex> lock(mutex_);
     
+    // Create a unique key for this parameter set
+    std::string paramKey = createParameterKey(params);
+    
     // Store evaluation result
-    evaluationResults_[params] = metrics;
+    evaluationResults_[paramKey] = metrics;
+    parameterSets_[paramKey] = params;
     
     // Check if this is better than our current best
     if (isBetter(metrics, bestMetrics_)) {
@@ -101,7 +128,10 @@ void ImbalanceParameterTuner::reset() {
     // Clear all data
     parameterSpace_.clear();
     evaluationResults_.clear();
-    bestParameters_.clear();
+    parameterSets_.clear();
+    
+    // Reset best parameters to empty
+    bestParameters_ = ParameterSet();
     
     // Reset metrics to worst possible values
     bestMetrics_.sharpeRatio = -std::numeric_limits<double>::infinity();
@@ -142,11 +172,15 @@ void ImbalanceParameterTuner::runGridSearch() {
         // Create parameter set for current indices
         ParameterSet currentParams;
         for (size_t i = 0; i < paramNames.size(); ++i) {
-            currentParams[paramNames[i]] = paramValues[i][currentIndices[i]];
+            // Add to numeric_params map instead of direct indexing
+            currentParams.setParameter(paramNames[i], paramValues[i][currentIndices[i]]);
         }
         
+        // Create a unique key for this parameter set
+        std::string paramKey = createParameterKey(currentParams);
+        
         // Check if we have already evaluated this combination
-        if (evaluationResults_.find(currentParams) == evaluationResults_.end()) {
+        if (evaluationResults_.find(paramKey) == evaluationResults_.end()) {
             // Release lock temporarily to allow other threads to access
             mutex_.unlock();
             
@@ -178,7 +212,8 @@ void ImbalanceParameterTuner::runGridSearch() {
             metrics.winRate = winrate_dist(gen);
             
             // Store evaluation
-            evaluationResults_[currentParams] = metrics;
+            evaluationResults_[paramKey] = metrics;
+            parameterSets_[paramKey] = currentParams;
             
             // Check if this is better than our current best
             if (isBetter(metrics, bestMetrics_)) {
@@ -236,11 +271,15 @@ void ImbalanceParameterTuner::runBayesianOptimization() {
         // Generate random values within parameter ranges
         for (size_t i = 0; i < paramNames.size(); ++i) {
             std::uniform_real_distribution<> dist(paramRanges[i].first, paramRanges[i].second);
-            currentParams[paramNames[i]] = dist(gen);
+            // Use setParameter instead of direct indexing
+            currentParams.setParameter(paramNames[i], dist(gen));
         }
         
+        // Create a unique key for this parameter set
+        std::string paramKey = createParameterKey(currentParams);
+        
         // Check if we have already evaluated this combination
-        if (evaluationResults_.find(currentParams) == evaluationResults_.end()) {
+        if (evaluationResults_.find(paramKey) == evaluationResults_.end()) {
             // Release lock temporarily to allow other threads to access
             mutex_.unlock();
             
@@ -268,7 +307,8 @@ void ImbalanceParameterTuner::runBayesianOptimization() {
             metrics.winRate = winrate_dist(gen);
             
             // Store evaluation
-            evaluationResults_[currentParams] = metrics;
+            evaluationResults_[paramKey] = metrics;
+            parameterSets_[paramKey] = currentParams;
             
             // Check if this is better than our current best
             if (isBetter(metrics, bestMetrics_)) {
@@ -280,6 +320,40 @@ void ImbalanceParameterTuner::runBayesianOptimization() {
     }
 }
 
+// Similarly update runGeneticAlgorithm() and runSimulatedAnnealing() - not showing full code for brevity
+
+bool ImbalanceParameterTuner::isBetter(const PerformanceMetrics& current, const PerformanceMetrics& best) const {
+    // Primary metric for comparison: Sharpe ratio
+    if (current.sharpeRatio > best.sharpeRatio + 0.1) {
+        return true;
+    }
+    
+    // If Sharpe ratios are similar, compare other metrics
+    if (std::abs(current.sharpeRatio - best.sharpeRatio) <= 0.1) {
+        // Check total return if Sharpe is similar
+        if (current.totalReturn > best.totalReturn * 1.05) {
+            return true;
+        }
+        
+        // Check drawdown if Sharpe and return are similar
+        if (std::abs(current.totalReturn - best.totalReturn) <= best.totalReturn * 0.05 && 
+            current.maxDrawdown < best.maxDrawdown * 0.95) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+void ImbalanceParameterTuner::updateBestParameters(const ParameterSet& params, const PerformanceMetrics& metrics) {
+    bestParameters_ = params;
+    bestMetrics_ = metrics;
+    
+    // Call the callback if registered
+    if (bestParameterCallback_) {
+        bestParameterCallback_(bestParameters_);
+    }
+}
 void ImbalanceParameterTuner::runGeneticAlgorithm() {
     // Simplified genetic algorithm implementation for parameter optimization
     
@@ -316,20 +390,25 @@ void ImbalanceParameterTuner::runGeneticAlgorithm() {
         
         for (size_t j = 0; j < paramNames.size(); ++j) {
             std::uniform_real_distribution<> dist(paramRanges[j].first, paramRanges[j].second);
-            individual[paramNames[j]] = dist(gen);
+            // Use setParameter instead of direct array access
+            individual.setParameter(paramNames[j], dist(gen));
         }
         
         population.push_back(individual);
     }
     
     // Run generations
-    for (int gen = 0; gen < generations && optimizationRunning_; ++gen) {
+    // for (int gen = 0; gen < generations && optimizationRunning_; ++gen) {
+    for (int generation = 0; generation < generations && optimizationRunning_; ++generation) {
         // Evaluate population
         std::vector<PerformanceMetrics> fitnessValues;
         
         for (const auto& individual : population) {
+            // Create key for the individual
+            std::string paramKey = createParameterKey(individual);
+            
             // Check if we have already evaluated this individual
-            if (evaluationResults_.find(individual) == evaluationResults_.end()) {
+            if (evaluationResults_.find(paramKey) == evaluationResults_.end()) {
                 // Release lock temporarily
                 mutex_.unlock();
                 
@@ -357,14 +436,15 @@ void ImbalanceParameterTuner::runGeneticAlgorithm() {
                 metrics.winRate = winrate_dist(gen);
                 
                 // Store evaluation
-                evaluationResults_[individual] = metrics;
+                evaluationResults_[paramKey] = metrics;
+                parameterSets_[paramKey] = individual;
             }
             
-            fitnessValues.push_back(evaluationResults_[individual]);
+            fitnessValues.push_back(evaluationResults_[createParameterKey(individual)]);
             
             // Check if this is better than our current best
-            if (isBetter(evaluationResults_[individual], bestMetrics_)) {
-                updateBestParameters(individual, evaluationResults_[individual]);
+            if (isBetter(evaluationResults_[createParameterKey(individual)], bestMetrics_)) {
+                updateBestParameters(individual, evaluationResults_[createParameterKey(individual)]);
             }
         }
         
@@ -388,8 +468,14 @@ void ImbalanceParameterTuner::runGeneticAlgorithm() {
         while (newPopulation.size() < populationSize) {
             // Tournament selection
             std::uniform_int_distribution<> idx_dist(0, populationSize - 1);
-            int idx1 = idx_dist(gen);
-            int idx2 = idx_dist(gen);
+            // int idx1 = idx_dist(gen);
+            // int idx2 = idx_dist(gen);
+            int idx1 = std::uniform_int_distribution<>(0, populationSize - 1)(gen);
+            int idx2 = std::uniform_int_distribution<>(0, populationSize - 1)(gen);
+            while (idx1 == idx2) {
+                idx2 = idx_dist(gen);
+            }
+            // Select the better of the two
             
             int selectedIdx = isBetter(fitnessValues[idx1], fitnessValues[idx2]) ? idx1 : idx2;
             ParameterSet offspring = population[selectedIdx];
@@ -408,7 +494,13 @@ void ImbalanceParameterTuner::runGeneticAlgorithm() {
                 // Perform crossover for each parameter with 50% chance
                 for (const auto& paramName : paramNames) {
                     if (prob_dist(gen) < 0.5) {
-                        std::swap(offspring[paramName], partner[paramName]);
+                        // Get values from both parents
+                        double val1 = offspring.getNumericParam(paramName);
+                        double val2 = partner.getNumericParam(paramName);
+                        
+                        // Swap values
+                        offspring.setParameter(paramName, val2);
+                        partner.setParameter(paramName, val1);
                     }
                 }
                 
@@ -418,11 +510,13 @@ void ImbalanceParameterTuner::runGeneticAlgorithm() {
             // Mutation
             for (const auto& paramName : paramNames) {
                 if (prob_dist(gen) < mutationRate) {
+                    int paramIdx = std::distance(paramNames.begin(), 
+                                    std::find(paramNames.begin(), paramNames.end(), paramName));
                     std::uniform_real_distribution<> param_dist(
-                        paramRanges[std::distance(paramNames.begin(), std::find(paramNames.begin(), paramNames.end(), paramName))].first,
-                        paramRanges[std::distance(paramNames.begin(), std::find(paramNames.begin(), paramNames.end(), paramName))].second
+                        paramRanges[paramIdx].first,
+                        paramRanges[paramIdx].second
                     );
-                    offspring[paramName] = param_dist(gen);
+                    offspring.setParameter(paramName, param_dist(gen));
                 }
             }
             
@@ -437,7 +531,7 @@ void ImbalanceParameterTuner::runGeneticAlgorithm() {
         // Replace population
         population = newPopulation;
         
-        optimizationProgress_ = static_cast<double>(gen + 1) / generations;
+        optimizationProgress_ = static_cast<double>(generation + 1) / generations;
     }
 }
 
@@ -473,12 +567,15 @@ void ImbalanceParameterTuner::runSimulatedAnnealing() {
     ParameterSet currentSolution;
     for (size_t i = 0; i < paramNames.size(); ++i) {
         std::uniform_real_distribution<> param_dist(paramRanges[i].first, paramRanges[i].second);
-        currentSolution[paramNames[i]] = param_dist(gen);
+        currentSolution.setParameter(paramNames[i], param_dist(gen));
     }
+    
+    // Create key for current solution
+    std::string currentKey = createParameterKey(currentSolution);
     
     // Evaluate initial solution
     PerformanceMetrics currentMetrics;
-    if (evaluationResults_.find(currentSolution) == evaluationResults_.end()) {
+    if (evaluationResults_.find(currentKey) == evaluationResults_.end()) {
         // Simulate performance metrics
         std::uniform_real_distribution<> sharpe_dist(-1.0, 3.0);
         std::uniform_real_distribution<> return_dist(-10.0, 50.0);
@@ -490,9 +587,10 @@ void ImbalanceParameterTuner::runSimulatedAnnealing() {
         currentMetrics.maxDrawdown = drawdown_dist(gen);
         currentMetrics.winRate = winrate_dist(gen);
         
-        evaluationResults_[currentSolution] = currentMetrics;
+        evaluationResults_[currentKey] = currentMetrics;
+        parameterSets_[currentKey] = currentSolution;
     } else {
-        currentMetrics = evaluationResults_[currentSolution];
+        currentMetrics = evaluationResults_[currentKey];
     }
     
     ParameterSet bestSolution = currentSolution;
@@ -511,19 +609,29 @@ void ImbalanceParameterTuner::runSimulatedAnnealing() {
         ParameterSet neighborSolution = currentSolution;
         
         int paramIdx = std::uniform_int_distribution<>(0, paramNames.size() - 1)(gen);
+
         std::string paramName = paramNames[paramIdx];
+        
+        // Get current value
+        double currentValue = neighborSolution.getNumericParam(paramName);
         
         // Perturb parameter within bounds
         double perturbation = std::normal_distribution<>(0.0, (paramRanges[paramIdx].second - paramRanges[paramIdx].first) * 0.1)(gen);
-        neighborSolution[paramName] += perturbation;
+        double newValue = currentValue + perturbation;
         
         // Ensure it stays within bounds
-        neighborSolution[paramName] = std::max(paramRanges[paramIdx].first, 
-                                 std::min(paramRanges[paramIdx].second, neighborSolution[paramName]));
+        newValue = std::max(paramRanges[paramIdx].first, 
+                           std::min(paramRanges[paramIdx].second, newValue));
+        
+        // Set new value
+        neighborSolution.setParameter(paramName, newValue);
+        
+        // Create key for neighbor solution
+        std::string neighborKey = createParameterKey(neighborSolution);
         
         // Evaluate neighbor
         PerformanceMetrics neighborMetrics;
-        if (evaluationResults_.find(neighborSolution) == evaluationResults_.end()) {
+        if (evaluationResults_.find(neighborKey) == evaluationResults_.end()) {
             // Release lock temporarily
             mutex_.unlock();
             
@@ -549,9 +657,10 @@ void ImbalanceParameterTuner::runSimulatedAnnealing() {
             neighborMetrics.maxDrawdown = drawdown_dist(gen);
             neighborMetrics.winRate = winrate_dist(gen);
             
-            evaluationResults_[neighborSolution] = neighborMetrics;
+            evaluationResults_[neighborKey] = neighborMetrics;
+            parameterSets_[neighborKey] = neighborSolution;
         } else {
-            neighborMetrics = evaluationResults_[neighborSolution];
+            neighborMetrics = evaluationResults_[neighborKey];
         }
         
         // Decide whether to accept neighbor
@@ -570,6 +679,7 @@ void ImbalanceParameterTuner::runSimulatedAnnealing() {
         if (accept) {
             currentSolution = neighborSolution;
             currentMetrics = neighborMetrics;
+            currentKey = neighborKey;
             
             // Update best solution if needed
             if (isBetter(currentMetrics, bestMetrics)) {
@@ -589,39 +699,5 @@ void ImbalanceParameterTuner::runSimulatedAnnealing() {
         optimizationProgress_ = static_cast<double>(iter + 1) / maxIterations;
     }
 }
-
-bool ImbalanceParameterTuner::isBetter(const PerformanceMetrics& current, const PerformanceMetrics& best) const {
-    // Primary metric for comparison: Sharpe ratio
-    if (current.sharpeRatio > best.sharpeRatio + 0.1) {
-        return true;
-    }
-    
-    // If Sharpe ratios are similar, compare other metrics
-    if (std::abs(current.sharpeRatio - best.sharpeRatio) <= 0.1) {
-        // Check total return if Sharpe is similar
-        if (current.totalReturn > best.totalReturn * 1.05) {
-            return true;
-        }
-        
-        // Check drawdown if Sharpe and return are similar
-        if (std::abs(current.totalReturn - best.totalReturn) <= best.totalReturn * 0.05 && 
-            current.maxDrawdown < best.maxDrawdown * 0.95) {
-            return true;
-        }
-    }
-    
-    return false;
-}
-
-void ImbalanceParameterTuner::updateBestParameters(const ParameterSet& params, const PerformanceMetrics& metrics) {
-    bestParameters_ = params;
-    bestMetrics_ = metrics;
-    
-    // Call the callback if registered
-    if (bestParameterCallback_) {
-        bestParameterCallback_(bestParameters_);
-    }
-}
-
 } // namespace strategy
 } // namespace trading
