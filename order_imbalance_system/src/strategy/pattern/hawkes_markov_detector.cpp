@@ -69,24 +69,24 @@
      }
  }
  
- // Get decay factor from lookup table
- double HawkesMarkovDetector::getDecayFactor(double dt, const std::string& decayType) {
-     if (dt >= config_.timeWindow) {
-         return 0.0;
-     }
-     
-     size_t idx = std::min(static_cast<size_t>(dt * 1000), expLookupShort_.size() - 1);
-     
-     if (decayType == "short") {
-         return expLookupShort_[idx];
-     } else if (decayType == "medium") {
-         return expLookupMedium_[idx];
-     } else if (decayType == "long") {
-         return expLookupLong_[idx];
-     } else {
-         return 0.0;
-     }
- }
+// Get decay factor from lookup table
+double HawkesMarkovDetector::getDecayFactor(double dt, const std::string& decayType) const {
+    if (dt >= config_.timeWindow) {
+        return 0.0;
+    }
+    
+    size_t idx = std::min(static_cast<size_t>(dt * 1000), expLookupShort_.size() - 1);
+    
+    if (decayType == "short") {
+        return expLookupShort_[idx];
+    } else if (decayType == "medium") {
+        return expLookupMedium_[idx];
+    } else if (decayType == "long") {
+        return expLookupLong_[idx];
+    } else {
+        return 0.0;
+    }
+}
  
  // Process a new order book event
  double HawkesMarkovDetector::processEvent(const OrderBookEvent& event,
@@ -287,9 +287,9 @@
      return static_cast<uint32_t>(std::distance(row.begin(), 
                                               std::max_element(row.begin(), row.end())));
  }
- 
+ double HawkesMarkovDetector::calculateHawkesIntensity(uint8_t eventType, double currentTime) const {
  // Calculate Hawkes intensity for a specific event type
- double HawkesMarkovDetector::calculateHawkesIntensity(uint8_t eventType, double currentTime) {
+//  double HawkesMarkovDetector::calculateHawkesIntensity(uint8_t eventType, double currentTime) {
      double intensity = config_.hawkesBaseIntensity;
      
      if (eventBuffer_.empty()) {

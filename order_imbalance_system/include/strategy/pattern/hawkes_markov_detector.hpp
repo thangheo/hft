@@ -136,8 +136,6 @@ public:
      * @param currentTime Current timestamp
      * @return Calculated intensity value
      */
-    double calculateHawkesIntensity(uint8_t eventType, double currentTime);
-    
     /**
      * @brief Predict the next state based on current state
      * @return Predicted next state ID
@@ -177,7 +175,7 @@ public:
      * @return True if successful, false otherwise
      */
     bool unregisterSignalCallback(size_t callbackId);
-    
+    double getDecayFactor(double dt, const std::string& decayType);
     /**
      * @brief Get the detector status
      * @return Status as a string
@@ -217,7 +215,8 @@ private:
     // Private helper methods
     uint32_t calculateMarketState(const data_ingestion::OrderBook& orderBook, 
                                  const std::vector<OrderBookEvent>& recentTrades);
-    double getDecayFactor(double dt, const std::string& decayType);
+    double calculateHawkesIntensity(uint8_t eventType, double currentTime) const;
+    double getDecayFactor(double dt, const std::string& decayType) const;
     void initializeExpLookup();
     void notifySignalCallbacks(const HawkesSignal& signal);
 };
