@@ -243,7 +243,7 @@
          
          // Add exchange-specific thresholds
          for (const auto& [exchangeId, thresholds] : exchange_thresholds_) {
-             std::string exchange_name = std::to_string(static_cast<int>(exchangeId));  // Convert ID to string
+             std::string exchange_name = exchangeId;
              
              json_data["exchange_thresholds"][exchange_name]["global_sensitivity"] = thresholds.global_sensitivity;
              
@@ -283,24 +283,42 @@
      std::lock_guard<std::mutex> lock(mutex_);
      return base_thresholds_.global_sensitivity;
  }
- //updateParameters
  void ThresholdManager::updateParameters(const ParameterSet& params) {
-     std::lock_guard<std::mutex> lock(mutex_);
-     
-     // Update parameters as needed
-     // For example, update thresholds or other configurations
-     if (params.has("global_sensitivity")) {
-         base_thresholds_.global_sensitivity = params.get<double>("global_sensitivity");
-     }
-     
-     if (params.has("volatility_factors")) {
-         volatility_factors_ = params.get<std::map<VolatilityLevel, double>>("volatility_factors");
-     }
-     
-     if (params.has("time_of_day_factors")) {
-         time_of_day_factors_ = params.get<std::map<int, double>>("time_of_day_factors");
-     }
- }    
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Update parameters as needed
+    // For example, update thresholds or other configurations
+    
+    // Use getNumericParam instead of non-existent has/get methods
+    double globalSensitivity = params.getNumericParam("global_sensitivity", base_thresholds_.global_sensitivity);
+    base_thresholds_.global_sensitivity = globalSensitivity;
+    
+    // For complex types like maps, we need a different approach since ParameterSet 
+    // doesn't directly support map types in the getters
+    auto volatilityArray = params.getArrayParam("volatility_factors");
+    if (!volatilityArray.empty() && volatilityArray.size() % 2 == 0) {
+        // Assuming the array is stored as [level1, factor1, level2, factor2, ...]
+        volatility_factors_.clear();
+        for (size_t i = 0; i < volatilityArray.size(); i += 2) {
+            VolatilityLevel level = static_cast<VolatilityLevel>(static_cast<int>(volatilityArray[i]));
+            double factor = volatilityArray[i + 1];
+            volatility_factors_[level] = factor;
+        }
+    }
+    
+    // Similar approach for time_of_day_factors
+    auto timeFactorsArray = params.getArrayParam("time_of_day_factors");
+    if (!timeFactorsArray.empty() && timeFactorsArray.size() % 2 == 0) {
+        // Assuming the array is stored as [hour1, factor1, hour2, factor2, ...]
+        time_of_day_factors_.clear();
+        for (size_t i = 0; i < timeFactorsArray.size(); i += 2) {
+            int hour = static_cast<int>(timeFactorsArray[i]);
+            double factor = timeFactorsArray[i + 1];
+            time_of_day_factors_[hour] = factor;
+        }
+    }
+}
+
  bool ThresholdManager::loadThresholds(const std::string& identifier) {
      try {
          // Read from file
@@ -343,7 +361,7 @@
          if (json_data.contains("exchange_thresholds")) {
              for (const auto& [exchange_name, exchange_json] : json_data["exchange_thresholds"].items()) {
                  // Convert string to ExchangeId
-                 ExchangeId exchangeId = static_cast<ExchangeId>(std::stoi(exchange_name));
+                 core::ExchangeId exchangeId = exchange_name; //this ExchangeId is a string, quite buggy
                  
                  ThresholdSet exchange_thresholds;
                  
