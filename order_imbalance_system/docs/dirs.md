@@ -108,7 +108,7 @@
 ./include/data_ingestion/websocket/connection_pool.hpp
 ./include/data_ingestion/websocket/client_interface.hpp
 ./include/data_ingestion/websocket/client_base.hpp
-./include/data_ingestion/websocket/websocket_client.h
+./include/data_ingestion/websocket/websocket_client.hpp
 ./include/data_ingestion/data_source_manager.hpp
 ./include/data_ingestion/exceptions.hpp
 ./include/data_ingestion/protocol

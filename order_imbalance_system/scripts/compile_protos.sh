@@ -6,24 +6,24 @@ PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
 cd "$PROJECT_ROOT"
 
 # Create output directories if they don't exist
-mkdir -p include/protos
-mkdir -p src/protos
-mkdir -p python/protos
+mkdir -p include/proto
+mkdir -p src/proto
+mkdir -p python/proto
 
-# Compile C++ protos
-for proto_file in protos/*.proto; do
+# Compile C++ proto
+for proto_file in proto/*.proto; do
   echo "Compiling C++ for $proto_file..."
-  protoc -I=protos --cpp_out=src/protos "$proto_file"
-  protoc -I=protos --cpp_out=include/protos "$proto_file"
+  protoc -I=proto --cpp_out=src/proto "$proto_file"
+  protoc -I=proto --cpp_out=include/proto "$proto_file"
 done
 
-# Compile Python protos
-for proto_file in protos/*.proto; do
+# Compile Python proto
+for proto_file in proto/*.proto; do
   echo "Compiling Python for $proto_file..."
-  protoc -I=protos --python_out=python/protos "$proto_file"
+  protoc -I=proto --python_out=python/proto "$proto_file"
 done
 
 # Create Python __init__.py
-touch python/protos/__init__.py
+touch python/proto/__init__.py
 
 echo "Protocol Buffers compilation finished!"

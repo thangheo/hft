@@ -98,7 +98,7 @@
      // Cancel all orders for the symbol
      auto results = execution_service_->cancelAllOrdersForSymbol(
          request->trading_pair(),
-         request->exchangeId()
+         request->exchangeid()
      );
      
      // Convert results to proto response
@@ -191,7 +191,7 @@
     trading::execution::models::Order order(proto_order.client_order_id());
     
     // Set basic fields
-    order.setExchangeId(proto_order.exchangeId());
+    order.setExchangeId(proto_order.exchangeid());
     order.setTradingPair(proto_order.trading_pair());
     
     // Convert side
@@ -323,7 +323,7 @@
     // Set identification fields
     proto_order.set_client_order_id(internal_order.getClientOrderId());
     proto_order.set_exchange_order_id(internal_order.getExchangeOrderId());
-    proto_order.set_exchange_id(internal_order.getExchangeId());
+    proto_order.set_exchangeid(internal_order.getExchangeId());
     proto_order.set_trading_pair(internal_order.getTradingPair());
     
     // Set side

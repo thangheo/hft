@@ -206,7 +206,7 @@ void testOrderBookCallback() {
         // assert(book.getSymbol() == Symbol{"BTC/USDT"});
         // assert(book.getSymbol().base == "btc");
         // assert(book.getSymbol().toString() == "BTC/USDT" || book.getSymbol().toString() == "btcusdt");
-        assert(book.getExchangeId() == ExchangeId::BINANCE);
+        assert(book.getExchangeId() == ExchangeId{"binance"});
         assert(book.getSequenceNumber() == 1);
     };
     

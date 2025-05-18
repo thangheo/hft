@@ -214,7 +214,7 @@
 │   │       │   ├── coinbase_client.hpp
 │   │       │   ├── exchange_connector.hpp
 │   │       │   └── ftx_connector.hpp
-│   │       └── websocket_client.h
+│   │       └── websocket_client.hpp
 │   ├── execution
 │   │   ├── algorithms
 │   │   │   ├── iceberg_algorithm.hpp
