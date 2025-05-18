@@ -77,6 +77,9 @@
      void setTypeThreshold(ImbalanceType type, const ImbalanceThreshold& threshold) {
          type_thresholds[type] = threshold;
      }
+     bool empty() const {
+         return thresholds.empty() && type_thresholds.empty();
+     }
  };
  
  } // namespace strategy

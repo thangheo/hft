@@ -63,7 +63,7 @@
      // Initialize metrics with snapshot metadata
      current_metrics_.exchangeId = exchangeId_;
      // Using the appropriate method to create a Symbol from string
-     current_metrics_.trading_pair = core::Symbol::fromString(trading_pair_); // Using factory method instead of constructor
+     current_metrics_.symbol = core::Symbol::fromString(trading_pair_); // Using factory method instead of constructor
      current_metrics_.timestamp = snapshot.getTimestamp();
      current_metrics_.sequence_number = snapshot.getSequenceNumber();
      
@@ -158,7 +158,7 @@
      current_metrics_ = OrderBookMetrics();
      current_metrics_.exchangeId = exchangeId_;
      // Using factory method to create Symbol
-     current_metrics_.trading_pair = core::Symbol::fromString(trading_pair_);
+     current_metrics_.symbol = core::Symbol::fromString(trading_pair_);
      
      // Reset timestamps
      last_update_time_ = std::chrono::system_clock::now();

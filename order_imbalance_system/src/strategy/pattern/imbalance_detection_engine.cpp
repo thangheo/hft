@@ -36,10 +36,11 @@
      // Initialize thresholds with defaults if not specified
      if (thresholds_.empty()) {
          // Set default thresholds if none provided
-         thresholds_[ImbalanceType::VOLUME_IMBALANCE] = 2.0;        // Bid/Ask volume ratio threshold
-         thresholds_[ImbalanceType::PRICE_LEVEL_IMBALANCE] = 1.5;   // Price level imbalance threshold
-         thresholds_[ImbalanceType::LIQUIDITY_FLOW_IMBALANCE] = 3.0;// Liquidity flow imbalance threshold
-         thresholds_[ImbalanceType::ABNORMAL_SPREAD] = 2.5;         // Abnormal spread threshold
+         thresholds_.setThreshold("volume_imbalance", 2.0); // Volume imbalance threshold
+         thresholds_.setThreshold("liquidity_removal", 1.5); // Liquidity removal threshold
+         thresholds_.setThreshold("price_level_imbalance", 1.5); // Price level imbalance threshold
+         thresholds_.setThreshold("abnormal_spread", 2.5); // Abnormal spread threshold
+        thresholds_.setThreshold("liquidity_flow_imbalance", 3.0); // Liquidity flow imbalance threshold
      }
      
      // Clear any existing state
@@ -154,25 +155,73 @@
      
      return status;
  }
-    // Update parameters
-    void ImbalanceDetectionEngine::updateParameters(const ParameterSet& params) {
-        std::lock_guard<std::mutex> lock(mutex_);
+   
+ void ImbalanceDetectionEngine::updateParameters(const ParameterSet& params) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Define default values for each threshold
+    const double DEFAULT_VOLUME_IMBALANCE = 2.0;
+    const double DEFAULT_PRICE_LEVEL_IMBALANCE = 1.5;
+    const double DEFAULT_LIQUIDITY_FLOW_IMBALANCE = 3.0;
+    const double DEFAULT_ABNORMAL_SPREAD = 2.5;
+    
+    // Update volume imbalance threshold
+    if (params.numeric_params.find("volume_imbalance_threshold") != params.numeric_params.end()) {
+        double threshold = params.getDouble("volume_imbalance_threshold", DEFAULT_VOLUME_IMBALANCE);
+        thresholds_.setThreshold("volume_imbalance", threshold);
         
-        // Update thresholds
-        if (params.numeric_params.find("volume_imbalance_threshold") != params.numeric_params.end()) {
-            thresholds_[ImbalanceType::VOLUME_IMBALANCE] = params.getDouble("volume_imbalance_threshold");
-        }
-        if (params.numeric_params.find("price_level_imbalance_threshold") != params.numeric_params.end()) {
-            thresholds_[ImbalanceType::PRICE_LEVEL_IMBALANCE] = params.getDouble("price_level_imbalance_threshold");
-        }
-        if (params.numeric_params.find("liquidity_flow_imbalance_threshold") != params.numeric_params.end()) {
-            thresholds_[ImbalanceType::LIQUIDITY_FLOW_IMBALANCE] = params.getDouble("liquidity_flow_imbalance_threshold");
-        }
-        if (params.numeric_params.find("abnormal_spread_threshold") != params.numeric_params.end()) {
-            thresholds_[ImbalanceType::ABNORMAL_SPREAD] = params.getDouble("abnormal_spread_threshold");
+        // If thresholds_ also has a map for ImbalanceType enum
+        if (thresholds_.type_thresholds.find(ImbalanceType::VOLUME_IMBALANCE) != thresholds_.type_thresholds.end()) {
+            ImbalanceThreshold imbalanceThreshold = thresholds_.getTypeThreshold(ImbalanceType::VOLUME_IMBALANCE);
+            imbalanceThreshold.activation_threshold = threshold;
+            thresholds_.setTypeThreshold(ImbalanceType::VOLUME_IMBALANCE, imbalanceThreshold);
         }
     }
-
+    
+    // Update price level imbalance threshold
+    if (params.numeric_params.find("price_level_imbalance_threshold") != params.numeric_params.end()) {
+        double threshold = params.getDouble("price_level_imbalance_threshold", DEFAULT_PRICE_LEVEL_IMBALANCE);
+        thresholds_.setThreshold("price_level_imbalance", threshold);
+        
+        // If thresholds_ also has a map for ImbalanceType enum
+        if (thresholds_.type_thresholds.find(ImbalanceType::PRICE_LEVEL_IMBALANCE) != thresholds_.type_thresholds.end()) {
+            ImbalanceThreshold imbalanceThreshold = thresholds_.getTypeThreshold(ImbalanceType::PRICE_LEVEL_IMBALANCE);
+            imbalanceThreshold.activation_threshold = threshold;
+            thresholds_.setTypeThreshold(ImbalanceType::PRICE_LEVEL_IMBALANCE, imbalanceThreshold);
+        }
+    }
+    
+    // Update liquidity flow imbalance threshold
+    if (params.numeric_params.find("liquidity_flow_imbalance_threshold") != params.numeric_params.end()) {
+        double threshold = params.getDouble("liquidity_flow_imbalance_threshold", DEFAULT_LIQUIDITY_FLOW_IMBALANCE);
+        thresholds_.setThreshold("liquidity_flow_imbalance", threshold);
+        
+        // If thresholds_ also has a map for ImbalanceType enum
+        if (thresholds_.type_thresholds.find(ImbalanceType::LIQUIDITY_FLOW_IMBALANCE) != thresholds_.type_thresholds.end()) {
+            ImbalanceThreshold imbalanceThreshold = thresholds_.getTypeThreshold(ImbalanceType::LIQUIDITY_FLOW_IMBALANCE);
+            imbalanceThreshold.activation_threshold = threshold;
+            thresholds_.setTypeThreshold(ImbalanceType::LIQUIDITY_FLOW_IMBALANCE, imbalanceThreshold);
+        }
+    }
+    
+    // Update abnormal spread threshold
+    if (params.numeric_params.find("abnormal_spread_threshold") != params.numeric_params.end()) {
+        double threshold = params.getDouble("abnormal_spread_threshold", DEFAULT_ABNORMAL_SPREAD);
+        thresholds_.setThreshold("abnormal_spread", threshold);
+        
+        // If thresholds_ also has a map for ImbalanceType enum
+        if (thresholds_.type_thresholds.find(ImbalanceType::ABNORMAL_SPREAD) != thresholds_.type_thresholds.end()) {
+            ImbalanceThreshold imbalanceThreshold = thresholds_.getTypeThreshold(ImbalanceType::ABNORMAL_SPREAD);
+            imbalanceThreshold.activation_threshold = threshold;
+            thresholds_.setTypeThreshold(ImbalanceType::ABNORMAL_SPREAD, imbalanceThreshold);
+        }
+    }
+    
+    // Update global sensitivity if provided
+    if (params.numeric_params.find("global_sensitivity") != params.numeric_params.end()) {
+        thresholds_.global_sensitivity = params.getDouble("global_sensitivity", 1.0);
+    }
+}
  // PRIVATE METHODS
  
  // Detect volume imbalance
@@ -197,7 +246,7 @@
      double volumeRatio = bidVolume / askVolume;
      
      // Get threshold for volume imbalance
-     double threshold = thresholds_[ImbalanceType::VOLUME_IMBALANCE];
+     double threshold = thresholds_.getTypeThreshold(ImbalanceType::VOLUME_IMBALANCE).activation_threshold;
      
      // Detect imbalance if ratio exceeds threshold or is below its inverse
      bool isImbalance = (volumeRatio >= threshold || volumeRatio <= 1.0 / threshold);
@@ -237,7 +286,8 @@
      double levelRatio = bidLevels / askLevels;
      
      // Get threshold for price level imbalance
-     double threshold = thresholds_[ImbalanceType::PRICE_LEVEL_IMBALANCE];
+     double threshold = thresholds_.getTypeThreshold(ImbalanceType::PRICE_LEVEL_IMBALANCE).activation_threshold;
+   
      
      // Detect imbalance if ratio exceeds threshold or is below its inverse
      bool isImbalance = (levelRatio >= threshold || levelRatio <= 1.0 / threshold);
@@ -280,7 +330,8 @@
      double flowImbalance = std::abs(netFlow) / totalFlow;
      
      // Get threshold for liquidity flow imbalance
-     double threshold = thresholds_[ImbalanceType::LIQUIDITY_FLOW_IMBALANCE];
+    //  double threshold = thresholds_[ImbalanceType::LIQUIDITY_FLOW_IMBALANCE];
+     double threshold = thresholds_.getTypeThreshold(ImbalanceType::LIQUIDITY_FLOW_IMBALANCE).activation_threshold;
      double normalizedThreshold = 1.0 - (1.0 / threshold); // Convert ratio threshold to 0-1 range
      
      // Detect imbalance if normalized flow exceeds threshold
@@ -321,7 +372,7 @@
      double spreadRatio = currentSpread / averageSpread;
      
      // Get threshold for abnormal spread
-     double threshold = thresholds_[ImbalanceType::ABNORMAL_SPREAD];
+     double threshold = thresholds_.getTypeThreshold(ImbalanceType::ABNORMAL_SPREAD).activation_threshold;
      
      // Detect imbalance if spread ratio exceeds threshold
      bool isImbalance = (spreadRatio >= threshold);
@@ -510,7 +561,7 @@
      event.detectionTime = std::chrono::system_clock::now();
      event.exchangeId = metrics.exchangeId;
      event.symbol = metrics.symbol;
-     event.confidence = calculateImbalanceConfidence(type, strength, metrics);
+     event.confidence = static_cast<trading::core::ConfidenceLevel>(calculateImbalanceConfidence(type, strength, metrics));
      event.eventId = generateEventId();
      
      // Copy relevant metrics
@@ -553,7 +604,7 @@
  // Calculate confidence level for an imbalance event
  double ImbalanceDetectionEngine::calculateImbalanceConfidence(ImbalanceType type, double strength, const OrderBookMetrics& metrics) {
      // Base confidence on the strength relative to the threshold
-     double threshold = thresholds_[type];
+     double threshold = thresholds_.getTypeThreshold(type).activation_threshold;
      double ratio = strength / threshold;
      
      // Cap ratio at 3.0 for normalization
