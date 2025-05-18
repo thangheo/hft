@@ -25,7 +25,7 @@
       double totalReturn;     // Total return
      double maxDrawdown;    // Maximum drawdown
      double winRate;        // Win rate (percentage)
-     double profit_factor;   // Profit factor (gross profit / gross loss)
+     double profitFactor;   // Profit factor (gross profit / gross loss)
      int trade_count;        // Number of trades
      double avg_trade_pnl;   // Average P&L per trade
       double volatility;      // Volatility of returns
@@ -40,7 +40,7 @@
      // Default constructor with zeroed metrics
      PerformanceMetrics()
          : pnl(0.0), sharpeRatio(0.0), maxDrawdown(0.0),
-           winRate(0.0), profit_factor(0.0), trade_count(0), avg_trade_pnl(0.0) {}
+           winRate(0.0), profitFactor(0.0), trade_count(0), avg_trade_pnl(0.0) {}
  };
  
 /**

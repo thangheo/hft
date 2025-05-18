@@ -16,7 +16,7 @@ enum class ImbalanceType;
  */
 struct TypePerformanceMetrics {
     double accuracy;           // Ratio of correct signals (0.0-1.0)
-    double profit_factor;      // Ratio of profits to losses
+    double profitFactor;      // Ratio of profits to losses
     double avg_return;         // Average return per signal
     double maxDrawdown;       // Maximum drawdown
     int signal_count;          // Number of signals generated
@@ -92,7 +92,7 @@ private:
         
         for (const auto& [type, metrics] : typePerformance) {
             total_accuracy += metrics.accuracy * metrics.signal_count;
-            total_profit_factor += metrics.profit_factor * metrics.signal_count;
+            total_profit_factor += metrics.profitFactor * metrics.signal_count;
             totalReturn += metrics.avg_return * metrics.signal_count;
             signal_count += metrics.signal_count;
         }

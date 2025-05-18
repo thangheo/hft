@@ -381,7 +381,7 @@
      // Calculate trades metrics if provided
      if (!pnl_series.empty()) {
          metrics.winRate = calculateWinRate(returns);
-         metrics.profit_factor = calculateProfitFactor(returns);
+         metrics.profitFactor = calculateProfitFactor(returns);
      }
      
      // Calculate benchmark metrics if provided
