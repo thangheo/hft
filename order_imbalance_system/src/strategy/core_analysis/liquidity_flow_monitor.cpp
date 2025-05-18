@@ -16,10 +16,10 @@
  namespace strategy {
  
  LiquidityFlowMonitor::LiquidityFlowMonitor(
-     const std::string& exchange_id, 
+     const std::string& exchangeId, 
      const std::string& trading_pair, 
      const ParameterSet& params)
-     : exchange_id_(exchange_id),
+     : exchangeId_(exchangeId),
        trading_pair_(trading_pair),
        large_order_threshold_(params.getDouble("large_order_threshold", 5.0)),
        history_window_seconds_(params.getInt("history_window_seconds", 60)),
@@ -28,28 +28,28 @@
        last_sequence_number_(0) {
      
      // Initialize metrics
-     current_metrics_.exchange_id = exchange_id;
+     current_metrics_.exchangeId = exchangeId;
      current_metrics_.trading_pair = trading_pair;
      current_metrics_.timestamp = std::chrono::system_clock::now();
  }
  LiquidityFlowMonitor::LiquidityFlowMonitor(const LiquidityFlowConfig& config)
-    : LiquidityFlowMonitor(config.exchange_id, config.trading_pair, config.params)
+    : LiquidityFlowMonitor(config.exchangeId, config.trading_pair, config.params)
 {
     // Initialize with config
     large_order_threshold_ = config.largeOrderThreshold;
     history_window_seconds_ = config.historyWindowSeconds;
     
     // Initialize metrics
-    current_metrics_.exchange_id = config.exchange_id;
+    current_metrics_.exchangeId = config.exchangeId;
     current_metrics_.trading_pair = config.trading_pair;
     current_metrics_.timestamp = std::chrono::system_clock::now();
 }
  LiquidityFlowMonitor::LiquidityFlowMonitor(
-     const std::string& exchange_id, 
+     const std::string& exchangeId, 
      const std::string& trading_pair, 
      double large_order_threshold, 
      int history_window_seconds)
-     : exchange_id_(exchange_id),
+     : exchangeId_(exchangeId),
        trading_pair_(trading_pair),
        large_order_threshold_(large_order_threshold),
        history_window_seconds_(history_window_seconds),
@@ -58,7 +58,7 @@
        last_sequence_number_(0) {
      
      // Initialize metrics
-     current_metrics_.exchange_id = exchange_id;
+     current_metrics_.exchangeId = exchangeId;
      current_metrics_.trading_pair = trading_pair;
      current_metrics_.timestamp = std::chrono::system_clock::now();
  }
@@ -252,7 +252,7 @@ void LiquidityFlowMonitor::reset() {
     
     // Reset metrics
     current_metrics_ = LiquidityMetrics();
-    current_metrics_.exchange_id = exchange_id_;
+    current_metrics_.exchangeId = exchangeId_;
     current_metrics_.trading_pair = trading_pair_;
     current_metrics_.timestamp = std::chrono::system_clock::now();
     
@@ -271,7 +271,7 @@ void LiquidityFlowMonitor::reset() {
      uint64_t sequence_number) {
      
      OrderBookDelta delta;
-     delta.exchange_id = exchange_id_;
+     delta.exchangeId = exchangeId_;
      delta.trading_pair = trading_pair_;
      delta.timestamp = timestamp;
      delta.sequence_number = sequence_number;
@@ -454,7 +454,7 @@ std::vector<LiquidityEvent> LiquidityFlowMonitor::detectRapidLiquidityChanges(
         
         events.emplace_back(
             LiquidityEvent::Type::RAPID_LIQUIDITY_ADDITION,
-            exchange_id_,
+            exchangeId_,
             trading_pair_,
             latest_delta.timestamp,
             core::Direction::BUY,
@@ -481,7 +481,7 @@ std::vector<LiquidityEvent> LiquidityFlowMonitor::detectRapidLiquidityChanges(
         
         events.emplace_back(
             LiquidityEvent::Type::RAPID_LIQUIDITY_ADDITION,
-            exchange_id_,
+            exchangeId_,
             trading_pair_,
             latest_delta.timestamp,
             core::Direction::SELL,
@@ -508,7 +508,7 @@ std::vector<LiquidityEvent> LiquidityFlowMonitor::detectRapidLiquidityChanges(
         
         events.emplace_back(
             LiquidityEvent::Type::RAPID_LIQUIDITY_REMOVAL,
-            exchange_id_,
+            exchangeId_,
             trading_pair_,
             latest_delta.timestamp,
             core::Direction::SELL, // Removing bids often signals selling pressure
@@ -535,7 +535,7 @@ std::vector<LiquidityEvent> LiquidityFlowMonitor::detectRapidLiquidityChanges(
         
         events.emplace_back(
             LiquidityEvent::Type::RAPID_LIQUIDITY_REMOVAL,
-            exchange_id_,
+            exchangeId_,
             trading_pair_,
             latest_delta.timestamp,
             core::Direction::BUY, // Removing asks often signals buying pressure
@@ -660,7 +660,7 @@ std::vector<LiquidityEvent> LiquidityFlowMonitor::detectSpreadChanges(
         
         events.emplace_back(
             event_type,
-            exchange_id_,
+            exchangeId_,
             trading_pair_,
             recent_books.back().get().getTimestamp(),
             direction,
@@ -690,7 +690,7 @@ std::vector<LiquidityEvent> LiquidityFlowMonitor::detectLiquidityImbalances(
         
         events.emplace_back(
             LiquidityEvent::Type::LIQUIDITY_IMBALANCE,
-            exchange_id_,
+            exchangeId_,
             trading_pair_,
             std::chrono::system_clock::now(),
             direction,
@@ -867,11 +867,11 @@ double LiquidityFlowMonitor::calculateTypicalOrderSize() const {
 }
 
 std::shared_ptr<LiquidityFlowMonitor> createLiquidityFlowMonitor(
-    const std::string& exchange_id, 
+    const std::string& exchangeId, 
     const std::string& trading_pair,
     const ParameterSet& params) {
     
-    return std::make_shared<LiquidityFlowMonitor>(exchange_id, trading_pair, params);
+    return std::make_shared<LiquidityFlowMonitor>(exchangeId, trading_pair, params);
 }
 
 } // namespace strategy

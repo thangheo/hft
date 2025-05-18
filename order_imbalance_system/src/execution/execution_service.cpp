@@ -142,8 +142,8 @@
     
     auto order_ptr = std::make_shared<models::Order>(order);
     RoutingResult routing_result = smart_order_router_->routeOrder(order_ptr);
-    std::string exchange_id = routing_result.exchange_id;
-    if (exchange_id.empty()) {
+    std::string exchangeId = routing_result.exchangeId;
+    if (exchangeId.empty()) {
         return ExecutionResponse{
             order.getClientOrderId(), "", false, 
             "No suitable exchange found",  
@@ -169,7 +169,7 @@
     exchange_order->setExpiryTime(order.getExpiryTime());
     exchange_order->setStrategyId(order.getStrategyId());
     exchange_order->setSignalId(order.getSignalId());
-    exchange_order->setExchangeId(exchange_id);
+    exchange_order->setExchangeId(exchangeId);
     exchange_order->setExchangeOrderId(order.getExchangeOrderId());
     exchange_order->setState(order.getState());
     // exchange_order->setExtraParam(order.getExtraParams());
@@ -178,7 +178,7 @@
     order_lifecycle_tracker_->addOrder(*exchange_order);
     
     // Get the exchange API client
-    auto api_client = api_client_manager_->getClient(exchange_id);
+    auto api_client = api_client_manager_->getClient(exchangeId);
     if (!api_client) {
         order_lifecycle_tracker_->updateOrderState(
             exchange_order->getClientOrderId(), 
@@ -379,7 +379,7 @@ std::string ExecutionService::orderStateToString(models::OrderState state) {
  
  CancelResponse ExecutionService::cancelOrderByExchangeId(
      const std::string& exchange_order_id, 
-     const std::string& exchange_id) {
+     const std::string& exchangeId) {
      
      // Validate service state
      if (!is_running_) {
@@ -391,7 +391,7 @@ std::string ExecutionService::orderStateToString(models::OrderState state) {
      }
      
      // Get client order ID from exchange order ID
-     auto client_order_id = order_lifecycle_tracker_->getClientOrderId(exchange_order_id, exchange_id);
+     auto client_order_id = order_lifecycle_tracker_->getClientOrderId(exchange_order_id, exchangeId);
      if (client_order_id.empty()) {
          return CancelResponse{
              "", exchange_order_id, false, 
@@ -406,7 +406,7 @@ std::string ExecutionService::orderStateToString(models::OrderState state) {
   
     std::vector<CancelResponse> ExecutionService::cancelAllOrdersForSymbol(
     const std::string& trading_pair,
-    const std::string& exchange_id) {
+    const std::string& exchangeId) {
     
     std::vector<CancelResponse> responses;
     
@@ -429,7 +429,7 @@ std::string ExecutionService::orderStateToString(models::OrderState state) {
     // Filter by trading pair and exchange if needed
     for (const auto& order : all_active_orders) {
         if (order->getTradingPair() == trading_pair) {
-            if (exchange_id.empty() || order->getExchangeId() == exchange_id) {
+            if (exchangeId.empty() || order->getExchangeId() == exchangeId) {
                 active_orders.push_back(order);
             }
         }
@@ -443,8 +443,8 @@ std::string ExecutionService::orderStateToString(models::OrderState state) {
     // If no orders were found, add a response indicating that
     if (responses.empty()) {
         std::string message = "No active orders found for " + trading_pair;
-        if (!exchange_id.empty()) {
-            message += " on exchange " + exchange_id;
+        if (!exchangeId.empty()) {
+            message += " on exchange " + exchangeId;
         }
         
         responses.push_back(CancelResponse{
@@ -570,14 +570,14 @@ OrderStatusResponse ExecutionService::getOrderStatus(const std::string& client_o
     
     // Select the best exchange
     RoutingResult routing_result = smart_order_router_->selectExchange(order);
-    std::string exchange_id = routing_result.exchange_id;
-    if (exchange_id.empty()) {
+    std::string exchangeId = routing_result.exchangeId;
+    if (exchangeId.empty()) {
         // logger_->error("No suitable exchange found for order generation");
         throw std::runtime_error("No suitable exchange found for order generation");
     }
     
     // Set exchange ID
-    order->setExchangeId(exchange_id);
+    order->setExchangeId(exchangeId);
     
     // Create a shared pointer to the order for the selector
     // auto order_ptr = std::make_shared<models::Order> (order);
@@ -650,7 +650,7 @@ ExecutionResponse ExecutionService::executeOrderWithAlgorithm(const models::Orde
     
     // Create algorithm parameters
     auto params = std::make_shared<DefaultAlgorithmParams>();
-    params->exchange_id = order.getExchangeId();
+    params->exchangeId = order.getExchangeId();
     params->trading_pair = order.getTradingPair();
     params->side = order.getSide();
     params->order_type = order.getType();

@@ -210,11 +210,11 @@ void AdaptiveMechanism::applyParameterDrift() {
     size_t halfPoint = performanceHistory_.size() / 2;
     
     for (size_t i = halfPoint; i < performanceHistory_.size(); ++i) {
-        recentSharpeAvg += performanceHistory_[i].sharpe_ratio;
+        recentSharpeAvg += performanceHistory_[i].sharpeRatio;
     }
     
     for (size_t i = 0; i < halfPoint; ++i) {
-        olderSharpeAvg += performanceHistory_[i].sharpe_ratio;
+        olderSharpeAvg += performanceHistory_[i].sharpeRatio;
     }
     
     recentSharpeAvg /= (performanceHistory_.size() - halfPoint);
@@ -377,13 +377,13 @@ void AdaptiveMechanism::applyAntiFragility() {
     
     double meanSharpe = 0.0;
     for (const auto& perf : performanceHistory_) {
-        meanSharpe += perf.sharpe_ratio;
+        meanSharpe += perf.sharpeRatio;
     }
     meanSharpe /= performanceHistory_.size();
     
     double varianceSharpe = 0.0;
     for (const auto& perf : performanceHistory_) {
-        double diff = perf.sharpe_ratio - meanSharpe;
+        double diff = perf.sharpeRatio - meanSharpe;
         varianceSharpe += diff * diff;
     }
     varianceSharpe /= performanceHistory_.size();
@@ -477,11 +477,11 @@ bool AdaptiveMechanism::isAdaptationNeeded() const {
         size_t halfPoint = performanceHistory_.size() / 2;
         
         for (size_t i = halfPoint; i < performanceHistory_.size(); ++i) {
-            recentPerf += performanceHistory_[i].sharpe_ratio;
+            recentPerf += performanceHistory_[i].sharpeRatio;
         }
         
         for (size_t i = 0; i < halfPoint; ++i) {
-            earlierPerf += performanceHistory_[i].sharpe_ratio;
+            earlierPerf += performanceHistory_[i].sharpeRatio;
         }
         
         recentPerf /= (performanceHistory_.size() - halfPoint);
@@ -521,12 +521,13 @@ void AdaptiveMechanism::checkForFailedAdaptation() {
     
     for (const auto& perf : performanceHistory_) {
         // Convert timestamp to time_point
-        auto perfTime = std::chrono::system_clock::from_time_t(perf.timestamp);
-        
+        // auto perfTime = std::chrono::system_clock::from_time_t(perf.timestamp);
+        //  std::chrono::system_clock::time_point timestamp; // Timestamp of the metrics
+        auto perfTime = perf.timestamp;
         if (perfTime < status_.lastAdaptationTime) {
-            beforeSharpe.push_back(perf.sharpe_ratio);
+            beforeSharpe.push_back(perf.sharpeRatio);
         } else {
-            afterSharpe.push_back(perf.sharpe_ratio);
+            afterSharpe.push_back(perf.sharpeRatio);
         }
     }
     

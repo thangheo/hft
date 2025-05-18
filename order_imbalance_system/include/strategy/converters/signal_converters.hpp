@@ -48,7 +48,7 @@
      for (const auto& [key, value] : signal.signal_metrics) {
          // Only copy specific metrics to avoid cluttering
          if (key == "confidence" || key == "expected_profit" || 
-             key == "max_drawdown" || key == "win_probability") {
+             key == "maxDrawdown" || key == "win_probability") {
              exec_signal.signal_metrics[key] = value;
          }
      }

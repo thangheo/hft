@@ -53,11 +53,11 @@ void example() {
     RoutingResult routing = router.routeOrder(order);
     
     // Apply routing result
-    if (!routing.exchange_id.empty()) {
-        order->setExchangeId(routing.exchange_id);
+    if (!routing.exchangeId.empty()) {
+        order->setExchangeId(routing.exchangeId);
         
         // Now the order is ready to be sent to the exchange
-        std::cout << "Order routed to " << routing.exchange_id 
+        std::cout << "Order routed to " << routing.exchangeId 
                   << " with type " << static_cast<int>(order->getType())
                   << " and price " << order->getPrice() << std::endl;
     } else {

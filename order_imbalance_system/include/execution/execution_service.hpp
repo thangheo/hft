@@ -121,21 +121,21 @@ public:
      * @brief Cancel an order by exchange order ID
      * 
      * @param exchange_order_id The exchange order ID to cancel
-     * @param exchange_id The exchange ID
+     * @param exchangeId The exchange ID
      * @return CancelResponse containing cancellation status and details
      */
     CancelResponse cancelOrderByExchangeId(const std::string& exchange_order_id, 
-                                          const std::string& exchange_id);
+                                          const std::string& exchangeId);
     
     /**
      * @brief Cancel all orders for a trading pair
      * 
      * @param trading_pair The trading pair
-     * @param exchange_id Optional exchange ID to filter by
+     * @param exchangeId Optional exchange ID to filter by
      * @return Vector of CancelResponse for each order
      */
     std::vector<CancelResponse> cancelAllOrdersForSymbol(const std::string& trading_pair,
-                                                        const std::string& exchange_id = "");
+                                                        const std::string& exchangeId = "");
     
     /**
      * @brief Get order status

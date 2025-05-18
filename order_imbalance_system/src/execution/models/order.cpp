@@ -36,7 +36,7 @@ Order::Order(const Order& other) {
     
     order_id_ = other.order_id_;
     client_order_id_ = other.client_order_id_;
-    exchange_id_ = other.exchange_id_;
+    exchangeId_ = other.exchangeId_;
     exchange_order_id_ = other.exchange_order_id_;
     trading_pair_ = other.trading_pair_;
     side_ = other.side_;
@@ -102,7 +102,7 @@ const std::string& Order::getClientOrderId() const {
 
 const std::string& Order::getExchangeId() const {
     std::lock_guard<std::mutex> lock(mutex_);
-    return exchange_id_;
+    return exchangeId_;
 }
 
 const std::string& Order::getExchangeOrderId() const {
@@ -219,9 +219,9 @@ void Order::setClientOrderId(const std::string& client_order_id) {
     client_order_id_ = client_order_id;
     updated_at_ = std::chrono::system_clock::now();
 }
-void Order::setExchangeId(const std::string& exchange_id) {
+void Order::setExchangeId(const std::string& exchangeId) {
     std::lock_guard<std::mutex> lock(mutex_);
-    exchange_id_ = exchange_id;
+    exchangeId_ = exchangeId;
     updated_at_ = std::chrono::system_clock::now();
 }
 
@@ -461,7 +461,7 @@ std::string Order::toString() const {
     std::ostringstream oss;
     oss << "Order[id=" << order_id_ 
         << ", clientId=" << client_order_id_
-        << ", exchange=" << exchange_id_
+        << ", exchange=" << exchangeId_
         << ", exchangeOrderId=" << exchange_order_id_
         << ", pair=" << trading_pair_
         << ", side=" << (side_ == OrderSide::BUY ? "BUY" : "SELL")

@@ -14,7 +14,7 @@ namespace execution {
  * Exchange information used for routing decisions
  */
 struct ExchangeInfo {
-    std::string exchange_id;
+    std::string exchangeId;
     double trading_fee;
     double liquidity_score;
     double latency_ms;
@@ -37,7 +37,7 @@ struct RoutingFactors {
  * Result of the routing decision
  */
 struct RoutingResult {
-    std::string exchange_id;
+    std::string exchangeId;
     double score;
     std::string reason;
 };
@@ -62,7 +62,7 @@ public:
     RoutingResult routeOrder(const models::OrderPtr& order) const;
     
     // Route an order to a specific exchange
-    bool routeToExchange(models::OrderPtr& order, const std::string& exchange_id) const;
+    bool routeToExchange(models::OrderPtr& order, const std::string& exchangeId) const;
     
     // Get available exchanges for a trading pair
     std::vector<std::string> getAvailableExchanges(const std::string& trading_pair) const;

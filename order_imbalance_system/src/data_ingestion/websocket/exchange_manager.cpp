@@ -153,7 +153,7 @@ bool ExchangeManager::subscribe(const std::vector<std::string>& trading_pairs,
         if (success) {
             // Store the subscription request
             SubscriptionRequest request;
-            request.exchange_id = "binance";
+            request.exchangeId = "binance";
             request.trading_pairs = trading_pairs;
             request.data_types = data_types;
             request.depth = depth;

@@ -15,9 +15,9 @@
  namespace trading {
  namespace strategy {
  
- OrderBookAnalyzer::OrderBookAnalyzer(const std::string& exchange_id, const std::string& trading_pair,
+ OrderBookAnalyzer::OrderBookAnalyzer(const std::string& exchangeId, const std::string& trading_pair,
                                     const ParameterSet& params)
-     : exchange_id_(exchange_id),
+     : exchangeId_(exchangeId),
        trading_pair_(trading_pair),
        depth_levels_(params.getInt("depth_levels", 10)),
        price_grouping_factor_(params.getDouble("price_grouping_factor", 0.0001)),
@@ -31,9 +31,9 @@
      historical_imbalances_.reserve(100);
  }
  
- OrderBookAnalyzer::OrderBookAnalyzer(const std::string& exchange_id, const std::string& trading_pair,
+ OrderBookAnalyzer::OrderBookAnalyzer(const std::string& exchangeId, const std::string& trading_pair,
                                     int depth_levels, double price_grouping_factor)
-     : exchange_id_(exchange_id),
+     : exchangeId_(exchangeId),
        trading_pair_(trading_pair),
        depth_levels_(depth_levels),
        price_grouping_factor_(price_grouping_factor),
@@ -61,7 +61,7 @@
      }
      
      // Initialize metrics with snapshot metadata
-     current_metrics_.exchange_id = exchange_id_;
+     current_metrics_.exchangeId = exchangeId_;
      // Using the appropriate method to create a Symbol from string
      current_metrics_.trading_pair = core::Symbol::fromString(trading_pair_); // Using factory method instead of constructor
      current_metrics_.timestamp = snapshot.getTimestamp();
@@ -156,7 +156,7 @@
      
      // Reset current metrics to defaults
      current_metrics_ = OrderBookMetrics();
-     current_metrics_.exchange_id = exchange_id_;
+     current_metrics_.exchangeId = exchangeId_;
      // Using factory method to create Symbol
      current_metrics_.trading_pair = core::Symbol::fromString(trading_pair_);
      
@@ -635,11 +635,11 @@
  }
  
  std::shared_ptr<OrderBookAnalyzer> createOrderBookAnalyzer(
-     const std::string& exchange_id, 
+     const std::string& exchangeId, 
      const std::string& trading_pair,
      const ParameterSet& params) {
      
-     return std::make_shared<OrderBookAnalyzer>(exchange_id, trading_pair, params);
+     return std::make_shared<OrderBookAnalyzer>(exchangeId, trading_pair, params);
  }
  //updateParameters function
 void OrderBookAnalyzer::updateParameters(const ParameterSet& params) {

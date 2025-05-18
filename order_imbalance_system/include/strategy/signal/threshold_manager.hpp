@@ -56,17 +56,17 @@ public:
     
     /**
      * @brief Get thresholds for a specific exchange
-     * @param exchange_id Exchange identifier
+     * @param exchangeId Exchange identifier
      * @return Exchange-specific thresholds
      */
-    ThresholdSet getExchangeThresholds(const ExchangeId& exchange_id);
+    ThresholdSet getExchangeThresholds(const ExchangeId& exchangeId);
     
     /**
      * @brief Set exchange-specific thresholds
-     * @param exchange_id Exchange identifier
+     * @param exchangeId Exchange identifier
      * @param thresholds Threshold set for this exchange
      */
-    void setExchangeThresholds(const ExchangeId& exchange_id, const ThresholdSet& thresholds);
+    void setExchangeThresholds(const ExchangeId& exchangeId, const ThresholdSet& thresholds);
     
     /**
      * @brief Set volatility adjustment factors

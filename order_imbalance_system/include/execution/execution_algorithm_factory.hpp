@@ -40,7 +40,7 @@ struct AlgorithmParams {
  * Default algorithm parameters with basic trading information
  */
 struct DefaultAlgorithmParams : public AlgorithmParams {
-    std::string exchange_id;
+    std::string exchangeId;
     std::string trading_pair;
     models::OrderSide side;
     models::OrderType order_type;

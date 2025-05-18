@@ -21,7 +21,7 @@ void signalHandler(int signal) {
 // Market data callback function
 void onMarketData(const MarketDataUpdate& update) {
     std::cout << "Received " << update.update_type << " update from " 
-              << update.exchange_id << " for " << update.trading_pair << std::endl;
+              << update.exchangeId << " for " << update.trading_pair << std::endl;
     
     // Print the first few bytes of the data for debugging
     size_t print_size = std::min(size_t(50), update.data.size());

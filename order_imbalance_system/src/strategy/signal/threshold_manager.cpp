@@ -127,11 +127,11 @@
      base_thresholds_ = base_thresholds;
  }
  
- ThresholdSet ThresholdManager::getExchangeThresholds(const ExchangeId& exchange_id) {
+ ThresholdSet ThresholdManager::getExchangeThresholds(const ExchangeId& exchangeId) {
      std::lock_guard<std::mutex> lock(mutex_);
      
      // Check if we have exchange-specific thresholds
-     auto it = exchange_thresholds_.find(exchange_id);
+     auto it = exchange_thresholds_.find(exchangeId);
      if (it != exchange_thresholds_.end()) {
          // Start with exchange-specific base thresholds
          ThresholdSet current = it->second;
@@ -151,9 +151,9 @@
      return getCurrentThresholds();
  }
  
- void ThresholdManager::setExchangeThresholds(const ExchangeId& exchange_id, const ThresholdSet& thresholds) {
+ void ThresholdManager::setExchangeThresholds(const ExchangeId& exchangeId, const ThresholdSet& thresholds) {
      std::lock_guard<std::mutex> lock(mutex_);
-     exchange_thresholds_[exchange_id] = thresholds;
+     exchange_thresholds_[exchangeId] = thresholds;
  }
  
  void ThresholdManager::setVolatilityFactors(const std::map<VolatilityLevel, double>& factors) {
@@ -242,8 +242,8 @@
          }
          
          // Add exchange-specific thresholds
-         for (const auto& [exchange_id, thresholds] : exchange_thresholds_) {
-             std::string exchange_name = std::to_string(static_cast<int>(exchange_id));  // Convert ID to string
+         for (const auto& [exchangeId, thresholds] : exchange_thresholds_) {
+             std::string exchange_name = std::to_string(static_cast<int>(exchangeId));  // Convert ID to string
              
              json_data["exchange_thresholds"][exchange_name]["global_sensitivity"] = thresholds.global_sensitivity;
              
@@ -343,7 +343,7 @@
          if (json_data.contains("exchange_thresholds")) {
              for (const auto& [exchange_name, exchange_json] : json_data["exchange_thresholds"].items()) {
                  // Convert string to ExchangeId
-                 ExchangeId exchange_id = static_cast<ExchangeId>(std::stoi(exchange_name));
+                 ExchangeId exchangeId = static_cast<ExchangeId>(std::stoi(exchange_name));
                  
                  ThresholdSet exchange_thresholds;
                  
@@ -365,7 +365,7 @@
                     }
                 }
                 
-                exchange_thresholds_[exchange_id] = exchange_thresholds;
+                exchange_thresholds_[exchangeId] = exchange_thresholds;
             }
         }
         

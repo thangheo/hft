@@ -36,7 +36,7 @@
   * Market state information
   */
  struct MarketState {
-    std::string exchange_id;               // Exchange identifier
+    std::string exchangeId;               // Exchange identifier
     std::string trading_pair;              // Trading pair
     core::Timestamp timestamp;                   // Timestamp of this state
     double trendStrength;                // Trend strength (0-1)
@@ -49,13 +49,13 @@
     
     // Default constructor
     MarketState()
-        : exchange_id(""), trading_pair(""), timestamp(std::chrono::system_clock::now()),
+        : exchangeId(""), trading_pair(""), timestamp(std::chrono::system_clock::now()),
           price(0.0), volatility(0.0), volume_24h(0.0), price_change_24h(0.0),
           market_regime("unknown") {}
     
     // Constructor with exchange and trading pair
     MarketState(const std::string& exchange, const std::string& pair)
-        : exchange_id(exchange), trading_pair(pair), timestamp(std::chrono::system_clock::now()),
+        : exchangeId(exchange), trading_pair(pair), timestamp(std::chrono::system_clock::now()),
           price(0.0), volatility(0.0), volume_24h(0.0), price_change_24h(0.0),
           market_regime("unknown") {}
 };
@@ -191,9 +191,9 @@
  }
 
 // Add to market_types.hpp (replace the existing functions)
-inline std::string exchangeIdToString(const ExchangeId& exchange_id) {
+inline std::string exchangeIdToString(const ExchangeId& exchangeId) {
     // ExchangeId is already a string, so just return it
-    return exchange_id;
+    return exchangeId;
 }
 
 inline ExchangeId exchangeIdFromString(const std::string& str) {

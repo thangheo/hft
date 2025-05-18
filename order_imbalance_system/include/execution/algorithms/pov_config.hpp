@@ -28,7 +28,7 @@ struct PovConfig {
     double urgency_factor = 1.0;         // Factor to adjust participation rate (higher = more urgent)
     double deviation_pct = 0.0;          // Allowed deviation from participation rate
     
-    std::string exchange_id;             // Optional exchange ID
+    std::string exchangeId;             // Optional exchange ID
 };
 
 } // namespace algorithms

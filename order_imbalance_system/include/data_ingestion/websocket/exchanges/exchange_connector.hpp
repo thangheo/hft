@@ -20,14 +20,14 @@ enum class DataType {
 };
 
 struct SubscriptionRequest {
-    std::string exchange_id;
+    std::string exchangeId;
     std::vector<std::string> trading_pairs;
     std::vector<DataType> data_types;
     int32_t depth;  // For order book subscriptions
 };
 
 // struct MarketDataUpdate {
-//     std::string exchange_id;
+//     std::string exchangeId;
 //     std::string trading_pair;
 //     std::string update_type;
 //     int64_t exchange_timestamp;
@@ -40,7 +40,7 @@ using MarketDataCallback = std::function<void(const MarketDataUpdate&)>;
 
 class ExchangeConnector {
 public:
-    ExchangeConnector(const std::string& exchange_id, 
+    ExchangeConnector(const std::string& exchangeId, 
                       MarketDataCallback callback);
     virtual ~ExchangeConnector() = default;
     
@@ -57,7 +57,7 @@ public:
     virtual bool isConnected() const { return connected_; }
     
     // Get exchange identifier
-    std::string getExchangeId() const { return exchange_id_; }
+    std::string getExchangeId() const { return exchangeId_; }
     
     // Get the last error
     std::string getLastError() const;
@@ -70,7 +70,7 @@ public:
     static std::string dataTypeToString(DataType type);
     
 protected:
-    std::string exchange_id_;
+    std::string exchangeId_;
     MarketDataCallback data_callback_;
     bool connected_;
     

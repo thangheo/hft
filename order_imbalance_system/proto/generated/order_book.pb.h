@@ -815,14 +815,14 @@ class OrderBookUpdate final :
   const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::data_ingestion::proto::PriceLevel >&
       asks() const;
 
-  // string exchange_id = 1;
+  // string exchangeId = 1;
   void clear_exchange_id();
-  const std::string& exchange_id() const;
+  const std::string& exchangeId() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
   void set_exchange_id(ArgT0&& arg0, ArgT... args);
   std::string* mutable_exchange_id();
   PROTOBUF_NODISCARD std::string* release_exchange_id();
-  void set_allocated_exchange_id(std::string* exchange_id);
+  void set_allocated_exchange_id(std::string* exchangeId);
   private:
   const std::string& _internal_exchange_id() const;
   inline PROTOBUF_ALWAYS_INLINE void _internal_set_exchange_id(const std::string& value);
@@ -921,7 +921,7 @@ class OrderBookUpdate final :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::data_ingestion::proto::PriceLevel > bids_;
     ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::data_ingestion::proto::PriceLevel > asks_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr exchange_id_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr exchangeId_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr trading_pair_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr checksum_;
     ::trading::data_ingestion::proto::OrderBookUpdate_Metadata* metadata_;
@@ -1840,54 +1840,54 @@ inline void OrderBookUpdate_Metadata::set_allocated_compression_algorithm(std::s
 
 // OrderBookUpdate
 
-// string exchange_id = 1;
+// string exchangeId = 1;
 inline void OrderBookUpdate::clear_exchange_id() {
-  _impl_.exchange_id_.ClearToEmpty();
+  _impl_.exchangeId_.ClearToEmpty();
 }
-inline const std::string& OrderBookUpdate::exchange_id() const {
-  // @@protoc_insertion_point(field_get:trading.data_ingestion.proto.OrderBookUpdate.exchange_id)
+inline const std::string& OrderBookUpdate::exchangeId() const {
+  // @@protoc_insertion_point(field_get:trading.data_ingestion.proto.OrderBookUpdate.exchangeId)
   return _internal_exchange_id();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
 void OrderBookUpdate::set_exchange_id(ArgT0&& arg0, ArgT... args) {
  
- _impl_.exchange_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.data_ingestion.proto.OrderBookUpdate.exchange_id)
+ _impl_.exchangeId_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:trading.data_ingestion.proto.OrderBookUpdate.exchangeId)
 }
 inline std::string* OrderBookUpdate::mutable_exchange_id() {
   std::string* _s = _internal_mutable_exchange_id();
-  // @@protoc_insertion_point(field_mutable:trading.data_ingestion.proto.OrderBookUpdate.exchange_id)
+  // @@protoc_insertion_point(field_mutable:trading.data_ingestion.proto.OrderBookUpdate.exchangeId)
   return _s;
 }
 inline const std::string& OrderBookUpdate::_internal_exchange_id() const {
-  return _impl_.exchange_id_.Get();
+  return _impl_.exchangeId_.Get();
 }
 inline void OrderBookUpdate::_internal_set_exchange_id(const std::string& value) {
   
-  _impl_.exchange_id_.Set(value, GetArenaForAllocation());
+  _impl_.exchangeId_.Set(value, GetArenaForAllocation());
 }
 inline std::string* OrderBookUpdate::_internal_mutable_exchange_id() {
   
-  return _impl_.exchange_id_.Mutable(GetArenaForAllocation());
+  return _impl_.exchangeId_.Mutable(GetArenaForAllocation());
 }
 inline std::string* OrderBookUpdate::release_exchange_id() {
-  // @@protoc_insertion_point(field_release:trading.data_ingestion.proto.OrderBookUpdate.exchange_id)
-  return _impl_.exchange_id_.Release();
+  // @@protoc_insertion_point(field_release:trading.data_ingestion.proto.OrderBookUpdate.exchangeId)
+  return _impl_.exchangeId_.Release();
 }
-inline void OrderBookUpdate::set_allocated_exchange_id(std::string* exchange_id) {
-  if (exchange_id != nullptr) {
+inline void OrderBookUpdate::set_allocated_exchange_id(std::string* exchangeId) {
+  if (exchangeId != nullptr) {
     
   } else {
     
   }
-  _impl_.exchange_id_.SetAllocated(exchange_id, GetArenaForAllocation());
+  _impl_.exchangeId_.SetAllocated(exchangeId, GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.exchange_id_.IsDefault()) {
-    _impl_.exchange_id_.Set("", GetArenaForAllocation());
+  if (_impl_.exchangeId_.IsDefault()) {
+    _impl_.exchangeId_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.data_ingestion.proto.OrderBookUpdate.exchange_id)
+  // @@protoc_insertion_point(field_set_allocated:trading.data_ingestion.proto.OrderBookUpdate.exchangeId)
 }
 
 // string trading_pair = 2;

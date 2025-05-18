@@ -28,11 +28,11 @@ void OrderBookNormalizer::initAdapters() {
 // Add to order_book_normalizer.cpp 
 
 OrderBookUpdate OrderBookNormalizer::getOrderBook(
-    const std::string& exchange_id,
+    const std::string& exchangeId,
     const std::string& trading_pair,
     int depth) const {
     
-    std::string key = createOrderBookKey(exchange_id, trading_pair);
+    std::string key = createOrderBookKey(exchangeId, trading_pair);
     
     // Thread-safe access to order books
     std::lock_guard<std::mutex> lock(mutex_);
@@ -44,7 +44,7 @@ OrderBookUpdate OrderBookNormalizer::getOrderBook(
     
     // Return empty update if not found
     OrderBookUpdate empty_update;
-    empty_update.exchange_id = exchange_id;
+    empty_update.exchangeId = exchangeId;
     empty_update.trading_pair = trading_pair;
     empty_update.is_snapshot = true;
     
@@ -52,9 +52,9 @@ OrderBookUpdate OrderBookNormalizer::getOrderBook(
 }
 void OrderBookNormalizer::processMarketData(const MarketDataUpdate& update) {
     // Find adapter for this exchange
-    auto it = exchange_adapters_.find(update.exchange_id);
+    auto it = exchange_adapters_.find(update.exchangeId);
     if (it == exchange_adapters_.end()) {
-        std::cerr << "No adapter found for exchange: " << update.exchange_id << std::endl;
+        std::cerr << "No adapter found for exchange: " << update.exchangeId << std::endl;
         return;
     }
     
@@ -63,7 +63,7 @@ void OrderBookNormalizer::processMarketData(const MarketDataUpdate& update) {
     // Check if adapter can handle this update
     if (!adapter->canHandle(update)) {
         std::cerr << "Adapter cannot handle update type for exchange: " 
-                  << update.exchange_id << std::endl;
+                  << update.exchangeId << std::endl;
         return;
     }
     
@@ -76,7 +76,7 @@ void OrderBookNormalizer::processMarketData(const MarketDataUpdate& update) {
         normalized.trading_pair = standardized_pair;
         
         // Get or create order book
-        std::shared_ptr<OrderBook> order_book = getOrCreateOrderBook(update.exchange_id, standardized_pair);
+        std::shared_ptr<OrderBook> order_book = getOrCreateOrderBook(update.exchangeId, standardized_pair);
         
         // Update the order book based on the normalized data
         if (normalized.is_snapshot) {
@@ -103,10 +103,10 @@ void OrderBookNormalizer::processMarketData(const MarketDataUpdate& update) {
     }
 }
 
-// std::shared_ptr<OrderBook> OrderBookNormalizer::getOrCreateOrderBook(const std::string& exchange_id, 
+// std::shared_ptr<OrderBook> OrderBookNormalizer::getOrCreateOrderBook(const std::string& exchangeId, 
 //     const std::string& trading_pair) {
 //     // Create a key for the map
-//     std::string key = createOrderBookKey(exchange_id, trading_pair);
+//     std::string key = createOrderBookKey(exchangeId, trading_pair);
 
 //     // Check if the order book exists
 //     auto it = order_books_.find(key);
@@ -115,7 +115,7 @@ void OrderBookNormalizer::processMarketData(const MarketDataUpdate& update) {
 //     }
 
 //     // Create a new order book
-//     std::cout << "Creating new order book for " << exchange_id << ":" << trading_pair << std::endl;
+//     std::cout << "Creating new order book for " << exchangeId << ":" << trading_pair << std::endl;
 
 //     // Parse trading pair into base/quote (assuming format like "BTC/USDT")
 //     Symbol symbol;
@@ -129,11 +129,11 @@ void OrderBookNormalizer::processMarketData(const MarketDataUpdate& update) {
 //         symbol.quote = "";
 //     }
 
-//     // Convert exchange_id string to ExchangeId enum
+//     // Convert exchangeId string to ExchangeId enum
 //     trading::core::Exchange exchange_enum = trading::core::Exchange::UNKNOWN;
-//     if (exchange_id == "binance") exchange_enum = trading::core::Exchange::BINANCE;
-//     else if (exchange_id == "ftx") exchange_enum = trading::core::Exchange::FTX;
-//     else if (exchange_id == "coinbase") exchange_enum = trading::core::Exchange::COINBASE;
+//     if (exchangeId == "binance") exchange_enum = trading::core::Exchange::BINANCE;
+//     else if (exchangeId == "ftx") exchange_enum = trading::core::Exchange::FTX;
+//     else if (exchangeId == "coinbase") exchange_enum = trading::core::Exchange::COINBASE;
 
 //     // Create OrderBook with proper callback that forwards updated order book data
 //     auto order_book = std::make_shared<OrderBook>(
@@ -151,10 +151,10 @@ void OrderBookNormalizer::processMarketData(const MarketDataUpdate& update) {
 // }
 // Modified version of getOrCreateOrderBook method
 std::shared_ptr<OrderBook> OrderBookNormalizer::getOrCreateOrderBook(
-    const std::string& exchange_id, 
+    const std::string& exchangeId, 
     const std::string& trading_pair) {
     // Create a key for the map
-    std::string key = createOrderBookKey(exchange_id, trading_pair);
+    std::string key = createOrderBookKey(exchangeId, trading_pair);
 
     // Check if the order book exists
     auto it = order_books_.find(key);
@@ -163,7 +163,7 @@ std::shared_ptr<OrderBook> OrderBookNormalizer::getOrCreateOrderBook(
     }
 
     // Create a new order book
-    std::cout << "Creating new order book for " << exchange_id << ":" << trading_pair << std::endl;
+    std::cout << "Creating new order book for " << exchangeId << ":" << trading_pair << std::endl;
 
     // Parse trading pair into base/quote (assuming format like "BTC/USDT")
     Symbol symbol;
@@ -179,7 +179,7 @@ std::shared_ptr<OrderBook> OrderBookNormalizer::getOrCreateOrderBook(
 
     // Create OrderBook with proper callback that forwards updated order book data
     auto order_book = std::make_shared<OrderBook>(
-        exchange_id,  // Now using the string exchange_id directly
+        exchangeId,  // Now using the string exchangeId directly
         symbol,
         [this](const OrderBook& book) {
             // Get snapshot from the updated order book and forward to callback
@@ -192,14 +192,14 @@ std::shared_ptr<OrderBook> OrderBookNormalizer::getOrCreateOrderBook(
     return order_book;
 }
 
-std::string OrderBookNormalizer::createOrderBookKey(const std::string& exchange_id, 
+std::string OrderBookNormalizer::createOrderBookKey(const std::string& exchangeId, 
   const std::string& trading_pair) const {
-    return exchange_id + ":" + trading_pair;
+    return exchangeId + ":" + trading_pair;
 }
 
 
 void OrderBookNormalizer::processExchangeData(const MarketDataUpdate& update, 
-                                            const std::string& exchange_id) {
+                                            const std::string& exchangeId) {
     // Implementation will be exchange-specific
     // This method would handle parsing/processing for each exchange
 }
@@ -207,7 +207,7 @@ void OrderBookNormalizer::processExchangeData(const MarketDataUpdate& update,
 // BinanceAdapter implementation
 
 bool BinanceAdapter::canHandle(const MarketDataUpdate& update) const {
-    if (update.exchange_id != "binance") return false;
+    if (update.exchangeId != "binance") return false;
     
     return update.update_type == "orderbook" || 
            update.update_type == "orderbook_snapshot";
@@ -225,7 +225,7 @@ OrderBookUpdate BinanceAdapter::normalize(const MarketDataUpdate& update) const 
         json data = json::parse(json_str);
         
         // Fill basic fields
-        result.exchange_id = "binance";
+        result.exchangeId = "binance";
         result.trading_pair = update.trading_pair;
         result.exchange_timestamp = update.exchange_timestamp;
         result.received_timestamp = update.received_timestamp;
@@ -309,14 +309,14 @@ std::string BinanceAdapter::standardizeTradingPair(const std::string& pair) cons
 
 // AdapterFactory implementation
 
-std::shared_ptr<ExchangeAdapter> AdapterFactory::createAdapter(const std::string& exchange_id) {
-    if (exchange_id == "binance") {
+std::shared_ptr<ExchangeAdapter> AdapterFactory::createAdapter(const std::string& exchangeId) {
+    if (exchangeId == "binance") {
         return std::make_shared<BinanceAdapter>();
     }
     
     // Add other exchanges as needed
     
-    throw std::runtime_error("No adapter available for exchange: " + exchange_id);
+    throw std::runtime_error("No adapter available for exchange: " + exchangeId);
 }
 
 } // namespace data_ingestion

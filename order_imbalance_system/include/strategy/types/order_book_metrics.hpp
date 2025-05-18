@@ -26,7 +26,7 @@
  struct OrderBookMetrics {
      core::Timestamp timestamp;
      uint64_t sequence_number;
-     core::ExchangeId exchange_id;
+     core::ExchangeId exchangeId;
      core::Symbol trading_pair;
      
      // Price metrics

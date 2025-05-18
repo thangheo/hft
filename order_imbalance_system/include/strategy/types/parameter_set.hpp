@@ -23,7 +23,7 @@
   */
  struct ParameterSet {
      std::string version;                              // Version identifier
-     core::ExchangeId exchange_id;                     // Exchange these parameters apply to
+     core::ExchangeId exchangeId;                     // Exchange these parameters apply to
      core::Timestamp last_updated;                     // When parameters were last updated
      std::map<std::string, double> numeric_params;     // Numeric parameters
      std::map<std::string, std::string> string_params; // String parameters
@@ -33,7 +33,7 @@
      // Constructor
      ParameterSet() : 
          version("1.0.0"),
-         exchange_id(""),
+         exchangeId(""),
          last_updated(std::chrono::system_clock::now()) {}
      // Get a double parameter with default value if not found
     double getDouble(const std::string& name, double default_value = 0.0) const {

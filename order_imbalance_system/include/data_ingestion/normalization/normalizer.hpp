@@ -19,11 +19,11 @@ public:
     void processOrderBookUpdate(const OrderBookUpdate& update);
     
     // Convert exchange-specific price/quantity formats to standard format
-    static std::string normalizePrice(const std::string& exchange_id, 
+    static std::string normalizePrice(const std::string& exchangeId, 
                                      const std::string& trading_pair,
                                      const std::string& price);
     
-    static std::string normalizeQuantity(const std::string& exchange_id, 
+    static std::string normalizeQuantity(const std::string& exchangeId, 
                                         const std::string& trading_pair,
                                         const std::string& quantity);
     

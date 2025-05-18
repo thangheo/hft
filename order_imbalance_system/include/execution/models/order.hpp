@@ -92,7 +92,7 @@ public:
     //     // Copy all regular members
     //     order_id_ = other.order_id_;
     //     client_order_id_ = other.client_order_id_;
-    //     exchange_id_ = other.exchange_id_;
+    //     exchangeId_ = other.exchangeId_;
     //     exchange_order_id_ = other.exchange_order_id_;
     //     trading_pair_ = other.trading_pair_;
     //     side_ = other.side_;
@@ -159,7 +159,7 @@ public:
     
     // Setters
     void setOrderId(const std::string& order_id);
-    void setExchangeId(const std::string& exchange_id);
+    void setExchangeId(const std::string& exchangeId);
     void setExchangeOrderId(const std::string& exchange_order_id);
     void setClientOrderId(const std::string& client_order_id);
     void setTradingPair(const std::string& trading_pair);
@@ -192,7 +192,7 @@ private:
     // Order identification
     std::string order_id_;
     std::string client_order_id_;
-    std::string exchange_id_;
+    std::string exchangeId_;
     std::string exchange_order_id_;
     
     // Order details

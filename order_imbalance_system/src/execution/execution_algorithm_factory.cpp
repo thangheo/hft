@@ -467,8 +467,8 @@ std::shared_ptr<ExecutionAlgorithm> ExecutionAlgorithmFactory::createAlgorithm(
             }
             
             // Use exchange ID if available
-            if (!params->exchange_id.empty()) {
-                pov_config.exchange_id = params->exchange_id;
+            if (!params->exchangeId.empty()) {
+                pov_config.exchangeId = params->exchangeId;
             }
             
             auto wrapper = std::make_shared<PovAlgorithmWrapper>(

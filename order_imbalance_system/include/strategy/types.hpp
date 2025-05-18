@@ -35,7 +35,6 @@
  #include "strategy/types/signal_performance.hpp"
  #include "strategy/types/exchange_metrics.hpp"
  #include "strategy/types/adaptation_rules.hpp"
-
  namespace trading {
  namespace strategy {
  

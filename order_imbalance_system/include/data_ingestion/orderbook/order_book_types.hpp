@@ -44,7 +44,7 @@ struct OrderBookKeyHash {
 
 // Raw market data from an exchange
 struct MarketDataUpdate {
-    std::string exchange_id;
+    std::string exchangeId;
     std::string trading_pair;
     std::string update_type;  // "orderbook", "trade", "ticker"
     int64_t exchange_timestamp;
@@ -54,7 +54,7 @@ struct MarketDataUpdate {
 
 // Normalized order book update
 struct OrderBookUpdate {
-    std::string exchange_id;
+    std::string exchangeId; //this is incorrect, should be ExchangeId or string if exchange
     std::string trading_pair;
     int64_t exchange_timestamp;
     int64_t received_timestamp;
@@ -66,7 +66,23 @@ struct OrderBookUpdate {
     std::string anomaly_type;  // Type of detected anomaly
     std::string anomaly_details;  // Details of the detected anomaly
     bool has_anomaly{false};  // Flag to indicate if an anomaly was detected
-    std::map<std::string, std::string> additional_fields;  // For future extensibility
+    core::Symbol symbol;  // Symbol object for better type safety
+    // additional_fields for future extensibility
+    std::unordered_map<std::string, std::string> additional_fields;
+    // Constructor
+    OrderBookUpdate() = default;
+    OrderBookUpdate(const std::string& exchangeId, const std::string& trading_pair,
+                    int64_t exchange_timestamp, int64_t received_timestamp,
+                    int64_t sequence_number, bool is_snapshot,
+                    const std::vector<PriceLevel>& bids,
+                    const std::vector<PriceLevel>& asks)
+        : exchangeId(exchangeId), trading_pair(trading_pair),
+          exchange_timestamp(exchange_timestamp), received_timestamp(received_timestamp),
+          sequence_number(sequence_number), is_snapshot(is_snapshot),
+          bids(bids), asks(asks) {}
+    // Add other constructors or methods as needed
+    // For example, a constructor that takes a MarketDataUpdate
+
 };
 
 // Callback types

@@ -23,7 +23,7 @@ public:
     void processMarketData(const MarketDataUpdate& update);
     
     // Get current state of an order book
-    OrderBookUpdate getOrderBook(const std::string& exchange_id, 
+    OrderBookUpdate getOrderBook(const std::string& exchangeId, 
                                const std::string& trading_pair,
                                int32_t depth = 10) const;
     
@@ -42,16 +42,16 @@ private:
     void initAdapters();
     
     // Get or create an order book
-    std::shared_ptr<OrderBook> getOrCreateOrderBook(const std::string& exchange_id, 
+    std::shared_ptr<OrderBook> getOrCreateOrderBook(const std::string& exchangeId, 
                                                 const std::string& trading_pair);
     
     // Create a key for the order book map
-    std::string createOrderBookKey(const std::string& exchange_id, 
+    std::string createOrderBookKey(const std::string& exchangeId, 
                                  const std::string& trading_pair) const;
     
     // Process exchange-specific data
     void processExchangeData(const MarketDataUpdate& update, 
-                           const std::string& exchange_id);
+                           const std::string& exchangeId);
 };
 
 // Interface for exchange-specific adapters
@@ -80,7 +80,7 @@ public:
 // Factory for creating adapters
 class AdapterFactory {
 public:
-    static std::shared_ptr<ExchangeAdapter> createAdapter(const std::string& exchange_id);
+    static std::shared_ptr<ExchangeAdapter> createAdapter(const std::string& exchangeId);
 };
 
 } // namespace data_ingestion

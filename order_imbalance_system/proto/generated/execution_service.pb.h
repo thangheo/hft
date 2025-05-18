@@ -1602,14 +1602,14 @@ class OrderProto final :
   std::string* _internal_mutable_client_order_id();
   public:
 
-  // string exchange_id = 3;
+  // string exchangeId = 3;
   void clear_exchange_id();
-  const std::string& exchange_id() const;
+  const std::string& exchangeId() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
   void set_exchange_id(ArgT0&& arg0, ArgT... args);
   std::string* mutable_exchange_id();
   PROTOBUF_NODISCARD std::string* release_exchange_id();
-  void set_allocated_exchange_id(std::string* exchange_id);
+  void set_allocated_exchange_id(std::string* exchangeId);
   private:
   const std::string& _internal_exchange_id() const;
   inline PROTOBUF_ALWAYS_INLINE void _internal_set_exchange_id(const std::string& value);
@@ -1787,7 +1787,7 @@ class OrderProto final :
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING> extra_params_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr order_id_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr client_order_id_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr exchange_id_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr exchangeId_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr exchange_order_id_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr trading_pair_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr strategy_id_;
@@ -2556,14 +2556,14 @@ class CancelOrderByExchangeIdRequestProto final :
   std::string* _internal_mutable_exchange_order_id();
   public:
 
-  // string exchange_id = 2;
+  // string exchangeId = 2;
   void clear_exchange_id();
-  const std::string& exchange_id() const;
+  const std::string& exchangeId() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
   void set_exchange_id(ArgT0&& arg0, ArgT... args);
   std::string* mutable_exchange_id();
   PROTOBUF_NODISCARD std::string* release_exchange_id();
-  void set_allocated_exchange_id(std::string* exchange_id);
+  void set_allocated_exchange_id(std::string* exchangeId);
   private:
   const std::string& _internal_exchange_id() const;
   inline PROTOBUF_ALWAYS_INLINE void _internal_set_exchange_id(const std::string& value);
@@ -2579,7 +2579,7 @@ class CancelOrderByExchangeIdRequestProto final :
   typedef void DestructorSkippable_;
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr exchange_order_id_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr exchange_id_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr exchangeId_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -2725,14 +2725,14 @@ class CancelAllOrdersRequestProto final :
   std::string* _internal_mutable_trading_pair();
   public:
 
-  // string exchange_id = 2;
+  // string exchangeId = 2;
   void clear_exchange_id();
-  const std::string& exchange_id() const;
+  const std::string& exchangeId() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
   void set_exchange_id(ArgT0&& arg0, ArgT... args);
   std::string* mutable_exchange_id();
   PROTOBUF_NODISCARD std::string* release_exchange_id();
-  void set_allocated_exchange_id(std::string* exchange_id);
+  void set_allocated_exchange_id(std::string* exchangeId);
   private:
   const std::string& _internal_exchange_id() const;
   inline PROTOBUF_ALWAYS_INLINE void _internal_set_exchange_id(const std::string& value);
@@ -2748,7 +2748,7 @@ class CancelAllOrdersRequestProto final :
   typedef void DestructorSkippable_;
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr trading_pair_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr exchange_id_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr exchangeId_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -4439,54 +4439,54 @@ inline void OrderProto::set_allocated_client_order_id(std::string* client_order_
   // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.OrderProto.client_order_id)
 }
 
-// string exchange_id = 3;
+// string exchangeId = 3;
 inline void OrderProto::clear_exchange_id() {
-  _impl_.exchange_id_.ClearToEmpty();
+  _impl_.exchangeId_.ClearToEmpty();
 }
-inline const std::string& OrderProto::exchange_id() const {
-  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.exchange_id)
+inline const std::string& OrderProto::exchangeId() const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.exchangeId)
   return _internal_exchange_id();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
 void OrderProto::set_exchange_id(ArgT0&& arg0, ArgT... args) {
  
- _impl_.exchange_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.exchange_id)
+ _impl_.exchangeId_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.exchangeId)
 }
 inline std::string* OrderProto::mutable_exchange_id() {
   std::string* _s = _internal_mutable_exchange_id();
-  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.OrderProto.exchange_id)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.OrderProto.exchangeId)
   return _s;
 }
 inline const std::string& OrderProto::_internal_exchange_id() const {
-  return _impl_.exchange_id_.Get();
+  return _impl_.exchangeId_.Get();
 }
 inline void OrderProto::_internal_set_exchange_id(const std::string& value) {
   
-  _impl_.exchange_id_.Set(value, GetArenaForAllocation());
+  _impl_.exchangeId_.Set(value, GetArenaForAllocation());
 }
 inline std::string* OrderProto::_internal_mutable_exchange_id() {
   
-  return _impl_.exchange_id_.Mutable(GetArenaForAllocation());
+  return _impl_.exchangeId_.Mutable(GetArenaForAllocation());
 }
 inline std::string* OrderProto::release_exchange_id() {
-  // @@protoc_insertion_point(field_release:trading.execution.grpc.OrderProto.exchange_id)
-  return _impl_.exchange_id_.Release();
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.OrderProto.exchangeId)
+  return _impl_.exchangeId_.Release();
 }
-inline void OrderProto::set_allocated_exchange_id(std::string* exchange_id) {
-  if (exchange_id != nullptr) {
+inline void OrderProto::set_allocated_exchange_id(std::string* exchangeId) {
+  if (exchangeId != nullptr) {
     
   } else {
     
   }
-  _impl_.exchange_id_.SetAllocated(exchange_id, GetArenaForAllocation());
+  _impl_.exchangeId_.SetAllocated(exchangeId, GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.exchange_id_.IsDefault()) {
-    _impl_.exchange_id_.Set("", GetArenaForAllocation());
+  if (_impl_.exchangeId_.IsDefault()) {
+    _impl_.exchangeId_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.OrderProto.exchange_id)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.OrderProto.exchangeId)
 }
 
 // string exchange_order_id = 4;
@@ -5308,54 +5308,54 @@ inline void CancelOrderByExchangeIdRequestProto::set_allocated_exchange_order_id
   // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_order_id)
 }
 
-// string exchange_id = 2;
+// string exchangeId = 2;
 inline void CancelOrderByExchangeIdRequestProto::clear_exchange_id() {
-  _impl_.exchange_id_.ClearToEmpty();
+  _impl_.exchangeId_.ClearToEmpty();
 }
-inline const std::string& CancelOrderByExchangeIdRequestProto::exchange_id() const {
-  // @@protoc_insertion_point(field_get:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_id)
+inline const std::string& CancelOrderByExchangeIdRequestProto::exchangeId() const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchangeId)
   return _internal_exchange_id();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
 void CancelOrderByExchangeIdRequestProto::set_exchange_id(ArgT0&& arg0, ArgT... args) {
  
- _impl_.exchange_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_id)
+ _impl_.exchangeId_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchangeId)
 }
 inline std::string* CancelOrderByExchangeIdRequestProto::mutable_exchange_id() {
   std::string* _s = _internal_mutable_exchange_id();
-  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_id)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchangeId)
   return _s;
 }
 inline const std::string& CancelOrderByExchangeIdRequestProto::_internal_exchange_id() const {
-  return _impl_.exchange_id_.Get();
+  return _impl_.exchangeId_.Get();
 }
 inline void CancelOrderByExchangeIdRequestProto::_internal_set_exchange_id(const std::string& value) {
   
-  _impl_.exchange_id_.Set(value, GetArenaForAllocation());
+  _impl_.exchangeId_.Set(value, GetArenaForAllocation());
 }
 inline std::string* CancelOrderByExchangeIdRequestProto::_internal_mutable_exchange_id() {
   
-  return _impl_.exchange_id_.Mutable(GetArenaForAllocation());
+  return _impl_.exchangeId_.Mutable(GetArenaForAllocation());
 }
 inline std::string* CancelOrderByExchangeIdRequestProto::release_exchange_id() {
-  // @@protoc_insertion_point(field_release:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_id)
-  return _impl_.exchange_id_.Release();
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchangeId)
+  return _impl_.exchangeId_.Release();
 }
-inline void CancelOrderByExchangeIdRequestProto::set_allocated_exchange_id(std::string* exchange_id) {
-  if (exchange_id != nullptr) {
+inline void CancelOrderByExchangeIdRequestProto::set_allocated_exchange_id(std::string* exchangeId) {
+  if (exchangeId != nullptr) {
     
   } else {
     
   }
-  _impl_.exchange_id_.SetAllocated(exchange_id, GetArenaForAllocation());
+  _impl_.exchangeId_.SetAllocated(exchangeId, GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.exchange_id_.IsDefault()) {
-    _impl_.exchange_id_.Set("", GetArenaForAllocation());
+  if (_impl_.exchangeId_.IsDefault()) {
+    _impl_.exchangeId_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_id)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchangeId)
 }
 
 // -------------------------------------------------------------------
@@ -5412,54 +5412,54 @@ inline void CancelAllOrdersRequestProto::set_allocated_trading_pair(std::string*
   // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.CancelAllOrdersRequestProto.trading_pair)
 }
 
-// string exchange_id = 2;
+// string exchangeId = 2;
 inline void CancelAllOrdersRequestProto::clear_exchange_id() {
-  _impl_.exchange_id_.ClearToEmpty();
+  _impl_.exchangeId_.ClearToEmpty();
 }
-inline const std::string& CancelAllOrdersRequestProto::exchange_id() const {
-  // @@protoc_insertion_point(field_get:trading.execution.grpc.CancelAllOrdersRequestProto.exchange_id)
+inline const std::string& CancelAllOrdersRequestProto::exchangeId() const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.CancelAllOrdersRequestProto.exchangeId)
   return _internal_exchange_id();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
 void CancelAllOrdersRequestProto::set_exchange_id(ArgT0&& arg0, ArgT... args) {
  
- _impl_.exchange_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.grpc.CancelAllOrdersRequestProto.exchange_id)
+ _impl_.exchangeId_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.CancelAllOrdersRequestProto.exchangeId)
 }
 inline std::string* CancelAllOrdersRequestProto::mutable_exchange_id() {
   std::string* _s = _internal_mutable_exchange_id();
-  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.CancelAllOrdersRequestProto.exchange_id)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.CancelAllOrdersRequestProto.exchangeId)
   return _s;
 }
 inline const std::string& CancelAllOrdersRequestProto::_internal_exchange_id() const {
-  return _impl_.exchange_id_.Get();
+  return _impl_.exchangeId_.Get();
 }
 inline void CancelAllOrdersRequestProto::_internal_set_exchange_id(const std::string& value) {
   
-  _impl_.exchange_id_.Set(value, GetArenaForAllocation());
+  _impl_.exchangeId_.Set(value, GetArenaForAllocation());
 }
 inline std::string* CancelAllOrdersRequestProto::_internal_mutable_exchange_id() {
   
-  return _impl_.exchange_id_.Mutable(GetArenaForAllocation());
+  return _impl_.exchangeId_.Mutable(GetArenaForAllocation());
 }
 inline std::string* CancelAllOrdersRequestProto::release_exchange_id() {
-  // @@protoc_insertion_point(field_release:trading.execution.grpc.CancelAllOrdersRequestProto.exchange_id)
-  return _impl_.exchange_id_.Release();
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.CancelAllOrdersRequestProto.exchangeId)
+  return _impl_.exchangeId_.Release();
 }
-inline void CancelAllOrdersRequestProto::set_allocated_exchange_id(std::string* exchange_id) {
-  if (exchange_id != nullptr) {
+inline void CancelAllOrdersRequestProto::set_allocated_exchange_id(std::string* exchangeId) {
+  if (exchangeId != nullptr) {
     
   } else {
     
   }
-  _impl_.exchange_id_.SetAllocated(exchange_id, GetArenaForAllocation());
+  _impl_.exchangeId_.SetAllocated(exchangeId, GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.exchange_id_.IsDefault()) {
-    _impl_.exchange_id_.Set("", GetArenaForAllocation());
+  if (_impl_.exchangeId_.IsDefault()) {
+    _impl_.exchangeId_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.CancelAllOrdersRequestProto.exchange_id)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.CancelAllOrdersRequestProto.exchangeId)
 }
 
 // -------------------------------------------------------------------

@@ -373,14 +373,14 @@
      }
      
      // Calculate basic metrics
-     metrics.total_return = (pnl_series.back() / pnl_series.front()) - 1.0;
-     metrics.max_drawdown = calculateMaxDrawdown(pnl_series);
-     metrics.sharpe_ratio = calculateSharpeRatio(returns, risk_free_rate);
+     metrics.totalReturn = (pnl_series.back() / pnl_series.front()) - 1.0;
+     metrics.maxDrawdown = calculateMaxDrawdown(pnl_series);
+     metrics.sharpeRatio = calculateSharpeRatio(returns, risk_free_rate);
      metrics.sortino_ratio = calculateSortinoRatio(returns, risk_free_rate);
      
      // Calculate trades metrics if provided
      if (!pnl_series.empty()) {
-         metrics.win_rate = calculateWinRate(returns);
+         metrics.winRate = calculateWinRate(returns);
          metrics.profit_factor = calculateProfitFactor(returns);
      }
      
@@ -398,7 +398,7 @@
          }
          
          metrics.benchmark_return = (benchmark_series.back() / benchmark_series.front()) - 1.0;
-         metrics.alpha = metrics.total_return - metrics.benchmark_return;
+         metrics.alpha = metrics.totalReturn - metrics.benchmark_return;
          metrics.beta = calculateCorrelation(returns, benchmark_returns);
          
          // Information ratio
@@ -425,7 +425,7 @@
          return 0.0;
      }
      
-     double max_drawdown = 0.0;
+     double maxDrawdown = 0.0;
      double peak = equity_curve[0];
      
      for (size_t i = 1; i < equity_curve.size(); ++i) {
@@ -433,11 +433,11 @@
              peak = equity_curve[i];
          } else {
              double drawdown = (peak - equity_curve[i]) / peak;
-             max_drawdown = std::max(max_drawdown, drawdown);
+             maxDrawdown = std::max(maxDrawdown, drawdown);
          }
      }
      
-     return max_drawdown;
+     return maxDrawdown;
  }
  
  double StrategyMetrics::calculateSharpeRatio(

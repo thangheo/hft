@@ -126,7 +126,7 @@ PROTOBUF_CONSTEXPR OrderProto::OrderProto(
   , /*decltype(_impl_.extra_params_)*/{::_pbi::ConstantInitialized()}
   , /*decltype(_impl_.order_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.client_order_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.exchange_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.exchangeId_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.exchange_order_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.trading_pair_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.strategy_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
@@ -207,7 +207,7 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORIT
 PROTOBUF_CONSTEXPR CancelOrderByExchangeIdRequestProto::CancelOrderByExchangeIdRequestProto(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_.exchange_order_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.exchange_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.exchangeId_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct CancelOrderByExchangeIdRequestProtoDefaultTypeInternal {
   PROTOBUF_CONSTEXPR CancelOrderByExchangeIdRequestProtoDefaultTypeInternal()
@@ -221,7 +221,7 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORIT
 PROTOBUF_CONSTEXPR CancelAllOrdersRequestProto::CancelAllOrdersRequestProto(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_.trading_pair_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.exchange_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.exchangeId_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct CancelAllOrdersRequestProtoDefaultTypeInternal {
   PROTOBUF_CONSTEXPR CancelAllOrdersRequestProtoDefaultTypeInternal()
@@ -369,7 +369,7 @@ const uint32_t TableStruct_execution_5fservice_2eproto::offsets[] PROTOBUF_SECTI
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.order_id_),
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.client_order_id_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.exchange_id_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.exchangeId_),
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.exchange_order_id_),
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.trading_pair_),
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.side_),
@@ -423,7 +423,7 @@ const uint32_t TableStruct_execution_5fservice_2eproto::offsets[] PROTOBUF_SECTI
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelOrderByExchangeIdRequestProto, _impl_.exchange_order_id_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelOrderByExchangeIdRequestProto, _impl_.exchange_id_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelOrderByExchangeIdRequestProto, _impl_.exchangeId_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelAllOrdersRequestProto, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -431,7 +431,7 @@ const uint32_t TableStruct_execution_5fservice_2eproto::offsets[] PROTOBUF_SECTI
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelAllOrdersRequestProto, _impl_.trading_pair_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelAllOrdersRequestProto, _impl_.exchange_id_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelAllOrdersRequestProto, _impl_.exchangeId_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelAllOrdersResponseProto, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -2559,7 +2559,7 @@ OrderProto::OrderProto(const OrderProto& from)
     , /*decltype(_impl_.extra_params_)*/{}
     , decltype(_impl_.order_id_){}
     , decltype(_impl_.client_order_id_){}
-    , decltype(_impl_.exchange_id_){}
+    , decltype(_impl_.exchangeId_){}
     , decltype(_impl_.exchange_order_id_){}
     , decltype(_impl_.trading_pair_){}
     , decltype(_impl_.strategy_id_){}
@@ -2595,12 +2595,12 @@ OrderProto::OrderProto(const OrderProto& from)
     _this->_impl_.client_order_id_.Set(from._internal_client_order_id(), 
       _this->GetArenaForAllocation());
   }
-  _impl_.exchange_id_.InitDefault();
+  _impl_.exchangeId_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.exchange_id_.Set("", GetArenaForAllocation());
+    _impl_.exchangeId_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   if (!from._internal_exchange_id().empty()) {
-    _this->_impl_.exchange_id_.Set(from._internal_exchange_id(), 
+    _this->_impl_.exchangeId_.Set(from._internal_exchange_id(), 
       _this->GetArenaForAllocation());
   }
   _impl_.exchange_order_id_.InitDefault();
@@ -2650,7 +2650,7 @@ inline void OrderProto::SharedCtor(
     , /*decltype(_impl_.extra_params_)*/{::_pbi::ArenaInitialized(), arena}
     , decltype(_impl_.order_id_){}
     , decltype(_impl_.client_order_id_){}
-    , decltype(_impl_.exchange_id_){}
+    , decltype(_impl_.exchangeId_){}
     , decltype(_impl_.exchange_order_id_){}
     , decltype(_impl_.trading_pair_){}
     , decltype(_impl_.strategy_id_){}
@@ -2676,9 +2676,9 @@ inline void OrderProto::SharedCtor(
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.client_order_id_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.exchange_id_.InitDefault();
+  _impl_.exchangeId_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.exchange_id_.Set("", GetArenaForAllocation());
+    _impl_.exchangeId_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   _impl_.exchange_order_id_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -2715,7 +2715,7 @@ inline void OrderProto::SharedDtor() {
   _impl_.extra_params_.~MapField();
   _impl_.order_id_.Destroy();
   _impl_.client_order_id_.Destroy();
-  _impl_.exchange_id_.Destroy();
+  _impl_.exchangeId_.Destroy();
   _impl_.exchange_order_id_.Destroy();
   _impl_.trading_pair_.Destroy();
   _impl_.strategy_id_.Destroy();
@@ -2740,7 +2740,7 @@ void OrderProto::Clear() {
   _impl_.extra_params_.Clear();
   _impl_.order_id_.ClearToEmpty();
   _impl_.client_order_id_.ClearToEmpty();
-  _impl_.exchange_id_.ClearToEmpty();
+  _impl_.exchangeId_.ClearToEmpty();
   _impl_.exchange_order_id_.ClearToEmpty();
   _impl_.trading_pair_.ClearToEmpty();
   _impl_.strategy_id_.ClearToEmpty();
@@ -2777,13 +2777,13 @@ const char* OrderProto::_InternalParse(const char* ptr, ::_pbi::ParseContext* ct
         } else
           goto handle_unusual;
         continue;
-      // string exchange_id = 3;
+      // string exchangeId = 3;
       case 3:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
           auto str = _internal_mutable_exchange_id();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.OrderProto.exchange_id"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.OrderProto.exchangeId"));
         } else
           goto handle_unusual;
         continue;
@@ -2994,12 +2994,12 @@ uint8_t* OrderProto::_InternalSerialize(
         2, this->_internal_client_order_id(), target);
   }
 
-  // string exchange_id = 3;
+  // string exchangeId = 3;
   if (!this->_internal_exchange_id().empty()) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_exchange_id().data(), static_cast<int>(this->_internal_exchange_id().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.grpc.OrderProto.exchange_id");
+      "trading.execution.grpc.OrderProto.exchangeId");
     target = stream->WriteStringMaybeAliased(
         3, this->_internal_exchange_id(), target);
   }
@@ -3218,7 +3218,7 @@ size_t OrderProto::ByteSizeLong() const {
         this->_internal_client_order_id());
   }
 
-  // string exchange_id = 3;
+  // string exchangeId = 3;
   if (!this->_internal_exchange_id().empty()) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
@@ -3458,8 +3458,8 @@ void OrderProto::InternalSwap(OrderProto* other) {
       &other->_impl_.client_order_id_, rhs_arena
   );
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.exchange_id_, lhs_arena,
-      &other->_impl_.exchange_id_, rhs_arena
+      &_impl_.exchangeId_, lhs_arena,
+      &other->_impl_.exchangeId_, rhs_arena
   );
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.exchange_order_id_, lhs_arena,
@@ -4230,7 +4230,7 @@ CancelOrderByExchangeIdRequestProto::CancelOrderByExchangeIdRequestProto(const C
   CancelOrderByExchangeIdRequestProto* const _this = this; (void)_this;
   new (&_impl_) Impl_{
       decltype(_impl_.exchange_order_id_){}
-    , decltype(_impl_.exchange_id_){}
+    , decltype(_impl_.exchangeId_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
@@ -4242,12 +4242,12 @@ CancelOrderByExchangeIdRequestProto::CancelOrderByExchangeIdRequestProto(const C
     _this->_impl_.exchange_order_id_.Set(from._internal_exchange_order_id(), 
       _this->GetArenaForAllocation());
   }
-  _impl_.exchange_id_.InitDefault();
+  _impl_.exchangeId_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.exchange_id_.Set("", GetArenaForAllocation());
+    _impl_.exchangeId_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   if (!from._internal_exchange_id().empty()) {
-    _this->_impl_.exchange_id_.Set(from._internal_exchange_id(), 
+    _this->_impl_.exchangeId_.Set(from._internal_exchange_id(), 
       _this->GetArenaForAllocation());
   }
   // @@protoc_insertion_point(copy_constructor:trading.execution.grpc.CancelOrderByExchangeIdRequestProto)
@@ -4259,16 +4259,16 @@ inline void CancelOrderByExchangeIdRequestProto::SharedCtor(
   (void)is_message_owned;
   new (&_impl_) Impl_{
       decltype(_impl_.exchange_order_id_){}
-    , decltype(_impl_.exchange_id_){}
+    , decltype(_impl_.exchangeId_){}
     , /*decltype(_impl_._cached_size_)*/{}
   };
   _impl_.exchange_order_id_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.exchange_order_id_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.exchange_id_.InitDefault();
+  _impl_.exchangeId_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.exchange_id_.Set("", GetArenaForAllocation());
+    _impl_.exchangeId_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 }
 
@@ -4284,7 +4284,7 @@ CancelOrderByExchangeIdRequestProto::~CancelOrderByExchangeIdRequestProto() {
 inline void CancelOrderByExchangeIdRequestProto::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
   _impl_.exchange_order_id_.Destroy();
-  _impl_.exchange_id_.Destroy();
+  _impl_.exchangeId_.Destroy();
 }
 
 void CancelOrderByExchangeIdRequestProto::SetCachedSize(int size) const {
@@ -4298,7 +4298,7 @@ void CancelOrderByExchangeIdRequestProto::Clear() {
   (void) cached_has_bits;
 
   _impl_.exchange_order_id_.ClearToEmpty();
-  _impl_.exchange_id_.ClearToEmpty();
+  _impl_.exchangeId_.ClearToEmpty();
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -4318,13 +4318,13 @@ const char* CancelOrderByExchangeIdRequestProto::_InternalParse(const char* ptr,
         } else
           goto handle_unusual;
         continue;
-      // string exchange_id = 2;
+      // string exchangeId = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           auto str = _internal_mutable_exchange_id();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_id"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchangeId"));
         } else
           goto handle_unusual;
         continue;
@@ -4367,12 +4367,12 @@ uint8_t* CancelOrderByExchangeIdRequestProto::_InternalSerialize(
         1, this->_internal_exchange_order_id(), target);
   }
 
-  // string exchange_id = 2;
+  // string exchangeId = 2;
   if (!this->_internal_exchange_id().empty()) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_exchange_id().data(), static_cast<int>(this->_internal_exchange_id().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_id");
+      "trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchangeId");
     target = stream->WriteStringMaybeAliased(
         2, this->_internal_exchange_id(), target);
   }
@@ -4400,7 +4400,7 @@ size_t CancelOrderByExchangeIdRequestProto::ByteSizeLong() const {
         this->_internal_exchange_order_id());
   }
 
-  // string exchange_id = 2;
+  // string exchangeId = 2;
   if (!this->_internal_exchange_id().empty()) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
@@ -4455,8 +4455,8 @@ void CancelOrderByExchangeIdRequestProto::InternalSwap(CancelOrderByExchangeIdRe
       &other->_impl_.exchange_order_id_, rhs_arena
   );
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.exchange_id_, lhs_arena,
-      &other->_impl_.exchange_id_, rhs_arena
+      &_impl_.exchangeId_, lhs_arena,
+      &other->_impl_.exchangeId_, rhs_arena
   );
 }
 
@@ -4483,7 +4483,7 @@ CancelAllOrdersRequestProto::CancelAllOrdersRequestProto(const CancelAllOrdersRe
   CancelAllOrdersRequestProto* const _this = this; (void)_this;
   new (&_impl_) Impl_{
       decltype(_impl_.trading_pair_){}
-    , decltype(_impl_.exchange_id_){}
+    , decltype(_impl_.exchangeId_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
@@ -4495,12 +4495,12 @@ CancelAllOrdersRequestProto::CancelAllOrdersRequestProto(const CancelAllOrdersRe
     _this->_impl_.trading_pair_.Set(from._internal_trading_pair(), 
       _this->GetArenaForAllocation());
   }
-  _impl_.exchange_id_.InitDefault();
+  _impl_.exchangeId_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.exchange_id_.Set("", GetArenaForAllocation());
+    _impl_.exchangeId_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   if (!from._internal_exchange_id().empty()) {
-    _this->_impl_.exchange_id_.Set(from._internal_exchange_id(), 
+    _this->_impl_.exchangeId_.Set(from._internal_exchange_id(), 
       _this->GetArenaForAllocation());
   }
   // @@protoc_insertion_point(copy_constructor:trading.execution.grpc.CancelAllOrdersRequestProto)
@@ -4512,16 +4512,16 @@ inline void CancelAllOrdersRequestProto::SharedCtor(
   (void)is_message_owned;
   new (&_impl_) Impl_{
       decltype(_impl_.trading_pair_){}
-    , decltype(_impl_.exchange_id_){}
+    , decltype(_impl_.exchangeId_){}
     , /*decltype(_impl_._cached_size_)*/{}
   };
   _impl_.trading_pair_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.trading_pair_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.exchange_id_.InitDefault();
+  _impl_.exchangeId_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.exchange_id_.Set("", GetArenaForAllocation());
+    _impl_.exchangeId_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 }
 
@@ -4537,7 +4537,7 @@ CancelAllOrdersRequestProto::~CancelAllOrdersRequestProto() {
 inline void CancelAllOrdersRequestProto::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
   _impl_.trading_pair_.Destroy();
-  _impl_.exchange_id_.Destroy();
+  _impl_.exchangeId_.Destroy();
 }
 
 void CancelAllOrdersRequestProto::SetCachedSize(int size) const {
@@ -4551,7 +4551,7 @@ void CancelAllOrdersRequestProto::Clear() {
   (void) cached_has_bits;
 
   _impl_.trading_pair_.ClearToEmpty();
-  _impl_.exchange_id_.ClearToEmpty();
+  _impl_.exchangeId_.ClearToEmpty();
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -4571,13 +4571,13 @@ const char* CancelAllOrdersRequestProto::_InternalParse(const char* ptr, ::_pbi:
         } else
           goto handle_unusual;
         continue;
-      // string exchange_id = 2;
+      // string exchangeId = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           auto str = _internal_mutable_exchange_id();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.CancelAllOrdersRequestProto.exchange_id"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.CancelAllOrdersRequestProto.exchangeId"));
         } else
           goto handle_unusual;
         continue;
@@ -4620,12 +4620,12 @@ uint8_t* CancelAllOrdersRequestProto::_InternalSerialize(
         1, this->_internal_trading_pair(), target);
   }
 
-  // string exchange_id = 2;
+  // string exchangeId = 2;
   if (!this->_internal_exchange_id().empty()) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_exchange_id().data(), static_cast<int>(this->_internal_exchange_id().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.grpc.CancelAllOrdersRequestProto.exchange_id");
+      "trading.execution.grpc.CancelAllOrdersRequestProto.exchangeId");
     target = stream->WriteStringMaybeAliased(
         2, this->_internal_exchange_id(), target);
   }
@@ -4653,7 +4653,7 @@ size_t CancelAllOrdersRequestProto::ByteSizeLong() const {
         this->_internal_trading_pair());
   }
 
-  // string exchange_id = 2;
+  // string exchangeId = 2;
   if (!this->_internal_exchange_id().empty()) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
@@ -4708,8 +4708,8 @@ void CancelAllOrdersRequestProto::InternalSwap(CancelAllOrdersRequestProto* othe
       &other->_impl_.trading_pair_, rhs_arena
   );
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.exchange_id_, lhs_arena,
-      &other->_impl_.exchange_id_, rhs_arena
+      &_impl_.exchangeId_, lhs_arena,
+      &other->_impl_.exchangeId_, rhs_arena
   );
 }
 

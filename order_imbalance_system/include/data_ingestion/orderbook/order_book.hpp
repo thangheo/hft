@@ -26,7 +26,7 @@ namespace data_ingestion {
  * Represents an order book delta (change)
  */
 struct OrderBookDelta {
-    std::string exchange_id;
+    std::string exchangeId;
     std::string trading_pair;
     core::Timestamp timestamp;
     uint64_t sequence_number;
@@ -68,7 +68,7 @@ using OrderBookDeltaCallback = std::function<void(const OrderBookDelta&)>;
 class OrderBook {
 public:
     OrderBook(ExchangeId exchange, const Symbol& symbol, OrderBookCallback callback = nullptr);
-    OrderBook(const std::string& exchange_id, const std::string& trading_pair, OrderBookCallback callback = nullptr);
+    OrderBook(const std::string& exchangeId, const std::string& trading_pair, OrderBookCallback callback = nullptr);
     ~OrderBook() = default;
     
     // Update methods
@@ -112,7 +112,7 @@ public:
     double getSpreadPercent() const;
     
     // Order book info
-    ExchangeId getExchangeId() const { return exchange_id_; }
+    ExchangeId getExchangeId() const { return exchangeId_; }
     Symbol getSymbol() const { return symbol_; }
     uint64_t getSequenceNumber() const { return sequence_number_; }
     Timestamp getTimestamp() const { return timestamp_; }
@@ -128,7 +128,7 @@ public:
     
 private:
     // Core order book data
-    ExchangeId exchange_id_;
+    ExchangeId exchangeId_;
     Symbol symbol_;
     Timestamp last_update_time_;
     uint64_t sequence_number_ = 0;

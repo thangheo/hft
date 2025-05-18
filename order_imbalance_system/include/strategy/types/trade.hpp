@@ -22,7 +22,7 @@
   * Represents a trade execution
   */
  struct Trade {
-     core::ExchangeId exchange_id;     // Exchange identifier
+     core::ExchangeId exchangeId;     // Exchange identifier
      core::Symbol symbol;              // Trading pair
      double price;                     // Execution price
      double quantity;                  // Execution quantity
@@ -34,19 +34,19 @@
      
      // Default constructor
      Trade() 
-         : exchange_id(), symbol(), price(0.0), quantity(0.0), is_buy(false),
+         : exchangeId(), symbol(), price(0.0), quantity(0.0), is_buy(false),
            timestamp(core::Timestamp()), trade_id(), fee(0.0), fee_currency() {}
      
      // Constructor with essential fields
      Trade(double p, double q, bool buy, const core::Timestamp& ts)
-         : exchange_id(), symbol(), price(p), quantity(q), is_buy(buy),
+         : exchangeId(), symbol(), price(p), quantity(q), is_buy(buy),
            timestamp(ts), trade_id(), fee(0.0), fee_currency() {}
      
      // Constructor with all fields
      Trade(const core::ExchangeId& exchange, const core::Symbol& sym, double p, double q, 
            bool buy, const core::Timestamp& ts, const std::string& id = "",
            double f = 0.0, const std::string& fc = "")
-         : exchange_id(exchange), symbol(sym), price(p), quantity(q), is_buy(buy),
+         : exchangeId(exchange), symbol(sym), price(p), quantity(q), is_buy(buy),
            timestamp(ts), trade_id(id), fee(f), fee_currency(fc) {}
            
      // Get the trading pair as a string

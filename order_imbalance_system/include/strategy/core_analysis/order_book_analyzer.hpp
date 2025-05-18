@@ -44,13 +44,13 @@
      /**
       * Creates an order book analyzer for a specific exchange and trading pair
       */
-     OrderBookAnalyzer(const std::string& exchange_id, const std::string& trading_pair, 
+     OrderBookAnalyzer(const std::string& exchangeId, const std::string& trading_pair, 
                       const ParameterSet& params = ParameterSet());
      
      /**
       * Creates an order book analyzer with parameters explicitly specified
       */
-     OrderBookAnalyzer(const std::string& exchange_id, const std::string& trading_pair, 
+     OrderBookAnalyzer(const std::string& exchangeId, const std::string& trading_pair, 
                       int depth_levels, double price_grouping_factor);
     OrderBookAnalyzer(const OrderBookAnalyzerConfig& config);
 
@@ -118,7 +118,7 @@
       * Get the exchange ID
       * @return Exchange ID
       */
-     const std::string& getExchangeId() const { return exchange_id_; }
+     const std::string& getExchangeId() const { return exchangeId_; }
      
      /**
       * Get the trading pair
@@ -277,7 +277,7 @@
      virtual void notifyMetricsUpdated();
      
      // Exchange and trading pair identification
-     std::string exchange_id_;
+     std::string exchangeId_;
      std::string trading_pair_;
      
      // Configuration
@@ -316,7 +316,7 @@
  
  // Factory function to create OrderBookAnalyzer instances
  std::shared_ptr<OrderBookAnalyzer> createOrderBookAnalyzer(
-     const std::string& exchange_id, 
+     const std::string& exchangeId, 
      const std::string& trading_pair,
      const ParameterSet& params = ParameterSet());
  

@@ -298,7 +298,7 @@ void OrderBookReconstructor::publishOrderBook(const std::shared_ptr<OrderBook>& 
      
 
     OrderBookUpdate update = order_book->getSnapshot();
-    std::string payload = update.exchange_id + ":" + update.trading_pair + ":" +
+    std::string payload = update.exchangeId + ":" + update.trading_pair + ":" +
         std::to_string(update.sequence_number) + ":" +
         std::to_string(update.exchange_timestamp) + ":" +
         std::to_string(update.received_timestamp);

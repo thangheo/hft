@@ -66,7 +66,7 @@ message FillProto {
 message OrderProto {
     string order_id = 1;
     string client_order_id = 2;
-    string exchange_id = 3;
+    string exchangeId = 3;
     string exchange_order_id = 4;
     string trading_pair = 5;
     enum OrderSide {
@@ -155,13 +155,13 @@ message CancelOrderRequestProto {
 // Cancel order by exchange ID request
 message CancelOrderByExchangeIdRequestProto {
     string exchange_order_id = 1;
-    string exchange_id = 2;
+    string exchangeId = 2;
 }
 
 // Cancel all orders request
 message CancelAllOrdersRequestProto {
     string trading_pair = 1;
-    string exchange_id = 2;  // Optional, can be empty
+    string exchangeId = 2;  // Optional, can be empty
 }
 
 // Cancel all orders response

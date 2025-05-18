@@ -18,7 +18,7 @@ struct TypePerformanceMetrics {
     double accuracy;           // Ratio of correct signals (0.0-1.0)
     double profit_factor;      // Ratio of profits to losses
     double avg_return;         // Average return per signal
-    double max_drawdown;       // Maximum drawdown
+    double maxDrawdown;       // Maximum drawdown
     int signal_count;          // Number of signals generated
     double avg_duration_ms;    // Average signal duration in milliseconds
     double avg_strength;       // Average signal strength
@@ -87,20 +87,20 @@ private:
         
         double total_accuracy = 0.0;
         double total_profit_factor = 0.0;
-        double total_return = 0.0;
+        double totalReturn = 0.0;
         int signal_count = 0;
         
         for (const auto& [type, metrics] : typePerformance) {
             total_accuracy += metrics.accuracy * metrics.signal_count;
             total_profit_factor += metrics.profit_factor * metrics.signal_count;
-            total_return += metrics.avg_return * metrics.signal_count;
+            totalReturn += metrics.avg_return * metrics.signal_count;
             signal_count += metrics.signal_count;
         }
         
         if (signal_count > 0) {
             overall_accuracy = total_accuracy / signal_count;
             overall_profit_factor = total_profit_factor / signal_count;
-            overall_return = total_return;
+            overall_return = totalReturn;
             total_signals = signal_count;
         }
     }

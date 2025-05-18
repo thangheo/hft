@@ -2,6 +2,8 @@
 #pragma once
 
 #include "strategy/types.hpp"
+#include "data_ingestion/orderbook/order_book.hpp"
+
 #include <memory>
 #include <map>
 #include <string>
@@ -19,7 +21,7 @@ namespace strategy {
 class Experiment {
 public:
     Experiment(const std::string& id, const std::string& name);
-    
+    Experiment();
     // Add a variant to the experiment
     void addVariant(const std::string& variantId, const StrategyVariant& variant, double trafficAllocation = 0.0);
     
@@ -69,7 +71,7 @@ public:
     Experiment getExperiment(const std::string& experimentId) const;
     
     // Assign a variant for a specific order book
-    StrategyVariant assignVariant(const std::string& experimentId, const OrderBookSnapshot& snapshot);
+    StrategyVariant assignVariant(const std::string& experimentId, const data_ingestion::OrderBookUpdate& snapshot);
     
     // Record outcome for a variant
     void recordOutcome(const std::string& experimentId, const std::string& variantId, const PerformanceMetrics& metrics);
@@ -100,7 +102,7 @@ private:
     std::map<std::string, double> earlyStoppingThresholds_;
     
     // Consistent hash function for variant assignment
-    uint64_t consistentHash(const OrderBookSnapshot& snapshot) const;
+    uint64_t consistentHash(const data_ingestion::OrderBookUpdate& snapshot);
     
     // Statistical significance testing
     bool isStatisticallySignificant(const ExperimentResults& results, double confidenceLevel) const;

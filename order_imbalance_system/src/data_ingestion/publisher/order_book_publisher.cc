@@ -333,7 +333,7 @@ OrderBookPublisher::OrderBookPublisher(const PublisherConfig& config)
                 // In a real implementation, we would deserialize the data
                 // For now, just create a dummy update
                 OrderBookUpdate update;
-                update.exchange_id = "unknown";
+                update.exchangeId = "unknown";
                 update.trading_pair = "unknown";
                 update.sequence_number = 0;
                 
@@ -380,10 +380,10 @@ bool OrderBookPublisher::updateConfig(const PublisherConfig& config) {
 }
 
 std::string OrderBookPublisher::createTopic(const OrderBookUpdate& update) {
-    // Format: market.orderbook.normalized.<exchange_id>.<trading_pair>
+    // Format: market.orderbook.normalized.<exchangeId>.<trading_pair>
     std::stringstream ss;
     ss << "market.orderbook.normalized." 
-       << update.exchange_id << "." 
+       << update.exchangeId << "." 
        << update.trading_pair;
     
     return ss.str();
@@ -395,7 +395,7 @@ std::vector<uint8_t> OrderBookPublisher::serializeOrderBookUpdate(const OrderBoo
     std::stringstream ss;
     
     ss << "{";
-    ss << "\"exchange_id\":\"" << update.exchange_id << "\",";
+    ss << "\"exchangeId\":\"" << update.exchangeId << "\",";
     ss << "\"trading_pair\":\"" << update.trading_pair << "\",";
     ss << "\"sequence_number\":" << update.sequence_number << ",";
     ss << "\"exchange_timestamp\":" << update.exchange_timestamp << ",";

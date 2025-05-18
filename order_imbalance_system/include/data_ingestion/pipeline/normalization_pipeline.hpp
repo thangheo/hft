@@ -255,12 +255,12 @@ public:
     
     bool process(const MarketDataUpdate& input, OrderBookUpdate& output) override {
         // Get adapter for this exchange
-        auto adapter = adapter_factory_->createAdapter(input.exchange_id);
+        auto adapter = adapter_factory_->createAdapter(input.exchangeId);
         
         // Check if adapter can handle this update
         if (!adapter->canHandle(input)) {
             std::cerr << "Adapter cannot handle update type for exchange: " 
-                      << input.exchange_id << std::endl;
+                      << input.exchangeId << std::endl;
             return false;
         }
         
@@ -346,7 +346,7 @@ public:
         // Adjust exchange timestamp if needed
         if (output.exchange_timestamp > 0) {
             output.adjusted_timestamp = time_sync_->adjustTimestamp(
-                output.exchange_id, output.exchange_timestamp);
+                output.exchangeId, output.exchange_timestamp);
         } else {
             output.adjusted_timestamp = output.received_timestamp;
         }
@@ -464,7 +464,7 @@ public:
         if (!is_running_) return false;
         
         // Update metric
-        metrics_->increment_input_count(update.exchange_id, update.trading_pair);
+        metrics_->increment_input_count(update.exchangeId, update.trading_pair);
         
         // Push to input queue
         return input_queue_->push(update);

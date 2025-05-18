@@ -210,7 +210,7 @@
              
              // Populate signal from JSON
              signal.id = signalJson["id"];
-             signal.exchangeId = signalJson["exchange_id"];
+             signal.exchangeId = signalJson["exchangeId"];
              signal.tradingPair = signalJson["trading_pair"];
              signal.direction = signalJson["direction"] == "buy" ? Direction::BUY : Direction::SELL;
              signal.strength = signalJson["strength"];
@@ -249,7 +249,7 @@
              // Parse the payload
              json paramsJson = json::parse(payload);
              
-             ExchangeId exchangeId = paramsJson["exchange_id"];
+             ExchangeId exchangeId = paramsJson["exchangeId"];
              TradingPair tradingPair = paramsJson["trading_pair"];
              StrategyId strategyId = paramsJson["strategy_id"];
              
@@ -258,11 +258,11 @@
              
              // Create response JSON
              json paramsResultJson;
-             paramsResultJson["exchange_id"] = params.exchangeId;
+             paramsResultJson["exchangeId"] = params.exchangeId;
              paramsResultJson["trading_pair"] = params.tradingPair;
              paramsResultJson["max_position_size"] = params.maxPositionSize;
              paramsResultJson["max_order_size"] = params.maxOrderSize;
-             paramsResultJson["max_drawdown"] = params.maxDrawdown;
+             paramsResultJson["maxDrawdown"] = params.maxDrawdown;
              paramsResultJson["max_exposure"] = params.maxExposure;
              paramsResultJson["last_updated"] = params.lastUpdated;
              
@@ -278,11 +278,11 @@
              json paramsJson = json::parse(payload);
              
              RiskParameters params;
-             params.exchangeId = paramsJson["exchange_id"];
+             params.exchangeId = paramsJson["exchangeId"];
              params.tradingPair = paramsJson["trading_pair"];
              params.maxPositionSize = paramsJson["max_position_size"];
              params.maxOrderSize = paramsJson["max_order_size"];
-             params.maxDrawdown = paramsJson["max_drawdown"];
+             params.maxDrawdown = paramsJson["maxDrawdown"];
              params.maxExposure = paramsJson["max_exposure"];
              
              // Update the parameters

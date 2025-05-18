@@ -29,7 +29,7 @@ void onOrderBookUpdate(const OrderBookUpdate& update) {
     
     // Print basic information about the update
     std::cout << "Normalized Order Book Update:" << std::endl;
-    std::cout << "Exchange: " << update.exchange_id << std::endl;
+    std::cout << "Exchange: " << update.exchangeId << std::endl;
     std::cout << "Trading Pair: " << update.trading_pair << std::endl;
     std::cout << "Timestamp: " << update.exchange_timestamp << std::endl;
     std::cout << "Latency: " << std::fixed << std::setprecision(3) << latency_ms << "ms" << std::endl;

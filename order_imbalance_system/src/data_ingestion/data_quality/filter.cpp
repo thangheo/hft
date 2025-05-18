@@ -13,7 +13,7 @@ PriceJumpFilter::PriceJumpFilter(double threshold_percent)
 }
 
 bool PriceJumpFilter::detectAnomaly(OrderBookUpdate& update) {
-    std::string key = update.exchange_id + ":" + update.trading_pair;
+    std::string key = update.exchangeId + ":" + update.trading_pair;
     
     // Calculate mid price
     double mid_price = calculateMidPrice(update);
@@ -73,7 +73,7 @@ bool SpreadFilter::detectAnomaly(OrderBookUpdate& update) {
     double spread_percent = calculateSpreadPercent(update);
     
     if (spread_percent > max_spread_percent_) {
-        std::cerr << "Abnormal spread detected for " << update.exchange_id << ":" << update.trading_pair
+        std::cerr << "Abnormal spread detected for " << update.exchangeId << ":" << update.trading_pair
                   << ": " << spread_percent << "% (threshold: " << max_spread_percent_ << "%)" << std::endl;
         update.has_anomaly = true;
         update.anomaly_type = "wide_spread";
@@ -132,7 +132,7 @@ VolumeFilter::VolumeFilter(double threshold_percent)
 }
 
 bool VolumeFilter::detectAnomaly(OrderBookUpdate& update) {
-    std::string key = update.exchange_id + ":" + update.trading_pair;
+    std::string key = update.exchangeId + ":" + update.trading_pair;
     
     // Calculate total volume
     double total_volume = calculateTotalVolume(update);

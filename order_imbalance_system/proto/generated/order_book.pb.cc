@@ -72,7 +72,7 @@ PROTOBUF_CONSTEXPR OrderBookUpdate::OrderBookUpdate(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_.bids_)*/{}
   , /*decltype(_impl_.asks_)*/{}
-  , /*decltype(_impl_.exchange_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.exchangeId_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.trading_pair_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.checksum_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.metadata_)*/nullptr
@@ -175,7 +175,7 @@ const uint32_t TableStruct_order_5fbook_2eproto::offsets[] PROTOBUF_SECTION_VARI
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::trading::data_ingestion::proto::OrderBookUpdate, _impl_.exchange_id_),
+  PROTOBUF_FIELD_OFFSET(::trading::data_ingestion::proto::OrderBookUpdate, _impl_.exchangeId_),
   PROTOBUF_FIELD_OFFSET(::trading::data_ingestion::proto::OrderBookUpdate, _impl_.trading_pair_),
   PROTOBUF_FIELD_OFFSET(::trading::data_ingestion::proto::OrderBookUpdate, _impl_.exchange_timestamp_),
   PROTOBUF_FIELD_OFFSET(::trading::data_ingestion::proto::OrderBookUpdate, _impl_.received_timestamp_),
@@ -1180,7 +1180,7 @@ OrderBookUpdate::OrderBookUpdate(const OrderBookUpdate& from)
   new (&_impl_) Impl_{
       decltype(_impl_.bids_){from._impl_.bids_}
     , decltype(_impl_.asks_){from._impl_.asks_}
-    , decltype(_impl_.exchange_id_){}
+    , decltype(_impl_.exchangeId_){}
     , decltype(_impl_.trading_pair_){}
     , decltype(_impl_.checksum_){}
     , decltype(_impl_.metadata_){nullptr}
@@ -1191,12 +1191,12 @@ OrderBookUpdate::OrderBookUpdate(const OrderBookUpdate& from)
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _impl_.exchange_id_.InitDefault();
+  _impl_.exchangeId_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.exchange_id_.Set("", GetArenaForAllocation());
+    _impl_.exchangeId_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   if (!from._internal_exchange_id().empty()) {
-    _this->_impl_.exchange_id_.Set(from._internal_exchange_id(), 
+    _this->_impl_.exchangeId_.Set(from._internal_exchange_id(), 
       _this->GetArenaForAllocation());
   }
   _impl_.trading_pair_.InitDefault();
@@ -1231,7 +1231,7 @@ inline void OrderBookUpdate::SharedCtor(
   new (&_impl_) Impl_{
       decltype(_impl_.bids_){arena}
     , decltype(_impl_.asks_){arena}
-    , decltype(_impl_.exchange_id_){}
+    , decltype(_impl_.exchangeId_){}
     , decltype(_impl_.trading_pair_){}
     , decltype(_impl_.checksum_){}
     , decltype(_impl_.metadata_){nullptr}
@@ -1241,9 +1241,9 @@ inline void OrderBookUpdate::SharedCtor(
     , decltype(_impl_.is_snapshot_){false}
     , /*decltype(_impl_._cached_size_)*/{}
   };
-  _impl_.exchange_id_.InitDefault();
+  _impl_.exchangeId_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.exchange_id_.Set("", GetArenaForAllocation());
+    _impl_.exchangeId_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   _impl_.trading_pair_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -1268,7 +1268,7 @@ inline void OrderBookUpdate::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
   _impl_.bids_.~RepeatedPtrField();
   _impl_.asks_.~RepeatedPtrField();
-  _impl_.exchange_id_.Destroy();
+  _impl_.exchangeId_.Destroy();
   _impl_.trading_pair_.Destroy();
   _impl_.checksum_.Destroy();
   if (this != internal_default_instance()) delete _impl_.metadata_;
@@ -1286,7 +1286,7 @@ void OrderBookUpdate::Clear() {
 
   _impl_.bids_.Clear();
   _impl_.asks_.Clear();
-  _impl_.exchange_id_.ClearToEmpty();
+  _impl_.exchangeId_.ClearToEmpty();
   _impl_.trading_pair_.ClearToEmpty();
   _impl_.checksum_.ClearToEmpty();
   if (GetArenaForAllocation() == nullptr && _impl_.metadata_ != nullptr) {
@@ -1305,13 +1305,13 @@ const char* OrderBookUpdate::_InternalParse(const char* ptr, ::_pbi::ParseContex
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // string exchange_id = 1;
+      // string exchangeId = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           auto str = _internal_mutable_exchange_id();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.data_ingestion.proto.OrderBookUpdate.exchange_id"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.data_ingestion.proto.OrderBookUpdate.exchangeId"));
         } else
           goto handle_unusual;
         continue;
@@ -1430,12 +1430,12 @@ uint8_t* OrderBookUpdate::_InternalSerialize(
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // string exchange_id = 1;
+  // string exchangeId = 1;
   if (!this->_internal_exchange_id().empty()) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_exchange_id().data(), static_cast<int>(this->_internal_exchange_id().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.data_ingestion.proto.OrderBookUpdate.exchange_id");
+      "trading.data_ingestion.proto.OrderBookUpdate.exchangeId");
     target = stream->WriteStringMaybeAliased(
         1, this->_internal_exchange_id(), target);
   }
@@ -1537,7 +1537,7 @@ size_t OrderBookUpdate::ByteSizeLong() const {
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
   }
 
-  // string exchange_id = 1;
+  // string exchangeId = 1;
   if (!this->_internal_exchange_id().empty()) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
@@ -1652,8 +1652,8 @@ void OrderBookUpdate::InternalSwap(OrderBookUpdate* other) {
   _impl_.bids_.InternalSwap(&other->_impl_.bids_);
   _impl_.asks_.InternalSwap(&other->_impl_.asks_);
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.exchange_id_, lhs_arena,
-      &other->_impl_.exchange_id_, rhs_arena
+      &_impl_.exchangeId_, lhs_arena,
+      &other->_impl_.exchangeId_, rhs_arena
   );
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.trading_pair_, lhs_arena,

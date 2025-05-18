@@ -6,28 +6,28 @@
 namespace trading {
 namespace data_ingestion {
 
-ExchangeConnector::ExchangeConnector(const std::string& exchange_id, 
+ExchangeConnector::ExchangeConnector(const std::string& exchangeId, 
                                      MarketDataCallback callback)
-    : exchange_id_(exchange_id), 
+    : exchangeId_(exchangeId), 
       data_callback_(std::move(callback)), 
       connected_(false),
       reconnect_attempt_limit_(5),
       current_reconnect_attempts_(0),
       reconnect_delay_ms_(1000) {
     
-    std::cout << "Initializing connector for exchange: " << exchange_id << std::endl;
+    std::cout << "Initializing connector for exchange: " << exchangeId << std::endl;
 }
 
 void ExchangeConnector::reportError(const std::string& error_msg, bool is_fatal) {
     std::lock_guard<std::mutex> lock(error_mutex_);
-    std::cerr << "[" << exchange_id_ << "] Error: " << error_msg << std::endl;
+    std::cerr << "[" << exchangeId_ << "] Error: " << error_msg << std::endl;
     
     last_error_ = error_msg;
     last_error_time_ = std::chrono::system_clock::now();
     
     // If fatal, disconnect and possibly attempt reconnection
     if (is_fatal && connected_) {
-        std::cout << "[" << exchange_id_ << "] Fatal error, disconnecting..." << std::endl;
+        std::cout << "[" << exchangeId_ << "] Fatal error, disconnecting..." << std::endl;
         disconnect();
         tryReconnect();
     }
@@ -45,12 +45,12 @@ void ExchangeConnector::setReconnectionParameters(int attempt_limit, int delay_m
 
 bool ExchangeConnector::tryReconnect() {
     if (current_reconnect_attempts_ >= reconnect_attempt_limit_) {
-        std::cerr << "[" << exchange_id_ << "] Exceeded reconnection attempt limit." << std::endl;
+        std::cerr << "[" << exchangeId_ << "] Exceeded reconnection attempt limit." << std::endl;
         return false;
     }
     
     current_reconnect_attempts_++;
-    std::cout << "[" << exchange_id_ << "] Attempting reconnect (" 
+    std::cout << "[" << exchangeId_ << "] Attempting reconnect (" 
               << current_reconnect_attempts_ << "/" 
               << reconnect_attempt_limit_ << ")..." << std::endl;
     
@@ -62,7 +62,7 @@ bool ExchangeConnector::tryReconnect() {
     bool success = connect();
     
     if (success) {
-        std::cout << "[" << exchange_id_ << "] Reconnected successfully." << std::endl;
+        std::cout << "[" << exchangeId_ << "] Reconnected successfully." << std::endl;
         current_reconnect_attempts_ = 0;
         
         // Resubscribe to all previously subscribed data

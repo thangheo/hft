@@ -76,7 +76,7 @@
   * Represents a complete volume profile for a trading pair
   */
  struct VolumeProfile {
-     std::string exchange_id;
+     std::string exchangeId;
      std::string trading_pair;
      core::Timestamp start_time;
      core::Timestamp end_time;
@@ -88,13 +88,13 @@
      
      // Default constructor
      VolumeProfile()
-         : exchange_id(""), trading_pair(""),
+         : exchangeId(""), trading_pair(""),
            start_time(std::chrono::system_clock::now()),
            end_time(std::chrono::system_clock::now()) {}
      
      // Constructor with exchange and pair
      VolumeProfile(const std::string& exchange, const std::string& pair)
-         : exchange_id(exchange), trading_pair(pair),
+         : exchangeId(exchange), trading_pair(pair),
            start_time(std::chrono::system_clock::now()),
            end_time(std::chrono::system_clock::now()) {}
  };
@@ -123,14 +123,14 @@
      /**
       * Creates a volume profile analyzer for a specific exchange and trading pair
       */
-     VolumeProfileAnalyzer(const std::string& exchange_id, const std::string& trading_pair, 
+     VolumeProfileAnalyzer(const std::string& exchangeId, const std::string& trading_pair, 
                            const ParameterSet& params = ParameterSet());
     VolumeProfileAnalyzer(const VolumeProfileConfig& config);
 
      /**
       * Creates a volume profile analyzer with parameters explicitly specified
       */
-     VolumeProfileAnalyzer(const std::string& exchange_id, const std::string& trading_pair, 
+     VolumeProfileAnalyzer(const std::string& exchangeId, const std::string& trading_pair, 
                            int num_price_ranges, double range_size_percent);
      
      virtual ~VolumeProfileAnalyzer() = default;
@@ -196,7 +196,7 @@
       * Get the exchange ID
       * @return Exchange ID
       */
-     const std::string& getExchangeId() const { return exchange_id_; }
+     const std::string& getExchangeId() const { return exchangeId_; }
      
      /**
       * Get the trading pair
@@ -276,7 +276,7 @@
      virtual std::vector<double> detectVolumeImbalanceZones(double threshold = 3.0) const;
      
      // Exchange and trading pair identification
-     std::string exchange_id_;
+     std::string exchangeId_;
      std::string trading_pair_;
      
      // Configuration
@@ -300,7 +300,7 @@
  
  // Factory function to create VolumeProfileAnalyzer instances
  std::shared_ptr<VolumeProfileAnalyzer> createVolumeProfileAnalyzer(
-     const std::string& exchange_id, 
+     const std::string& exchangeId, 
      const std::string& trading_pair,
      const ParameterSet& params = ParameterSet());
  

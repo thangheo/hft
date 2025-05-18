@@ -54,15 +54,15 @@ double OrderBookDelta::getTotalRemovedAskVolume() const {
 
 // OrderBook constructors
 OrderBook::OrderBook(ExchangeId exchange, const Symbol& symbol, OrderBookCallback callback)
-    : exchange_id_(exchange),
+    : exchangeId_(exchange),
       symbol_(symbol),
       callback_(std::move(callback)),
       sequence_number_(0),
       is_valid_(false) {
 }
 
-OrderBook::OrderBook(const std::string& exchange_id, const std::string& trading_pair, OrderBookCallback callback)
-    : exchange_id_(exchange_id),
+OrderBook::OrderBook(const std::string& exchangeId, const std::string& trading_pair, OrderBookCallback callback)
+    : exchangeId_(exchangeId),
       callback_(std::move(callback)),
       sequence_number_(0),
       is_valid_(false) {
@@ -94,7 +94,7 @@ bool OrderBook::applySnapshot(const std::vector<PriceLevel>& bids,
     
     // Initialize a delta for this snapshot
     OrderBookDelta delta{
-        .exchange_id = exchangeIdToString(exchange_id_),
+        .exchangeId = exchangeIdToString(exchangeId_),
         .trading_pair = symbol_.toString(),
         .timestamp = timestamp,
         .sequence_number = sequence_number
@@ -153,7 +153,7 @@ bool OrderBook::applyUpdate(const std::vector<PriceLevel>& bids,
         // We missed some updates, invalidate the book
         is_valid_ = false;
         std::cerr << "Sequence gap detected for "
-                  << exchange_id_ << ":"
+                  << exchangeId_ << ":"
                   << symbol_.base << "/" << symbol_.quote
                   << " (" << sequence_number_
                   << " -> " << sequence_number << ")" << std::endl;
@@ -167,7 +167,7 @@ bool OrderBook::applyUpdate(const std::vector<PriceLevel>& bids,
     
     // Initialize a delta for this update
     OrderBookDelta delta{
-        .exchange_id = exchangeIdToString(exchange_id_),
+        .exchangeId = exchangeIdToString(exchangeId_),
         .trading_pair = symbol_.toString(),
         .timestamp = timestamp,
         .sequence_number = sequence_number
@@ -300,7 +300,7 @@ OrderBookDelta OrderBook::getOrderBookDelta(Timestamp previous_timestamp) const 
     
     // Initialize the delta result
     OrderBookDelta result{
-        .exchange_id = exchangeIdToString(exchange_id_),
+        .exchangeId = exchangeIdToString(exchangeId_),
         .trading_pair = symbol_.toString(),
         .timestamp = timestamp_,
         .sequence_number = sequence_number_
@@ -374,7 +374,7 @@ OrderBookUpdate OrderBook::getSnapshot(int depth) const {
     std::lock_guard<std::mutex> lock(mutex_);
     
     OrderBookUpdate update;
-    update.exchange_id = exchangeIdToString(exchange_id_);
+    update.exchangeId = exchangeIdToString(exchangeId_);
     update.trading_pair = symbol_.toString();
     update.exchange_timestamp = timestamp_.time_since_epoch().count();
     update.received_timestamp = last_update_time_.time_since_epoch().count();

@@ -197,7 +197,7 @@ void BinanceWebSocketClient::processOrderBookData(const std::string& symbol,
     
     try {
         MarketDataUpdate update;
-        update.exchange_id = "binance";
+        update.exchangeId = "binance";
         update.trading_pair = symbol;
         update.update_type = "orderbook";
         
@@ -230,7 +230,7 @@ void BinanceWebSocketClient::processTrade(const std::string& symbol, const json&
     
     try {
         MarketDataUpdate update;
-        update.exchange_id = "binance";
+        update.exchangeId = "binance";
         update.trading_pair = symbol;
         update.update_type = "trade";
         
@@ -265,7 +265,7 @@ void BinanceWebSocketClient::processTicker(const std::string& symbol, const json
     
     try {
         MarketDataUpdate update;
-        update.exchange_id = "binance";
+        update.exchangeId = "binance";
         update.trading_pair = symbol;
         update.update_type = "ticker";
         
@@ -298,7 +298,7 @@ void BinanceWebSocketClient::processBookTicker(const std::string& symbol, const 
     
     try {
         MarketDataUpdate update;
-        update.exchange_id = "binance";
+        update.exchangeId = "binance";
         update.trading_pair = symbol;
         update.update_type = "bookTicker";
         

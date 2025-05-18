@@ -32,7 +32,7 @@
   * Metrics related to liquidity flow
   */
  struct LiquidityMetrics {
-     std::string exchange_id;
+     std::string exchangeId;
      std::string trading_pair;
      core::Timestamp timestamp;
      
@@ -72,7 +72,7 @@
      };
      
      Type type;
-     std::string exchange_id;
+     std::string exchangeId;
      std::string trading_pair;
      core::Timestamp timestamp;
      core::Direction direction;          // core::Direction implied by this event
@@ -83,7 +83,7 @@
      
      LiquidityEvent(Type t, const std::string& exchange, const std::string& pair,
                    core::Timestamp ts, core::Direction dir, double price, double qty, double sig)
-         : type(t), exchange_id(exchange), trading_pair(pair),
+         : type(t), exchangeId(exchange), trading_pair(pair),
            timestamp(ts), direction(dir), price_level(price),
            quantity(qty), significance(sig) {}
  };
@@ -125,14 +125,14 @@
      /**
       * Creates a liquidity flow monitor for a specific exchange and trading pair
       */
-     LiquidityFlowMonitor(const std::string& exchange_id, const std::string& trading_pair, 
+     LiquidityFlowMonitor(const std::string& exchangeId, const std::string& trading_pair, 
                           const ParameterSet& params = ParameterSet());
      LiquidityFlowMonitor(const LiquidityFlowConfig& config);
 
      /**
       * Creates a liquidity flow monitor with parameters explicitly specified
       */
-     LiquidityFlowMonitor(const std::string& exchange_id, const std::string& trading_pair, 
+     LiquidityFlowMonitor(const std::string& exchangeId, const std::string& trading_pair, 
                           double large_order_threshold, int history_window_seconds);
      
      virtual ~LiquidityFlowMonitor() = default;
@@ -179,7 +179,7 @@
       * Get the exchange ID
       * @return Exchange ID
       */
-     const std::string& getExchangeId() const { return exchange_id_; }
+     const std::string& getExchangeId() const { return exchangeId_; }
      
      /**
       * Get the trading pair
@@ -281,7 +281,7 @@
      virtual double calculateTypicalOrderSize() const;
      
      // Exchange and trading pair identification
-     std::string exchange_id_;
+     std::string exchangeId_;
      std::string trading_pair_;
      
      // Configuration
@@ -304,7 +304,7 @@
  
  // Factory function to create LiquidityFlowMonitor instances
  std::shared_ptr<LiquidityFlowMonitor> createLiquidityFlowMonitor(
-     const std::string& exchange_id, 
+     const std::string& exchangeId, 
      const std::string& trading_pair,
      const ParameterSet& params = ParameterSet());
  

@@ -20,13 +20,13 @@ void SmartOrderRouter::initialize(const std::vector<ExchangeInfo>& exchanges) {
     
     exchanges_.clear();
     for (const auto& exchange : exchanges) {
-        exchanges_[exchange.exchange_id] = exchange;
+        exchanges_[exchange.exchangeId] = exchange;
     }
 }
 
 void SmartOrderRouter::updateExchangeInfo(const ExchangeInfo& exchange_info) {
     std::lock_guard<std::mutex> lock(mutex_);
-    exchanges_[exchange_info.exchange_id] = exchange_info;
+    exchanges_[exchange_info.exchangeId] = exchange_info;
 }
 RoutingResult SmartOrderRouter::selectExchange(const models::OrderPtr& order) const {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -74,11 +74,11 @@ RoutingResult SmartOrderRouter::routeOrder(const models::OrderPtr& order) const 
     return routing_strategy_(order, available_exchanges, routing_factors_);
 }
 
-bool SmartOrderRouter::routeToExchange(models::OrderPtr& order, const std::string& exchange_id) const {
+bool SmartOrderRouter::routeToExchange(models::OrderPtr& order, const std::string& exchangeId) const {
     std::lock_guard<std::mutex> lock(mutex_);
     
     // Check if exchange exists and supports this trading pair and order type
-    auto it = exchanges_.find(exchange_id);
+    auto it = exchanges_.find(exchangeId);
     if (it == exchanges_.end()) {
         return false;
     }
@@ -90,7 +90,7 @@ bool SmartOrderRouter::routeToExchange(models::OrderPtr& order, const std::strin
     }
     
     // Set the exchange ID on the order
-    order->setExchangeId(exchange_id);
+    order->setExchangeId(exchangeId);
     return true;
 }
 
@@ -131,7 +131,7 @@ RoutingResult SmartOrderRouter::defaultRoutingStrategy(
     std::vector<std::pair<std::string, double>> exchange_scores;
     for (const auto& exchange : exchanges) {
         double score = calculateExchangeScore(exchange, order);
-        exchange_scores.emplace_back(exchange.exchange_id, score);
+        exchange_scores.emplace_back(exchange.exchangeId, score);
     }
     
     // Find exchange with highest score
@@ -144,11 +144,11 @@ RoutingResult SmartOrderRouter::defaultRoutingStrategy(
     // Build routing result
     RoutingResult result;
     if (best_exchange != exchange_scores.end()) {
-        result.exchange_id = best_exchange->first;
+        result.exchangeId = best_exchange->first;
         result.score = best_exchange->second;
         result.reason = "Selected based on optimal routing score";
     } else {
-        result.exchange_id = "";
+        result.exchangeId = "";
         result.score = 0.0;
         result.reason = "No suitable exchange found";
     }

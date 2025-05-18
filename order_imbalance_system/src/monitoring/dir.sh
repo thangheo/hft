@@ -826,7 +826,7 @@ strategy_performance:
     - returns
     - sharpe_ratio
     - sortino_ratio
-    - max_drawdown
+    - maxDrawdown
     - win_loss_ratio
   performance_window_days: 30
   # TODO: Add additional strategy performance settings

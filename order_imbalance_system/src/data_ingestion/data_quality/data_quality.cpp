@@ -51,7 +51,7 @@ bool DataQualityControl::validateUpdate(OrderBookUpdate& update) {
     
     // Step 2: Validate data structure
     if (!validator_->validate(update, validation_context_)) {
-        std::cerr << "Validation failed for " << update.exchange_id << ":" << update.trading_pair << std::endl;
+        std::cerr << "Validation failed for " << update.exchangeId << ":" << update.trading_pair << std::endl;
         for (const auto& error : validation_context_.errors) {
             std::cerr << "  - " << error << std::endl;
         }
@@ -60,7 +60,7 @@ bool DataQualityControl::validateUpdate(OrderBookUpdate& update) {
     
     // Step 3: Detect anomalies
     if (!anomaly_detector_->detectAnomalies(update)) {
-        std::cerr << "Anomaly detected for " << update.exchange_id << ":" << update.trading_pair 
+        std::cerr << "Anomaly detected for " << update.exchangeId << ":" << update.trading_pair 
                   << ": " << update.anomaly_type << " - " << update.anomaly_details << std::endl;
         return false;
     }
@@ -129,7 +129,7 @@ double PriceRangeFilter::getReasonablePriceRange(const std::string& symbol) cons
 
 // SequenceGapFilter implementation
 bool SequenceGapFilter::filter(OrderBookUpdate& update) {
-    std::string key = update.exchange_id + ":" + update.trading_pair;
+    std::string key = update.exchangeId + ":" + update.trading_pair;
     
     auto it = last_sequence_numbers_.find(key);
     if (it == last_sequence_numbers_.end()) {

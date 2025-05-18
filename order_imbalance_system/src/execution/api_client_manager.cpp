@@ -90,7 +90,7 @@ std::string ApiClientManager::getHealthStatus() const {
         const auto& exchangeId = pair.first;
         const auto& client = pair.second;
         nlohmann::json clientHealth;
-        clientHealth["exchange_id"] = exchangeId;
+        clientHealth["exchangeId"] = exchangeId;
         clientHealth["connected"] = client->isConnected();
         health["clients"].push_back(clientHealth);
     }

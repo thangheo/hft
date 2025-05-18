@@ -34,21 +34,21 @@
      std::map<std::string, double> supporting_metrics;  // Additional metrics supporting the imbalance
      uint64_t event_id;                                 // Unique identifier for this event
      core::ConfidenceLevel confidence;                  // Confidence level in this imbalance
-     core::ExchangeId exchange_id;                      // Exchange where imbalance was detected
+     core::ExchangeId exchangeId;                      // Exchange where imbalance was detected
      core::Symbol symbol;                               // Trading pair
  
      // Constructor with required fields
      ImbalanceEvent(ImbalanceType t, core::Direction d, double s, core::Timestamp dt)
          : type(t), direction(d), strength(s), detection_time(dt),
            primary_metric(0.0), event_id(0), confidence(core::ConfidenceLevel::MEDIUM),
-           exchange_id(core::ExchangeId()), symbol(core::Symbol()) {}
+           exchangeId(core::ExchangeId()), symbol(core::Symbol()) {}
      
      // Default constructor
      ImbalanceEvent() 
          : type(ImbalanceType::VOLUME_IMBALANCE), direction(core::Direction::NEUTRAL),
            strength(0.0), detection_time(core::Timestamp()), primary_metric(0.0),
            event_id(0), confidence(core::ConfidenceLevel::MEDIUM),
-           exchange_id(core::ExchangeId()), symbol(core::Symbol()) {}
+           exchangeId(core::ExchangeId()), symbol(core::Symbol()) {}
            
      // Add a supporting metric
      void addSupportingMetric(const std::string& name, double value) {

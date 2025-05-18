@@ -71,7 +71,7 @@
                      // Create MarketData from JSON
                      MarketData marketData;
                      marketData.tradingPair = json["trading_pair"];
-                     marketData.exchangeId = json["exchange_id"];
+                     marketData.exchangeId = json["exchangeId"];
                      marketData.timestamp = json["timestamp"];
                      marketData.price = json["price"];
                      marketData.volume = json["volume"];
@@ -96,7 +96,7 @@
          nlohmann::json json;
          json["order_id"] = request.orderId;
          json["client_order_id"] = request.clientOrderId;
-         json["exchange_id"] = request.exchangeId;
+         json["exchangeId"] = request.exchangeId;
          json["trading_pair"] = request.tradingPair;
          json["side"] = request.side == OrderSide::BUY ? "buy" : "sell";
          json["type"] = request.type;
@@ -123,7 +123,7 @@
          OrderRequest request;
          request.orderId = json["order_id"];
          request.clientOrderId = json["client_order_id"];
-         request.exchangeId = json["exchange_id"];
+         request.exchangeId = json["exchangeId"];
          request.tradingPair = json["trading_pair"];
          request.side = json["side"] == "buy" ? OrderSide::BUY : OrderSide::SELL;
          request.type = json["type"];
@@ -215,7 +215,7 @@
              
              // Add exchange ID if provided
              if (exchangeId) {
-                 request["exchange_id"] = *exchangeId;
+                 request["exchangeId"] = *exchangeId;
              }
              
              // Send request
@@ -226,7 +226,7 @@
              if (responseJson["success"].get<bool>()) {
                  MarketData marketData;
                  marketData.tradingPair = responseJson["data"]["trading_pair"];
-                 marketData.exchangeId = responseJson["data"]["exchange_id"];
+                 marketData.exchangeId = responseJson["data"]["exchangeId"];
                  marketData.timestamp = responseJson["data"]["timestamp"];
                  marketData.price = responseJson["data"]["price"];
                  marketData.volume = responseJson["data"]["volume"];
@@ -260,7 +260,7 @@
              
              // Add exchange ID if provided
              if (exchangeId) {
-                 request["exchange_id"] = *exchangeId;
+                 request["exchangeId"] = *exchangeId;
              }
              
              // Send request
@@ -302,7 +302,7 @@
              
              // Add exchange ID if provided
              if (exchangeId) {
-                 request["exchange_id"] = *exchangeId;
+                 request["exchangeId"] = *exchangeId;
              }
              
              // Send request
@@ -342,7 +342,7 @@
              
              // Add exchange ID if provided
              if (exchangeId) {
-                 request["exchange_id"] = *exchangeId;
+                 request["exchangeId"] = *exchangeId;
              }
              
              // Send request
@@ -372,7 +372,7 @@
              // Create message
              nlohmann::json request = {
                  {"action", "get_order_history"},
-                 {"exchange_id", exchangeId},
+                 {"exchangeId", exchangeId},
                  {"trading_pair", tradingPair},
                  {"limit", limit}
              };
@@ -408,7 +408,7 @@
              // Create message
              nlohmann::json request = {
                  {"action", "get_exchange_balances"},
-                 {"exchange_id", exchangeId}
+                 {"exchangeId", exchangeId}
              };
              
              // Send request
@@ -460,7 +460,7 @@
              
              // Add exchange ID if provided
              if (exchangeId) {
-                 request["exchange_id"] = *exchangeId;
+                 request["exchangeId"] = *exchangeId;
              }
              
              // Send request
@@ -504,7 +504,7 @@
              
              // Add exchange ID if provided
              if (exchangeId) {
-                 request["exchange_id"] = *exchangeId;
+                 request["exchangeId"] = *exchangeId;
              }
              
              // Send request
@@ -535,7 +535,7 @@
              // Create message
              nlohmann::json request = {
                  {"action", "get_trading_fees"},
-                 {"exchange_id", exchangeId}
+                 {"exchangeId", exchangeId}
              };
              
              // Add trading pair if provided

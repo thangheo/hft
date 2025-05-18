@@ -61,7 +61,7 @@
                      ExecutionReport report;
                      report.orderId = json["order_id"];
                      report.exchangeOrderId = json["exchange_order_id"];
-                     report.exchangeId = json["exchange_id"];
+                     report.exchangeId = json["exchangeId"];
                      report.tradingPair = json["trading_pair"];
                      report.side = json["side"] == "buy" ? OrderSide::BUY : OrderSide::SELL;
                      report.quantity = json["quantity"];
@@ -89,7 +89,7 @@
          nlohmann::json json;
          json["order_id"] = request.orderId;
          json["client_order_id"] = request.clientOrderId;
-         json["exchange_id"] = request.exchangeId;
+         json["exchangeId"] = request.exchangeId;
          json["trading_pair"] = request.tradingPair;
          json["side"] = request.side == OrderSide::BUY ? "buy" : "sell";
          json["type"] = request.type;
@@ -116,7 +116,7 @@
          OrderRequest request;
          request.orderId = json["order_id"];
          request.clientOrderId = json["client_order_id"];
-         request.exchangeId = json["exchange_id"];
+         request.exchangeId = json["exchangeId"];
          request.tradingPair = json["trading_pair"];
          request.side = json["side"] == "buy" ? OrderSide::BUY : OrderSide::SELL;
          request.type = json["type"];
@@ -258,7 +258,7 @@
              // Create message
              nlohmann::json request = {
                  {"action", "cancel_all_orders"},
-                 {"exchange_id", exchangeId}
+                 {"exchangeId", exchangeId}
              };
              
              // Send request
@@ -288,7 +288,7 @@
              // Create message
              nlohmann::json request = {
                  {"action", "cancel_all_orders"},
-                 {"exchange_id", exchangeId},
+                 {"exchangeId", exchangeId},
                  {"trading_pair", tradingPair}
              };
              
@@ -358,7 +358,7 @@
              
              // Add exchange ID if provided
              if (exchangeId) {
-                 request["exchange_id"] = *exchangeId;
+                 request["exchangeId"] = *exchangeId;
              }
              
              // Send request
@@ -392,7 +392,7 @@
              // Create message
              nlohmann::json request = {
                  {"action", "is_exchange_available"},
-                 {"exchange_id", exchangeId}
+                 {"exchangeId", exchangeId}
              };
              
              // Send request
@@ -422,7 +422,7 @@
              // Create message
              nlohmann::json request = {
                  {"action", "get_exchange_status"},
-                 {"exchange_id", exchangeId}
+                 {"exchangeId", exchangeId}
              };
              
              // Send request

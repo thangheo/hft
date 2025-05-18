@@ -86,7 +86,7 @@ Experiment ABTestingFramework::getExperiment(const std::string& experimentId) co
     return Experiment("", "");
 }
 
-StrategyVariant ABTestingFramework::assignVariant(const std::string& experimentId, const OrderBookSnapshot& snapshot) {
+StrategyVariant ABTestingFramework::assignVariant(const std::string& experimentId, const data_ingestion::OrderBookUpdate& snapshot) {
     std::lock_guard<std::mutex> lock(mutex_);
     
     auto expIt = experiments_.find(experimentId);
@@ -310,31 +310,51 @@ void ABTestingFramework::enableEarlyStopping(const std::string& experimentId, bo
     earlyStoppingThresholds_[experimentId] = confidenceThreshold;
 }
 
-uint64_t ABTestingFramework::consistentHash(const OrderBookSnapshot& snapshot) const {
+
+
+
+uint64_t ABTestingFramework::consistentHash(const data_ingestion::OrderBookUpdate& snapshot) {
     // Simple hash function for consistent assignment based on order book characteristics
     uint64_t hash = 0;
     
     // Hash based on exchange ID and symbol
-    hash ^= std::hash<int>()(static_cast<int>(snapshot.exchange)) + 0x9e3779b9;
-    hash ^= std::hash<std::string>()(snapshot.symbol) + 0x9e3779b9;
+    // Convert exchange ID to string if it's not already a string
+    std::string exchangeIdStr;
+    if constexpr (std::is_same_v<decltype(snapshot.exchangeId), std::string>) {
+        exchangeIdStr = snapshot.exchangeId;
+    } else {
+        // Convert enum to integer and then to string
+        exchangeIdStr = snapshot.exchangeId;
+    }
+    hash ^= std::hash<std::string>()(exchangeIdStr) + 0x9e3779b9;
+    
+    // Symbol should already be a string
+    hash ^= std::hash<std::string>()(snapshot.symbol.toString()) + 0x9e3779b9;
     
     // Hash based on some order book metrics
     if (!snapshot.bids.empty() && !snapshot.asks.empty()) {
-        hash ^= std::hash<double>()(snapshot.bids[0].price) + 0x9e3779b9;
-        hash ^= std::hash<double>()(snapshot.asks[0].price) + 0x9e3779b9;
+        // Use best bid and ask prices
+        hash ^= std::hash<double>()(snapshot.bids[0].getPrice()) + 0x9e3779b9;
+        hash ^= std::hash<double>()(snapshot.asks[0].getPrice()) + 0x9e3779b9;
         
         // Incorporate volumes at best levels
-        if (!snapshot.bids.empty()) {
-            hash ^= std::hash<double>()(snapshot.bids[0].quantity) + 0x9e3779b9;
-        }
-        if (!snapshot.asks.empty()) {
-            hash ^= std::hash<double>()(snapshot.asks[0].quantity) + 0x9e3779b9;
-        }
+        hash ^= std::hash<double>()(snapshot.bids[0].getQuantity()) + 0x9e3779b9;
+        hash ^= std::hash<double>()(snapshot.asks[0].getQuantity()) + 0x9e3779b9;
+    }
+    
+    // Calculate mid price if possible
+    if (!snapshot.bids.empty() && !snapshot.asks.empty()) {
+        double midPrice = (snapshot.bids[0].getPrice() + snapshot.asks[0].getPrice()) / 2.0;
+        hash ^= std::hash<double>()(midPrice) + 0x9e3779b9;
     }
     
     // Incorporate timestamp for time variability while maintaining consistency
-    uint64_t timeBucket = snapshot.timestamp / (24 * 60 * 60 * 1000);  // Daily buckets
+    // Assuming snapshot.timestamp is already in milliseconds
+    uint64_t timeBucket = snapshot.exchange_timestamp / (24 * 60 * 60 * 1000); // Daily buckets
     hash ^= std::hash<uint64_t>()(timeBucket) + 0x9e3779b9;
+    
+    // Also incorporate sequence number for extra uniqueness
+    hash ^= std::hash<uint64_t>()(snapshot.sequence_number) + 0x9e3779b9;
     
     return hash;
 }
@@ -481,7 +501,7 @@ void ABTestingFramework::updateTrafficAllocation(const std::string& experimentId
     }
     
     // Find best sample
-    int bestIdx = 0;
+    size_t bestIdx = 0;
     for (size_t i = 1; i < samples.size(); ++i) {
         if (samples[i] > samples[bestIdx]) {
             bestIdx = i;
@@ -498,6 +518,82 @@ void ABTestingFramework::updateTrafficAllocation(const std::string& experimentId
         }
     }
 }
+// void ABTestingFramework::updateTrafficAllocation(const std::string& experimentId) {
+//     // Multi-armed bandit implementation using Thompson sampling
+    
+//     auto resultsIt = results_.find(experimentId);
+//     auto experimentIt = experiments_.find(experimentId);
+    
+//     if (resultsIt == results_.end() || experimentIt == experiments_.end()) {
+//         return;
+//     }
+    
+//     ExperimentResults& results = resultsIt->second;
+//     Experiment& experiment = experimentIt->second;
+    
+//     // Get variant IDs
+//     std::vector<std::string> variantIds = experiment.getVariantIds();
+    
+//     // Check if we have enough data
+//     bool enoughData = true;
+//     for (const auto& variantId : variantIds) {
+//         auto variantIt = results.variantResults.find(variantId);
+//         if (variantIt == results.variantResults.end() || variantIt->second.metrics.size() < 5) {
+//             enoughData = false;
+//             break;
+//         }
+//     }
+    
+//     if (!enoughData) {
+//         // Not enough data, use equal allocation
+//         double equalAllocation = 1.0 / variantIds.size();
+//         for (const auto& variantId : variantIds) {
+//             experiment.setTrafficAllocation(variantId, equalAllocation);
+//         }
+//         return;
+//     }
+    
+//     // Thompson sampling
+//     std::random_device rd;
+//     std::mt19937 gen(rd());
+    
+//     std::vector<double> samples;
+//     for (const auto& variantId : variantIds) {
+//         const auto& variant = results.variantResults.at(variantId);
+        
+//         // Calculate mean and standard deviation of Sharpe ratio
+//         double mean = variant.aggregateMetrics.sharpeRatio;
+        
+//         double sumSq = 0.0;
+//         for (const auto& metric : variant.metrics) {
+//             double diff = metric.sharpeRatio - mean;
+//             sumSq += diff * diff;
+//         }
+//         double stdDev = std::sqrt(sumSq / variant.metrics.size());
+        
+//         // Sample from normal distribution
+//         std::normal_distribution<> dist(mean, stdDev + 0.0001);  // Add small constant to avoid division by zero
+//         samples.push_back(dist(gen));
+//     }
+    
+//     // Find best sample
+//     int bestIdx = 0;
+//     for (size_t i = 1; i < samples.size(); ++i) {
+//         if (samples[i] > samples[bestIdx]) {
+//             bestIdx = i;
+//         }
+//     }
+    
+//     // Allocate more traffic to the best variant, but keep some exploration
+//     for (size_t i = 0; i < variantIds.size(); ++i) {
+//         if (i == bestIdx) {
+//             experiment.setTrafficAllocation(variantIds[i], 0.8);  // 80% to best
+//         } else {
+//             // Distribute remaining 20% equally among others
+//             experiment.setTrafficAllocation(variantIds[i], 0.2 / (variantIds.size() - 1));
+//         }
+//     }
+// }
 
 } // namespace strategy
 } // namespace trading
