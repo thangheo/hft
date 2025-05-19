@@ -5,7 +5,7 @@
  * Created: 2025-04-29
  */
 
- #include "data_interface.hpp"
+ #include "interfaces/data_interface.hpp"
  #include <common/zeromq_client.hpp>
  #include <common/logger.hpp>
  #include <nlohmann/json.hpp>

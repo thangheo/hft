@@ -11,6 +11,7 @@
 namespace trading {
 namespace execution {
 
+
 enum class ExchangeRequestType {
     PlaceOrder,
     CancelOrder,

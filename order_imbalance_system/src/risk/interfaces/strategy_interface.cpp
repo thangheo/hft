@@ -5,7 +5,7 @@
  * Created: 2025-04-29
  */
 
- #include "strategy_interface.hpp"
+ #include "interfaces/strategy_interface.hpp"
  #include <common/zeromq_client.hpp>
  #include <common/logger.hpp>
 

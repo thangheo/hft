@@ -17,7 +17,8 @@
 #include "interfaces/strategy_interface.hpp"
 #include "interfaces/execution_interface.hpp"
 #include "interfaces/data_interface.hpp"
-
+#include "execution/models/execution_report.hpp"
+#include "interfaces/strategy_interface.hpp"
 #include <atomic>
 #include <memory>
 #include <mutex>
@@ -27,11 +28,13 @@
 
 namespace trading   {
 namespace risk {
+using namespace trading::execution::models;
 
 /**
  * The Risk Manager is the central coordinating component for all risk subsystems.
  * It orchestrates risk checks, monitors trading activity, and enforces risk limits.
  */
+
 class RiskManager {
 public:
     /**

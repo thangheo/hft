@@ -1,9 +1,5 @@
 # Risk Management System Architecture Summary
 
-## Overview
-
-I've designed a comprehensive set of header files for a risk management system in a high-frequency crypto trading platform. The architecture follows the specifications in the provided documents and implements a layered, modular design with clear separation of concerns and well-defined interfaces between components.
-
 ## Core Components
 
 ### Risk Types and Configuration

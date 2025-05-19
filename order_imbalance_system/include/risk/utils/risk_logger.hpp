@@ -2,21 +2,26 @@
 
 #include "../risk_types.hpp"
 #include "../risk_config.hpp"
-
+#include "core/time.hpp"
+#include "core/types.hpp"
+#include "risk_types.hpp"
 #include <string>
+#include <optional>
 #include <memory>
 #include <sstream>
 #include <map>
 #include <vector>
 #include <functional>
 #include <mutex>
+#include <atomic>
 
+namespace trading {
 namespace risk {
 
-/**
+    /**
  * Enum for log levels
  */
-enum class LogLevel {
+enum class LogLevel : int {
     DEBUG,
     INFO,
     WARN,
@@ -28,7 +33,7 @@ enum class LogLevel {
  * Structure to represent a log entry
  */
 struct LogEntry {
-    Timestamp timestamp;
+    core::Timestamp timestamp;
     LogLevel level;
     std::string component;
     std::string message;
@@ -189,3 +194,4 @@ private:
 #define RISK_LOG_FATAL(component, message, ...) RISK_LOGGER.fatal(component, message, __VA_ARGS__)
 
 } // namespace risk
+} // namespace trading
