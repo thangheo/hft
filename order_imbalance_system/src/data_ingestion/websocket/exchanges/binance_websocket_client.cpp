@@ -1,5 +1,7 @@
 // src/data_ingestion/websocket/exchanges/binance_websocket_client.cpp
 #include "data_ingestion/websocket/exchanges/binance_websocket_client.hpp"
+#include "common/logger.hpp"
+
 #include <iostream>
 #include <sstream>
 #include <algorithm>
@@ -10,82 +12,239 @@ namespace data_ingestion {
 
 BinanceWebSocketClient::BinanceWebSocketClient(const std::string& host,
                                              const std::string& port,
-                                             MarketDataCallback callback)
-    : WebSocketClientBase(host, port, true),
-      data_callback_(std::move(callback)) {
+                                             std::function<void(const std::string&, const std::string&, const std::vector<uint8_t>&)> callback)
+    : host_(host)
+    , port_(port)
+    , endpoint_("wss://" + host + ":" + port + "/ws")
+    , dataCallback_(callback)
+    , lastMessageTime_(std::chrono::system_clock::now()) {
     
-    // Configure connection parameters
-    setPingInterval(30000);  // 30 seconds ping interval
-    setReconnectionParameters(5, 1000, 1.5);  // 5 attempts, starting with 1s delay
+    LOG_INFO("Created BinanceWebSocketClient for " + endpoint_);
 }
 
 BinanceWebSocketClient::~BinanceWebSocketClient() {
     disconnect();
 }
 
-void WebSocketClientBase::onOpen() {
-    // Default empty implementation
-
+// ClientInterface implementation
+bool BinanceWebSocketClient::connect() {
+    if (connected_.load()) {
+        LOG_WARN("Already connected to Binance WebSocket");
+        return true;
+    }
+    
+    try {
+        status_.store(ConnectionStatus::CONNECTING);
+        
+        // TODO: Implement actual WebSocket connection using boost::beast
+        // For now, simulate connection
+        initializeConnection();
+        
+        connected_.store(true);
+        status_.store(ConnectionStatus::CONNECTED);
+        
+        if (connectionCallback_) {
+            connectionCallback_(ConnectionStatus::CONNECTED, "Connected to Binance WebSocket");
+        }
+        
+        LOG_INFO("Connected to Binance WebSocket: " + endpoint_);
+        return true;
+        
+    } catch (const std::exception& e) {
+        status_.store(ConnectionStatus::ERROR);
+        connected_.store(false);
+        
+        if (connectionCallback_) {
+            connectionCallback_(ConnectionStatus::ERROR, e.what());
+        }
+        
+        LOG_ERROR("Failed to connect to Binance WebSocket: " + std::string(e.what()));
+        return false;
+    }
 }
 
-void WebSocketClientBase::onMessage(const std::string& message) {
-    // Default empty implementation
-}
-
-void WebSocketClientBase::onClose(int code, const std::string& reason) {
-    // Default empty implementation
-}
-void WebSocketClientBase::onError(const std::string& error) {
-    // Default empty implementation
-}
-void WebSocketClientBase::onReconnect() {
-    // Default empty implementation
+void BinanceWebSocketClient::disconnect() {
+    if (!connected_.load()) {
+        return;
+    }
+    
+    connected_.store(false);
+    status_.store(ConnectionStatus::DISCONNECTED);
+    
+    closeConnection();
+    
+    if (connectionCallback_) {
+        connectionCallback_(ConnectionStatus::DISCONNECTED, "Disconnected from Binance WebSocket");
+    }
+    
+    LOG_INFO("Disconnected from Binance WebSocket");
 }
 
 bool BinanceWebSocketClient::isConnected() const {
-    return WebSocketClientBase::isConnected();
+    return connected_.load();
 }
 
-bool BinanceWebSocketClient::subscribe(const std::vector<std::string>& streams) {
-    if (!isConnected()) {
-        std::cerr << "Cannot subscribe, not connected to Binance" << std::endl;
+ConnectionStatus BinanceWebSocketClient::getStatus() const {
+    return status_.load();
+}
+
+bool BinanceWebSocketClient::subscribe(const std::vector<core::Symbol>& symbols) {
+    std::lock_guard<std::mutex> lock(subscriptionMutex_);
+    
+    if (!connected_.load()) {
+        LOG_ERROR("Cannot subscribe - not connected to Binance WebSocket");
         return false;
     }
     
+    std::vector<std::string> streams;
+    for (const auto& symbol : symbols) {
+        // Create different stream types for each symbol
+        streams.push_back(symbolToStream(symbol, "depth"));    // Order book
+        streams.push_back(symbolToStream(symbol, "trade"));    // Trades
+        streams.push_back(symbolToStream(symbol, "ticker"));   // 24hr stats
+        
+        // Add to subscribed symbols if not already present
+        if (std::find(subscribedSymbols_.begin(), subscribedSymbols_.end(), symbol) == subscribedSymbols_.end()) {
+            subscribedSymbols_.push_back(symbol);
+        }
+    }
+    
+    bool success = subscribeToStreams(streams);
+    
+    if (success) {
+        LOG_INFO("Successfully subscribed to " + std::to_string(symbols.size()) + " symbols on Binance");
+    } else {
+        LOG_ERROR("Failed to subscribe to symbols on Binance");
+    }
+    
+    return success;
+}
+
+bool BinanceWebSocketClient::unsubscribe(const std::vector<core::Symbol>& symbols) {
+    std::lock_guard<std::mutex> lock(subscriptionMutex_);
+    
+    std::vector<std::string> streams;
+    for (const auto& symbol : symbols) {
+        streams.push_back(symbolToStream(symbol, "depth"));
+        streams.push_back(symbolToStream(symbol, "trade"));
+        streams.push_back(symbolToStream(symbol, "ticker"));
+        
+        // Remove from subscribed symbols
+        subscribedSymbols_.erase(
+            std::remove(subscribedSymbols_.begin(), subscribedSymbols_.end(), symbol),
+            subscribedSymbols_.end()
+        );
+    }
+    
+    return unsubscribeFromStreams(streams);
+}
+
+std::vector<core::Symbol> BinanceWebSocketClient::getSubscribedSymbols() const {
+    std::lock_guard<std::mutex> lock(subscriptionMutex_);
+    return subscribedSymbols_;
+}
+
+bool BinanceWebSocketClient::sendMessage(const std::string& message) {
+    if (!connected_.load()) {
+        return false;
+    }
+    
+    return sendWebSocketMessage(message);
+}
+
+void BinanceWebSocketClient::setMessageCallback(MessageCallback callback) {
+    messageCallback_ = callback;
+}
+
+void BinanceWebSocketClient::setConnectionCallback(ConnectionCallback callback) {
+    connectionCallback_ = callback;
+}
+
+core::ExchangeId BinanceWebSocketClient::getExchangeId() const {
+    return "binance";
+}
+
+std::string BinanceWebSocketClient::getExchangeName() const {
+    return "Binance";
+}
+
+std::string BinanceWebSocketClient::getEndpoint() const {
+    return endpoint_;
+}
+
+int BinanceWebSocketClient::getMessageCount() const {
+    return messageCount_.load();
+}
+
+double BinanceWebSocketClient::getAverageLatency() const {
+    int count = messageCount_.load();
+    return count > 0 ? totalLatency_.load() / count : 0.0;
+}
+
+core::Timestamp BinanceWebSocketClient::getLastMessageTime() const {
+    return lastMessageTime_;
+}
+
+// Binance-specific methods
+bool BinanceWebSocketClient::subscribeToStreams(const std::vector<std::string>& streams) {
     return sendSubscriptionRequest(streams, true);
 }
 
-bool BinanceWebSocketClient::unsubscribe(const std::vector<std::string>& streams) {
-    if (!isConnected()) {
-        std::cerr << "Cannot unsubscribe, not connected to Binance" << std::endl;
-        return false;
-    }
-    
+bool BinanceWebSocketClient::unsubscribeFromStreams(const std::vector<std::string>& streams) {
     return sendSubscriptionRequest(streams, false);
 }
 
 std::vector<std::string> BinanceWebSocketClient::getSubscribedStreams() const {
-    // Return a copy of the subscribed streams
-    // to avoid
-    // concurrent modification issues
-    // std::lock_guard<std::mutex> lock(subscription_mutex_);
-    return subscribed_streams_; 
+    std::lock_guard<std::mutex> lock(subscriptionMutex_);
+    return subscribedStreams_;
 }
-void BinanceWebSocketClient::onOpen() {
+
+// Private implementation methods
+void BinanceWebSocketClient::initializeConnection() {
+    // TODO: Implement actual WebSocket connection initialization
+    // This would typically involve:
+    // 1. Creating WebSocket connection using boost::beast
+    // 2. Setting up SSL if needed
+    // 3. Performing WebSocket handshake
+    // 4. Starting message processing thread
+    
+    LOG_INFO("WebSocket connection initialized (placeholder implementation)");
+}
+
+void BinanceWebSocketClient::closeConnection() {
+    // TODO: Implement actual WebSocket connection cleanup
+    LOG_INFO("WebSocket connection closed (placeholder implementation)");
+}
+
+bool BinanceWebSocketClient::sendWebSocketMessage(const std::string& message) {
+    // TODO: Implement actual WebSocket message sending
+    LOG_DEBUG("Sending WebSocket message: " + message);
+    return true; // Placeholder
+}
+
+void BinanceWebSocketClient::onWebSocketOpen() {
     std::cout << "Connected to Binance WebSocket" << std::endl;
     
     // Resubscribe to previously subscribed streams
-    std::lock_guard<std::mutex> lock(subscription_mutex_);
-    if (!subscribed_streams_.empty()) {
-        std::cout << "Resubscribing to " << subscribed_streams_.size() << " streams" << std::endl;
-        subscribe(subscribed_streams_);
+    std::lock_guard<std::mutex> lock(subscriptionMutex_);
+    if (!subscribedStreams_.empty()) {
+        std::cout << "Resubscribing to " << subscribedStreams_.size() << " streams" << std::endl;
+        subscribeToStreams(subscribedStreams_);
     }
 }
 
-void BinanceWebSocketClient::onMessage(const std::string& message) {
+void BinanceWebSocketClient::onWebSocketMessage(const std::string& message) {
     try {
         // Parse the JSON message
         json data = json::parse(message);
+        
+        // Update statistics
+        updateStatistics();
+        
+        // Call the message callback
+        if (messageCallback_) {
+            messageCallback_(message, std::chrono::system_clock::now());
+        }
         
         // Handle subscription responses
         if (data.contains("id") && (data.contains("result") || data.contains("error"))) {
@@ -124,18 +283,12 @@ void BinanceWebSocketClient::onMessage(const std::string& message) {
     }
 }
 
-void BinanceWebSocketClient::onClose(int code, const std::string& reason) {
+void BinanceWebSocketClient::onWebSocketClose(int code, const std::string& reason) {
     std::cout << "Disconnected from Binance WebSocket: [" << code << "] " << reason << std::endl;
 }
 
-void BinanceWebSocketClient::onError(const std::string& error) {
+void BinanceWebSocketClient::onWebSocketError(const std::string& error) {
     std::cerr << "Binance WebSocket error: " << error << std::endl;
-}
-
-void BinanceWebSocketClient::onReconnect() {
-    std::cout << "Reconnected to Binance WebSocket" << std::endl;
-    
-    // Resubscriptions are handled in onOpen()
 }
 
 void BinanceWebSocketClient::handleStreamMessage(const json& data) {
@@ -191,32 +344,17 @@ void BinanceWebSocketClient::handleResponse(const json& data) {
 void BinanceWebSocketClient::processOrderBookData(const std::string& symbol, 
                                                 const std::string& event_type, 
                                                 const json& data) {
-    if (!data_callback_) {
+    if (!dataCallback_) {
         return;
     }
     
     try {
-        MarketDataUpdate update;
-        update.exchangeId = "binance";
-        update.trading_pair = symbol;
-        update.update_type = "orderbook";
-        
-        // Extract timestamps
-        if (data.contains("E")) {
-            update.exchange_timestamp = data["E"];
-        } else {
-            update.exchange_timestamp = 0;
-        }
-        
-        // Set received timestamp
-        update.received_timestamp = std::chrono::system_clock::now().time_since_epoch().count();
-        
-        // Serialize the data for processing
+        // Create data for callback
         std::string json_str = data.dump();
-        update.data = std::vector<uint8_t>(json_str.begin(), json_str.end());
+        std::vector<uint8_t> dataBytes(json_str.begin(), json_str.end());
         
-        // Call the callback
-        data_callback_(update);
+        // Call the callback with the expected signature
+        dataCallback_("binance", symbol, dataBytes);
     }
     catch (const std::exception& e) {
         std::cerr << "Error processing Binance order book data: " << e.what() << std::endl;
@@ -224,34 +362,17 @@ void BinanceWebSocketClient::processOrderBookData(const std::string& symbol,
 }
 
 void BinanceWebSocketClient::processTrade(const std::string& symbol, const json& data) {
-    if (!data_callback_) {
+    if (!dataCallback_) {
         return;
     }
     
     try {
-        MarketDataUpdate update;
-        update.exchangeId = "binance";
-        update.trading_pair = symbol;
-        update.update_type = "trade";
-        
-        // Extract timestamps
-        if (data.contains("E")) {
-            update.exchange_timestamp = data["E"];
-        } else if (data.contains("T")) {
-            update.exchange_timestamp = data["T"];
-        } else {
-            update.exchange_timestamp = 0;
-        }
-        
-        // Set received timestamp
-        update.received_timestamp = std::chrono::system_clock::now().time_since_epoch().count();
-        
-        // Serialize the data for processing
+        // Create data for callback
         std::string json_str = data.dump();
-        update.data = std::vector<uint8_t>(json_str.begin(), json_str.end());
+        std::vector<uint8_t> dataBytes(json_str.begin(), json_str.end());
         
-        // Call the callback
-        data_callback_(update);
+        // Call the callback with the expected signature
+        dataCallback_("binance", symbol, dataBytes);
     }
     catch (const std::exception& e) {
         std::cerr << "Error processing Binance trade data: " << e.what() << std::endl;
@@ -259,32 +380,17 @@ void BinanceWebSocketClient::processTrade(const std::string& symbol, const json&
 }
 
 void BinanceWebSocketClient::processTicker(const std::string& symbol, const json& data) {
-    if (!data_callback_) {
+    if (!dataCallback_) {
         return;
     }
     
     try {
-        MarketDataUpdate update;
-        update.exchangeId = "binance";
-        update.trading_pair = symbol;
-        update.update_type = "ticker";
-        
-        // Extract timestamps
-        if (data.contains("E")) {
-            update.exchange_timestamp = data["E"];
-        } else {
-            update.exchange_timestamp = 0;
-        }
-        
-        // Set received timestamp
-        update.received_timestamp = std::chrono::system_clock::now().time_since_epoch().count();
-        
-        // Serialize the data for processing
+        // Create data for callback
         std::string json_str = data.dump();
-        update.data = std::vector<uint8_t>(json_str.begin(), json_str.end());
+        std::vector<uint8_t> dataBytes(json_str.begin(), json_str.end());
         
-        // Call the callback
-        data_callback_(update);
+        // Call the callback with the expected signature
+        dataCallback_("binance", symbol, dataBytes);
     }
     catch (const std::exception& e) {
         std::cerr << "Error processing Binance ticker data: " << e.what() << std::endl;
@@ -292,28 +398,17 @@ void BinanceWebSocketClient::processTicker(const std::string& symbol, const json
 }
 
 void BinanceWebSocketClient::processBookTicker(const std::string& symbol, const json& data) {
-    if (!data_callback_) {
+    if (!dataCallback_) {
         return;
     }
     
     try {
-        MarketDataUpdate update;
-        update.exchangeId = "binance";
-        update.trading_pair = symbol;
-        update.update_type = "bookTicker";
-        
-        // BookTicker doesn't typically include a timestamp
-        update.exchange_timestamp = 0;
-        
-        // Set received timestamp
-        update.received_timestamp = std::chrono::system_clock::now().time_since_epoch().count();
-        
-        // Serialize the data for processing
+        // Create data for callback
         std::string json_str = data.dump();
-        update.data = std::vector<uint8_t>(json_str.begin(), json_str.end());
+        std::vector<uint8_t> dataBytes(json_str.begin(), json_str.end());
         
-        // Call the callback
-        data_callback_(update);
+        // Call the callback with the expected signature
+        dataCallback_("binance", symbol, dataBytes);
     }
     catch (const std::exception& e) {
         std::cerr << "Error processing Binance book ticker data: " << e.what() << std::endl;
@@ -321,42 +416,61 @@ void BinanceWebSocketClient::processBookTicker(const std::string& symbol, const 
 }
 
 bool BinanceWebSocketClient::sendSubscriptionRequest(const std::vector<std::string>& streams, bool subscribe) {
+    if (!connected_.load()) {
+        return false;
+    }
+    
     try {
         // Prepare the subscription message
         json request;
-        request["id"] = subscription_id_counter_++;
+        request["id"] = subscriptionIdCounter_++;
         request["method"] = subscribe ? "SUBSCRIBE" : "UNSUBSCRIBE";
         request["params"] = streams;
         
         // Send the request
         std::string message = request.dump();
-        send(message);
+        bool success = sendWebSocketMessage(message);
         
         // Update subscription list
-        std::lock_guard<std::mutex> lock(subscription_mutex_);
-        if (subscribe) {
+        std::lock_guard<std::mutex> lock(subscriptionMutex_);
+        if (success && subscribe) {
             // Add new streams to the list
             for (const auto& stream : streams) {
-                if (std::find(subscribed_streams_.begin(), subscribed_streams_.end(), stream) == subscribed_streams_.end()) {
-                    subscribed_streams_.push_back(stream);
+                if (std::find(subscribedStreams_.begin(), subscribedStreams_.end(), stream) == subscribedStreams_.end()) {
+                    subscribedStreams_.push_back(stream);
                 }
             }
-        } else {
+        } else if (success && !subscribe) {
             // Remove streams from the list
             for (const auto& stream : streams) {
-                auto it = std::find(subscribed_streams_.begin(), subscribed_streams_.end(), stream);
-                if (it != subscribed_streams_.end()) {
-                    subscribed_streams_.erase(it);
+                auto it = std::find(subscribedStreams_.begin(), subscribedStreams_.end(), stream);
+                if (it != subscribedStreams_.end()) {
+                    subscribedStreams_.erase(it);
                 }
             }
         }
         
-        return true;
+        return success;
     }
     catch (const std::exception& e) {
         std::cerr << "Error sending Binance subscription request: " << e.what() << std::endl;
         return false;
     }
+}
+
+std::string BinanceWebSocketClient::symbolToStream(const core::Symbol& symbol, const std::string& streamType) const {
+    std::string symbolStr = symbol.base + symbol.quote;
+    std::transform(symbolStr.begin(), symbolStr.end(), symbolStr.begin(), ::tolower);
+    return symbolStr + "@" + streamType;
+}
+
+core::Symbol BinanceWebSocketClient::streamToSymbol(const std::string& stream) const {
+    size_t atPos = stream.find('@');
+    if (atPos != std::string::npos) {
+        std::string symbolStr = stream.substr(0, atPos);
+        return core::Symbol::fromString(symbolStr);
+    }
+    return core::Symbol();
 }
 
 std::string BinanceWebSocketClient::extractSymbolFromStream(const std::string& stream) const {
@@ -380,6 +494,15 @@ std::string BinanceWebSocketClient::extractEventTypeFromStream(const std::string
     return "";
 }
 
+void BinanceWebSocketClient::updateStatistics() {
+    messageCount_.fetch_add(1);
+    lastMessageTime_ = std::chrono::system_clock::now();
+    // TODO: Calculate actual latency if needed
+}
+
+void BinanceWebSocketClient::workerFunction() {
+    // TODO: Implement if needed for background processing
+}
 
 } // namespace data_ingestion
 } // namespace trading

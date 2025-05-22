@@ -21,9 +21,11 @@
 │   │   ├── production.yaml
 │   │   └── staging.yaml
 │   ├── exchanges.json
+│   ├── execution
 │   ├── execution_engine.yaml
 │   ├── grafana
 │   │   └── provisioning
+│   │       ├── dashboards
 │   │       └── datasources
 │   │           └── default.yml
 │   ├── influxdb
@@ -61,7 +63,8 @@
 │   │   ├── default_parameters.json
 │   │   └── exchange_specific_parameters.json
 │   ├── strategy_params.json
-│   └── system_config.json
+│   ├── system_config.json
+│   └── zeromq
 ├── dependency-guide.md
 ├── docker
 │   ├── admin
@@ -86,6 +89,7 @@
 │   │   ├── risk-deployment.yaml
 │   │   ├── risk-service.yaml
 │   │   └── service.yaml
+│   ├── monitoring
 │   ├── order_book_reconstructor.dockerfile
 │   ├── risk
 │   │   └── Dockerfile
@@ -141,6 +145,7 @@
 │   ├── strategy
 │   │   └── Order Imbalance Strategy Engine - Software Architecture.pdf
 │   ├── trategy.txt
+│   ├── type_system_migration.md
 │   └── user
 │       └── dashboards.md
 ├── include
@@ -148,6 +153,13 @@
 │   │   ├── logger.hpp
 │   │   ├── types.hpp
 │   │   └── zeromq_client.hpp
+│   ├── core
+│   │   ├── confidence.hpp
+│   │   ├── direction.hpp
+│   │   ├── market_types.hpp
+│   │   ├── time.hpp
+│   │   ├── trading_signal_base.hpp
+│   │   └── types.hpp
 │   ├── data_ingestion
 │   │   ├── blockchain
 │   │   │   ├── data_collector.hpp
@@ -218,7 +230,11 @@
 │   ├── execution
 │   │   ├── algorithms
 │   │   │   ├── iceberg_algorithm.hpp
+│   │   │   ├── pov_algorithm.hpp
+│   │   │   ├── pov_config.hpp
+│   │   │   ├── timer.hpp
 │   │   │   ├── twap_algorithm.hpp
+│   │   │   ├── twap_config.hpp
 │   │   │   └── vwap_algorithm.hpp
 │   │   ├── api_client_manager.hpp
 │   │   ├── authentication_service.hpp
@@ -227,7 +243,9 @@
 │   │   │   ├── binance_api_client.hpp
 │   │   │   └── ftx_api_client.hpp
 │   │   ├── execution_algorithm_factory.hpp
+│   │   ├── execution_forward_decl.hpp
 │   │   ├── execution_service.hpp
+│   │   ├── execution_types.hpp
 │   │   ├── fill_reconciliation.hpp
 │   │   ├── grpc
 │   │   │   └── execution_service_impl.hpp
@@ -240,7 +258,10 @@
 │   │   ├── order_type_selector.hpp
 │   │   ├── rate_limit_controller.hpp
 │   │   ├── request_prioritizer.hpp
-│   │   └── smart_order_router.hpp
+│   │   ├── smart_order_router.hpp
+│   │   ├── trading_signal.hpp
+│   │   └── types
+│   │       └── trading_signal.hpp
 │   ├── external
 │   │   └── cppzmq
 │   │       ├── zmq_addon.hpp
@@ -293,6 +314,8 @@
 │   │       ├── risk_logger.hpp
 │   │       └── risk_metrics.hpp
 │   └── strategy
+│       ├── converters
+│       │   └── signal_converters.hpp
 │       ├── core_analysis
 │       │   ├── liquidity_flow_monitor.hpp
 │       │   ├── order_book_analyzer.hpp
@@ -305,9 +328,11 @@
 │       │   ├── ab_testing_framework.hpp
 │       │   ├── adaptive_mechanism.hpp
 │       │   ├── exchange_calibration.hpp
-│       │   └── imbalance_parameter_tuner.hpp
+│       │   ├── imbalance_parameter_tuner.hpp
+│       │   └── strategy_variant_utils.hpp
 │       ├── pattern
 │       │   ├── analyzer.hpp
+│       │   ├── analyzer_types.hpp
 │       │   ├── hawkes_enhanced_detection_engine.hpp
 │       │   ├── hawkes_markov_detector.hpp
 │       │   └── imbalance_detection_engine.hpp
@@ -317,7 +342,27 @@
 │       │   ├── momentum_correlation.hpp
 │       │   ├── signal_decay_model.hpp
 │       │   └── threshold_manager.hpp
-│       └── strategy_types.hpp
+│       ├── types
+│       │   ├── adaptation_rules.hpp
+│       │   ├── component_config.hpp
+│       │   ├── component_types.hpp
+│       │   ├── config_types.hpp
+│       │   ├── constants.hpp
+│       │   ├── correlation_types.hpp
+│       │   ├── exchange_metrics.hpp
+│       │   ├── imbalance_event.hpp
+│       │   ├── imbalance_threshold.hpp
+│       │   ├── imbalance_type.hpp
+│       │   ├── order_book_metrics.hpp
+│       │   ├── parameter_set.hpp
+│       │   ├── performance_metrics.hpp
+│       │   ├── signal_performance.hpp
+│       │   ├── strategy_performance.hpp
+│       │   ├── trade.hpp
+│       │   └── trading_signal.hpp
+│       ├── types.hpp
+│       └── utils
+│           └── type_adapters.hpp
 ├── kubernetes
 │   ├── configmap.yaml
 │   ├── deployment.yaml
@@ -325,12 +370,29 @@
 │   ├── order-book-normalizer-deployment.yaml
 │   └── order-book-normalizer-service.yaml
 ├── libs
-│   └── CMakeLists.txt
+│   ├── CMakeLists.txt
+│   └── external
+├── LICENSE
 ├── monitoring.txt
 ├── proto
 │   ├── CMakeLists.txt
+│   ├── execution
 │   ├── execution_service.proto
+│   ├── generated
+│   │   ├── execution_service.grpc.pb.cc
+│   │   ├── execution_service.grpc.pb.h
+│   │   ├── execution_service.pb.cc
+│   │   ├── execution_service.pb.h
+│   │   ├── market_data.grpc.pb.cc
+│   │   ├── market_data.grpc.pb.h
+│   │   ├── market_data.pb.cc
+│   │   ├── market_data.pb.h
+│   │   ├── order_book.grpc.pb.cc
+│   │   ├── order_book.grpc.pb.h
+│   │   ├── order_book.pb.cc
+│   │   └── order_book.pb.h
 │   ├── market_data.proto
+│   ├── new_CMakeLists.txt
 │   └── order_book.proto
 ├── python
 │   ├── admin
@@ -498,7 +560,8 @@
 │   ├── common
 │   │   ├── CMakeLists.txt
 │   │   ├── logger.cpp
-│   │   └── zeromq_client.cpp
+│   │   ├── zeromq_client.cpp
+│   │   └── zeromq_example.cc
 │   ├── data_ingestion
 │   │   ├── blockchain
 │   │   │   ├── data_collector.cpp
@@ -513,7 +576,7 @@
 │   │   ├── data_source_manager.cpp
 │   │   ├── dir.sh.sh
 │   │   ├── examples
-│   │   │   └── exchange_manager_example.cpp
+│   │   │   └── exchange_manager_example.cc
 │   │   ├── logging.cpp
 │   │   ├── news
 │   │   │   ├── api_client.cpp
@@ -524,17 +587,17 @@
 │   │   │   ├── order_book.cpp
 │   │   │   └── reconstructor.cpp
 │   │   ├── pipeline
-│   │   │   ├── example.cpp
-│   │   │   └── normalization_pipeline.cpp
+│   │   │   ├── example.cc
+│   │   │   └── normalization_pipeline.cc
 │   │   ├── protocol
 │   │   │   ├── binance_adapter.cpp
 │   │   │   ├── coinbase_adapter.cpp
 │   │   │   └── ftx_adapter.cpp
 │   │   ├── publisher
-│   │   │   ├── example_publisher.cpp
+│   │   │   ├── example_publisher.cc
 │   │   │   ├── guide.md
-│   │   │   ├── order_book_publisher.cpp
-│   │   │   ├── order_book_subscriber_example.cpp
+│   │   │   ├── order_book_publisher.cc
+│   │   │   ├── order_book_subscriber_example.cc
 │   │   │   └── zeromq_publisher.cpp
 │   │   ├── README.md
 │   │   ├── rest
@@ -558,7 +621,7 @@
 │   │       ├── exchange_manager.cpp
 │   │       ├── exchanges
 │   │       │   ├── binance_client_factory.cpp
-│   │       │   ├── binance_parser.cpp
+│   │       │   ├── binance_parser.cc
 │   │       │   ├── binance_websocket_client.cpp
 │   │       │   ├── coinbase_client.cpp
 │   │       │   ├── exchange_connector.cpp
@@ -567,12 +630,16 @@
 │   ├── execution
 │   │   ├── algorithms
 │   │   │   ├── iceberg_algorithm.cpp
+│   │   │   ├── pov_algorithm.cpp
+│   │   │   ├── timer.cpp
 │   │   │   ├── twap_algorithm.cpp
 │   │   │   └── vwap_algorithm.cpp
 │   │   ├── api_client_manager.cpp
 │   │   ├── authentication_service.cpp
 │   │   ├── CMakeLists.txt
 │   │   ├── dir.sh
+│   │   ├── examples
+│   │   │   └── smart_oder_example.cc
 │   │   ├── exchange_api_client.cpp
 │   │   ├── exchanges
 │   │   │   ├── binance_api_client.cpp
@@ -591,12 +658,13 @@
 │   │   ├── order_type_selector.cpp
 │   │   ├── rate_limit_controller.cpp
 │   │   ├── request_prioritizer.cpp
-│   │   ├── smart_oder_example.cpp
 │   │   └── smart_order_router.cpp
 │   ├── main.cpp
 │   ├── monitoring
 │   │   ├── alert_manager.cpp
 │   │   ├── CMakeLists.txt
+│   │   ├── db
+│   │   │   └── schema
 │   │   ├── dir.sh
 │   │   ├── escalation_policy.cpp
 │   │   ├── execution_analyzer.cpp
@@ -630,6 +698,7 @@
 │   │   ├── implement.md
 │   │   ├── interfaces
 │   │   │   ├── data_interface.cpp
+│   │   │   ├── data_interface_examples.cpp
 │   │   │   ├── execution_interface.cpp
 │   │   │   └── strategy_interface.cpp
 │   │   ├── portfolio
@@ -663,6 +732,7 @@
 │   └── strategy
 │       ├── CMakeLists.txt
 │       ├── core_analysis
+│       │   ├── liquidity_flow_example.cc
 │       │   ├── liquidity_flow_monitor.cpp
 │       │   ├── order_book_analyzer.cpp
 │       │   ├── strategy_metrics.cpp
@@ -673,19 +743,22 @@
 │       ├── implementation_plan.md
 │       ├── modules.md
 │       ├── optimization
+│       │   ├── ab_testing_example.cc
 │       │   ├── ab_testing_framework.cpp
 │       │   ├── adaptive_mechanism.cpp
 │       │   ├── exchange_calibration.cpp
-│       │   └── imbalance_parameter_tuner.cpp
+│       │   ├── experiment_results.cpp
+│       │   ├── imbalance_parameter_tuner.cpp
+│       │   └── strategy_variant.cpp
 │       ├── pattern
 │       │   ├── analyzer.cpp
 │       │   ├── hawkes_enhanced_detection_engine.cpp
 │       │   ├── hawkes_markov_detector.cpp
 │       │   ├── imbalance_detection_engine.cpp
-│       │   └── usage_example.cpp
+│       │   └── usage_example.cc
 │       ├── signal
 │       │   ├── imbalance_signal_generator.cpp
-│       │   ├── logistic_regression_signal_generator.cpp
+│       │   ├── logistic_regression_signal_generator.cc
 │       │   ├── momentum_correlation.cpp
 │       │   ├── signal_decay_model.cpp
 │       │   └── threshold_manager.cpp
@@ -695,7 +768,31 @@
 │   │   └── test_alert_manager.py
 │   ├── api
 │   │   └── test_api_endpoints.py
+│   ├── build
+│   │   ├── CMakeCache.txt
+│   │   ├── CMakeFiles
+│   │   │   ├── 3.28.3
+│   │   │   │   ├── CMakeCCompiler.cmake
+│   │   │   │   ├── CMakeCXXCompiler.cmake
+│   │   │   │   ├── CMakeDetermineCompilerABI_C.bin
+│   │   │   │   ├── CMakeDetermineCompilerABI_CXX.bin
+│   │   │   │   ├── CMakeSystem.cmake
+│   │   │   │   ├── CompilerIdC
+│   │   │   │   │   ├── a.out
+│   │   │   │   │   ├── CMakeCCompilerId.c
+│   │   │   │   │   └── tmp
+│   │   │   │   └── CompilerIdCXX
+│   │   │   │       ├── a.out
+│   │   │   │       ├── CMakeCXXCompilerId.cpp
+│   │   │   │       └── tmp
+│   │   │   ├── cmake.check_cache
+│   │   │   ├── CMakeConfigureLog.yaml
+│   │   │   ├── CMakeScratch
+│   │   │   └── pkgRedirects
+│   │   └── data_ingestion
+│   │       └── CMakeFiles
 │   ├── CMakeLists.txt
+│   ├── common
 │   ├── data_ingestion
 │   │   ├── CMakeLists.txt
 │   │   ├── mock_exchange_server.cpp
@@ -742,9 +839,11 @@
 │   │   ├── test_smart_order_router.cpp
 │   │   ├── test_twap_algorithm.cpp
 │   │   └── test_vwap_algorithm.cpp
+│   ├── monitoring
 │   ├── risk
 │   │   ├── CMakeLists.txt
 │   │   ├── integration
+│   │   │   ├── CMakeLists.txt
 │   │   │   ├── risk_interfaces_integration_test.cpp
 │   │   │   ├── test_portfolio_integration.cpp
 │   │   │   ├── test_portfolio_manager.cpp
@@ -779,6 +878,7 @@
 │   │   │   ├── test_post_trade_monitor.cpp
 │   │   │   └── test_stop_loss_manager.cpp
 │   │   ├── pretrade
+│   │   │   ├── CMakeLists.txt
 │   │   │   ├── integration_test_pretrade_risk_filter.cpp
 │   │   │   ├── test_exposure_calculator.cpp
 │   │   │   ├── test_fat_finger_protection.cpp
@@ -796,10 +896,12 @@
 │   │       ├── test_risk_logger.cpp
 │   │       └── test_risk_metrics.cpp
 │   ├── strategy
+│   │   ├── CMakeLists.txt
 │   │   ├── mock_imbalance_detection.cpp
 │   │   ├── test_imbalance_detection.cpp
 │   │   ├── test_imbalance_detection_integration.cpp
 │   │   ├── test_integration_tests.cpp
+│   │   ├── test_liquidity_flow_monitor.cpp
 │   │   ├── test_order_book_analyzer.cpp
 │   │   └── test_signal_generation.cpp
 │   ├── system
@@ -809,4 +911,4 @@
 │       └── test_pnl_calculator.py
 └── tree.txt
 
-181 directories, 629 files
+311 directories, 1259 files

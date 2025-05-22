@@ -1,0 +1,69 @@
+include/data_ingestion
+├── blockchain
+│   ├── data_collector.hpp
+│   └── transaction_monitor.hpp
+├── cache
+│   └── order_book_cache.hpp
+├── config.hpp
+├── connection_monitor.hpp
+├── data_quality
+│   ├── data_quality.hpp
+│   ├── filter.hpp
+│   └── validator.hpp
+├── data_source_manager.hpp
+├── exceptions.hpp
+├── exchange_manager.hpp
+├── logging.hpp
+├── monitoring
+│   └── pipeline_metrics.hpp
+├── news
+│   ├── api_client.hpp
+│   └── processor.hpp
+├── normalization
+│   ├── monitoring.hpp
+│   ├── normalizer.hpp
+│   ├── order_book_normalizer.hpp
+│   └── pipeline.hpp
+├── orderbook
+│   ├── order_book.hpp
+│   ├── order_book_types.hpp
+│   ├── price_level.hpp
+│   └── reconstructor.hpp
+├── pipeline
+│   └── normalization_pipeline.hpp
+├── protocol
+│   ├── adapter_interface.hpp
+│   ├── binance_adapter.hpp
+│   ├── coinbase_adapter.hpp
+│   └── ftx_adapter.hpp
+├── publisher
+│   └── zeromq_publisher.hpp
+├── rest
+│   ├── client_base.hpp
+│   ├── client_interface.hpp
+│   └── exchanges
+│       ├── binance_client.hpp
+│       ├── coinbase_client.hpp
+│       └── ftx_client.hpp
+├── sentiment
+│   ├── analyzer.hpp
+│   └── collector.hpp
+├── storage
+│   └── influxdb_writer.hpp
+├── time
+│   └── synchronizer.hpp
+├── types.hpp
+└── websocket
+    ├── client_base.hpp
+    ├── client_interface.hpp
+    ├── connection_pool.hpp
+    ├── exchanges
+    │   ├── binance_client_factory.hpp
+    │   ├── binance_parser.hpp
+    │   ├── binance_websocket_client.hpp
+    │   ├── coinbase_client.hpp
+    │   ├── exchange_connector.hpp
+    │   └── ftx_connector.hpp
+    └── websocket_client.hpp
+
+18 directories, 49 files

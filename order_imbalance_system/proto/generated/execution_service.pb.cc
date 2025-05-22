@@ -557,7 +557,7 @@ const char descriptor_table_protodef_execution_5fservice_2eproto[] PROTOBUF_SECT
   "T\n#CancelOrderByExchangeIdRequestProto\022\031"
   "\n\021exchange_order_id\030\001 \001(\t\022\022\n\nexchangeId\030"
   "\002 \001(\t\"G\n\033CancelAllOrdersRequestProto\022\024\n\014"
-  "trading_pair\030\001 \001(\t\022\022\n\nexchangeId\030\002 \001(\t\"^"
+  "tradingPair\030\001 \001(\t\022\022\n\nexchangeId\030\002 \001(\t\"^"
   "\n\034CancelAllOrdersResponseProto\022>\n\trespon"
   "ses\030\001 \003(\0132+.trading.execution.grpc.Cance"
   "lResponseProto\"2\n\027OrderStatusRequestProt"
@@ -912,13 +912,13 @@ const char* TradingSignalProto::_InternalParse(const char* ptr, ::_pbi::ParseCon
         } else
           goto handle_unusual;
         continue;
-      // string trading_pair = 2;
+      // string tradingPair = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           auto str = _internal_mutable_trading_pair();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.TradingSignalProto.trading_pair"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.TradingSignalProto.tradingPair"));
         } else
           goto handle_unusual;
         continue;
@@ -1027,12 +1027,12 @@ uint8_t* TradingSignalProto::_InternalSerialize(
         1, this->_internal_signal_id(), target);
   }
 
-  // string trading_pair = 2;
+  // string tradingPair = 2;
   if (!this->_internal_trading_pair().empty()) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_trading_pair().data(), static_cast<int>(this->_internal_trading_pair().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.grpc.TradingSignalProto.trading_pair");
+      "trading.execution.grpc.TradingSignalProto.tradingPair");
     target = stream->WriteStringMaybeAliased(
         2, this->_internal_trading_pair(), target);
   }
@@ -1148,7 +1148,7 @@ size_t TradingSignalProto::ByteSizeLong() const {
         this->_internal_signal_id());
   }
 
-  // string trading_pair = 2;
+  // string tradingPair = 2;
   if (!this->_internal_trading_pair().empty()) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
@@ -2797,13 +2797,13 @@ const char* OrderProto::_InternalParse(const char* ptr, ::_pbi::ParseContext* ct
         } else
           goto handle_unusual;
         continue;
-      // string trading_pair = 5;
+      // string tradingPair = 5;
       case 5:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
           auto str = _internal_mutable_trading_pair();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.OrderProto.trading_pair"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.OrderProto.tradingPair"));
         } else
           goto handle_unusual;
         continue;
@@ -3014,12 +3014,12 @@ uint8_t* OrderProto::_InternalSerialize(
         4, this->_internal_exchange_order_id(), target);
   }
 
-  // string trading_pair = 5;
+  // string tradingPair = 5;
   if (!this->_internal_trading_pair().empty()) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_trading_pair().data(), static_cast<int>(this->_internal_trading_pair().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.grpc.OrderProto.trading_pair");
+      "trading.execution.grpc.OrderProto.tradingPair");
     target = stream->WriteStringMaybeAliased(
         5, this->_internal_trading_pair(), target);
   }
@@ -3232,7 +3232,7 @@ size_t OrderProto::ByteSizeLong() const {
         this->_internal_exchange_order_id());
   }
 
-  // string trading_pair = 5;
+  // string tradingPair = 5;
   if (!this->_internal_trading_pair().empty()) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
@@ -4561,13 +4561,13 @@ const char* CancelAllOrdersRequestProto::_InternalParse(const char* ptr, ::_pbi:
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // string trading_pair = 1;
+      // string tradingPair = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
           auto str = _internal_mutable_trading_pair();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.CancelAllOrdersRequestProto.trading_pair"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.CancelAllOrdersRequestProto.tradingPair"));
         } else
           goto handle_unusual;
         continue;
@@ -4610,12 +4610,12 @@ uint8_t* CancelAllOrdersRequestProto::_InternalSerialize(
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // string trading_pair = 1;
+  // string tradingPair = 1;
   if (!this->_internal_trading_pair().empty()) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_trading_pair().data(), static_cast<int>(this->_internal_trading_pair().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.grpc.CancelAllOrdersRequestProto.trading_pair");
+      "trading.execution.grpc.CancelAllOrdersRequestProto.tradingPair");
     target = stream->WriteStringMaybeAliased(
         1, this->_internal_trading_pair(), target);
   }
@@ -4646,7 +4646,7 @@ size_t CancelAllOrdersRequestProto::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // string trading_pair = 1;
+  // string tradingPair = 1;
   if (!this->_internal_trading_pair().empty()) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(

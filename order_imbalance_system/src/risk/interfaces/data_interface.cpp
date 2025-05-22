@@ -17,7 +17,8 @@
 #include <iostream>
 namespace trading {
 namespace risk {
-
+    
+    
 // Helper to log with timestamp (temporary until we integrate with logging system)
 void logWithTimestamp(const std::string& level, const std::string& message) {
     auto now = std::chrono::system_clock::now();
@@ -67,7 +68,7 @@ private:
         json["order_id"] = request.orderId;
         json["client_order_id"] = request.clientOrderId;
         json["exchangeId"] = request.exchangeId;
-        json["trading_pair"] = request.tradingPair;
+        json["tradingPair"] = request.tradingPair;
         json["side"] = request.side == OrderSide::BUY ? "buy" : "sell";
         json["type"] = request.type;
         json["quantity"] = request.quantity;
@@ -95,7 +96,7 @@ private:
         request.orderId = json["order_id"];
         request.clientOrderId = json["client_order_id"];
         request.exchangeId = json["exchangeId"];
-        request.tradingPair = json["trading_pair"];
+        request.tradingPair = json["tradingPair"];
         request.side = json["side"] == "buy" ? OrderSide::BUY : OrderSide::SELL;
         request.type = json["type"];
         request.quantity = json["quantity"];
@@ -122,7 +123,7 @@ private:
     // Parse MarketData from JSON
     MarketData jsonToMarketData(const nlohmann::json& json) {
         MarketData marketData;
-        marketData.tradingPair = json["trading_pair"];
+        marketData.tradingPair = json["tradingPair"];
         marketData.exchangeId = json["exchangeId"];
         
         // Parse timestamp
@@ -266,7 +267,7 @@ public:
             // Create message
             nlohmann::json request = {
                 {"action", "get_market_data"},
-                {"trading_pair", tradingPair}
+                {"tradingPair", tradingPair}
             };
             
             // Add exchange ID if provided
@@ -301,7 +302,7 @@ public:
             // Create message
             nlohmann::json request = {
                 {"action", "get_current_price"},
-                {"trading_pair", tradingPair}
+                {"tradingPair", tradingPair}
             };
             
             // Add exchange ID if provided
@@ -340,7 +341,7 @@ public:
             // Create message
             nlohmann::json request = {
                 {"action", "get_historical_prices"},
-                {"trading_pair", tradingPair},
+                {"tradingPair", tradingPair},
                 {"interval", interval},
                 {"count", count}
             };
@@ -376,7 +377,7 @@ public:
             // Create message
             nlohmann::json request = {
                 {"action", "get_volatility"},
-                {"trading_pair", tradingPair},
+                {"tradingPair", tradingPair},
                 {"timeframe", timeframe}
             };
             
@@ -412,7 +413,7 @@ public:
             nlohmann::json request = {
                 {"action", "get_order_history"},
                 {"exchangeId", exchangeId},
-                {"trading_pair", tradingPair},
+                {"tradingPair", tradingPair},
                 {"limit", limit}
             };
             
@@ -484,7 +485,7 @@ public:
             // Create message
             nlohmann::json request = {
                 {"action", "subscribe_market_data"},
-                {"trading_pair", tradingPair}
+                {"tradingPair", tradingPair}
             };
             
             // Add exchange ID if provided
@@ -526,7 +527,7 @@ public:
             // Create message
             nlohmann::json request = {
                 {"action", "unsubscribe_market_data"},
-                {"trading_pair", tradingPair}
+                {"tradingPair", tradingPair}
             };
             
             // Add exchange ID if provided
@@ -565,7 +566,7 @@ public:
             
             // Add trading pair if provided
             if (tradingPair) {
-                request["trading_pair"] = *tradingPair;
+                request["tradingPair"] = *tradingPair;
             }
             
             // Send request

@@ -19,7 +19,7 @@ void example() {
     
     // Create order parameters
     OrderGenerationParams params;
-    params.trading_pair = "BTC/USDT";
+    params.tradingPair = "BTC/USDT";
     params.side = OrderSide::BUY;
     params.quantity = 0.1;
     params.strategy_id = "order_imbalance_v1";

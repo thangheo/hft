@@ -30,13 +30,13 @@ class ExecutionAlgorithmFactory::TwapAlgorithmWrapper : public ExecutionAlgorith
 public:
     TwapAlgorithmWrapper(
         const std::string& id,
-        const std::string& trading_pair,
+        const std::string& tradingPair,
         models::OrderSide side,
         const algorithms::TwapConfig& config)
         : id_(id), algo_() {
         
         // Initialize algorithm
-        algo_.initialize(trading_pair, side, config);
+        algo_.initialize(tradingPair, side, config);
     }
     
     // Implement ExecutionAlgorithm interface
@@ -108,13 +108,13 @@ class ExecutionAlgorithmFactory::VwapAlgorithmWrapper : public ExecutionAlgorith
 public:
     VwapAlgorithmWrapper(
         const std::string& id,
-        const std::string& trading_pair,
+        const std::string& tradingPair,
         models::OrderSide side,
         const algorithms::VwapConfig& config)
         : id_(id), algo_() {
         
         // Initialize algorithm
-        algo_.initialize(trading_pair, side, config);
+        algo_.initialize(tradingPair, side, config);
     }
     
     // Implement ExecutionAlgorithm interface
@@ -186,13 +186,13 @@ class ExecutionAlgorithmFactory::IcebergAlgorithmWrapper : public ExecutionAlgor
 public:
     IcebergAlgorithmWrapper(
         const std::string& id,
-        const std::string& trading_pair,
+        const std::string& tradingPair,
         models::OrderSide side,
         const algorithms::IcebergConfig& config)
         : id_(id), algo_() {
         
         // Initialize algorithm
-        algo_.initialize(trading_pair, side, config);
+        algo_.initialize(tradingPair, side, config);
     }
     
     // Implement ExecutionAlgorithm interface
@@ -259,13 +259,13 @@ class ExecutionAlgorithmFactory::PovAlgorithmWrapper : public ExecutionAlgorithm
 public:
     PovAlgorithmWrapper(
         const std::string& id,
-        const std::string& trading_pair,
+        const std::string& tradingPair,
         models::OrderSide side,
         const algorithms::PovConfig& config)
         : id_(id), algo_() {
         
         // Initialize algorithm
-        algo_.initialize(trading_pair, side, config);
+        algo_.initialize(tradingPair, side, config);
     }
     
     // Implement ExecutionAlgorithm interface
@@ -362,7 +362,7 @@ std::shared_ptr<ExecutionAlgorithm> ExecutionAlgorithmFactory::createAlgorithm(
             twap_config.price_limit = params->price;
             
             auto wrapper = std::make_shared<TwapAlgorithmWrapper>(
-                algorithm_id, params->trading_pair, params->side, twap_config);
+                algorithm_id, params->tradingPair, params->side, twap_config);
             
             if (order_callback_) {
                 wrapper->setOrderCallback(order_callback_);
@@ -391,7 +391,7 @@ std::shared_ptr<ExecutionAlgorithm> ExecutionAlgorithmFactory::createAlgorithm(
             vwap_config.volume_profile = volume_profile;
             
             auto wrapper = std::make_shared<VwapAlgorithmWrapper>(
-                algorithm_id, params->trading_pair, params->side, vwap_config);
+                algorithm_id, params->tradingPair, params->side, vwap_config);
             
             if (order_callback_) {
                 wrapper->setOrderCallback(order_callback_);
@@ -421,7 +421,7 @@ std::shared_ptr<ExecutionAlgorithm> ExecutionAlgorithmFactory::createAlgorithm(
             iceberg_config.price = params->price;
             
             auto wrapper = std::make_shared<IcebergAlgorithmWrapper>(
-                algorithm_id, params->trading_pair, params->side, iceberg_config);
+                algorithm_id, params->tradingPair, params->side, iceberg_config);
             
             if (order_callback_) {
                 wrapper->setOrderCallback(order_callback_);
@@ -472,7 +472,7 @@ std::shared_ptr<ExecutionAlgorithm> ExecutionAlgorithmFactory::createAlgorithm(
             }
             
             auto wrapper = std::make_shared<PovAlgorithmWrapper>(
-                algorithm_id, params->trading_pair, params->side, pov_config);
+                algorithm_id, params->tradingPair, params->side, pov_config);
             
             if (order_callback_) {
                 wrapper->setOrderCallback(order_callback_);

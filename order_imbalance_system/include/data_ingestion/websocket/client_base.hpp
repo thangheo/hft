@@ -13,6 +13,7 @@
 #include <boost/beast/websocket/ssl.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl/stream.hpp>
+#include "data_ingestion/websocket/client_interface.hpp"
 
 namespace trading {
 namespace data_ingestion {
@@ -23,7 +24,7 @@ namespace net = boost::asio;
 namespace ssl = boost::asio::ssl;
 using tcp = boost::asio::ip::tcp;
 
-class WebSocketClientBase {
+class WebSocketClientBase : public ClientInterface {
 public:
     WebSocketClientBase(const std::string& host, 
                        const std::string& port,
@@ -31,17 +32,16 @@ public:
     virtual ~WebSocketClientBase();
     
     // Connection management
-    virtual bool connect();
-    virtual void disconnect();
-    virtual bool isConnected() const;
+    virtual bool connect() override;
+    virtual void disconnect() override;
+    virtual bool isConnected() const override;
     
     // Message sending
-    virtual void send(const std::string& message);
-    //got_pong
+    virtual void send(const std::string& message) ;
     
     // Configuration
     void setPingInterval(int interval_ms);
-    void setReconnectionParameters(int attempt_limit, int delay_ms, float backoff_factor = 1.5);
+    void setReconnectionParameters(int attempt_limit, int delay_ms, float backoff_factor = 1.5f);
     
 protected:
     // Event handlers to be implemented by derived classes
@@ -64,13 +64,14 @@ private:
     void handlePong();
     void handleError(const std::string& error);
     void handleReconnection();
-    // void got_pong();
     
-    // Boost.Asio components
+    // Boost.Asio components - Fixed types
     net::io_context io_context_;
     std::unique_ptr<ssl::context> ssl_context_;
+    
+    // Fixed: Use proper stream types without reference
     std::unique_ptr<beast::ssl_stream<tcp::socket>> ssl_stream_;
-    std::unique_ptr<websocket::stream<beast::ssl_stream<tcp::socket>&>> ws_ssl_stream_;
+    std::unique_ptr<websocket::stream<beast::ssl_stream<tcp::socket>>> ws_ssl_stream_;
     std::unique_ptr<websocket::stream<tcp::socket>> ws_stream_;
     
     // Threading and synchronization

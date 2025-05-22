@@ -405,7 +405,7 @@ std::string ExecutionService::orderStateToString(models::OrderState state) {
  }
   
     std::vector<CancelResponse> ExecutionService::cancelAllOrdersForSymbol(
-    const std::string& trading_pair,
+    const std::string& tradingPair,
     const std::string& exchangeId) {
     
     std::vector<CancelResponse> responses;
@@ -428,7 +428,7 @@ std::string ExecutionService::orderStateToString(models::OrderState state) {
     
     // Filter by trading pair and exchange if needed
     for (const auto& order : all_active_orders) {
-        if (order->getTradingPair() == trading_pair) {
+        if (order->getTradingPair() == tradingPair) {
             if (exchangeId.empty() || order->getExchangeId() == exchangeId) {
                 active_orders.push_back(order);
             }
@@ -442,7 +442,7 @@ std::string ExecutionService::orderStateToString(models::OrderState state) {
     
     // If no orders were found, add a response indicating that
     if (responses.empty()) {
-        std::string message = "No active orders found for " + trading_pair;
+        std::string message = "No active orders found for " + tradingPair;
         if (!exchangeId.empty()) {
             message += " on exchange " + exchangeId;
         }
@@ -558,7 +558,7 @@ OrderStatusResponse ExecutionService::getOrderStatus(const std::string& client_o
  models::Order ExecutionService::createOrderFromSignal(const TradingSignal& signal) {
     // Use order generator to create an order based on the signal
     OrderGenerationParams params;
-    params.trading_pair = signal.trading_pair;
+    params.tradingPair = signal.tradingPair;
     params.signal_strength = signal.strength;
     params.target_size = signal.target_size;
     params.signal_id = signal.signal_id;
@@ -651,7 +651,7 @@ ExecutionResponse ExecutionService::executeOrderWithAlgorithm(const models::Orde
     // Create algorithm parameters
     auto params = std::make_shared<DefaultAlgorithmParams>();
     params->exchangeId = order.getExchangeId();
-    params->trading_pair = order.getTradingPair();
+    params->tradingPair = order.getTradingPair();
     params->side = order.getSide();
     params->order_type = order.getType();
     params->quantity = order.getQuantity();

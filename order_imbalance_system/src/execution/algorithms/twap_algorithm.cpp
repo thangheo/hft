@@ -18,7 +18,7 @@ namespace algorithms {
 TwapAlgorithm::TwapAlgorithm() = default;
 
 bool TwapAlgorithm::initialize(
-    const std::string& trading_pair,
+    const std::string& tradingPair,
     models::OrderSide side,
     const TwapConfig& config) {
     
@@ -47,7 +47,7 @@ bool TwapAlgorithm::initialize(
     }
     
     // Store parameters
-    trading_pair_ = trading_pair;
+    trading_pair_ = tradingPair;
     side_ = side;
     config_ = config;
     state_ = State::INITIALIZED;

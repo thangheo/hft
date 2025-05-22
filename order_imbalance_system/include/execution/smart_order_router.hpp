@@ -20,7 +20,7 @@ struct ExchangeInfo {
     double latency_ms;
     double success_rate;
     bool supports_order_type(models::OrderType type) const;
-    bool supports_trading_pair(const std::string& trading_pair) const;
+    bool supports_trading_pair(const std::string& tradingPair) const;
 };
 
 /**
@@ -65,7 +65,7 @@ public:
     bool routeToExchange(models::OrderPtr& order, const std::string& exchangeId) const;
     
     // Get available exchanges for a trading pair
-    std::vector<std::string> getAvailableExchanges(const std::string& trading_pair) const;
+    std::vector<std::string> getAvailableExchanges(const std::string& tradingPair) const;
     
     // Set custom routing strategy
     void setRoutingStrategy(

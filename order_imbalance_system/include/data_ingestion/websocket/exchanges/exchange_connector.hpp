@@ -9,15 +9,27 @@
 #include <chrono>
 #include <thread>
 #include <data_ingestion/orderbook/order_book_types.hpp>
-
+#include <core/market_types.hpp>
 namespace trading {
 namespace data_ingestion {
 
+using namespace core;
+// enum class DataType {
+//     TRADES,
+//     ORDER_BOOK,
+//     TICKER
+// };
+
+/**
+ * Types of market data we can collect
+ */
 enum class DataType {
-    TRADES,
-    ORDER_BOOK,
-    TICKER
+    ORDER_BOOK,    // Order book updates (depth data)
+    TRADES,        // Individual trade executions  
+    TICKER,        // 24hr price statistics
+    BOOK_TICKER    // Best bid/offer prices
 };
+
 
 struct SubscriptionRequest {
     std::string exchangeId;
@@ -28,8 +40,8 @@ struct SubscriptionRequest {
 
 // struct MarketDataUpdate {
 //     std::string exchangeId;
-//     std::string trading_pair;
-//     std::string update_type;
+//     std::string tradingPair;
+//     std::string updateType;
 //     int64_t exchange_timestamp;
 //     int64_t received_timestamp;
 //     std::vector<uint8_t> data;  // Exchange-specific data format

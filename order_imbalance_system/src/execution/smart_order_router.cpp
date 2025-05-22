@@ -94,12 +94,12 @@ bool SmartOrderRouter::routeToExchange(models::OrderPtr& order, const std::strin
     return true;
 }
 
-std::vector<std::string> SmartOrderRouter::getAvailableExchanges(const std::string& trading_pair) const {
+std::vector<std::string> SmartOrderRouter::getAvailableExchanges(const std::string& tradingPair) const {
     std::lock_guard<std::mutex> lock(mutex_);
     
     std::vector<std::string> available;
     for (const auto& [id, info] : exchanges_) {
-        if (info.supports_trading_pair(trading_pair)) {
+        if (info.supports_trading_pair(tradingPair)) {
             available.push_back(id);
         }
     }

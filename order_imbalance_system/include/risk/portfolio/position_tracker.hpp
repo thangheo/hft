@@ -9,7 +9,7 @@
 #include "../risk_types.hpp"
 #include "../risk_config.hpp"
 #include "../interfaces/data_interface.hpp"
-
+#include "execution/models/execution_report.hpp"
 #include <map>
 #include <unordered_map>
 #include <string>
@@ -21,6 +21,7 @@
 namespace trading {
 namespace risk {
 
+using namespace trading::execution::models;
 /**
  * Position class representing a trading position
  */

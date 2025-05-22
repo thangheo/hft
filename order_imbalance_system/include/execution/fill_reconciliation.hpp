@@ -30,7 +30,7 @@ class FillReconciliation;
 struct FillDiscrepancy {
     std::string order_id;
     std::string exchangeId;
-    std::string trading_pair;
+    std::string tradingPair;
     double expected_quantity;
     double actual_quantity;
     double expected_price;

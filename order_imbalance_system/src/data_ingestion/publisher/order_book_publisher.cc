@@ -334,7 +334,7 @@ OrderBookPublisher::OrderBookPublisher(const PublisherConfig& config)
                 // For now, just create a dummy update
                 OrderBookUpdate update;
                 update.exchangeId = "unknown";
-                update.trading_pair = "unknown";
+                update.tradingPair = "unknown";
                 update.sequence_number = 0;
                 
                 back_pressure_callback_(update);
@@ -380,11 +380,11 @@ bool OrderBookPublisher::updateConfig(const PublisherConfig& config) {
 }
 
 std::string OrderBookPublisher::createTopic(const OrderBookUpdate& update) {
-    // Format: market.orderbook.normalized.<exchangeId>.<trading_pair>
+    // Format: market.orderbook.normalized.<exchangeId>.<tradingPair>
     std::stringstream ss;
     ss << "market.orderbook.normalized." 
        << update.exchangeId << "." 
-       << update.trading_pair;
+       << update.tradingPair;
     
     return ss.str();
 }
@@ -396,7 +396,7 @@ std::vector<uint8_t> OrderBookPublisher::serializeOrderBookUpdate(const OrderBoo
     
     ss << "{";
     ss << "\"exchangeId\":\"" << update.exchangeId << "\",";
-    ss << "\"trading_pair\":\"" << update.trading_pair << "\",";
+    ss << "\"tradingPair\":\"" << update.tradingPair << "\",";
     ss << "\"sequence_number\":" << update.sequence_number << ",";
     ss << "\"exchange_timestamp\":" << update.exchange_timestamp << ",";
     ss << "\"received_timestamp\":" << update.received_timestamp << ",";

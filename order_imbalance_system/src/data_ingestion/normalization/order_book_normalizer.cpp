@@ -11,6 +11,7 @@
 namespace trading {
 namespace data_ingestion {
 
+using namespace core;
 // OrderBookNormalizer implementation
 
 OrderBookNormalizer::OrderBookNormalizer(NormalizedOrderBookCallback callback)
@@ -29,10 +30,10 @@ void OrderBookNormalizer::initAdapters() {
 
 OrderBookUpdate OrderBookNormalizer::getOrderBook(
     const std::string& exchangeId,
-    const std::string& trading_pair,
+    const std::string& tradingPair,
     int depth) const {
     
-    std::string key = createOrderBookKey(exchangeId, trading_pair);
+    std::string key = createOrderBookKey(exchangeId, tradingPair);
     
     // Thread-safe access to order books
     std::lock_guard<std::mutex> lock(mutex_);
@@ -45,7 +46,7 @@ OrderBookUpdate OrderBookNormalizer::getOrderBook(
     // Return empty update if not found
     OrderBookUpdate empty_update;
     empty_update.exchangeId = exchangeId;
-    empty_update.trading_pair = trading_pair;
+    empty_update.tradingPair = tradingPair;
     empty_update.is_snapshot = true;
     
     return empty_update;
@@ -72,8 +73,8 @@ void OrderBookNormalizer::processMarketData(const MarketDataUpdate& update) {
         OrderBookUpdate normalized = adapter->normalize(update);
         
         // Standardize trading pair
-        std::string standardized_pair = adapter->standardizeTradingPair(update.trading_pair);
-        normalized.trading_pair = standardized_pair;
+        std::string standardized_pair = adapter->standardizeTradingPair(update.tradingPair);
+        normalized.tradingPair = standardized_pair;
         
         // Get or create order book
         std::shared_ptr<OrderBook> order_book = getOrCreateOrderBook(update.exchangeId, standardized_pair);
@@ -104,9 +105,9 @@ void OrderBookNormalizer::processMarketData(const MarketDataUpdate& update) {
 }
 
 // std::shared_ptr<OrderBook> OrderBookNormalizer::getOrCreateOrderBook(const std::string& exchangeId, 
-//     const std::string& trading_pair) {
+//     const std::string& tradingPair) {
 //     // Create a key for the map
-//     std::string key = createOrderBookKey(exchangeId, trading_pair);
+//     std::string key = createOrderBookKey(exchangeId, tradingPair);
 
 //     // Check if the order book exists
 //     auto it = order_books_.find(key);
@@ -115,17 +116,17 @@ void OrderBookNormalizer::processMarketData(const MarketDataUpdate& update) {
 //     }
 
 //     // Create a new order book
-//     std::cout << "Creating new order book for " << exchangeId << ":" << trading_pair << std::endl;
+//     std::cout << "Creating new order book for " << exchangeId << ":" << tradingPair << std::endl;
 
 //     // Parse trading pair into base/quote (assuming format like "BTC/USDT")
 //     Symbol symbol;
-//     size_t slash_pos = trading_pair.find('/');
+//     size_t slash_pos = tradingPair.find('/');
 //     if (slash_pos != std::string::npos) {
-//         symbol.base = trading_pair.substr(0, slash_pos);
-//         symbol.quote = trading_pair.substr(slash_pos + 1);
+//         symbol.base = tradingPair.substr(0, slash_pos);
+//         symbol.quote = tradingPair.substr(slash_pos + 1);
 //     } else {
 //         // Handle case where there's no slash
-//         symbol.base = trading_pair;
+//         symbol.base = tradingPair;
 //         symbol.quote = "";
 //     }
 
@@ -152,9 +153,9 @@ void OrderBookNormalizer::processMarketData(const MarketDataUpdate& update) {
 // Modified version of getOrCreateOrderBook method
 std::shared_ptr<OrderBook> OrderBookNormalizer::getOrCreateOrderBook(
     const std::string& exchangeId, 
-    const std::string& trading_pair) {
+    const std::string& tradingPair) {
     // Create a key for the map
-    std::string key = createOrderBookKey(exchangeId, trading_pair);
+    std::string key = createOrderBookKey(exchangeId, tradingPair);
 
     // Check if the order book exists
     auto it = order_books_.find(key);
@@ -163,17 +164,17 @@ std::shared_ptr<OrderBook> OrderBookNormalizer::getOrCreateOrderBook(
     }
 
     // Create a new order book
-    std::cout << "Creating new order book for " << exchangeId << ":" << trading_pair << std::endl;
+    std::cout << "Creating new order book for " << exchangeId << ":" << tradingPair << std::endl;
 
     // Parse trading pair into base/quote (assuming format like "BTC/USDT")
     Symbol symbol;
-    size_t slash_pos = trading_pair.find('/');
+    size_t slash_pos = tradingPair.find('/');
     if (slash_pos != std::string::npos) {
-        symbol.base = trading_pair.substr(0, slash_pos);
-        symbol.quote = trading_pair.substr(slash_pos + 1);
+        symbol.base = tradingPair.substr(0, slash_pos);
+        symbol.quote = tradingPair.substr(slash_pos + 1);
     } else {
         // Handle case where there's no slash
-        symbol.base = trading_pair;
+        symbol.base = tradingPair;
         symbol.quote = "";
     }
 
@@ -193,8 +194,8 @@ std::shared_ptr<OrderBook> OrderBookNormalizer::getOrCreateOrderBook(
 }
 
 std::string OrderBookNormalizer::createOrderBookKey(const std::string& exchangeId, 
-  const std::string& trading_pair) const {
-    return exchangeId + ":" + trading_pair;
+  const std::string& tradingPair) const {
+    return exchangeId + ":" + tradingPair;
 }
 
 
@@ -209,8 +210,8 @@ void OrderBookNormalizer::processExchangeData(const MarketDataUpdate& update,
 bool BinanceAdapter::canHandle(const MarketDataUpdate& update) const {
     if (update.exchangeId != "binance") return false;
     
-    return update.update_type == "orderbook" || 
-           update.update_type == "orderbook_snapshot";
+    return update.updateType == "orderbook" || 
+           update.updateType == "orderbook_snapshot";
 }
 
 OrderBookUpdate BinanceAdapter::normalize(const MarketDataUpdate& update) const {
@@ -226,7 +227,7 @@ OrderBookUpdate BinanceAdapter::normalize(const MarketDataUpdate& update) const 
         
         // Fill basic fields
         result.exchangeId = "binance";
-        result.trading_pair = update.trading_pair;
+        result.tradingPair = update.tradingPair;
         result.exchange_timestamp = update.exchange_timestamp;
         result.received_timestamp = update.received_timestamp;
         

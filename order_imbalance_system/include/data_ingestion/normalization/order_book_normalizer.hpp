@@ -3,6 +3,7 @@
 
 #include "data_ingestion/orderbook/order_book_types.hpp"
 #include "data_ingestion/orderbook/order_book.hpp"
+#include "core/market_types.hpp"
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -10,6 +11,7 @@
 namespace trading {
 namespace data_ingestion {
 
+using namespace core;
 // Forward declarations
 class ExchangeAdapter;
 
@@ -24,7 +26,7 @@ public:
     
     // Get current state of an order book
     OrderBookUpdate getOrderBook(const std::string& exchangeId, 
-                               const std::string& trading_pair,
+                               const std::string& tradingPair,
                                int32_t depth = 10) const;
     
 private:
@@ -43,11 +45,11 @@ private:
     
     // Get or create an order book
     std::shared_ptr<OrderBook> getOrCreateOrderBook(const std::string& exchangeId, 
-                                                const std::string& trading_pair);
+                                                const std::string& tradingPair);
     
     // Create a key for the order book map
     std::string createOrderBookKey(const std::string& exchangeId, 
-                                 const std::string& trading_pair) const;
+                                 const std::string& tradingPair) const;
     
     // Process exchange-specific data
     void processExchangeData(const MarketDataUpdate& update, 

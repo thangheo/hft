@@ -97,7 +97,7 @@
  
      // Cancel all orders for the symbol
      auto results = execution_service_->cancelAllOrdersForSymbol(
-         request->trading_pair(),
+         request->tradingPair(),
          request->exchangeid()
      );
      
@@ -163,7 +163,7 @@
     
     // Basic fields
     signal.signal_id = proto_signal.signal_id();
-    signal.trading_pair = proto_signal.trading_pair();
+    signal.tradingPair = proto_signal.tradingPair();
     signal.strategy_id = proto_signal.strategy_id();
     signal.strategy_version = proto_signal.strategy_version();
     signal.target_size = proto_signal.target_size();
@@ -192,7 +192,7 @@
     
     // Set basic fields
     order.setExchangeId(proto_order.exchangeid());
-    order.setTradingPair(proto_order.trading_pair());
+    order.setTradingPair(proto_order.tradingPair());
     
     // Convert side
     order.setSide(proto_order.side() == ::trading::execution::grpc::OrderProto_OrderSide_BUY 

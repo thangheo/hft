@@ -5,7 +5,7 @@ package trading.execution.grpc;  // Added ".grpc" to avoid collision
 // Trading signal to be executed
 message TradingSignalProto {
     string signal_id = 1;
-    string trading_pair = 2;
+    string tradingPair = 2;
     enum OrderSide {
         BUY = 0;
         SELL = 1;
@@ -68,7 +68,7 @@ message OrderProto {
     string client_order_id = 2;
     string exchangeId = 3;
     string exchange_order_id = 4;
-    string trading_pair = 5;
+    string tradingPair = 5;
     enum OrderSide {
         BUY = 0;
         SELL = 1;
@@ -160,7 +160,7 @@ message CancelOrderByExchangeIdRequestProto {
 
 // Cancel all orders request
 message CancelAllOrdersRequestProto {
-    string trading_pair = 1;
+    string tradingPair = 1;
     string exchangeId = 2;  // Optional, can be empty
 }
 

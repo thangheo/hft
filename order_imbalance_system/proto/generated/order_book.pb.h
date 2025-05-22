@@ -829,14 +829,14 @@ class OrderBookUpdate final :
   std::string* _internal_mutable_exchangeid();
   public:
 
-  // string trading_pair = 2;
+  // string tradingPair = 2;
   void clear_trading_pair();
-  const std::string& trading_pair() const;
+  const std::string& tradingPair() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
   void set_trading_pair(ArgT0&& arg0, ArgT... args);
   std::string* mutable_trading_pair();
   PROTOBUF_NODISCARD std::string* release_trading_pair();
-  void set_allocated_trading_pair(std::string* trading_pair);
+  void set_allocated_trading_pair(std::string* tradingPair);
   private:
   const std::string& _internal_trading_pair() const;
   inline PROTOBUF_ALWAYS_INLINE void _internal_set_trading_pair(const std::string& value);
@@ -1890,12 +1890,12 @@ inline void OrderBookUpdate::set_allocated_exchangeid(std::string* exchangeid) {
   // @@protoc_insertion_point(field_set_allocated:trading.data_ingestion.proto.OrderBookUpdate.exchangeId)
 }
 
-// string trading_pair = 2;
+// string tradingPair = 2;
 inline void OrderBookUpdate::clear_trading_pair() {
   _impl_.trading_pair_.ClearToEmpty();
 }
-inline const std::string& OrderBookUpdate::trading_pair() const {
-  // @@protoc_insertion_point(field_get:trading.data_ingestion.proto.OrderBookUpdate.trading_pair)
+inline const std::string& OrderBookUpdate::tradingPair() const {
+  // @@protoc_insertion_point(field_get:trading.data_ingestion.proto.OrderBookUpdate.tradingPair)
   return _internal_trading_pair();
 }
 template <typename ArgT0, typename... ArgT>
@@ -1903,11 +1903,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void OrderBookUpdate::set_trading_pair(ArgT0&& arg0, ArgT... args) {
  
  _impl_.trading_pair_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.data_ingestion.proto.OrderBookUpdate.trading_pair)
+  // @@protoc_insertion_point(field_set:trading.data_ingestion.proto.OrderBookUpdate.tradingPair)
 }
 inline std::string* OrderBookUpdate::mutable_trading_pair() {
   std::string* _s = _internal_mutable_trading_pair();
-  // @@protoc_insertion_point(field_mutable:trading.data_ingestion.proto.OrderBookUpdate.trading_pair)
+  // @@protoc_insertion_point(field_mutable:trading.data_ingestion.proto.OrderBookUpdate.tradingPair)
   return _s;
 }
 inline const std::string& OrderBookUpdate::_internal_trading_pair() const {
@@ -1922,22 +1922,22 @@ inline std::string* OrderBookUpdate::_internal_mutable_trading_pair() {
   return _impl_.trading_pair_.Mutable(GetArenaForAllocation());
 }
 inline std::string* OrderBookUpdate::release_trading_pair() {
-  // @@protoc_insertion_point(field_release:trading.data_ingestion.proto.OrderBookUpdate.trading_pair)
+  // @@protoc_insertion_point(field_release:trading.data_ingestion.proto.OrderBookUpdate.tradingPair)
   return _impl_.trading_pair_.Release();
 }
-inline void OrderBookUpdate::set_allocated_trading_pair(std::string* trading_pair) {
-  if (trading_pair != nullptr) {
+inline void OrderBookUpdate::set_allocated_trading_pair(std::string* tradingPair) {
+  if (tradingPair != nullptr) {
     
   } else {
     
   }
-  _impl_.trading_pair_.SetAllocated(trading_pair, GetArenaForAllocation());
+  _impl_.trading_pair_.SetAllocated(tradingPair, GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
   if (_impl_.trading_pair_.IsDefault()) {
     _impl_.trading_pair_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.data_ingestion.proto.OrderBookUpdate.trading_pair)
+  // @@protoc_insertion_point(field_set_allocated:trading.data_ingestion.proto.OrderBookUpdate.tradingPair)
 }
 
 // int64 exchange_timestamp = 3;

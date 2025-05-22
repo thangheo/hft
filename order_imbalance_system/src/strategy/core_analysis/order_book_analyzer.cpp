@@ -15,10 +15,10 @@
  namespace trading {
  namespace strategy {
  
- OrderBookAnalyzer::OrderBookAnalyzer(const std::string& exchangeId, const std::string& trading_pair,
+ OrderBookAnalyzer::OrderBookAnalyzer(const std::string& exchangeId, const std::string& tradingPair,
                                     const ParameterSet& params)
      : exchangeId_(exchangeId),
-       trading_pair_(trading_pair),
+       trading_pair_(tradingPair),
        depth_levels_(params.getInt("depth_levels", 10)),
        price_grouping_factor_(params.getDouble("price_grouping_factor", 0.0001)),
        min_samples_for_stability_(params.getInt("min_samples_for_stability", 5)),
@@ -31,10 +31,10 @@
      historical_imbalances_.reserve(100);
  }
  
- OrderBookAnalyzer::OrderBookAnalyzer(const std::string& exchangeId, const std::string& trading_pair,
+ OrderBookAnalyzer::OrderBookAnalyzer(const std::string& exchangeId, const std::string& tradingPair,
                                     int depth_levels, double price_grouping_factor)
      : exchangeId_(exchangeId),
-       trading_pair_(trading_pair),
+       trading_pair_(tradingPair),
        depth_levels_(depth_levels),
        price_grouping_factor_(price_grouping_factor),
        min_samples_for_stability_(5),
@@ -636,10 +636,10 @@
  
  std::shared_ptr<OrderBookAnalyzer> createOrderBookAnalyzer(
      const std::string& exchangeId, 
-     const std::string& trading_pair,
+     const std::string& tradingPair,
      const ParameterSet& params) {
      
-     return std::make_shared<OrderBookAnalyzer>(exchangeId, trading_pair, params);
+     return std::make_shared<OrderBookAnalyzer>(exchangeId, tradingPair, params);
  }
  //updateParameters function
 void OrderBookAnalyzer::updateParameters(const ParameterSet& params) {

@@ -12,7 +12,7 @@ namespace execution {
  // Struct definitions for service interfaces
  struct TradingSignal {
     std::string signal_id;
-    std::string trading_pair;
+    std::string tradingPair;
     models::OrderSide direction;
     double strength;
     double target_size;

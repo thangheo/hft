@@ -20,7 +20,7 @@ message PriceLevel {
 // Represents an order book update
 message OrderBookUpdate {
     string exchangeId = 1;             // Exchange identifier
-    string trading_pair = 2;            // Trading pair (e.g., "BTC/USD")
+    string tradingPair = 2;            // Trading pair (e.g., "BTC/USD")
     int64 exchange_timestamp = 3;       // Timestamp from exchange (nanoseconds since epoch)
     int64 received_timestamp = 4;       // Timestamp when received by our system
     int64 sequence_number = 5;          // Sequence number for ordering updates

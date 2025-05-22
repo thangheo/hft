@@ -33,7 +33,7 @@
   */
  struct LiquidityMetrics {
      std::string exchangeId;
-     std::string trading_pair;
+     std::string tradingPair;
      core::Timestamp timestamp;
      
      // Bid-side metrics
@@ -73,7 +73,7 @@
      
      Type type;
      std::string exchangeId;
-     std::string trading_pair;
+     std::string tradingPair;
      core::Timestamp timestamp;
      core::Direction direction;          // core::Direction implied by this event
      double price_level;           // Price level where event occurred
@@ -83,7 +83,7 @@
      
      LiquidityEvent(Type t, const std::string& exchange, const std::string& pair,
                    core::Timestamp ts, core::Direction dir, double price, double qty, double sig)
-         : type(t), exchangeId(exchange), trading_pair(pair),
+         : type(t), exchangeId(exchange), tradingPair(pair),
            timestamp(ts), direction(dir), price_level(price),
            quantity(qty), significance(sig) {}
  };
@@ -125,14 +125,14 @@
      /**
       * Creates a liquidity flow monitor for a specific exchange and trading pair
       */
-     LiquidityFlowMonitor(const std::string& exchangeId, const std::string& trading_pair, 
+     LiquidityFlowMonitor(const std::string& exchangeId, const std::string& tradingPair, 
                           const ParameterSet& params = ParameterSet());
      LiquidityFlowMonitor(const LiquidityFlowConfig& config);
 
      /**
       * Creates a liquidity flow monitor with parameters explicitly specified
       */
-     LiquidityFlowMonitor(const std::string& exchangeId, const std::string& trading_pair, 
+     LiquidityFlowMonitor(const std::string& exchangeId, const std::string& tradingPair, 
                           double large_order_threshold, int history_window_seconds);
      
      virtual ~LiquidityFlowMonitor() = default;
@@ -305,7 +305,7 @@
  // Factory function to create LiquidityFlowMonitor instances
  std::shared_ptr<LiquidityFlowMonitor> createLiquidityFlowMonitor(
      const std::string& exchangeId, 
-     const std::string& trading_pair,
+     const std::string& tradingPair,
      const ParameterSet& params = ParameterSet());
  
  

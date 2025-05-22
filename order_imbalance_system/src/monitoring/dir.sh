@@ -1153,7 +1153,7 @@ Retrieves performance metrics based on specified parameters.
 - `interval`: Time interval for data aggregation (e.g., 1m, 5m, 1h, 1d)
 - `component` (optional): Filter by component name
 - `strategy` (optional): Filter by strategy name
-- `trading_pair` (optional): Filter by trading pair
+- `tradingPair` (optional): Filter by trading pair
 
 **Response:**
 ```json

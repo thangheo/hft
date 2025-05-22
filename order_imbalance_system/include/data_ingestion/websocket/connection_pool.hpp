@@ -1,7 +1,7 @@
 // include/data_ingestion/websocket/connection_pool.hpp
 #pragma once
 
-#include "data_ingestion/websocket/client_base.hpp"
+#include "data_ingestion/websocket/client_interface.hpp"
 #include <string>
 #include <memory>
 #include <vector>
@@ -16,32 +16,34 @@ namespace trading {
 namespace data_ingestion {
 
 // Forward declaration
-class WebSocketClientBase;
+using ClientInterfacePtr = std::shared_ptr<ClientInterface>;
 
-// Connection factory function type
-using ConnectionFactory = std::function<std::shared_ptr<WebSocketClientBase>()>;
+// Connection factory function type - Updated to use ClientInterface
+using ConnectionFactory = std::function<ClientInterfacePtr()>;
 
 class ConnectionPool {
 public:
-    ConnectionPool(const std::string& pool_id,
+    ConnectionPool(const std::string& poolId,
                   ConnectionFactory factory,
-                  int min_connections = 1,
-                  int max_connections = 5);
+                  int minConnections = 1,
+                  int maxConnections = 5);
     ~ConnectionPool();
     
     // Pool lifecycle management
     void initialize();
     void shutdown();
+    
     // Connect all connections in the pool
     bool connectAll();
     
     // Disconnect all connections in the pool
     void disconnectAll();
+    
     // Get a connection from the pool (will block if none available)
-    std::shared_ptr<WebSocketClientBase> acquireConnection(int timeout_ms = 5000);
+    ClientInterfacePtr acquireConnection(int timeoutMs = 5000);
     
     // Release a connection back to the pool
-    void releaseConnection(std::shared_ptr<WebSocketClientBase> connection);
+    void releaseConnection(ClientInterfacePtr connection);
     
     // Health monitoring API
     bool isHealthy() const;
@@ -49,49 +51,71 @@ public:
     int getAvailableConnectionCount() const;
     int getTotalConnectionCount() const;
     
+    // Statistics
+    struct PoolStats {
+        int connectionRequests = 0;
+        int connectionTimeouts = 0;
+        int connectionFailures = 0;
+        int connectionReleases = 0;
+        int totalConnections = 0;
+        int activeConnections = 0;
+        int availableConnections = 0;
+    };
+    
+    PoolStats getStats() const;
+
 private:
     // Connection tracking
     struct ConnectionInfo {
-        std::shared_ptr<WebSocketClientBase> connection;
-        bool in_use;
-        std::chrono::steady_clock::time_point last_used;
-        int failure_count;
+        ClientInterfacePtr connection;
+        bool inUse;
+        std::chrono::steady_clock::time_point lastUsed;
+        int failureCount;
+        
+        ConnectionInfo(ClientInterfacePtr conn) 
+            : connection(std::move(conn))
+            , inUse(false)
+            , lastUsed(std::chrono::steady_clock::now())
+            , failureCount(0) {}
     };
     
     // Internal methods
     void monitorConnections();
-    std::shared_ptr<WebSocketClientBase> createConnection();
+    ClientInterfacePtr createConnection();
     void pruneConnections();
     void ensureMinConnections();
     void removeUnhealthyConnections();
     
     // Pool identification
-    std::string pool_id_;
+    std::string poolId_;
     
     // Connection factory
-    ConnectionFactory connection_factory_;
+    ConnectionFactory connectionFactory_;
     
     // Pool configuration
-    int min_connections_;
-    int max_connections_;
-    std::chrono::seconds idle_timeout_{300}; // 5 minutes
-    int max_failures_{3};
-    std::chrono::seconds prune_interval_{60}; // 1 minute
+    int minConnections_;
+    int maxConnections_;
+    std::chrono::seconds idleTimeout_{300}; // 5 minutes
+    int maxFailures_{3};
+    std::chrono::seconds pruneInterval_{60}; // 1 minute
     
     // Connection management
     std::vector<ConnectionInfo> connections_;
     mutable std::mutex mutex_;
-    std::condition_variable conn_available_;
+    std::condition_variable connectionAvailable_;
     
     // Monitoring thread
-    std::thread monitor_thread_;
+    std::thread monitorThread_;
     std::atomic<bool> running_{false};
     
     // Statistics
-    std::atomic<int> connection_requests_{0};
-    std::atomic<int> connection_timeouts_{0};
-    std::atomic<int> connection_failures_{0};
-    std::atomic<int> connection_releases_{0};
+    std::atomic<int> connectionRequests_{0};
+    std::atomic<int> connectionTimeouts_{0};
+    std::atomic<int> connectionFailures_{0};
+    std::atomic<int> connectionReleases_{0};
+    std::atomic<int> totalConnections_{0};
+    std::atomic<int> activeConnections_{0};
+
 };
 
 } // namespace data_ingestion

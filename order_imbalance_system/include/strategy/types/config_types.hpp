@@ -94,7 +94,7 @@
      int historySize = 1000;                // Size of history to maintain
      double flowImbalanceThreshold = 0.6;   // Threshold for flow imbalance detection
      std::string exchangeId;             // Exchange ID
-    std::string trading_pair;             // Trading pair
+    std::string tradingPair;             // Trading pair
         double largeOrderThreshold = 5.0;     // Threshold for large orders
         int historyWindowSeconds = 60;       // Window size for historical analysis
         double largeOrderVolume = 0.0;       // Volume of large orders
@@ -124,7 +124,7 @@
      int priceLevels = 20;                  // Number of price levels to track
     //  exchangeId
         std::string exchangeId;               // Exchange ID
-        std::string trading_pair;               // Trading pair
+        std::string tradingPair;               // Trading pair
         double range_size_percent = 0.01;        // Size of each price range as percentage of price
         // time_frame_minutes
         int time_frame_minutes = 60;            // Time frame in minutes

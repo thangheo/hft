@@ -124,8 +124,8 @@
      /**
       * Set the trading pair from a string
       */
-     void setTradingPair(const std::string& trading_pair) {
-         symbol = core::Symbol::fromString(trading_pair);
+     void setTradingPair(const std::string& tradingPair) {
+         symbol = core::Symbol::fromString(tradingPair);
      }
      
      /**

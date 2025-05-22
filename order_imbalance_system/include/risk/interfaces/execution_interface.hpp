@@ -4,21 +4,51 @@
  * File: execution_interface.hpp
  * Created: 2025-04-29
  */
+
 #pragma once
 
-#include "../risk_types.hpp"
-
+#include "risk_types.hpp"
 #include <string>
 #include <vector>
 #include <memory>
+#include <optional>
 #include <functional>
 
 namespace trading {
 namespace risk {
 
+// Forward declarations
+struct OrderRequest;
+struct ExecutionReport;
+
 /**
- * ExecutionInterface provides communication with the Execution Engine.
- * It allows order management and receives execution reports.
+ * Execution report structure for risk interface
+ */
+struct ExecutionReport {
+    std::string orderId;
+    std::string clientOrderId;
+    std::string exchangeOrderId;
+    std::string exchangeId;
+    std::string tradingPair;
+    OrderSide side;
+    std::string type;
+    std::string status;
+    double quantity;
+    double filledQuantity;
+    double price;
+    double averageFillPrice;
+    Timestamp timestamp;
+    double fee;
+    std::string feeCurrency;
+    std::string rejectReason;
+    
+    ExecutionReport() 
+        : side(OrderSide::BUY), quantity(0.0), filledQuantity(0.0), 
+          price(0.0), averageFillPrice(0.0), fee(0.0) {}
+};
+
+/**
+ * Interface for communication with the execution engine
  */
 class ExecutionInterface {
 public:
@@ -28,18 +58,20 @@ public:
     ExecutionInterface();
     
     /**
-     * Destructor
+     * Virtual destructor
      */
     virtual ~ExecutionInterface() = default;
     
     /**
-     * Initialize the interface
-     * @return true if initialization was successful, false otherwise
+     * Initialize the execution interface
+     * 
+     * @return true if successful, false otherwise
      */
     virtual bool initialize() = 0;
     
     /**
-     * Submit an order
+     * Submit an order for execution
+     * 
      * @param orderRequest The order request
      * @return Order ID if successful, empty string otherwise
      */
@@ -47,60 +79,75 @@ public:
     
     /**
      * Cancel an order
-     * @param orderId The order identifier
-     * @return true if cancellation was successful, false otherwise
+     * 
+     * @param orderId The order ID to cancel
+     * @return true if successful, false otherwise
      */
     virtual bool cancelOrder(const std::string& orderId) = 0;
     
     /**
-     * Cancel all orders for a specific exchange
-     * @param exchangeId The exchange identifier
+     * Cancel all orders for an exchange
+     * 
+     * @param exchangeId Exchange ID
      * @return Number of orders cancelled
      */
-    virtual int cancelAllOrders(const ExchangeId& exchangeId) = 0;
+    virtual int cancelAllOrders(const std::string& exchangeId) = 0;
     
     /**
-     * Cancel all orders for a specific trading pair
-     * @param exchangeId The exchange identifier
-     * @param tradingPair The trading pair
+     * Cancel all orders for an exchange and trading pair
+     * 
+     * @param exchangeId Exchange ID
+     * @param tradingPair Trading pair
      * @return Number of orders cancelled
      */
-    virtual int cancelAllOrders(const ExchangeId& exchangeId, const TradingPair& tradingPair) = 0;
+    virtual int cancelAllOrders(const std::string& exchangeId, const std::string& tradingPair) = 0;
     
     /**
      * Get order status
-     * @param orderId The order identifier
-     * @return JSON string containing order status
+     * 
+     * @param orderId Order ID
+     * @return Order status as JSON string
      */
     virtual std::string getOrderStatus(const std::string& orderId) = 0;
     
     /**
-     * Register a callback for execution reports
-     * @param callback The function to call when execution reports are received
+     * Register callback for execution reports
+     * 
+     * @param callback Function to call when execution report is received
      */
     virtual void registerExecutionReportCallback(const std::function<void(const ExecutionReport&)>& callback) = 0;
     
     /**
-     * Get all open orders
-     * @param exchangeId Optional exchange ID to filter orders
-     * @return Vector of open order information
+     * Get open orders
+     * 
+     * @param exchangeId Optional exchange ID filter
+     * @return Vector of open orders
      */
-    virtual std::vector<OrderRequest> getOpenOrders(const std::optional<ExchangeId>& exchangeId = std::nullopt) = 0;
+    virtual std::vector<OrderRequest> getOpenOrders(const std::optional<std::string>& exchangeId = std::nullopt) = 0;
     
     /**
-     * Check if an exchange is available
-     * @param exchangeId The exchange identifier
+     * Check if exchange is available
+     * 
+     * @param exchangeId Exchange ID
      * @return true if available, false otherwise
      */
-    virtual bool isExchangeAvailable(const ExchangeId& exchangeId) = 0;
+    virtual bool isExchangeAvailable(const std::string& exchangeId) = 0;
     
     /**
      * Get exchange status
-     * @param exchangeId The exchange identifier
-     * @return JSON string containing exchange status
+     * 
+     * @param exchangeId Exchange ID
+     * @return Exchange status as JSON string
      */
-    virtual std::string getExchangeStatus(const ExchangeId& exchangeId) = 0;
+    virtual std::string getExchangeStatus(const std::string& exchangeId) = 0;
 };
 
+/**
+ * Factory function to create ExecutionInterface
+ * 
+ * @return Unique pointer to ExecutionInterface implementation
+ */
+std::unique_ptr<ExecutionInterface> createExecutionInterface();
+
 } // namespace risk
-}
+} // namespace trading

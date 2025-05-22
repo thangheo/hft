@@ -130,11 +130,11 @@ public:
     /**
      * @brief Cancel all orders for a trading pair
      * 
-     * @param trading_pair The trading pair
+     * @param tradingPair The trading pair
      * @param exchangeId Optional exchange ID to filter by
      * @return Vector of CancelResponse for each order
      */
-    std::vector<CancelResponse> cancelAllOrdersForSymbol(const std::string& trading_pair,
+    std::vector<CancelResponse> cancelAllOrdersForSymbol(const std::string& tradingPair,
                                                         const std::string& exchangeId = "");
     
     /**

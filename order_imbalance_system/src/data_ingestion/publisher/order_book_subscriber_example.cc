@@ -79,7 +79,7 @@ void processOrderBookUpdate(const OrderBookUpdate& update, SubscriberStats& stat
     
     // Update exchange and pair statistics
     std::string exchange = update.exchangeId();
-    std::string pair = update.trading_pair();
+    std::string pair = update.tradingPair();
     
     stats.updates_by_exchange[exchange]++;
     stats.updates_by_pair[pair]++;

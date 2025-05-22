@@ -18,27 +18,27 @@
  
  VolumeProfileAnalyzer::VolumeProfileAnalyzer(
      const std::string& exchangeId, 
-     const std::string& trading_pair, 
+     const std::string& tradingPair, 
      const ParameterSet& params)
      : exchangeId_(exchangeId),
-       trading_pair_(trading_pair),
+       trading_pair_(tradingPair),
        num_price_ranges_(params.getInt("num_price_ranges", 20)),
        range_size_percent_(params.getDouble("range_size_percent", 0.001)),
        time_frame_minutes_(params.getInt("time_frame_minutes", 60)),
-       current_profile_(exchangeId, trading_pair),
+       current_profile_(exchangeId, tradingPair),
        last_update_time_(std::chrono::system_clock::now()) {
      
      // Initialize multi-timeframe profiles
-     timeframe_profiles_["1m"] = VolumeProfile(exchangeId, trading_pair);
-     timeframe_profiles_["5m"] = VolumeProfile(exchangeId, trading_pair);
-     timeframe_profiles_["15m"] = VolumeProfile(exchangeId, trading_pair);
-     timeframe_profiles_["1h"] = VolumeProfile(exchangeId, trading_pair);
-     timeframe_profiles_["4h"] = VolumeProfile(exchangeId, trading_pair);
-     timeframe_profiles_["1d"] = VolumeProfile(exchangeId, trading_pair);
+     timeframe_profiles_["1m"] = VolumeProfile(exchangeId, tradingPair);
+     timeframe_profiles_["5m"] = VolumeProfile(exchangeId, tradingPair);
+     timeframe_profiles_["15m"] = VolumeProfile(exchangeId, tradingPair);
+     timeframe_profiles_["1h"] = VolumeProfile(exchangeId, tradingPair);
+     timeframe_profiles_["4h"] = VolumeProfile(exchangeId, tradingPair);
+     timeframe_profiles_["1d"] = VolumeProfile(exchangeId, tradingPair);
  }
 
  VolumeProfileAnalyzer::VolumeProfileAnalyzer(const VolumeProfileConfig& config)
-    : VolumeProfileAnalyzer(config.exchangeId, config.trading_pair, config.params) // or use other fields as needed
+    : VolumeProfileAnalyzer(config.exchangeId, config.tradingPair, config.params) // or use other fields as needed
 {
     // Initialize with config
     num_price_ranges_ = config.num_price_ranges;
@@ -46,33 +46,33 @@
     time_frame_minutes_ = config.time_frame_minutes;
     
     // Initialize multi-timeframe profiles
-    timeframe_profiles_["1m"] = VolumeProfile(config.exchangeId, config.trading_pair);
-    timeframe_profiles_["5m"] = VolumeProfile(config.exchangeId, config.trading_pair);
-    timeframe_profiles_["15m"] = VolumeProfile(config.exchangeId, config.trading_pair);
-    timeframe_profiles_["1h"] = VolumeProfile(config.exchangeId, config.trading_pair);
-    timeframe_profiles_["4h"] = VolumeProfile(config.exchangeId, config.trading_pair);
-    timeframe_profiles_["1d"] = VolumeProfile(config.exchangeId, config.trading_pair);
+    timeframe_profiles_["1m"] = VolumeProfile(config.exchangeId, config.tradingPair);
+    timeframe_profiles_["5m"] = VolumeProfile(config.exchangeId, config.tradingPair);
+    timeframe_profiles_["15m"] = VolumeProfile(config.exchangeId, config.tradingPair);
+    timeframe_profiles_["1h"] = VolumeProfile(config.exchangeId, config.tradingPair);
+    timeframe_profiles_["4h"] = VolumeProfile(config.exchangeId, config.tradingPair);
+    timeframe_profiles_["1d"] = VolumeProfile(config.exchangeId, config.tradingPair);
 }
  VolumeProfileAnalyzer::VolumeProfileAnalyzer(
      const std::string& exchangeId, 
-     const std::string& trading_pair, 
+     const std::string& tradingPair, 
      int num_price_ranges, 
      double range_size_percent)
      : exchangeId_(exchangeId),
-       trading_pair_(trading_pair),
+       trading_pair_(tradingPair),
        num_price_ranges_(num_price_ranges),
        range_size_percent_(range_size_percent),
        time_frame_minutes_(60),
-       current_profile_(exchangeId, trading_pair),
+       current_profile_(exchangeId, tradingPair),
        last_update_time_(std::chrono::system_clock::now()) {
      
      // Initialize multi-timeframe profiles
-     timeframe_profiles_["1m"] = VolumeProfile(exchangeId, trading_pair);
-     timeframe_profiles_["5m"] = VolumeProfile(exchangeId, trading_pair);
-     timeframe_profiles_["15m"] = VolumeProfile(exchangeId, trading_pair);
-     timeframe_profiles_["1h"] = VolumeProfile(exchangeId, trading_pair);
-     timeframe_profiles_["4h"] = VolumeProfile(exchangeId, trading_pair);
-     timeframe_profiles_["1d"] = VolumeProfile(exchangeId, trading_pair);
+     timeframe_profiles_["1m"] = VolumeProfile(exchangeId, tradingPair);
+     timeframe_profiles_["5m"] = VolumeProfile(exchangeId, tradingPair);
+     timeframe_profiles_["15m"] = VolumeProfile(exchangeId, tradingPair);
+     timeframe_profiles_["1h"] = VolumeProfile(exchangeId, tradingPair);
+     timeframe_profiles_["4h"] = VolumeProfile(exchangeId, tradingPair);
+     timeframe_profiles_["1d"] = VolumeProfile(exchangeId, tradingPair);
  }
  
  void VolumeProfileAnalyzer::updateVolumeProfile(
@@ -617,10 +617,10 @@
  
  std::shared_ptr<VolumeProfileAnalyzer> createVolumeProfileAnalyzer(
      const std::string& exchangeId, 
-     const std::string& trading_pair,
+     const std::string& tradingPair,
      const ParameterSet& params) {
      
-     return std::make_shared<VolumeProfileAnalyzer>(exchangeId, trading_pair, params);
+     return std::make_shared<VolumeProfileAnalyzer>(exchangeId, tradingPair, params);
  }
  
  } // namespace strategy

@@ -22,7 +22,7 @@ void signalHandler(int signum) {
 
 // Generate a random order book update for testing
 OrderBookUpdate generateRandomOrderBookUpdate(const std::string& exchangeId, 
-                                             const std::string& trading_pair) {
+                                             const std::string& tradingPair) {
     static std::random_device rd;
     static std::mt19937 gen(rd());
     static std::uniform_real_distribution<> price_dist(10000.0, 10100.0);
@@ -31,7 +31,7 @@ OrderBookUpdate generateRandomOrderBookUpdate(const std::string& exchangeId,
     
     OrderBookUpdate update;
     update.exchangeId = exchangeId;
-    update.trading_pair = trading_pair;
+    update.tradingPair = tradingPair;
     update.exchange_timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(
         std::chrono::system_clock::now().time_since_epoch()).count();
     update.received_timestamp = update.exchange_timestamp + 5000000;  // 5ms later
@@ -134,7 +134,7 @@ void displayStats(const PublisherStats& stats) {
 // Back pressure callback
 void handleBackPressure(const OrderBookUpdate& update) {
     std::cout << "Back pressure applied for update from " 
-              << update.exchangeId << ":" << update.trading_pair 
+              << update.exchangeId << ":" << update.tradingPair 
               << " sequence: " << update.sequence_number << std::endl;
 }
 

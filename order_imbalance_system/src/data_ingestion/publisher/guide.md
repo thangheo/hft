@@ -95,13 +95,13 @@ publisher->registerBackPressureCallback([this](const OrderBookUpdate& update) {
     
     // 1. Log the event
     logger_->warn("Back pressure applied, dropping update for {}: {}",
-                 update.exchangeId, update.trading_pair);
+                 update.exchangeId, update.tradingPair);
     
     // 2. Store in a secondary buffer for later processing
     backlog_buffer_.push(update);
     
     // 3. Apply thinning (e.g., for non-critical pairs)
-    if (!isHighPriorityPair(update.trading_pair)) {
+    if (!isHighPriorityPair(update.tradingPair)) {
         // Discard silently
         return;
     }

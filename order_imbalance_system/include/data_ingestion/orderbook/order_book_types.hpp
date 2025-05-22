@@ -42,20 +42,26 @@ struct OrderBookKeyHash {
     }
 };
 
-// Raw market data from an exchange
-struct MarketDataUpdate {
-    std::string exchangeId;
-    std::string trading_pair;
-    std::string update_type;  // "orderbook", "trade", "ticker"
-    int64_t exchange_timestamp;
-    int64_t received_timestamp;
-    std::vector<uint8_t> data;  // Raw data from exchange
-};
+/**
+ * @brief Structure representing a market data update
+ */
+
+// struct MarketDataUpdate {
+//     std::string exchangeId;           // Exchange identifier
+//     std::string tradingPair;          // Trading pair (e.g., "BTCUSDT")
+//     std::string updateType;           // Type of update ("orderbook", "trade", "ticker")
+//     std::chrono::system_clock::time_point timestamp;  // Update timestamp
+//     std::vector<uint8_t> data;        // Raw data bytes
+//     uint64_t sequenceNumber = 0;      // Optional sequence number
+    
+//     MarketDataUpdate() = default;
+// };
+
 
 // Normalized order book update
 struct OrderBookUpdate {
     std::string exchangeId; //this is incorrect, should be ExchangeId or string if exchange
-    std::string trading_pair;
+    std::string tradingPair;
     int64_t exchange_timestamp;
     int64_t received_timestamp;
     int64_t sequence_number;
@@ -71,12 +77,12 @@ struct OrderBookUpdate {
     std::unordered_map<std::string, std::string> additional_fields;
     // Constructor
     OrderBookUpdate() = default;
-    OrderBookUpdate(const std::string& exchangeId, const std::string& trading_pair,
+    OrderBookUpdate(const std::string& exchangeId, const std::string& tradingPair,
                     int64_t exchange_timestamp, int64_t received_timestamp,
                     int64_t sequence_number, bool is_snapshot,
                     const std::vector<PriceLevel>& bids,
                     const std::vector<PriceLevel>& asks)
-        : exchangeId(exchangeId), trading_pair(trading_pair),
+        : exchangeId(exchangeId), tradingPair(tradingPair),
           exchange_timestamp(exchange_timestamp), received_timestamp(received_timestamp),
           sequence_number(sequence_number), is_snapshot(is_snapshot),
           bids(bids), asks(asks) {}

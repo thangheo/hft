@@ -28,7 +28,7 @@
      
      // Transfer basic properties
      exec_signal.signal_id = signal.id;
-     exec_signal.trading_pair = signal.getTradingPair();
+     exec_signal.tradingPair = signal.getTradingPair();
      exec_signal.direction = signal.direction;
      exec_signal.strength = signal.strength;
      exec_signal.exchange = signal.exchange;
@@ -75,7 +75,7 @@
      
      // Transfer basic properties
      strat_signal.id = signal.signal_id;
-     strat_signal.setTradingPair(signal.trading_pair);
+     strat_signal.setTradingPair(signal.tradingPair);
      strat_signal.direction = signal.direction;
      strat_signal.strength = signal.strength;
      strat_signal.exchange = signal.exchange;

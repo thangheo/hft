@@ -1,5 +1,8 @@
-// src/data_ingestion/examples/websocket_example.cpp
-#include "data_ingestion/websocket/exchanges/binance_client_factory.hpp"
+// src/data_ingestion/websocket/examples_websocket.cpp
+#include "data_ingestion/websocket/exchanges/binance_websocket_client.hpp"
+#include "data_ingestion/websocket/connection_pool.hpp"
+#include "core/market_types.hpp"
+#include "common/logger.hpp"
 #include <iostream>
 #include <string>
 #include <chrono>
@@ -9,6 +12,7 @@
 #include <atomic>
 
 using namespace trading::data_ingestion;
+using namespace trading::core;
 
 // Signal handler to gracefully exit the program
 std::atomic<bool> running{true};
@@ -18,25 +22,19 @@ void signalHandler(int signal) {
     running = false;
 }
 
-// Market data callback function
-void onMarketData(const MarketDataUpdate& update) {
-    std::cout << "Received " << update.update_type << " update from " 
-              << update.exchangeId << " for " << update.trading_pair << std::endl;
+// Market data callback function - Updated signature to match your BinanceWebSocketClient
+void onMarketData(const std::string& exchange, const std::string& symbol, const std::vector<uint8_t>& data) {
+    std::cout << "Received data from " << exchange << " for " << symbol << std::endl;
     
     // Print the first few bytes of the data for debugging
-    size_t print_size = std::min(size_t(50), update.data.size());
-    std::string data_preview(update.data.begin(), update.data.begin() + print_size);
-    if (update.data.size() > print_size) {
-        data_preview += "...";
+    size_t printSize = std::min(size_t(100), data.size());
+    std::string dataPreview(data.begin(), data.begin() + printSize);
+    if (data.size() > printSize) {
+        dataPreview += "...";
     }
     
-    std::cout << "Data preview: " << data_preview << std::endl;
-    
-    // Calculate latency
-    auto received_ns = std::chrono::system_clock::now().time_since_epoch().count();
-    auto latency_ms = (received_ns - update.received_timestamp) / 1000000.0;
-    std::cout << "Processing latency: " << latency_ms << "ms" << std::endl;
-    
+    std::cout << "Data preview: " << dataPreview << std::endl;
+    std::cout << "Data size: " << data.size() << " bytes" << std::endl;
     std::cout << "-------------------------" << std::endl;
 }
 
@@ -49,62 +47,102 @@ int main() {
         std::cout << "Starting WebSocket example..." << std::endl;
         
         // Create a connection pool for Binance
-        auto pool = BinanceClientFactory::createConnectionPool(
-            onMarketData,   // Callback function
-            2,              // Min connections
-            5,              // Max connections
-            false           // Use production API
+        auto pool = std::make_unique<ConnectionPool>(
+            "binance_example_pool",
+            []() -> ClientInterfacePtr {
+                // Factory function to create Binance clients
+                return std::make_shared<BinanceWebSocketClient>(
+                    "stream.binance.com", 
+                    "9443",
+                    onMarketData  // Pass the callback function
+                );
+            },
+            1,  // Min connections (start with 1 for example)
+            3   // Max connections
         );
         
-        std::cout << "Connection pool created and initialized" << std::endl;
+        std::cout << "Connection pool created" << std::endl;
+        
+        // Initialize and connect the pool
+        pool->initialize();
+        if (!pool->connectAll()) {
+            std::cerr << "Failed to connect all connections in the pool" << std::endl;
+            return 1;
+        }
+        
+        std::cout << "Connection pool initialized and connected" << std::endl;
         
         // Acquire a connection from the pool
-        auto client = std::dynamic_pointer_cast<BinanceWebSocketClient>(pool->acquireConnection());
+        auto connection = pool->acquireConnection(5000); // 5 second timeout
         
-        if (!client) {
+        if (!connection) {
             std::cerr << "Failed to acquire a connection from the pool" << std::endl;
             return 1;
         }
         
         std::cout << "Acquired connection from pool" << std::endl;
         
-        // Subscribe to some streams
-        std::vector<std::string> streams = {
-            "btcusdt@depth@100ms",
-            "btcusdt@trade",
-            "ethusdt@depth@100ms",
-            "ethusdt@trade"
+        // Create Symbol objects properly - base and quote currencies
+        std::vector<Symbol> symbols = {
+            Symbol("BTC", "USDT"),  // Bitcoin/USDT
+            Symbol("ETH", "USDT"),  // Ethereum/USDT
+            Symbol("BNB", "USDT")   // Binance Coin/USDT
         };
         
-        if (client->subscribe(streams)) {
-            std::cout << "Successfully subscribed to " << streams.size() << " streams" << std::endl;
+        // Subscribe to market data for these symbols
+        if (connection->subscribe(symbols)) {
+            std::cout << "Successfully subscribed to " << symbols.size() << " symbols:" << std::endl;
+            for (const auto& symbol : symbols) {
+                std::cout << "  - " << symbol.toString() << std::endl;
+            }
         } else {
-            std::cerr << "Failed to subscribe to streams" << std::endl;
+            std::cerr << "Failed to subscribe to symbols" << std::endl;
+            pool->releaseConnection(connection);
             return 1;
         }
         
         // Keep the program running until a signal is received
-        std::cout << "Receiving data... Press Ctrl+C to exit" << std::endl;
+        std::cout << "\nReceiving data... Press Ctrl+C to exit\n" << std::endl;
         
+        int counter = 0;
         while (running) {
-            std::this_thread::sleep_for(std::chrono::seconds(1));
+            std::this_thread::sleep_for(std::chrono::seconds(5));
             
+            // Print pool status every 5 seconds
             if (pool->isHealthy()) {
                 std::cout << "Connection pool status: Healthy ("
                           << pool->getActiveConnectionCount() << " active, "
                           << pool->getAvailableConnectionCount() << " available, "
                           << pool->getTotalConnectionCount() << " total)" << std::endl;
+                
+                // Print connection stats
+                std::cout << "Connection stats: " 
+                          << connection->getMessageCount() << " messages received, "
+                          << "avg latency: " << connection->getAverageLatency() << "ms" << std::endl;
             } else {
                 std::cerr << "Connection pool status: Unhealthy" << std::endl;
             }
+            
+            counter++;
+            if (counter >= 12) { // Exit after 1 minute for demo
+                std::cout << "Demo time completed, exiting..." << std::endl;
+                break;
+            }
         }
         
+        // Clean shutdown
+        std::cout << "\nShutting down..." << std::endl;
+        
+        // Unsubscribe from symbols
+        connection->unsubscribe(symbols);
+        
         // Release the connection back to the pool
-        pool->releaseConnection(client);
+        pool->releaseConnection(connection);
+        std::cout << "Released connection back to pool" << std::endl;
         
         // Shutdown the pool
-        std::cout << "Shutting down connection pool..." << std::endl;
         pool->shutdown();
+        std::cout << "Connection pool shut down" << std::endl;
         
         std::cout << "Example completed successfully" << std::endl;
         return 0;

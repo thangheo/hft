@@ -131,8 +131,8 @@ bool DataValidator::validateRequiredFields(const OrderBookUpdate& update, std::s
         valid = false;
     }
     
-    if (update.trading_pair.empty()) {
-        ss << "Missing trading_pair; ";
+    if (update.tradingPair.empty()) {
+        ss << "Missing tradingPair; ";
         valid = false;
     }
     

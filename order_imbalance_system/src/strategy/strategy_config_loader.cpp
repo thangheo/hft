@@ -292,7 +292,7 @@ LiquidityFlowConfig parseLiquidityFlowConfig(const json& componentJson) {
         if (params.contains("historySize")) config.historySize = params["historySize"].get<int>();
         if (params.contains("flowImbalanceThreshold")) config.flowImbalanceThreshold = params["flowImbalanceThreshold"].get<double>();
         if (params.contains("exchangeId")) config.exchangeId = params["exchangeId"].get<std::string>();
-        if (params.contains("trading_pair")) config.trading_pair = params["trading_pair"].get<std::string>();
+        if (params.contains("tradingPair")) config.tradingPair = params["tradingPair"].get<std::string>();
         if (params.contains("largeOrderThreshold")) config.largeOrderThreshold = params["largeOrderThreshold"].get<double>();
         if (params.contains("historyWindowSeconds")) config.historyWindowSeconds = params["historyWindowSeconds"].get<int>();
         if (params.contains("largeOrderVolume")) config.largeOrderVolume = params["largeOrderVolume"].get<double>();
@@ -359,7 +359,7 @@ VolumeProfileConfig parseVolumeProfileConfig(const json& componentJson) {
         if (params.contains("timeWindowMs")) config.timeWindowMs = params["timeWindowMs"].get<int>();
         if (params.contains("priceLevels")) config.priceLevels = params["priceLevels"].get<int>();
         if (params.contains("exchangeId")) config.exchangeId = params["exchangeId"].get<std::string>();
-        if (params.contains("trading_pair")) config.trading_pair = params["trading_pair"].get<std::string>();
+        if (params.contains("tradingPair")) config.tradingPair = params["tradingPair"].get<std::string>();
         if (params.contains("range_size_percent")) config.range_size_percent = params["range_size_percent"].get<double>();
         if (params.contains("time_frame_minutes")) config.time_frame_minutes = params["time_frame_minutes"].get<int>();
         if (params.contains("num_price_ranges")) config.num_price_ranges = params["num_price_ranges"].get<int>();
@@ -777,7 +777,7 @@ json liquidityFlowConfigToJson(const LiquidityFlowConfig& config) {
     params["historySize"] = config.historySize;
     params["flowImbalanceThreshold"] = config.flowImbalanceThreshold;
     params["exchangeId"] = config.exchangeId;
-    params["trading_pair"] = config.trading_pair;
+    params["tradingPair"] = config.tradingPair;
     params["largeOrderThreshold"] = config.largeOrderThreshold;
     params["historyWindowSeconds"] = config.historyWindowSeconds;
     params["largeOrderVolume"] = config.largeOrderVolume;
@@ -838,7 +838,7 @@ json volumeProfileConfigToJson(const VolumeProfileConfig& config) {
     params["timeWindowMs"] = config.timeWindowMs;
     params["priceLevels"] = config.priceLevels;
     params["exchangeId"] = config.exchangeId;
-    params["trading_pair"] = config.trading_pair;
+    params["tradingPair"] = config.tradingPair;
     params["range_size_percent"] = config.range_size_percent;
     params["time_frame_minutes"] = config.time_frame_minutes;
     params["num_price_ranges"] = config.num_price_ranges;

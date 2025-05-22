@@ -69,9 +69,9 @@
   */
  class OrderImbalanceStrategyExample {
  public:
-     OrderImbalanceStrategyExample(const std::string& exchangeId, const std::string& trading_pair)
+     OrderImbalanceStrategyExample(const std::string& exchangeId, const std::string& tradingPair)
          : exchangeId_(exchangeId), 
-           trading_pair_(trading_pair),
+           trading_pair_(tradingPair),
            running_(false) {
          
          // Load configuration parameters
@@ -81,7 +81,7 @@
          
          // Initialize components
          liquidity_monitor_ = std::make_shared<LiquidityFlowMonitor>(
-             exchangeId, trading_pair, flow_monitor_params);
+             exchangeId, tradingPair, flow_monitor_params);
          
          // Initialize other components and connect them
          // (In a real implementation, these would be properly instantiated)
@@ -89,11 +89,11 @@
          // signal_generator_ = std::make_shared<ImbalanceSignalGenerator>(...);
          
          // Setup current and previous order books
-         current_book_ = std::make_shared<OrderBook>(exchangeId, trading_pair);
-         previous_book_ = std::make_shared<OrderBook>(exchangeId, trading_pair);
+         current_book_ = std::make_shared<OrderBook>(exchangeId, tradingPair);
+         previous_book_ = std::make_shared<OrderBook>(exchangeId, tradingPair);
          
          std::cout << "Order Imbalance Strategy initialized for " 
-                   << exchangeId << " " << trading_pair << std::endl;
+                   << exchangeId << " " << tradingPair << std::endl;
      }
      
      // Method to simulate receiving order book updates
@@ -172,7 +172,7 @@
      // Create a balanced order book
      OrderBookUpdate update1;
      update1.exchangeId = "binance";
-     update1.trading_pair = "BTC/USDT";
+     update1.tradingPair = "BTC/USDT";
      update1.timestamp = std::chrono::system_clock::now();
      update1.sequence_number = 1;
      update1.is_snapshot = true;
@@ -199,7 +199,7 @@
      // Create an update with a large order imbalance
      OrderBookUpdate update2;
      update2.exchangeId = "binance";
-     update2.trading_pair = "BTC/USDT";
+     update2.tradingPair = "BTC/USDT";
      update2.timestamp = std::chrono::system_clock::now();
      update2.sequence_number = 2;
      update2.is_snapshot = true;
@@ -226,7 +226,7 @@
      // Create an update with a spread collapse
      OrderBookUpdate update3;
      update3.exchangeId = "binance";
-     update3.trading_pair = "BTC/USDT";
+     update3.tradingPair = "BTC/USDT";
      update3.timestamp = std::chrono::system_clock::now();
      update3.sequence_number = 3;
      update3.is_snapshot = true;

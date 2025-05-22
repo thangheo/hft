@@ -132,13 +132,46 @@
   * Configuration structure for collateral management
   */
  struct CollateralConfig {
-     double minFreeCollateralRatio;
+    //  double minFreeCollateralRatio;
      double targetFreeCollateralRatio;
      bool enableEmergencyFunding;
      std::vector<std::string> fundingSources;
      double maxFundingAmount;
- };
  
+    // Minimum ratio of free collateral to total collateral (e.g., 0.2 for 20%)
+    double minimumFreeCollateralRatio = 0.2;
+
+    // If free collateral ratio drops below this, emergency funding is triggered
+    double emergencyFundingThreshold = 0.1;
+
+    // If true, emergency funding is auto-initiated
+    bool autoInitiateEmergencyFunding = false;
+
+    // List of exchanges managed by the collateral manager
+    std::vector<ExchangeId> managedExchanges;
+
+    // Minimum balances required for each asset (asset symbol -> minimum amount)
+    std::map<std::string, double> minimumBalances;
+
+    // Buffer to add to emergency funding (e.g., 0.1 for 10% extra)
+    double emergencyFundingBuffer = 0.1;
+
+    // Source to use for emergency funding (e.g., "main_wallet")
+    std::string emergencyFundingSource;
+
+    // Margin rates per exchange and symbol (ExchangeId -> (symbol -> margin rate))
+    std::map<ExchangeId, std::map<std::string, double>> exchangeMarginRates;
+
+    // Base currency for collateral calculations (e.g., "USD")
+    std::string baseCurrency = "USD";
+
+    // Asset conversion rates (asset symbol -> conversion rate to base currency)
+    std::map<std::string, double> assetConversionRates;
+
+    // Minimums for critical assets (asset symbol -> minimum amount)
+    std::map<std::string, double> criticalAssetMinimums;
+};
+
  /**
   * Configuration structure for risk logging
   */

@@ -16,7 +16,7 @@
 
 namespace trading {
 namespace data_ingestion {
-namespace websocket {
+// namespace websocket {
 
 // Callback function types
 using MessageCallback = std::function<void(const std::string&, const Timestamp&)>;
@@ -56,7 +56,7 @@ public:
     virtual Timestamp getLastMessageTime() const = 0;
 };
 
-} // namespace websocket
+// } // namespace websocket
 } // namespace data_ingestion
 } // namespace trading
 // End of file

@@ -53,7 +53,7 @@ namespace algorithms {
 VwapAlgorithm::VwapAlgorithm() = default;
 
 bool VwapAlgorithm::initialize(
-    const std::string& trading_pair,
+    const std::string& tradingPair,
     models::OrderSide side,
     const VwapConfig& config) {
     
@@ -86,7 +86,7 @@ bool VwapAlgorithm::initialize(
     }
     
     // Store parameters
-    trading_pair_ = trading_pair;
+    trading_pair_ = tradingPair;
     side_ = side;
     config_ = config;
     state_ = State::INITIALIZED;

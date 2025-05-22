@@ -14,7 +14,7 @@ namespace execution {
  */
 struct TradingSignal {
     std::string signal_id;
-    std::string trading_pair;
+    std::string tradingPair;
     models::OrderSide direction;  // Using your enum type
     double strength;
     double target_size;
@@ -25,7 +25,7 @@ struct TradingSignal {
     
     // Getters for cleaner API access
     const std::string& getSignalId() const { return signal_id; }
-    const std::string& getTradingPair() const { return trading_pair; }
+    const std::string& getTradingPair() const { return tradingPair; }
     models::OrderSide getDirection() const { return direction; }
     double getStrength() const { return strength; }
     double getTargetSize() const { return target_size; }

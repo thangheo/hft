@@ -12,14 +12,19 @@ namespace data_ingestion {
 ExchangeManager::ExchangeManager(NormalizedOrderBookCallback callback, 
                                int min_connections,
                                int max_connections)
-    : normalizer_(std::make_unique<OrderBookNormalizer>(std::move(callback))),
+    : normalizedCallback_(std::move(callback)),
       min_connections_(min_connections),
       max_connections_(max_connections),
       is_connected_(false),
       running_(false) {
     
-    // Create market data callback
-    data_callback_ = std::bind(&ExchangeManager::onMarketData, this, std::placeholders::_1);
+    // Create the normalizer with the callback
+    normalizer_ = std::make_unique<OrderBookNormalizer>(normalizedCallback_);
+    
+    // Create WebSocket callback that converts data and forwards to normalizer
+    websocketCallback_ = [this](const std::string& exchange, const std::string& symbol, const std::vector<uint8_t>& data) {
+        this->onWebSocketData(exchange, symbol, data);
+    };
     
     std::cout << "Exchange Manager initialized" << std::endl;
 }
@@ -36,6 +41,7 @@ ExchangeManager::~ExchangeManager() {
     
     std::cout << "Exchange Manager shutdown complete" << std::endl;
 }
+
 bool ExchangeManager::initialize() {
     std::lock_guard<std::mutex> lock(mutex_);
     
@@ -44,17 +50,19 @@ bool ExchangeManager::initialize() {
         connection_pool_ = std::make_unique<ConnectionPool>(
             "binance",
             // Factory function that properly creates a BinanceWebSocketClient
-            [this]() -> std::shared_ptr<WebSocketClientBase> {
-                // Using the correct constructor with host, port, and callback
+            [this]() -> ClientInterfacePtr {  // ✅ Correct return type
                 return std::make_shared<BinanceWebSocketClient>(
                     "stream.binance.com",  // host
-                    "443",                 // port
-                    this->data_callback_   // callback
+                    "9443",                // port (correct port for WSS)
+                    this->websocketCallback_  // ✅ Correct callback type
                 );
             },
             min_connections_,
             max_connections_
         );
+        
+        // Initialize the connection pool
+        connection_pool_->initialize();
         
         // Start the connection monitor thread
         running_ = true;
@@ -66,6 +74,84 @@ bool ExchangeManager::initialize() {
     }
     catch (const std::exception& e) {
         std::cerr << "Error initializing Binance connection pool: " << e.what() << std::endl;
+        return false;
+    }
+}
+void ExchangeManager::onWebSocketData(const std::string& exchange, const std::string& symbol, const std::vector<uint8_t>& data) {
+    try {
+        // Convert WebSocket data to MarketDataUpdate format
+        MarketDataUpdate update;
+        update.exchangeId = exchange;
+        update.tradingPair = symbol;
+        update.received_timestamp = std::chrono::system_clock::now().time_since_epoch().count();
+        update.data = data;
+        
+        // Determine update type from the data (you might need to parse JSON to get this)
+        // For now, we'll default to "unknown" - you can improve this later
+        update.updateType = "unknown";
+        
+        // Forward to the normalizer
+        if (normalizer_) {
+            normalizer_->processMarketData(update);
+        }
+        
+    } catch (const std::exception& e) {
+        std::cerr << "Error processing WebSocket data: " << e.what() << std::endl;
+    }
+}
+
+bool ExchangeManager::subscribe(const std::vector<std::string>& trading_pairs,
+                              const std::vector<DataType>& data_types,
+                              int32_t depth) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    if (!connection_pool_ || !is_connected_) {
+        std::cerr << "Not connected to Binance. Call connect() first." << std::endl;
+        return false;
+    }
+    
+    try {
+        // Acquire a connection from the pool for subscription
+        auto connection = connection_pool_->acquireConnection();
+        
+        if (!connection) {
+            std::cerr << "Failed to acquire connection for subscription" << std::endl;
+            return false;
+        }
+        
+        // Convert trading pairs to Symbol objects
+        std::vector<core::Symbol> symbols;
+        for (const auto& pair : trading_pairs) {
+            // Parse trading pair (e.g., "BTC/USDT" or "BTCUSDT")
+            core::Symbol symbol = core::Symbol::fromString(pair);
+            symbols.push_back(symbol);
+        }
+        
+        // Subscribe using the ClientInterface method
+        bool success = connection->subscribe(symbols);
+        
+        // Release the connection back to the pool
+        connection_pool_->releaseConnection(connection);
+        
+        if (success) {
+            // Store the subscription request
+            SubscriptionRequest request;
+            request.exchangeId = "binance";
+            request.trading_pairs = trading_pairs;
+            request.data_types = data_types;
+            request.depth = depth;
+            
+            active_subscriptions_.push_back(request);
+            
+            std::cout << "Subscribed to " << trading_pairs.size() << " trading pairs on Binance" << std::endl;
+        } else {
+            std::cerr << "Failed to subscribe on Binance" << std::endl;
+        }
+        
+        return success;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Error subscribing on Binance: " << e.what() << std::endl;
         return false;
     }
 }
@@ -110,77 +196,78 @@ void ExchangeManager::disconnect() {
     }
 }
 
-bool ExchangeManager::subscribe(const std::vector<std::string>& trading_pairs,
-                              const std::vector<DataType>& data_types,
-                              int32_t depth) {
-    std::lock_guard<std::mutex> lock(mutex_);
+// bool ExchangeManager::subscribe(const std::vector<std::string>& trading_pairs,
+//                               const std::vector<DataType>& data_types,
+//                               int32_t depth) {
+//     std::lock_guard<std::mutex> lock(mutex_);
     
-    if (!connection_pool_ || !is_connected_) {
-        std::cerr << "Not connected to Binance. Call connect() first." << std::endl;
-        return false;
-    }
+//     if (!connection_pool_ || !is_connected_) {
+//         std::cerr << "Not connected to Binance. Call connect() first." << std::endl;
+//         return false;
+//     }
     
-    try {
-        // Create Binance-specific stream names
-        std::vector<std::string> streams = createStreamNames(trading_pairs, data_types, depth);
+//     try {
+//         // Create Binance-specific stream names
+//         std::vector<std::string> streams = createStreamNames(trading_pairs, data_types, depth);
         
-        if (streams.empty()) {
-            std::cerr << "Failed to create stream names for subscription" << std::endl;
-            return false;
-        }
+//         if (streams.empty()) {
+//             std::cerr << "Failed to create stream names for subscription" << std::endl;
+//             return false;
+//         }
         
-        // Acquire a connection from the pool for subscription
-        auto connection = connection_pool_->acquireConnection();
+//         // Acquire a connection from the pool for subscription
+//         auto connection = connection_pool_->acquireConnection();
         
-        if (!connection) {
-            std::cerr << "Failed to acquire connection for subscription" << std::endl;
-            return false;
-        }
+//         if (!connection) {
+//             std::cerr << "Failed to acquire connection for subscription" << std::endl;
+//             return false;
+//         }
         
-        // Cast to BinanceWebSocketClient and subscribe
-        auto binance_client = std::dynamic_pointer_cast<BinanceWebSocketClient>(connection);
-        if (!binance_client) {
-            std::cerr << "Failed to cast connection to BinanceWebSocketClient" << std::endl;
-            connection_pool_->releaseConnection(connection);
-            return false;
-        }
+//         // Cast to BinanceWebSocketClient and subscribe
+//         auto binance_client = std::dynamic_pointer_cast<BinanceWebSocketClient>(connection);
+//         if (!binance_client) {
+//             std::cerr << "Failed to cast connection to BinanceWebSocketClient" << std::endl;
+//             connection_pool_->releaseConnection(connection);
+//             return false;
+//         }
         
-        bool success = binance_client->subscribe(streams);
+//         // bool success = binance_client->subscribe(streams);
+//         bool success = binance_client->subscribeToStreams(streams);
         
-        // Release the connection back to the pool
-        connection_pool_->releaseConnection(connection);
+//         // Release the connection back to the pool
+//         connection_pool_->releaseConnection(connection);
         
-        if (success) {
-            // Store the subscription request
-            SubscriptionRequest request;
-            request.exchangeId = "binance";
-            request.trading_pairs = trading_pairs;
-            request.data_types = data_types;
-            request.depth = depth;
+//         if (success) {
+//             // Store the subscription request
+//             SubscriptionRequest request;
+//             request.exchangeId = "binance";
+//             request.trading_pairs = trading_pairs;
+//             request.data_types = data_types;
+//             request.depth = depth;
             
-            active_subscriptions_.push_back(request);
+//             active_subscriptions_.push_back(request);
             
-            std::cout << "Subscribed to " << trading_pairs.size() << " trading pairs on Binance" << std::endl;
-        } else {
-            std::cerr << "Failed to subscribe on Binance" << std::endl;
-        }
+//             std::cout << "Subscribed to " << trading_pairs.size() << " trading pairs on Binance" << std::endl;
+//         } else {
+//             std::cerr << "Failed to subscribe on Binance" << std::endl;
+//         }
         
-        return success;
-    }
-    catch (const std::exception& e) {
-        std::cerr << "Error subscribing on Binance: " << e.what() << std::endl;
-        return false;
-    }
-}
+//         return success;
+//     }
+//     catch (const std::exception& e) {
+//         std::cerr << "Error subscribing on Binance: " << e.what() << std::endl;
+//         return false;
+//     }
+// }
 
 bool ExchangeManager::isConnected() const {
     std::lock_guard<std::mutex> lock(mutex_);
     return is_connected_ && connection_pool_ && connection_pool_->isHealthy();
 }
 
-OrderBookUpdate ExchangeManager::getOrderBook(const std::string& trading_pair,
+OrderBookUpdate ExchangeManager::getOrderBook(const std::string& tradingPair,
                                             int32_t depth) const {
-    return normalizer_->getOrderBook("binance", trading_pair, depth);
+    return normalizer_->getOrderBook("binance", tradingPair, depth);
 }
 
 std::string ExchangeManager::getConnectionStats() const {
@@ -200,10 +287,10 @@ std::string ExchangeManager::getConnectionStats() const {
     return ss.str();
 }
 
-void ExchangeManager::onMarketData(const MarketDataUpdate& update) {
-    // Process the market data through the normalizer
-    normalizer_->processMarketData(update);
-}
+// void ExchangeManager::onMarketData(const MarketDataUpdate& update) {
+//     // Process the market data through the normalizer
+//     normalizer_->processMarketData(update);
+// }
 
 void ExchangeManager::monitorConnections() {
     std::cout << "Starting connection monitor thread" << std::endl;

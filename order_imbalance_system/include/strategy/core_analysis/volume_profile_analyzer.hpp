@@ -77,7 +77,7 @@
   */
  struct VolumeProfile {
      std::string exchangeId;
-     std::string trading_pair;
+     std::string tradingPair;
      core::Timestamp start_time;
      core::Timestamp end_time;
      std::vector<PriceRange> price_ranges;
@@ -88,13 +88,13 @@
      
      // Default constructor
      VolumeProfile()
-         : exchangeId(""), trading_pair(""),
+         : exchangeId(""), tradingPair(""),
            start_time(std::chrono::system_clock::now()),
            end_time(std::chrono::system_clock::now()) {}
      
      // Constructor with exchange and pair
      VolumeProfile(const std::string& exchange, const std::string& pair)
-         : exchangeId(exchange), trading_pair(pair),
+         : exchangeId(exchange), tradingPair(pair),
            start_time(std::chrono::system_clock::now()),
            end_time(std::chrono::system_clock::now()) {}
  };
@@ -123,14 +123,14 @@
      /**
       * Creates a volume profile analyzer for a specific exchange and trading pair
       */
-     VolumeProfileAnalyzer(const std::string& exchangeId, const std::string& trading_pair, 
+     VolumeProfileAnalyzer(const std::string& exchangeId, const std::string& tradingPair, 
                            const ParameterSet& params = ParameterSet());
     VolumeProfileAnalyzer(const VolumeProfileConfig& config);
 
      /**
       * Creates a volume profile analyzer with parameters explicitly specified
       */
-     VolumeProfileAnalyzer(const std::string& exchangeId, const std::string& trading_pair, 
+     VolumeProfileAnalyzer(const std::string& exchangeId, const std::string& tradingPair, 
                            int num_price_ranges, double range_size_percent);
      
      virtual ~VolumeProfileAnalyzer() = default;
@@ -301,7 +301,7 @@
  // Factory function to create VolumeProfileAnalyzer instances
  std::shared_ptr<VolumeProfileAnalyzer> createVolumeProfileAnalyzer(
      const std::string& exchangeId, 
-     const std::string& trading_pair,
+     const std::string& tradingPair,
      const ParameterSet& params = ParameterSet());
  
  } // namespace strategy

@@ -48,11 +48,11 @@ public:
     
     // Update market condition
     void updateMarketCondition(
-        const std::string& trading_pair,
+        const std::string& tradingPair,
         const MarketCondition& condition);
     
     // Get current market condition
-    MarketCondition getMarketCondition(const std::string& trading_pair) const;
+    MarketCondition getMarketCondition(const std::string& tradingPair) const;
     
     // Set custom selection strategy
     void setSelectionStrategy(

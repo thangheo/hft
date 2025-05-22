@@ -12,7 +12,7 @@ namespace execution {
  * Parameters for order generation
  */
 struct OrderGenerationParams {
-    std::string trading_pair;
+    std::string tradingPair;
     models::OrderSide side;
     models::OrderType type = models::OrderType::MARKET;
     double quantity = 0.0;

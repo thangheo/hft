@@ -3,31 +3,150 @@
 #include <iostream>
 #include <algorithm>
 #include <chrono>
-
+#include "common/logger.hpp"
 namespace trading {
 namespace data_ingestion {
 
-ConnectionPool::ConnectionPool(const std::string& pool_id,
+// 1. Update constructor
+ConnectionPool::ConnectionPool(const std::string& poolId,
                               ConnectionFactory factory,
-                              int min_connections,
-                              int max_connections)
-    : pool_id_(pool_id),
-      connection_factory_(std::move(factory)),
-      min_connections_(min_connections),
-      max_connections_(max_connections) {
+                              int minConnections,
+                              int maxConnections)
+    : poolId_(poolId),
+      connectionFactory_(std::move(factory)),
+      minConnections_(minConnections),
+      maxConnections_(maxConnections) {
     
     // Validate parameters
-    if (min_connections < 1) {
-        min_connections_ = 1;
+    if (minConnections < 1) {
+        minConnections_ = 1;
     }
     
-    if (max_connections < min_connections_) {
-        max_connections_ = min_connections_;
+    if (maxConnections < minConnections_) {
+        maxConnections_ = minConnections_;
     }
     
-    std::cout << "Created connection pool '" << pool_id_ << "' with "
-              << min_connections_ << "-" << max_connections_ << " connections" << std::endl;
+    LOG_INFO("Created connection pool '" + poolId_ + "' with " +
+             std::to_string(minConnections_) + "-" + std::to_string(maxConnections_) + " connections");
 }
+
+// 2. Update acquireConnection method
+ClientInterfacePtr ConnectionPool::acquireConnection(int timeoutMs) {
+    connectionRequests_++;
+    
+    auto startTime = std::chrono::steady_clock::now();
+    
+    {
+        std::unique_lock<std::mutex> lock(mutex_);
+        
+        // First check for any available connections
+        for (auto& info : connections_) {
+            if (!info.inUse && info.connection && info.connection->isConnected()) {
+                info.inUse = true;
+                info.lastUsed = std::chrono::steady_clock::now();
+                
+                LOG_DEBUG("Acquired existing connection from pool '" + poolId_ + "'");
+                return info.connection;
+            }
+        }
+        
+        // No available connections, can we create a new one?
+        if (static_cast<int>(connections_.size()) < maxConnections_) {
+            auto conn = createConnection();
+            if (conn) {
+                connections_.emplace_back(conn);
+                connections_.back().inUse = true;
+                
+                LOG_DEBUG("Created new connection for pool '" + poolId_ + "'");
+                return connections_.back().connection;
+            }
+        }
+        
+        // Wait for connection to be released
+        auto available = connectionAvailable_.wait_for(
+            lock, 
+            std::chrono::milliseconds(timeoutMs),
+            [this]() {
+                return std::any_of(connections_.begin(), connections_.end(),
+                    [](const ConnectionInfo& info) {
+                        return !info.inUse && info.connection && info.connection->isConnected();
+                    });
+            });
+        
+        if (available) {
+            for (auto& info : connections_) {
+                if (!info.inUse && info.connection && info.connection->isConnected()) {
+                    info.inUse = true;
+                    info.lastUsed = std::chrono::steady_clock::now();
+                    
+                    LOG_DEBUG("Acquired released connection from pool '" + poolId_ + "'");
+                    return info.connection;
+                }
+            }
+        }
+    }
+    
+    // Timeout
+    connectionTimeouts_++;
+    LOG_WARN("Timed out waiting for connection from pool '" + poolId_ + "'");
+    return nullptr;
+}
+
+// 3. Update releaseConnection method  
+void ConnectionPool::releaseConnection(ClientInterfacePtr connection) {
+    if (!connection) {
+        return;
+    }
+    
+    connectionReleases_++;
+    
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    // Find the connection in our pool
+    auto it = std::find_if(connections_.begin(), connections_.end(),
+        [&connection](const ConnectionInfo& info) {
+            return info.connection.get() == connection.get();
+        });
+    
+    if (it != connections_.end()) {
+        it->inUse = false;
+        it->lastUsed = std::chrono::steady_clock::now();
+        
+        // If the connection is broken, increment its failure count
+        if (!connection->isConnected()) {
+            it->failureCount++;
+            LOG_WARN("Released broken connection to pool '" + poolId_ + 
+                       "' (failure count: " + std::to_string(it->failureCount) + ")");
+        } else {
+            LOG_DEBUG("Released connection to pool '" + poolId_ + "'");
+        }
+        
+        // Notify one waiting thread that a connection is available
+        connectionAvailable_.notify_one();
+    } else {
+        LOG_WARN("Released connection not found in pool '" + poolId_ + "'");
+    }
+}
+
+// 4. Update createConnection method
+ClientInterfacePtr ConnectionPool::createConnection() {
+    try {
+        auto conn = connectionFactory_();
+        
+        if (conn && conn->connect()) {
+            LOG_DEBUG("Created new connection for pool '" + poolId_ + "'");
+            return conn;
+        } else {
+            connectionFailures_++;
+            LOG_ERROR("Failed to create/connect new connection for pool '" + poolId_ + "'");
+        }
+    } catch (const std::exception& e) {
+        connectionFailures_++;
+        LOG_ERROR("Exception creating connection for pool '" + poolId_ + "': " + e.what());
+    }
+    
+    return nullptr;
+}    
 
 ConnectionPool::~ConnectionPool() {
     shutdown();
@@ -40,22 +159,23 @@ void ConnectionPool::initialize() {
         return;
     }
     
-    std::cout << "Initializing connection pool '" << pool_id_ << "'..." << std::endl;
+    std::cout << "Initializing connection pool '" << poolId_ << "'..." << std::endl;
     
     // Pre-create minimum number of connections
-    for (int i = 0; i < min_connections_; ++i) {
+    for (int i = 0; i < minConnections_; ++i) {
         auto conn = createConnection();
         if (conn) {
-            ConnectionInfo info{conn, false, std::chrono::steady_clock::now(), 0};
+            // ConnectionInfo info{conn, false, std::chrono::steady_clock::now(), 0};
+            ConnectionInfo info(conn);
             connections_.push_back(std::move(info));
         }
     }
     
     // Start the monitoring thread
     running_ = true;
-    monitor_thread_ = std::thread(&ConnectionPool::monitorConnections, this);
+    monitorThread_ = std::thread(&ConnectionPool::monitorConnections, this);
     
-    std::cout << "Connection pool '" << pool_id_ << "' initialized with "
+    std::cout << "Connection pool '" << poolId_ << "' initialized with "
               << connections_.size() << " connections" << std::endl;
 }
 
@@ -89,16 +209,16 @@ void ConnectionPool::shutdown() {
             return;
         }
         
-        std::cout << "Shutting down connection pool '" << pool_id_ << "'..." << std::endl;
+        std::cout << "Shutting down connection pool '" << poolId_ << "'..." << std::endl;
         running_ = false;
     }
     
     // Wake up any threads waiting for connections
-    conn_available_.notify_all();
+    connectionAvailable_.notify_all();
     
     // Wait for the monitor thread to finish
-    if (monitor_thread_.joinable()) {
-        monitor_thread_.join();
+    if (monitorThread_.joinable()) {
+        monitorThread_.join();
     }
     
     // Close all connections
@@ -115,125 +235,7 @@ void ConnectionPool::shutdown() {
         connections_.clear();
     }
     
-    std::cout << "Connection pool '" << pool_id_ << "' shut down" << std::endl;
-}
-
-std::shared_ptr<WebSocketClientBase> ConnectionPool::acquireConnection(int timeout_ms) {
-    connection_requests_++;
-    
-    auto start_time = std::chrono::steady_clock::now();
-    
-    // Try to get an existing connection from the pool
-    {
-        std::unique_lock<std::mutex> lock(mutex_);
-        
-        // First check for any available connections
-        for (auto& info : connections_) {
-            if (!info.in_use && info.connection && info.connection->isConnected()) {
-                info.in_use = true;
-                info.last_used = std::chrono::steady_clock::now();
-                
-                std::cout << "Acquired existing connection from pool '" << pool_id_ << "' ("
-                          << getActiveConnectionCount() << " active, "
-                          << getAvailableConnectionCount() << " available)" << std::endl;
-                
-                return info.connection;
-            }
-        }
-        
-        // No available connections, can we create a new one?
-        if (static_cast<int>(connections_.size()) < max_connections_) {
-            auto conn = createConnection();
-            if (conn) {
-                ConnectionInfo info{conn, true, std::chrono::steady_clock::now(), 0};
-                connections_.push_back(std::move(info));
-                
-                std::cout << "Created new connection for pool '" << pool_id_ << "' ("
-                          << getActiveConnectionCount() << " active, "
-                          << getAvailableConnectionCount() << " available)" << std::endl;
-                
-                return connections_.back().connection;
-            }
-        }
-        
-        // No connections available and can't create more, wait for one to be released
-        std::cout << "Waiting for connection from pool '" << pool_id_ << "' ("
-                  << getActiveConnectionCount() << " active, "
-                  << getAvailableConnectionCount() << " available)" << std::endl;
-        
-        auto available = conn_available_.wait_for(lock, std::chrono::milliseconds(timeout_ms),
-            [this]() {
-                return std::any_of(connections_.begin(), connections_.end(),
-                    [](const ConnectionInfo& info) {
-                        return !info.in_use && info.connection && info.connection->isConnected();
-                    });
-            });
-        
-        if (available) {
-            // Find the first available connection
-            for (auto& info : connections_) {
-                if (!info.in_use && info.connection && info.connection->isConnected()) {
-                    info.in_use = true;
-                    info.last_used = std::chrono::steady_clock::now();
-                    
-                    std::cout << "Acquired released connection from pool '" << pool_id_ << "' ("
-                              << getActiveConnectionCount() << " active, "
-                              << getAvailableConnectionCount() << " available)" << std::endl;
-                    
-                    return info.connection;
-                }
-            }
-        }
-    }
-    
-    // If we get here, we timed out waiting for a connection
-    connection_timeouts_++;
-    
-    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
-        std::chrono::steady_clock::now() - start_time).count();
-    
-    std::cerr << "Timed out waiting for connection from pool '" << pool_id_
-              << "' after " << elapsed << "ms" << std::endl;
-    
-    return nullptr;
-}
-
-void ConnectionPool::releaseConnection(std::shared_ptr<WebSocketClientBase> connection) {
-    if (!connection) {
-        return;
-    }
-    
-    connection_releases_++;
-    
-    std::lock_guard<std::mutex> lock(mutex_);
-    
-    // Find the connection in our pool
-    auto it = std::find_if(connections_.begin(), connections_.end(),
-        [&connection](const ConnectionInfo& info) {
-            return info.connection.get() == connection.get();
-        });
-    
-    if (it != connections_.end()) {
-        it->in_use = false;
-        it->last_used = std::chrono::steady_clock::now();
-        
-        // If the connection is broken, increment its failure count
-        if (!connection->isConnected()) {
-            it->failure_count++;
-            
-            std::cout << "Released broken connection to pool '" << pool_id_
-                     << "' (failure count: " << it->failure_count << ")" << std::endl;
-        } else {
-            std::cout << "Released connection to pool '" << pool_id_ << "' ("
-                      << getActiveConnectionCount() << " active, "
-                      << getAvailableConnectionCount() << " available)" << std::endl;
-        }
-        
-        // Notify one waiting thread that a connection is available
-        conn_available_.notify_one();
-    } else {
-        std::cerr << "WARNING: Released connection not found in pool '" << pool_id_ << "'" << std::endl;
-    }
+    std::cout << "Connection pool '" << poolId_ << "' shut down" << std::endl;
 }
 
 bool ConnectionPool::isHealthy() const {
@@ -251,7 +253,7 @@ int ConnectionPool::getActiveConnectionCount() const {
     
     return std::count_if(connections_.begin(), connections_.end(),
         [](const ConnectionInfo& info) {
-            return info.in_use;
+            return info.inUse;
         });
 }
 
@@ -260,7 +262,7 @@ int ConnectionPool::getAvailableConnectionCount() const {
     
     return std::count_if(connections_.begin(), connections_.end(),
         [](const ConnectionInfo& info) {
-            return !info.in_use && info.connection && info.connection->isConnected();
+            return !info.inUse && info.connection && info.connection->isConnected();
         });
 }
 
@@ -270,11 +272,11 @@ int ConnectionPool::getTotalConnectionCount() const {
 }
 
 void ConnectionPool::monitorConnections() {
-    std::cout << "Starting connection pool monitor for '" << pool_id_ << "'" << std::endl;
+    std::cout << "Starting connection pool monitor for '" << poolId_ << "'" << std::endl;
     
     while (running_) {
         // Sleep for the prune interval
-        std::this_thread::sleep_for(prune_interval_);
+        std::this_thread::sleep_for(pruneInterval_);
         
         if (!running_) {
             break;
@@ -286,13 +288,13 @@ void ConnectionPool::monitorConnections() {
         removeUnhealthyConnections();
     }
     
-    std::cout << "Stopped connection pool monitor for '" << pool_id_ << "'" << std::endl;
+    std::cout << "Stopped connection pool monitor for '" << poolId_ << "'" << std::endl;
 }
 
 void ConnectionPool::pruneConnections() {
     std::lock_guard<std::mutex> lock(mutex_);
     
-    if (connections_.size() <= static_cast<size_t>(min_connections_)) {
+    if (connections_.size() <= static_cast<size_t>(minConnections_)) {
         return;  // Don't prune if we're at or below the minimum
     }
     
@@ -301,12 +303,12 @@ void ConnectionPool::pruneConnections() {
     
     // Identify connections to remove (idle and exceeding the minimum)
     auto it = connections_.begin();
-    while (it != connections_.end() && static_cast<int>(connections_.size() - pruned) > min_connections_) {
-        if (!it->in_use) {
-            auto idle_time = std::chrono::duration_cast<std::chrono::seconds>(now - it->last_used);
+    while (it != connections_.end() && static_cast<int>(connections_.size() - pruned) > minConnections_) {
+        if (!it->inUse) {
+            auto idle_time = std::chrono::duration_cast<std::chrono::seconds>(now - it->lastUsed);
             
-            if (idle_time > idle_timeout_) {
-                std::cout << "Pruning idle connection from pool '" << pool_id_ 
+            if (idle_time > idleTimeout_) {
+                std::cout << "Pruning idle connection from pool '" << poolId_ 
                           << "' (idle for " << idle_time.count() << "s)" << std::endl;
                 
                 if (it->connection) {
@@ -323,7 +325,7 @@ void ConnectionPool::pruneConnections() {
     }
     
     if (pruned > 0) {
-        std::cout << "Pruned " << pruned << " idle connections from pool '" << pool_id_ << "'" << std::endl;
+        std::cout << "Pruned " << pruned << " idle connections from pool '" << poolId_ << "'" << std::endl;
     }
 }
 
@@ -337,18 +339,19 @@ void ConnectionPool::ensureMinConnections() {
         });
     
     // Create new connections if we're below the minimum
-    if (healthy_count < min_connections_) {
-        int to_create = min_connections_ - healthy_count;
+    if (healthy_count < minConnections_) {
+        int to_create = minConnections_ - healthy_count;
         std::cout << "Creating " << to_create << " connections to maintain minimum in pool '" 
-                  << pool_id_ << "'" << std::endl;
+                  << poolId_ << "'" << std::endl;
         
         for (int i = 0; i < to_create; ++i) {
             auto conn = createConnection();
             if (conn) {
-                ConnectionInfo info{conn, false, std::chrono::steady_clock::now(), 0};
+                // ConnectionInfo info{conn, false, std::chrono::steady_clock::now(), 0};
+                ConnectionInfo info(conn);
                 connections_.push_back(std::move(info));
             } else {
-                connection_failures_++;
+                connectionFailures_++;
             }
         }
     }
@@ -360,9 +363,9 @@ void ConnectionPool::removeUnhealthyConnections() {
     // Remove connections with too many failures
     auto it = connections_.begin();
     while (it != connections_.end()) {
-        if (it->failure_count >= max_failures_) {
-            std::cout << "Removing unhealthy connection from pool '" << pool_id_ 
-                      << "' (failures: " << it->failure_count << ")" << std::endl;
+        if (it->failureCount >= maxFailures_) {
+            std::cout << "Removing unhealthy connection from pool '" << poolId_ 
+                      << "' (failures: " << it->failureCount << ")" << std::endl;
             
             if (it->connection) {
                 it->connection->disconnect();
@@ -376,23 +379,27 @@ void ConnectionPool::removeUnhealthyConnections() {
     }
 }
 
-std::shared_ptr<WebSocketClientBase> ConnectionPool::createConnection() {
-    try {
-        auto conn = connection_factory_();
-        
-        if (conn && conn->connect()) {
-            return conn;
-        } else {
-            connection_failures_++;
-            std::cerr << "Failed to create/connect new connection for pool '" << pool_id_ << "'" << std::endl;
+
+ConnectionPool::PoolStats ConnectionPool::getStats() const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    PoolStats stats;
+    stats.connectionRequests = connectionRequests_.load();
+    stats.connectionTimeouts = connectionTimeouts_.load();
+    stats.connectionFailures = connectionFailures_.load();
+    stats.connectionReleases = connectionReleases_.load();
+    stats.totalConnections = static_cast<int>(connections_.size());
+    
+    // Count active and available connections
+    for (const auto& info : connections_) {
+        if (info.inUse) {
+            stats.activeConnections++;
+        } else if (info.connection && info.connection->isConnected()) {
+            stats.availableConnections++;
         }
-    } catch (const std::exception& e) {
-        connection_failures_++;
-        std::cerr << "Exception creating connection for pool '" << pool_id_ << "': " 
-                  << e.what() << std::endl;
     }
     
-    return nullptr;
+    return stats;
 }
 
 } // namespace data_ingestion

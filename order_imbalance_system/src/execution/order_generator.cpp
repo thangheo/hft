@@ -39,7 +39,7 @@ models::OrderPtr OrderGenerator::createOrder(const OrderGenerationParams& params
     }
     
     // Set basic order properties
-    order->setTradingPair(processed_params.trading_pair);
+    order->setTradingPair(processed_params.tradingPair);
     order->setSide(processed_params.side);
     order->setType(processed_params.type);
     order->setQuantity(processed_params.quantity);
@@ -73,7 +73,7 @@ models::OrderPtr OrderGenerator::createOrderFromSignal(const std::shared_ptr<Tra
     OrderGenerationParams params;
     
     // Basic signal to order conversion
-    params.trading_pair = signal->trading_pair;
+    params.tradingPair = signal->tradingPair;
     params.side = signal->direction;  // Already a models::OrderSide, no conversion needed
     params.quantity = signal->target_size;
     params.strategy_id = signal->strategy_id;
@@ -124,7 +124,7 @@ void OrderGenerator::setParameterTransformer(
 
 void OrderGenerator::validateParams(const OrderGenerationParams& params) const {
     // Check for required fields
-    if (params.trading_pair.empty()) {
+    if (params.tradingPair.empty()) {
         throw std::invalid_argument("Trading pair cannot be empty");
     }
     

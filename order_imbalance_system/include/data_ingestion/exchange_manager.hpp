@@ -6,6 +6,7 @@
 #include "data_ingestion/normalization/order_book_normalizer.hpp"
 #include "data_ingestion/websocket/connection_pool.hpp"
 // #include "data_ingestion/websocket/websocket_client.hpp"
+#include "data_ingestion/websocket/exchanges/exchange_connector.hpp"
 #include <string>
 #include <memory>
 #include <vector>
@@ -44,7 +45,6 @@ public:
     ExchangeManager(NormalizedOrderBookCallback callback, 
                    int min_connections = 2,
                    int max_connections = 10);
-    
     /**
      * @brief Destructor that ensures proper cleanup of connections
      */
@@ -86,11 +86,11 @@ public:
     
     /**
      * @brief Gets the current order book for a specific trading pair
-     * @param trading_pair The trading pair to get the order book for
+     * @param tradingPair The trading pair to get the order book for
      * @param depth Depth of order book to return (0 = full depth)
      * @return The current order book
      */
-    OrderBookUpdate getOrderBook(const std::string& trading_pair,
+    OrderBookUpdate getOrderBook(const std::string& tradingPair,
                                int32_t depth = 0) const;
     
     /**
@@ -109,6 +109,11 @@ public:
 #endif
 
 private:
+
+    std::function<void(const std::string&, const std::string&, const std::vector<uint8_t>&)> websocketCallback_;
+    NormalizedOrderBookCallback normalizedCallback_;
+    void onWebSocketData(const std::string& exchange, const std::string& symbol, const std::vector<uint8_t>& data);
+   
     // Order book normalizer
     std::unique_ptr<OrderBookNormalizer> normalizer_;
     
@@ -134,7 +139,7 @@ private:
      * @brief Callback for receiving market data from Binance
      * @param update The market data update
      */
-    void onMarketData(const MarketDataUpdate& update);
+    // void onMarketData(const MarketDataUpdate& update);
     
     /**
      * @brief Thread function to monitor connections

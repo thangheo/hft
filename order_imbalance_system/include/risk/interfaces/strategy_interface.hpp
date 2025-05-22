@@ -6,9 +6,8 @@
  */
 #pragma once
 
-#include "../risk_types.hpp"
-#include "../risk_events.hpp"
-
+#include "risk_types.hpp"
+#include "risk_events.hpp"
 #include <string>
 #include <vector>
 #include <memory>
@@ -16,6 +15,7 @@
 
 namespace trading {
 namespace risk {
+
 
 /**
  * StrategyInterface provides communication with the Strategy Engine.
@@ -89,6 +89,13 @@ public:
      */
     virtual void registerStrategyEventCallback(const std::function<void(const StrategyId&, const std::string&)>& callback) = 0;
 };
+
+/**
+ * Factory function to create StrategyInterface
+ * 
+ * @return Unique pointer to StrategyInterface implementation
+ */
+std::unique_ptr<StrategyInterface> createStrategyInterface();
 
 } // namespace risk
 } // namespace trading

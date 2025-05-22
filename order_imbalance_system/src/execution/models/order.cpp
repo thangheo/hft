@@ -59,12 +59,12 @@ Order::Order(const Order& other) {
 }
 // Factory method for market orders
 std::shared_ptr<Order> Order::createMarketOrder(
-    const std::string& trading_pair, 
+    const std::string& tradingPair, 
     OrderSide side, 
     double quantity) {
     
     auto order = std::make_shared<Order>();
-    order->setTradingPair(trading_pair);
+    order->setTradingPair(tradingPair);
     order->setSide(side);
     order->setType(OrderType::MARKET);
     order->setQuantity(quantity);
@@ -74,13 +74,13 @@ std::shared_ptr<Order> Order::createMarketOrder(
 
 // Factory method for limit orders
 std::shared_ptr<Order> Order::createLimitOrder(
-    const std::string& trading_pair, 
+    const std::string& tradingPair, 
     OrderSide side, 
     double quantity, 
     double price) {
     
     auto order = std::make_shared<Order>();
-    order->setTradingPair(trading_pair);
+    order->setTradingPair(tradingPair);
     order->setSide(side);
     order->setType(OrderType::LIMIT);
     order->setQuantity(quantity);
@@ -231,9 +231,9 @@ void Order::setExchangeOrderId(const std::string& exchange_order_id) {
     updated_at_ = std::chrono::system_clock::now();
 }
 
-void Order::setTradingPair(const std::string& trading_pair) {
+void Order::setTradingPair(const std::string& tradingPair) {
     std::lock_guard<std::mutex> lock(mutex_);
-    trading_pair_ = trading_pair;
+    trading_pair_ = tradingPair;
     updated_at_ = std::chrono::system_clock::now();
 }
 

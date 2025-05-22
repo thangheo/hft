@@ -6,32 +6,61 @@ namespace data_ingestion {
 
 std::shared_ptr<BinanceWebSocketClient> BinanceClientFactory::createClient(
     MarketDataCallback callback,
-    bool use_testnet) {
+    bool useTestnet) {
     
-    const std::string& host = use_testnet ? TESTNET_HOST : MAINNET_HOST;
+    const std::string& host = useTestnet ? TESTNET_HOST : MAINNET_HOST;
     
-    return std::make_shared<BinanceWebSocketClient>(host, PORT, std::move(callback));
+    // Convert MarketDataCallback to the expected signature
+    auto dataCallback = [callback](const std::string& exchange, const std::string& symbol, const std::vector<uint8_t>& data) {
+        if (callback) {
+            // Convert raw data back to MarketDataUpdate if needed
+            // For now, we'll create a basic update - you may need to parse JSON here
+            MarketDataUpdate update;
+            update.exchangeId = exchange;
+            update.tradingPair = symbol;
+            update.timestamp = std::chrono::system_clock::now();
+            update.updateType = "orderbook"; // or parse from data
+            update.data = data;
+            
+            callback(update);
+        }
+    };
+    
+    return std::make_shared<BinanceWebSocketClient>(host, PORT, dataCallback);
 }
 
 std::unique_ptr<ConnectionPool> BinanceClientFactory::createConnectionPool(
     MarketDataCallback callback,
-    int min_connections,
-    int max_connections,
-    bool use_testnet) {
+    int minConnections,
+    int maxConnections,
+    bool useTestnet) {
     
-    const std::string& host = use_testnet ? TESTNET_HOST : MAINNET_HOST;
+    const std::string& host = useTestnet ? TESTNET_HOST : MAINNET_HOST;
     
-    // Create a factory function that will be used by the connection pool
-    ConnectionFactory factory = [host, PORT, callback]() {
-        return std::make_shared<BinanceWebSocketClient>(host, PORT, callback);
+    // Convert callback for connection factory
+    auto dataCallback = [callback](const std::string& exchange, const std::string& symbol, const std::vector<uint8_t>& data) {
+        if (callback) {
+            MarketDataUpdate update;
+            update.exchangeId = exchange;
+            update.tradingPair = symbol;
+            update.timestamp = std::chrono::system_clock::now();
+            update.updateType = "orderbook";
+            update.data = data;
+            
+            callback(update);
+        }
+    };
+    
+    ConnectionFactory factory = [host, dataCallback]() {
+        return std::make_shared<BinanceWebSocketClient>(host, PORT, dataCallback);
     };
     
     // Create the connection pool
     auto pool = std::make_unique<ConnectionPool>(
-        "binance" + std::string(use_testnet ? "-testnet" : ""),
+        "binance" + std::string(useTestnet ? "-testnet" : ""),
         factory,
-        min_connections,
-        max_connections
+        minConnections,
+        maxConnections
     );
     
     // Initialize the pool

@@ -268,7 +268,7 @@ public:
         output = adapter->normalize(input);
         
         // Standardize trading pair
-        output.trading_pair = adapter->standardizeTradingPair(input.trading_pair);
+        output.tradingPair = adapter->standardizeTradingPair(input.tradingPair);
         
         return true;
     }
@@ -464,7 +464,7 @@ public:
         if (!is_running_) return false;
         
         // Update metric
-        metrics_->increment_input_count(update.exchangeId, update.trading_pair);
+        metrics_->increment_input_count(update.exchangeId, update.tradingPair);
         
         // Push to input queue
         return input_queue_->push(update);

@@ -211,7 +211,7 @@
              // Populate signal from JSON
              signal.id = signalJson["id"];
              signal.exchangeId = signalJson["exchangeId"];
-             signal.tradingPair = signalJson["trading_pair"];
+             signal.tradingPair = signalJson["tradingPair"];
              signal.direction = signalJson["direction"] == "buy" ? Direction::BUY : Direction::SELL;
              signal.strength = signalJson["strength"];
              signal.targetSize = signalJson["target_size"];
@@ -250,7 +250,7 @@
              json paramsJson = json::parse(payload);
              
              ExchangeId exchangeId = paramsJson["exchangeId"];
-             TradingPair tradingPair = paramsJson["trading_pair"];
+             TradingPair tradingPair = paramsJson["tradingPair"];
              StrategyId strategyId = paramsJson["strategy_id"];
              
              // Get the parameters
@@ -259,7 +259,7 @@
              // Create response JSON
              json paramsResultJson;
              paramsResultJson["exchangeId"] = params.exchangeId;
-             paramsResultJson["trading_pair"] = params.tradingPair;
+             paramsResultJson["tradingPair"] = params.tradingPair;
              paramsResultJson["max_position_size"] = params.maxPositionSize;
              paramsResultJson["max_order_size"] = params.maxOrderSize;
              paramsResultJson["maxDrawdown"] = params.maxDrawdown;
@@ -279,7 +279,7 @@
              
              RiskParameters params;
              params.exchangeId = paramsJson["exchangeId"];
-             params.tradingPair = paramsJson["trading_pair"];
+             params.tradingPair = paramsJson["tradingPair"];
              params.maxPositionSize = paramsJson["max_position_size"];
              params.maxOrderSize = paramsJson["max_order_size"];
              params.maxDrawdown = paramsJson["maxDrawdown"];

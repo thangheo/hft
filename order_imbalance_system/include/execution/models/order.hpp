@@ -121,12 +121,12 @@ public:
     
     // Factory methods for common order types
     static std::shared_ptr<Order> createMarketOrder(
-        const std::string& trading_pair, 
+        const std::string& tradingPair, 
         OrderSide side, 
         double quantity);
         
     static std::shared_ptr<Order> createLimitOrder(
-        const std::string& trading_pair, 
+        const std::string& tradingPair, 
         OrderSide side, 
         double quantity, 
         double price);
@@ -162,7 +162,7 @@ public:
     void setExchangeId(const std::string& exchangeId);
     void setExchangeOrderId(const std::string& exchange_order_id);
     void setClientOrderId(const std::string& client_order_id);
-    void setTradingPair(const std::string& trading_pair);
+    void setTradingPair(const std::string& tradingPair);
     void setSide(OrderSide side);
     void setType(OrderType type);
     void setQuantity(double quantity);

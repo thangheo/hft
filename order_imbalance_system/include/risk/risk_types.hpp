@@ -28,37 +28,38 @@ class ValidationResult;
 class ThresholdSet;
 class RiskParameters;
 class PerformanceMetrics;
-class MarketData;
+// class MarketData;
 
 /**
  * Type for timestamp representation
  */
 using Timestamp = std::chrono::time_point<std::chrono::system_clock>;
-
+using MarketDataUpdate = core::MarketDataUpdate;    
+using MarketData = core::MarketData;
 /**
  * Structure to hold market data information
  */
-struct MarketData {
-    std::string tradingPair;              // Trading pair symbol (e.g., "BTC/USDT")
-    std::string exchangeId;               // Exchange identifier
-    Timestamp timestamp;                  // Timestamp of the data
-    double price;                         // Current market price
-    double volume;                        // Trading volume
-    double bid;                           // Best bid price
-    double ask;                           // Best ask price
-    double lastTradePrice;                // Last trade price
-    double lastTradeQuantity;             // Last trade quantity
-    double open24h;                       // Opening price 24 hours ago
-    double high24h;                       // Highest price in last 24 hours
-    double low24h;                        // Lowest price in last 24 hours
-    double volumeQuote24h;                // 24-hour volume in quote currency
-    std::map<std::string, double> extra;  // Extra fields for extensibility
+// struct MarketData {
+//     std::string tradingPair;              // Trading pair symbol (e.g., "BTC/USDT")
+//     std::string exchangeId;               // Exchange identifier
+//     Timestamp timestamp;                  // Timestamp of the data
+//     double price;                         // Current market price
+//     double volume;                        // Trading volume
+//     double bid;                           // Best bid price
+//     double ask;                           // Best ask price
+//     double lastTradePrice;                // Last trade price
+//     double lastTradeQuantity;             // Last trade quantity
+//     double open24h;                       // Opening price 24 hours ago
+//     double high24h;                       // Highest price in last 24 hours
+//     double low24h;                        // Lowest price in last 24 hours
+//     double volumeQuote24h;                // 24-hour volume in quote currency
+//     std::map<std::string, double> extra;  // Extra fields for extensibility
     
-    MarketData() 
-        : price(0.0), volume(0.0), bid(0.0), ask(0.0), 
-          lastTradePrice(0.0), lastTradeQuantity(0.0),
-          open24h(0.0), high24h(0.0), low24h(0.0), volumeQuote24h(0.0) {}
-};
+//     MarketData() 
+//         : price(0.0), volume(0.0), bid(0.0), ask(0.0), 
+//           lastTradePrice(0.0), lastTradeQuantity(0.0),
+//           open24h(0.0), high24h(0.0), low24h(0.0), volumeQuote24h(0.0) {}
+// };
 
 /**
  * Enum for order side

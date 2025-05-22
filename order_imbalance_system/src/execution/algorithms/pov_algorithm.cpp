@@ -23,7 +23,7 @@ PovAlgorithm::~PovAlgorithm() {
 }
 
 bool PovAlgorithm::initialize(
-    const std::string& trading_pair,
+    const std::string& tradingPair,
     models::OrderSide side,
     const PovConfig& config) {
     
@@ -41,7 +41,7 @@ bool PovAlgorithm::initialize(
     }
     
     // Store configuration
-    trading_pair_ = trading_pair;
+    trading_pair_ = tradingPair;
     side_ = side;
     config_ = config;
     

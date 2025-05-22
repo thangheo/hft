@@ -26,7 +26,7 @@
   */
  struct TradingSignal {
      std::string signal_id;                        // Unique signal identifier
-     std::string trading_pair;                     // Trading pair (e.g., "BTC/USDT")
+     std::string tradingPair;                     // Trading pair (e.g., "BTC/USDT")
      core::Direction direction;                    // Buy or sell direction
      double strength;                              // Signal strength (0.0-1.0)
      double target_size;                           // Suggested position size
@@ -41,7 +41,7 @@
       */
      TradingSignal()
          : signal_id(""),
-           trading_pair(""),
+           tradingPair(""),
            direction(core::Direction::NEUTRAL),
            strength(0.0),
            target_size(0.0),
@@ -60,7 +60,7 @@
          double str
      )
          : signal_id(id),
-           trading_pair(pair),
+           tradingPair(pair),
            direction(dir),
            strength(str),
            target_size(0.0),
@@ -77,7 +77,7 @@
      /**
       * Get the trading pair
       */
-     const std::string& getTradingPair() const { return trading_pair; }
+     const std::string& getTradingPair() const { return tradingPair; }
      
      /**
       * Get the direction

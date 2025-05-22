@@ -493,14 +493,14 @@ class TradingSignalProto final :
   std::string* _internal_mutable_signal_id();
   public:
 
-  // string trading_pair = 2;
+  // string tradingPair = 2;
   void clear_trading_pair();
-  const std::string& trading_pair() const;
+  const std::string& tradingPair() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
   void set_trading_pair(ArgT0&& arg0, ArgT... args);
   std::string* mutable_trading_pair();
   PROTOBUF_NODISCARD std::string* release_trading_pair();
-  void set_allocated_trading_pair(std::string* trading_pair);
+  void set_allocated_trading_pair(std::string* tradingPair);
   private:
   const std::string& _internal_trading_pair() const;
   inline PROTOBUF_ALWAYS_INLINE void _internal_set_trading_pair(const std::string& value);
@@ -1630,14 +1630,14 @@ class OrderProto final :
   std::string* _internal_mutable_exchange_order_id();
   public:
 
-  // string trading_pair = 5;
+  // string tradingPair = 5;
   void clear_trading_pair();
-  const std::string& trading_pair() const;
+  const std::string& tradingPair() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
   void set_trading_pair(ArgT0&& arg0, ArgT... args);
   std::string* mutable_trading_pair();
   PROTOBUF_NODISCARD std::string* release_trading_pair();
-  void set_allocated_trading_pair(std::string* trading_pair);
+  void set_allocated_trading_pair(std::string* tradingPair);
   private:
   const std::string& _internal_trading_pair() const;
   inline PROTOBUF_ALWAYS_INLINE void _internal_set_trading_pair(const std::string& value);
@@ -2711,14 +2711,14 @@ class CancelAllOrdersRequestProto final :
     kTradingPairFieldNumber = 1,
     kExchangeIdFieldNumber = 2,
   };
-  // string trading_pair = 1;
+  // string tradingPair = 1;
   void clear_trading_pair();
-  const std::string& trading_pair() const;
+  const std::string& tradingPair() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
   void set_trading_pair(ArgT0&& arg0, ArgT... args);
   std::string* mutable_trading_pair();
   PROTOBUF_NODISCARD std::string* release_trading_pair();
-  void set_allocated_trading_pair(std::string* trading_pair);
+  void set_allocated_trading_pair(std::string* tradingPair);
   private:
   const std::string& _internal_trading_pair() const;
   inline PROTOBUF_ALWAYS_INLINE void _internal_set_trading_pair(const std::string& value);
@@ -3402,12 +3402,12 @@ inline void TradingSignalProto::set_allocated_signal_id(std::string* signal_id) 
   // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.TradingSignalProto.signal_id)
 }
 
-// string trading_pair = 2;
+// string tradingPair = 2;
 inline void TradingSignalProto::clear_trading_pair() {
   _impl_.trading_pair_.ClearToEmpty();
 }
-inline const std::string& TradingSignalProto::trading_pair() const {
-  // @@protoc_insertion_point(field_get:trading.execution.grpc.TradingSignalProto.trading_pair)
+inline const std::string& TradingSignalProto::tradingPair() const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.TradingSignalProto.tradingPair)
   return _internal_trading_pair();
 }
 template <typename ArgT0, typename... ArgT>
@@ -3415,11 +3415,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void TradingSignalProto::set_trading_pair(ArgT0&& arg0, ArgT... args) {
  
  _impl_.trading_pair_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.grpc.TradingSignalProto.trading_pair)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.TradingSignalProto.tradingPair)
 }
 inline std::string* TradingSignalProto::mutable_trading_pair() {
   std::string* _s = _internal_mutable_trading_pair();
-  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.TradingSignalProto.trading_pair)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.TradingSignalProto.tradingPair)
   return _s;
 }
 inline const std::string& TradingSignalProto::_internal_trading_pair() const {
@@ -3434,22 +3434,22 @@ inline std::string* TradingSignalProto::_internal_mutable_trading_pair() {
   return _impl_.trading_pair_.Mutable(GetArenaForAllocation());
 }
 inline std::string* TradingSignalProto::release_trading_pair() {
-  // @@protoc_insertion_point(field_release:trading.execution.grpc.TradingSignalProto.trading_pair)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.TradingSignalProto.tradingPair)
   return _impl_.trading_pair_.Release();
 }
-inline void TradingSignalProto::set_allocated_trading_pair(std::string* trading_pair) {
-  if (trading_pair != nullptr) {
+inline void TradingSignalProto::set_allocated_trading_pair(std::string* tradingPair) {
+  if (tradingPair != nullptr) {
     
   } else {
     
   }
-  _impl_.trading_pair_.SetAllocated(trading_pair, GetArenaForAllocation());
+  _impl_.trading_pair_.SetAllocated(tradingPair, GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
   if (_impl_.trading_pair_.IsDefault()) {
     _impl_.trading_pair_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.TradingSignalProto.trading_pair)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.TradingSignalProto.tradingPair)
 }
 
 // .trading.execution.grpc.TradingSignalProto.OrderSide direction = 3;
@@ -4539,12 +4539,12 @@ inline void OrderProto::set_allocated_exchange_order_id(std::string* exchange_or
   // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.OrderProto.exchange_order_id)
 }
 
-// string trading_pair = 5;
+// string tradingPair = 5;
 inline void OrderProto::clear_trading_pair() {
   _impl_.trading_pair_.ClearToEmpty();
 }
-inline const std::string& OrderProto::trading_pair() const {
-  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.trading_pair)
+inline const std::string& OrderProto::tradingPair() const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.tradingPair)
   return _internal_trading_pair();
 }
 template <typename ArgT0, typename... ArgT>
@@ -4552,11 +4552,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void OrderProto::set_trading_pair(ArgT0&& arg0, ArgT... args) {
  
  _impl_.trading_pair_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.trading_pair)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.tradingPair)
 }
 inline std::string* OrderProto::mutable_trading_pair() {
   std::string* _s = _internal_mutable_trading_pair();
-  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.OrderProto.trading_pair)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.OrderProto.tradingPair)
   return _s;
 }
 inline const std::string& OrderProto::_internal_trading_pair() const {
@@ -4571,22 +4571,22 @@ inline std::string* OrderProto::_internal_mutable_trading_pair() {
   return _impl_.trading_pair_.Mutable(GetArenaForAllocation());
 }
 inline std::string* OrderProto::release_trading_pair() {
-  // @@protoc_insertion_point(field_release:trading.execution.grpc.OrderProto.trading_pair)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.OrderProto.tradingPair)
   return _impl_.trading_pair_.Release();
 }
-inline void OrderProto::set_allocated_trading_pair(std::string* trading_pair) {
-  if (trading_pair != nullptr) {
+inline void OrderProto::set_allocated_trading_pair(std::string* tradingPair) {
+  if (tradingPair != nullptr) {
     
   } else {
     
   }
-  _impl_.trading_pair_.SetAllocated(trading_pair, GetArenaForAllocation());
+  _impl_.trading_pair_.SetAllocated(tradingPair, GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
   if (_impl_.trading_pair_.IsDefault()) {
     _impl_.trading_pair_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.OrderProto.trading_pair)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.OrderProto.tradingPair)
 }
 
 // .trading.execution.grpc.OrderProto.OrderSide side = 6;
@@ -5362,12 +5362,12 @@ inline void CancelOrderByExchangeIdRequestProto::set_allocated_exchangeid(std::s
 
 // CancelAllOrdersRequestProto
 
-// string trading_pair = 1;
+// string tradingPair = 1;
 inline void CancelAllOrdersRequestProto::clear_trading_pair() {
   _impl_.trading_pair_.ClearToEmpty();
 }
-inline const std::string& CancelAllOrdersRequestProto::trading_pair() const {
-  // @@protoc_insertion_point(field_get:trading.execution.grpc.CancelAllOrdersRequestProto.trading_pair)
+inline const std::string& CancelAllOrdersRequestProto::tradingPair() const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.CancelAllOrdersRequestProto.tradingPair)
   return _internal_trading_pair();
 }
 template <typename ArgT0, typename... ArgT>
@@ -5375,11 +5375,11 @@ inline PROTOBUF_ALWAYS_INLINE
 void CancelAllOrdersRequestProto::set_trading_pair(ArgT0&& arg0, ArgT... args) {
  
  _impl_.trading_pair_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.grpc.CancelAllOrdersRequestProto.trading_pair)
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.CancelAllOrdersRequestProto.tradingPair)
 }
 inline std::string* CancelAllOrdersRequestProto::mutable_trading_pair() {
   std::string* _s = _internal_mutable_trading_pair();
-  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.CancelAllOrdersRequestProto.trading_pair)
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.CancelAllOrdersRequestProto.tradingPair)
   return _s;
 }
 inline const std::string& CancelAllOrdersRequestProto::_internal_trading_pair() const {
@@ -5394,22 +5394,22 @@ inline std::string* CancelAllOrdersRequestProto::_internal_mutable_trading_pair(
   return _impl_.trading_pair_.Mutable(GetArenaForAllocation());
 }
 inline std::string* CancelAllOrdersRequestProto::release_trading_pair() {
-  // @@protoc_insertion_point(field_release:trading.execution.grpc.CancelAllOrdersRequestProto.trading_pair)
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.CancelAllOrdersRequestProto.tradingPair)
   return _impl_.trading_pair_.Release();
 }
-inline void CancelAllOrdersRequestProto::set_allocated_trading_pair(std::string* trading_pair) {
-  if (trading_pair != nullptr) {
+inline void CancelAllOrdersRequestProto::set_allocated_trading_pair(std::string* tradingPair) {
+  if (tradingPair != nullptr) {
     
   } else {
     
   }
-  _impl_.trading_pair_.SetAllocated(trading_pair, GetArenaForAllocation());
+  _impl_.trading_pair_.SetAllocated(tradingPair, GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
   if (_impl_.trading_pair_.IsDefault()) {
     _impl_.trading_pair_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.CancelAllOrdersRequestProto.trading_pair)
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.CancelAllOrdersRequestProto.tradingPair)
 }
 
 // string exchangeId = 2;

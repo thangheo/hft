@@ -27,7 +27,7 @@ struct OrderBookMetrics {
     core::Timestamp timestamp;
     uint64_t sequence_number;
     core::ExchangeId exchangeId;
-    core::Symbol symbol;  // Changed from trading_pair for consistency
+    core::Symbol symbol;  // Changed from tradingPair for consistency
     
     
     // Map of metrics for flexible access

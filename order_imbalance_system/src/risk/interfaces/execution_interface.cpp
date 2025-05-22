@@ -7,36 +7,46 @@
 
 #include "interfaces/execution_interface.hpp"
 #include <common/zeromq_client.hpp>
-#include <common/logger.hpp>
-#include <execution/models/execution_report.hpp>
-#include <execution/models/order.hpp>
 #include <nlohmann/json.hpp>
 #include <sstream>
 #include <chrono>
 #include <mutex>
+#include <iostream>
+#include <iomanip>
 
 namespace trading {
 namespace risk {
 
-using ExecutionReport = execution::models::ExecutionReport;
-using OrderType = execution::models::OrderType;
-using OrderSide = execution::models::OrderSide;
-using OrderState = execution::models::OrderState;
+// Helper to log with timestamp (temporary until we integrate with logging system)
+void logWithTimestamp(const std::string& level, const std::string& message) {
+    auto now = std::chrono::system_clock::now();
+    auto now_time_t = std::chrono::system_clock::to_time_t(now);
+    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+        now.time_since_epoch()) % 1000;
+        
+    std::stringstream ss;
+    ss << "[" << std::put_time(std::localtime(&now_time_t), "%Y-%m-%d %H:%M:%S")
+       << '.' << std::setfill('0') << std::setw(3) << ms.count() << "] ";
+    ss << "[" << level << "] " << message;
+    std::cout << ss.str() << std::endl;
+}
 
 class ExecutionInterfaceImpl : public ExecutionInterface {
 private:
-    // ZeroMQ client for communication
-    std::unique_ptr<common::ZeroMQClient> zmqClient_;
+    // Configuration
+    std::string requestEndpoint_;
+    std::string publishEndpoint_;
+    std::string executionReportsTopic_;
+    
+    // ZeroMQ clients
+    std::unique_ptr<common::ZeroMQClient> requestClient_;
+    std::unique_ptr<common::ZeroMQClient> subscriptionClient_;
     
     // Callback for execution reports
     std::function<void(const ExecutionReport&)> executionReportCallback_;
     
     // Mutex for thread safety
     std::mutex mutex_;
-    
-    // Configuration
-    std::string executionServiceEndpoint_;
-    std::string executionReportsTopic_;
     
     // Flag to indicate if initialization was successful
     bool initialized_ = false;
@@ -47,7 +57,7 @@ private:
         json["order_id"] = request.orderId;
         json["client_order_id"] = request.clientOrderId;
         json["exchangeId"] = request.exchangeId;
-        json["trading_pair"] = request.tradingPair;
+        json["tradingPair"] = request.tradingPair;
         json["side"] = request.side == OrderSide::BUY ? "buy" : "sell";
         json["type"] = request.type;
         json["quantity"] = request.quantity;
@@ -55,7 +65,8 @@ private:
         json["time_in_force"] = request.timeInForce;
         json["strategy_id"] = request.strategyId;
         json["signal_id"] = request.signalId;
-        json["timestamp"] = request.timestamp;
+        json["timestamp"] = std::chrono::duration_cast<std::chrono::milliseconds>(
+            request.timestamp.time_since_epoch()).count();
         
         // Add optional parameters if provided
         if (!request.params.empty()) {
@@ -74,7 +85,7 @@ private:
         request.orderId = json["order_id"];
         request.clientOrderId = json["client_order_id"];
         request.exchangeId = json["exchangeId"];
-        request.tradingPair = json["trading_pair"];
+        request.tradingPair = json["tradingPair"];
         request.side = json["side"] == "buy" ? OrderSide::BUY : OrderSide::SELL;
         request.type = json["type"];
         request.quantity = json["quantity"];
@@ -82,7 +93,11 @@ private:
         request.timeInForce = json["time_in_force"];
         request.strategyId = json["strategy_id"];
         request.signalId = json["signal_id"];
-        request.timestamp = json["timestamp"];
+        
+        // Parse timestamp
+        int64_t timestampMs = json["timestamp"];
+        request.timestamp = std::chrono::system_clock::time_point(
+            std::chrono::milliseconds(timestampMs));
         
         // Parse optional parameters if provided
         if (json.contains("params") && json["params"].is_object()) {
@@ -94,17 +109,73 @@ private:
         return request;
     }
 
+    // Parse ExecutionReport from JSON
+    ExecutionReport jsonToExecutionReport(const nlohmann::json& json) {
+        ExecutionReport report;
+        report.orderId = json["order_id"];
+        report.clientOrderId = json["client_order_id"];
+        report.exchangeOrderId = json["exchange_order_id"];
+        report.exchangeId = json["exchangeId"];
+        report.tradingPair = json["tradingPair"];
+        report.side = json["side"] == "buy" ? OrderSide::BUY : OrderSide::SELL;
+        report.type = json["type"];
+        report.status = json["status"];
+        report.quantity = json["quantity"];
+        report.filledQuantity = json["filled_quantity"];
+        report.price = json["price"];
+        report.averageFillPrice = json["average_fill_price"];
+        
+        // Parse timestamp
+        int64_t timestampMs = json["timestamp"];
+        report.timestamp = std::chrono::system_clock::time_point(
+            std::chrono::milliseconds(timestampMs));
+        
+        // Parse optional fields
+        if (json.contains("fee")) report.fee = json["fee"];
+        if (json.contains("fee_currency")) report.feeCurrency = json["fee_currency"];
+        if (json.contains("reject_reason")) report.rejectReason = json["reject_reason"];
+        
+        return report;
+    }
+
+    // Handle received execution report messages
+    void handleExecutionReportMessage(const std::string& topic, const std::string& message) {
+        if (topic == executionReportsTopic_) {
+            try {
+                auto json = nlohmann::json::parse(message);
+                auto report = jsonToExecutionReport(json);
+                
+                // Call the callback if registered
+                if (executionReportCallback_) {
+                    executionReportCallback_(report);
+                }
+            } catch (const std::exception& e) {
+                logWithTimestamp("ERROR", "Error processing execution report: " + std::string(e.what()));
+            }
+        }
+    }
+
+    // Handle error messages
+    void handleErrorMessage(const std::string& context, const std::string& error) {
+        logWithTimestamp("ERROR", "ZeroMQ error in " + context + ": " + error);
+    }
+
 public:
     ExecutionInterfaceImpl() : ExecutionInterface() {
         // Load configuration
         // In a real implementation, this would be loaded from a config file
-        executionServiceEndpoint_ = "tcp://localhost:5556";
+        requestEndpoint_ = "tcp://localhost:5556";
+        publishEndpoint_ = "tcp://localhost:5559";
         executionReportsTopic_ = "execution_reports";
     }
     
     ~ExecutionInterfaceImpl() override {
-        if (initialized_) {
-            zmqClient_->stop();
+        // Clean shutdown of ZeroMQ clients
+        if (subscriptionClient_) {
+            subscriptionClient_->stop();
+        }
+        if (requestClient_) {
+            requestClient_->stop();
         }
     }
     
@@ -116,61 +187,63 @@ public:
         }
         
         try {
-            // Initialize ZeroMQ client for both request-reply and pub-sub
-            zmqClient_ = std::make_unique<common::ZeroMQClient>(
-                executionServiceEndpoint_, executionServiceEndpoint_ + "_pub");
+            // Configure ZeroMQ clients
+            common::ZeroMQConfig requestConfig;
+            requestConfig.publisherEndpoint = requestEndpoint_;
             
-            // Register message handler for execution reports
-            zmqClient_->setMessageHandler([this](const std::string& topic, const std::string& message) {
-                if (topic == executionReportsTopic_) {
-                    try {
-                        // Parse the received message
-                        auto json = nlohmann::json::parse(message);
-                        
-                        // Create ExecutionReport from JSON
-                        ExecutionReport report;
-                        report.orderId = json["order_id"];
-                        report.exchangeOrderId = json["exchange_order_id"];
-                        report.exchangeId = json["exchangeId"];
-                        report.tradingPair = json["trading_pair"];
-                        report.side = json["side"] == "buy" ? OrderSide::BUY : OrderSide::SELL;
-                        report.quantity = json["quantity"];
-                        report.price = json["price"];
-                        report.status = json["status"];
-                        report.filledQuantity = json["filled_quantity"];
-                        report.averageFillPrice = json["average_fill_price"];
-                        report.timestamp = json["timestamp"];
-                        report.fee = json["fee"];
-                        report.fee_currency = json["fee_currency"];
-                        
-                        // Call the callback if registered
-                        if (executionReportCallback_) {
-                            executionReportCallback_(report);
-                        }
-                    } catch (const std::exception& e) {
-                        LOG_ERROR("Error processing execution report: {}", e.what());
-                    }
-                }
-            });
+            common::ZeroMQConfig subscriptionConfig;
+            subscriptionConfig.subscriberEndpoint = publishEndpoint_;
+            subscriptionConfig.reconnectInterval = std::chrono::milliseconds(1000);
+            subscriptionConfig.maxReconnectAttempts = 5;
+            
+            // Initialize request client
+            requestClient_ = std::make_unique<common::ZeroMQClient>(requestConfig);
+            
+            // Initialize subscription client
+            subscriptionClient_ = std::make_unique<common::ZeroMQClient>(subscriptionConfig);
+            
+            // Set message handler for subscription client
+            subscriptionClient_->setMessageHandler(
+                std::bind(&ExecutionInterfaceImpl::handleExecutionReportMessage, this, 
+                          std::placeholders::_1, std::placeholders::_2));
+            
+            // Set error handler for both clients
+            subscriptionClient_->setErrorHandler(
+                std::bind(&ExecutionInterfaceImpl::handleErrorMessage, this,
+                          std::placeholders::_1, std::placeholders::_2));
+            requestClient_->setErrorHandler(
+                std::bind(&ExecutionInterfaceImpl::handleErrorMessage, this,
+                          std::placeholders::_1, std::placeholders::_2));
+            
+            // Start the clients
+            if (!requestClient_->start()) {
+                logWithTimestamp("ERROR", "Failed to start request client");
+                return false;
+            }
+            
+            if (!subscriptionClient_->start()) {
+                logWithTimestamp("ERROR", "Failed to start subscription client");
+                return false;
+            }
             
             // Subscribe to the execution reports topic
-            zmqClient_->subscribe(executionReportsTopic_);
-            
-            // Start receiving messages
-            zmqClient_->start();
+            if (!subscriptionClient_->subscribe(executionReportsTopic_)) {
+                logWithTimestamp("ERROR", "Failed to subscribe to execution reports topic");
+                return false;
+            }
             
             initialized_ = true;
-            LOG_INFO("Execution interface initialized successfully");
+            logWithTimestamp("INFO", "Execution interface initialized successfully");
             return true;
         } catch (const std::exception& e) {
-            LOG_ERROR("Failed to initialize execution interface: {}", e.what());
+            logWithTimestamp("ERROR", "Failed to initialize execution interface: " + std::string(e.what()));
             return false;
         }
     }
     
     std::string submitOrder(const OrderRequest& orderRequest) override {
         if (!initialized_) {
-            LOG_ERROR("Execution interface not initialized");
+            logWithTimestamp("ERROR", "Execution interface not initialized");
             return "";
         }
         
@@ -182,25 +255,23 @@ public:
             };
             
             // Send request
-            std::string response = zmqClient_->publish("orders", request.dump());
-            
-            // Parse response
-            auto responseJson = nlohmann::json::parse(response);
-            if (responseJson["success"].get<bool>()) {
-                return responseJson["order_id"].get<std::string>();
-            } else {
-                LOG_ERROR("Failed to submit order: {}", responseJson["error"].get<std::string>());
+            if (!requestClient_->publish("orders", request.dump())) {
+                logWithTimestamp("ERROR", "Failed to send submit order request");
                 return "";
             }
+            
+            // In a real implementation, we would wait for the response with a timeout
+            // For now, we'll just return the client order ID
+            return orderRequest.clientOrderId;
         } catch (const std::exception& e) {
-            LOG_ERROR("Failed to submit order: {}", e.what());
+            logWithTimestamp("ERROR", "Failed to submit order: " + std::string(e.what()));
             return "";
         }
     }
     
     bool cancelOrder(const std::string& orderId) override {
         if (!initialized_) {
-            LOG_ERROR("Execution interface not initialized");
+            logWithTimestamp("ERROR", "Execution interface not initialized");
             return false;
         }
         
@@ -212,20 +283,23 @@ public:
             };
             
             // Send request
-            std::string response = zmqClient_->publish("orders", request.dump());
+            if (!requestClient_->publish("orders", request.dump())) {
+                logWithTimestamp("ERROR", "Failed to send cancel order request");
+                return false;
+            }
             
-            // Parse response
-            auto responseJson = nlohmann::json::parse(response);
-            return responseJson["success"].get<bool>();
+            // In a real implementation, we would wait for the response with a timeout
+            // For now, we'll just return true
+            return true;
         } catch (const std::exception& e) {
-            LOG_ERROR("Failed to cancel order: {}", e.what());
+            logWithTimestamp("ERROR", "Failed to cancel order: " + std::string(e.what()));
             return false;
         }
     }
     
-    int cancelAllOrders(const ExchangeId& exchangeId) override {
+    int cancelAllOrders(const std::string& exchangeId) override {
         if (!initialized_) {
-            LOG_ERROR("Execution interface not initialized");
+            logWithTimestamp("ERROR", "Execution interface not initialized");
             return 0;
         }
         
@@ -237,25 +311,23 @@ public:
             };
             
             // Send request
-            std::string response = zmqClient_->publish("orders", request.dump());
-            
-            // Parse response
-            auto responseJson = nlohmann::json::parse(response);
-            if (responseJson["success"].get<bool>()) {
-                return responseJson["cancelled_count"].get<int>();
-            } else {
-                LOG_ERROR("Failed to cancel all orders: {}", responseJson["error"].get<std::string>());
+            if (!requestClient_->publish("orders", request.dump())) {
+                logWithTimestamp("ERROR", "Failed to send cancel all orders request");
                 return 0;
             }
+            
+            // In a real implementation, we would wait for the response with a timeout
+            // For now, we'll just return 0
+            return 0;
         } catch (const std::exception& e) {
-            LOG_ERROR("Failed to cancel all orders: {}", e.what());
+            logWithTimestamp("ERROR", "Failed to cancel all orders: " + std::string(e.what()));
             return 0;
         }
     }
     
-    int cancelAllOrders(const ExchangeId& exchangeId, const TradingPair& tradingPair) override {
+    int cancelAllOrders(const std::string& exchangeId, const std::string& tradingPair) override {
         if (!initialized_) {
-            LOG_ERROR("Execution interface not initialized");
+            logWithTimestamp("ERROR", "Execution interface not initialized");
             return 0;
         }
         
@@ -264,29 +336,27 @@ public:
             nlohmann::json request = {
                 {"action", "cancel_all_orders"},
                 {"exchangeId", exchangeId},
-                {"trading_pair", tradingPair}
+                {"tradingPair", tradingPair}
             };
             
             // Send request
-            std::string response = zmqClient_->publish("orders", request.dump());
-            
-            // Parse response
-            auto responseJson = nlohmann::json::parse(response);
-            if (responseJson["success"].get<bool>()) {
-                return responseJson["cancelled_count"].get<int>();
-            } else {
-                LOG_ERROR("Failed to cancel all orders: {}", responseJson["error"].get<std::string>());
+            if (!requestClient_->publish("orders", request.dump())) {
+                logWithTimestamp("ERROR", "Failed to send cancel all orders request");
                 return 0;
             }
+            
+            // In a real implementation, we would wait for the response with a timeout
+            // For now, we'll just return 0
+            return 0;
         } catch (const std::exception& e) {
-            LOG_ERROR("Failed to cancel all orders: {}", e.what());
+            logWithTimestamp("ERROR", "Failed to cancel all orders: " + std::string(e.what()));
             return 0;
         }
     }
     
     std::string getOrderStatus(const std::string& orderId) override {
         if (!initialized_) {
-            LOG_ERROR("Execution interface not initialized");
+            logWithTimestamp("ERROR", "Execution interface not initialized");
             return "{}";
         }
         
@@ -298,18 +368,16 @@ public:
             };
             
             // Send request
-            std::string response = zmqClient_->publish("orders", request.dump());
-            
-            // Parse response
-            auto responseJson = nlohmann::json::parse(response);
-            if (responseJson["success"].get<bool>()) {
-                return responseJson["order_status"].dump();
-            } else {
-                LOG_ERROR("Failed to get order status: {}", responseJson["error"].get<std::string>());
+            if (!requestClient_->publish("orders", request.dump())) {
+                logWithTimestamp("ERROR", "Failed to send get order status request");
                 return "{}";
             }
+            
+            // In a real implementation, we would wait for the response with a timeout
+            // For now, we'll just return an empty JSON object
+            return "{}";
         } catch (const std::exception& e) {
-            LOG_ERROR("Failed to get order status: {}", e.what());
+            logWithTimestamp("ERROR", "Failed to get order status: " + std::string(e.what()));
             return "{}";
         }
     }
@@ -319,9 +387,9 @@ public:
         executionReportCallback_ = callback;
     }
     
-    std::vector<OrderRequest> getOpenOrders(const std::optional<ExchangeId>& exchangeId) override {
+    std::vector<OrderRequest> getOpenOrders(const std::optional<std::string>& exchangeId) override {
         if (!initialized_) {
-            LOG_ERROR("Execution interface not initialized");
+            logWithTimestamp("ERROR", "Execution interface not initialized");
             return {};
         }
         
@@ -337,29 +405,23 @@ public:
             }
             
             // Send request
-            std::string response = zmqClient_->publish("orders", request.dump());
-            
-            // Parse response
-            auto responseJson = nlohmann::json::parse(response);
-            if (responseJson["success"].get<bool>()) {
-                std::vector<OrderRequest> orders;
-                for (const auto& orderJson : responseJson["orders"]) {
-                    orders.push_back(jsonToOrderRequest(orderJson));
-                }
-                return orders;
-            } else {
-                LOG_ERROR("Failed to get open orders: {}", responseJson["error"].get<std::string>());
+            if (!requestClient_->publish("orders", request.dump())) {
+                logWithTimestamp("ERROR", "Failed to send get open orders request");
                 return {};
             }
+            
+            // In a real implementation, we would wait for the response with a timeout
+            // For now, we'll just return an empty vector
+            return {};
         } catch (const std::exception& e) {
-            LOG_ERROR("Failed to get open orders: {}", e.what());
+            logWithTimestamp("ERROR", "Failed to get open orders: " + std::string(e.what()));
             return {};
         }
     }
     
-    bool isExchangeAvailable(const ExchangeId& exchangeId) override {
+    bool isExchangeAvailable(const std::string& exchangeId) override {
         if (!initialized_) {
-            LOG_ERROR("Execution interface not initialized");
+            logWithTimestamp("ERROR", "Execution interface not initialized");
             return false;
         }
         
@@ -371,25 +433,23 @@ public:
             };
             
             // Send request
-            std::string response = zmqClient_->publish("exchange_status", request.dump());
-            
-            // Parse response
-            auto responseJson = nlohmann::json::parse(response);
-            if (responseJson["success"].get<bool>()) {
-                return responseJson["available"].get<bool>();
-            } else {
-                LOG_ERROR("Failed to check if exchange is available: {}", responseJson["error"].get<std::string>());
+            if (!requestClient_->publish("exchange_status", request.dump())) {
+                logWithTimestamp("ERROR", "Failed to send exchange availability request");
                 return false;
             }
+            
+            // In a real implementation, we would wait for the response with a timeout
+            // For now, we'll just return false
+            return false;
         } catch (const std::exception& e) {
-            LOG_ERROR("Failed to check if exchange is available: {}", e.what());
+            logWithTimestamp("ERROR", "Failed to check if exchange is available: " + std::string(e.what()));
             return false;
         }
     }
     
-    std::string getExchangeStatus(const ExchangeId& exchangeId) override {
+    std::string getExchangeStatus(const std::string& exchangeId) override {
         if (!initialized_) {
-            LOG_ERROR("Execution interface not initialized");
+            logWithTimestamp("ERROR", "Execution interface not initialized");
             return "{}";
         }
         
@@ -401,18 +461,16 @@ public:
             };
             
             // Send request
-            std::string response = zmqClient_->publish("exchange_status", request.dump());
-            
-            // Parse response
-            auto responseJson = nlohmann::json::parse(response);
-            if (responseJson["success"].get<bool>()) {
-                return responseJson["exchange_status"].dump();
-            } else {
-                LOG_ERROR("Failed to get exchange status: {}", responseJson["error"].get<std::string>());
+            if (!requestClient_->publish("exchange_status", request.dump())) {
+                logWithTimestamp("ERROR", "Failed to send get exchange status request");
                 return "{}";
             }
+            
+            // In a real implementation, we would wait for the response with a timeout
+            // For now, we'll just return an empty JSON object
+            return "{}";
         } catch (const std::exception& e) {
-            LOG_ERROR("Failed to get exchange status: {}", e.what());
+            logWithTimestamp("ERROR", "Failed to get exchange status: " + std::string(e.what()));
             return "{}";
         }
     }

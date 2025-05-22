@@ -20,17 +20,17 @@ OrderTypeSelection OrderTypeSelector::selectOrderType(
 }
 
 void OrderTypeSelector::updateMarketCondition(
-    const std::string& trading_pair,
+    const std::string& tradingPair,
     const MarketCondition& condition) {
     
     std::lock_guard<std::mutex> lock(mutex_);
-    market_conditions_[trading_pair] = condition;
+    market_conditions_[tradingPair] = condition;
 }
 
-MarketCondition OrderTypeSelector::getMarketCondition(const std::string& trading_pair) const {
+MarketCondition OrderTypeSelector::getMarketCondition(const std::string& tradingPair) const {
     std::lock_guard<std::mutex> lock(mutex_);
     
-    auto it = market_conditions_.find(trading_pair);
+    auto it = market_conditions_.find(tradingPair);
     if (it != market_conditions_.end()) {
         return it->second;
     }

@@ -29,15 +29,67 @@
  
  // Common timestamp definition
  using Timestamp = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
- 
+ using ExchangeId = std::string;
 
+
+// Raw market data from an exchange
+struct MarketDataUpdate {
+    std::string exchangeId;
+    std::string tradingPair;
+    std::string updateType;  // "orderbook", "trade", "ticker"
+    int64_t exchange_timestamp;
+    int64_t received_timestamp;
+    std::vector<uint8_t> data;  // Raw data from exchange
+    uint64_t sequenceNumber = 0;      // Optional sequence number
+    std::chrono::system_clock::time_point timestamp;  // Update timestamp
+    MarketDataUpdate() = default;
+
+};
+
+
+/**
+ * Structure to hold market data information
+ */
+struct MarketData {
+    std::string tradingPair;              // Trading pair symbol (e.g., "BTC/USDT")
+    std::string exchangeId;               // Exchange identifier
+    Timestamp timestamp;                  // Timestamp of the data
+    double price;                         // Current market price
+    double volume;                        // Trading volume
+    double bid;                           // Best bid price
+    double ask;                           // Best ask price
+    double lastTradePrice;                // Last trade price
+    double lastTradeQuantity;             // Last trade quantity
+    double open24h;                       // Opening price 24 hours ago
+    double high24h;                       // Highest price in last 24 hours
+    double low24h;                        // Lowest price in last 24 hours
+    double volumeQuote24h;                // 24-hour volume in quote currency
+    double priceChange24h;
+    double priceChangePercent24h;
+
+    std::map<std::string, double> extra;  // Extra fields for extensibility
+    
+    MarketData() 
+        : price(0.0), volume(0.0), bid(0.0), ask(0.0), 
+          lastTradePrice(0.0), lastTradeQuantity(0.0),
+          open24h(0.0), high24h(0.0), low24h(0.0), volumeQuote24h(0.0) {}
+};
+struct TradeData {
+    std::string symbol;
+    double price;
+    double quantity;
+    std::string side; // "buy" or "sell"
+    uint64_t timestamp;
+    ExchangeId exchangeId;
+    std::string tradeId;
+};
 
  /**
   * Market state information
   */
  struct MarketState {
     std::string exchangeId;               // Exchange identifier
-    std::string trading_pair;              // Trading pair
+    std::string tradingPair;              // Trading pair
     core::Timestamp timestamp;                   // Timestamp of this state
     double trendStrength;                // Trend strength (0-1)
     // double volume_ratio;                 // Volume ratio compared to average
@@ -49,13 +101,13 @@
     
     // Default constructor
     MarketState()
-        : exchangeId(""), trading_pair(""), timestamp(std::chrono::system_clock::now()),
+        : exchangeId(""), tradingPair(""), timestamp(std::chrono::system_clock::now()),
           price(0.0), volatility(0.0), volume_24h(0.0), price_change_24h(0.0),
           market_regime("unknown") {}
     
     // Constructor with exchange and trading pair
     MarketState(const std::string& exchange, const std::string& pair)
-        : exchangeId(exchange), trading_pair(pair), timestamp(std::chrono::system_clock::now()),
+        : exchangeId(exchange), tradingPair(pair), timestamp(std::chrono::system_clock::now()),
           price(0.0), volatility(0.0), volume_24h(0.0), price_change_24h(0.0),
           market_regime("unknown") {}
 };
@@ -106,7 +158,6 @@
  
  // Using Exchange as the universal exchange identifier to replace data_ingestion::ExchangeId
 //  using ExchangeId = Exchange;
- using ExchangeId = std::string;
  /**
   * @struct ExchangeData
   * @brief Represents raw data received from an exchange

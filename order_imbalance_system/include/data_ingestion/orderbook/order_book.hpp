@@ -27,7 +27,7 @@ namespace data_ingestion {
  */
 struct OrderBookDelta {
     std::string exchangeId;
-    std::string trading_pair;
+    std::string tradingPair;
     core::Timestamp timestamp;
     uint64_t sequence_number;
     std::vector<PriceLevel> added_bids = {};
@@ -68,7 +68,7 @@ using OrderBookDeltaCallback = std::function<void(const OrderBookDelta&)>;
 class OrderBook {
 public:
     OrderBook(ExchangeId exchange, const Symbol& symbol, OrderBookCallback callback = nullptr);
-    OrderBook(const std::string& exchangeId, const std::string& trading_pair, OrderBookCallback callback = nullptr);
+    OrderBook(const std::string& exchangeId, const std::string& tradingPair, OrderBookCallback callback = nullptr);
     ~OrderBook() = default;
     
     // Update methods

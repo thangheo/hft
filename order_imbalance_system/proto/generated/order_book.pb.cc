@@ -1315,13 +1315,13 @@ const char* OrderBookUpdate::_InternalParse(const char* ptr, ::_pbi::ParseContex
         } else
           goto handle_unusual;
         continue;
-      // string trading_pair = 2;
+      // string tradingPair = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           auto str = _internal_mutable_trading_pair();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.data_ingestion.proto.OrderBookUpdate.trading_pair"));
+          CHK_(::_pbi::VerifyUTF8(str, "trading.data_ingestion.proto.OrderBookUpdate.tradingPair"));
         } else
           goto handle_unusual;
         continue;
@@ -1440,12 +1440,12 @@ uint8_t* OrderBookUpdate::_InternalSerialize(
         1, this->_internal_exchangeid(), target);
   }
 
-  // string trading_pair = 2;
+  // string tradingPair = 2;
   if (!this->_internal_trading_pair().empty()) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_trading_pair().data(), static_cast<int>(this->_internal_trading_pair().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.data_ingestion.proto.OrderBookUpdate.trading_pair");
+      "trading.data_ingestion.proto.OrderBookUpdate.tradingPair");
     target = stream->WriteStringMaybeAliased(
         2, this->_internal_trading_pair(), target);
   }
@@ -1544,7 +1544,7 @@ size_t OrderBookUpdate::ByteSizeLong() const {
         this->_internal_exchangeid());
   }
 
-  // string trading_pair = 2;
+  // string tradingPair = 2;
   if (!this->_internal_trading_pair().empty()) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(

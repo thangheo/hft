@@ -17,10 +17,10 @@
  
  LiquidityFlowMonitor::LiquidityFlowMonitor(
      const std::string& exchangeId, 
-     const std::string& trading_pair, 
+     const std::string& tradingPair, 
      const ParameterSet& params)
      : exchangeId_(exchangeId),
-       trading_pair_(trading_pair),
+       trading_pair_(tradingPair),
        large_order_threshold_(params.getDouble("large_order_threshold", 5.0)),
        history_window_seconds_(params.getInt("history_window_seconds", 60)),
        typical_order_size_(1.0),
@@ -29,11 +29,11 @@
      
      // Initialize metrics
      current_metrics_.exchangeId = exchangeId;
-     current_metrics_.trading_pair = trading_pair;
+     current_metrics_.tradingPair = tradingPair;
      current_metrics_.timestamp = std::chrono::system_clock::now();
  }
  LiquidityFlowMonitor::LiquidityFlowMonitor(const LiquidityFlowConfig& config)
-    : LiquidityFlowMonitor(config.exchangeId, config.trading_pair, config.params)
+    : LiquidityFlowMonitor(config.exchangeId, config.tradingPair, config.params)
 {
     // Initialize with config
     large_order_threshold_ = config.largeOrderThreshold;
@@ -41,16 +41,16 @@
     
     // Initialize metrics
     current_metrics_.exchangeId = config.exchangeId;
-    current_metrics_.trading_pair = config.trading_pair;
+    current_metrics_.tradingPair = config.tradingPair;
     current_metrics_.timestamp = std::chrono::system_clock::now();
 }
  LiquidityFlowMonitor::LiquidityFlowMonitor(
      const std::string& exchangeId, 
-     const std::string& trading_pair, 
+     const std::string& tradingPair, 
      double large_order_threshold, 
      int history_window_seconds)
      : exchangeId_(exchangeId),
-       trading_pair_(trading_pair),
+       trading_pair_(tradingPair),
        large_order_threshold_(large_order_threshold),
        history_window_seconds_(history_window_seconds),
        typical_order_size_(1.0),
@@ -59,7 +59,7 @@
      
      // Initialize metrics
      current_metrics_.exchangeId = exchangeId;
-     current_metrics_.trading_pair = trading_pair;
+     current_metrics_.tradingPair = tradingPair;
      current_metrics_.timestamp = std::chrono::system_clock::now();
  }
  
@@ -253,7 +253,7 @@ void LiquidityFlowMonitor::reset() {
     // Reset metrics
     current_metrics_ = LiquidityMetrics();
     current_metrics_.exchangeId = exchangeId_;
-    current_metrics_.trading_pair = trading_pair_;
+    current_metrics_.tradingPair = trading_pair_;
     current_metrics_.timestamp = std::chrono::system_clock::now();
     
     // Reset tracked values
@@ -272,7 +272,7 @@ void LiquidityFlowMonitor::reset() {
      
      OrderBookDelta delta;
      delta.exchangeId = exchangeId_;
-     delta.trading_pair = trading_pair_;
+     delta.tradingPair = trading_pair_;
      delta.timestamp = timestamp;
      delta.sequence_number = sequence_number;
      
@@ -868,10 +868,10 @@ double LiquidityFlowMonitor::calculateTypicalOrderSize() const {
 
 std::shared_ptr<LiquidityFlowMonitor> createLiquidityFlowMonitor(
     const std::string& exchangeId, 
-    const std::string& trading_pair,
+    const std::string& tradingPair,
     const ParameterSet& params) {
     
-    return std::make_shared<LiquidityFlowMonitor>(exchangeId, trading_pair, params);
+    return std::make_shared<LiquidityFlowMonitor>(exchangeId, tradingPair, params);
 }
 
 } // namespace strategy
