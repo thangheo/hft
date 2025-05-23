@@ -11,15 +11,22 @@
 #include "position_tracker.hpp"
 #include "rebalancing_engine.hpp"
 #include "collateral_manager.hpp"
+#include "../../execution/models/execution_report.hpp"
 
 #include <memory>
 #include <string>
 #include <mutex>
 #include <vector>
 #include <functional>
+#include <unordered_map>
+#include <optional>
 
 namespace trading {
 namespace risk {
+
+// Forward declarations for types that might not be fully defined yet
+struct MarketData;
+struct RebalancingResult;
 
 /**
  * PortfolioManager orchestrates portfolio-level operations.
@@ -41,9 +48,9 @@ public:
     
     /**
      * Process an execution report
-     * @param executionReport The execution report to process
+     * @param executionReport The execution report to process (from execution component)
      */
-    void processExecutionReport(const ExecutionReport& executionReport);
+    void processExecutionReport(const trading::execution::models::ExecutionReport& executionReport);
     
     /**
      * Update market data
@@ -140,4 +147,4 @@ private:
 };
 
 } // namespace risk
-}
+} // namespace trading

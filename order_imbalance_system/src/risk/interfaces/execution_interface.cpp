@@ -32,6 +32,7 @@ void logWithTimestamp(const std::string& level, const std::string& message) {
 }
 
 class ExecutionInterfaceImpl : public ExecutionInterface {
+
 private:
     // Configuration
     std::string requestEndpoint_;
@@ -178,7 +179,34 @@ public:
             requestClient_->stop();
         }
     }
-    
+    std::map<std::string, double> getAccountBalances(const ExchangeId& exchangeId) override {
+        if (!initialized_) {
+            logWithTimestamp("ERROR", "Execution interface not initialized");
+            return {};
+        }
+        
+        try {
+            // Create message
+            // Create message - use exchangeId.id to get the string
+            nlohmann::json request = {
+                {"action", "get_account_balances"},
+                {"exchangeId", exchangeId.id}  // Access the .id member
+            };
+            
+            // Send request
+            if (!requestClient_->publish("account", request.dump())) {
+                logWithTimestamp("ERROR", "Failed to send get account balances request");
+                return {};
+            }
+            
+            // In a real implementation, we would wait for the response with a timeout
+            // For now, we'll just return an empty map
+            return {};
+        } catch (const std::exception& e) {
+            logWithTimestamp("ERROR", "Failed to get account balances: " + std::string(e.what()));
+            return {};
+        }
+    }
     bool initialize() override {
         std::lock_guard<std::mutex> lock(mutex_);
         

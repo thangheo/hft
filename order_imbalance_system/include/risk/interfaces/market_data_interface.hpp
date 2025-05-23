@@ -33,7 +33,6 @@ struct VolatilityCalculator {
 };
 
 
-    // ====================================================================
 /**
  * Market data cache entry
  */
@@ -81,8 +80,8 @@ public:
     // DataInterface implementation
     bool initialize() override;
     
-    MarketData getMarketData(
-        const std::string& tradingPair, 
+    std::optional<MarketData> getMarketData(
+        const std::string& tradingPair,
         const std::optional<std::string>& exchangeId = std::nullopt) override;
     
     double getCurrentPrice(

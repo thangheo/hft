@@ -4,7 +4,7 @@
 #include <cmath>
 #include <algorithm>
 #include <numeric>
-
+#include <unordered_map>
 namespace trading {
 namespace risk {
 
@@ -26,42 +26,7 @@ std::vector<std::pair<Timestamp, double>> PriceHistory::getRecentPrices(int coun
     
     return result;
 }
-
-// double PriceHistory::calculateVolatility(const std::string& timeframe) const {
-//     if (prices.size() < 2) return 0.0;
-    
-//     // Simple volatility calculation using standard deviation of returns
-//     std::vector<double> returns;
-//     for (size_t i = 1; i < prices.size(); ++i) {
-//         if (prices[i-1].second > 0) {
-//             double logReturn = std::log(prices[i].second / prices[i-1].second);
-//             returns.push_back(logReturn);
-//         }
-//     }
-    
-//     if (returns.empty()) return 0.0;
-    
-//     // Calculate mean
-//     double mean = std::accumulate(returns.begin(), returns.end(), 0.0) / returns.size();
-    
-//     // Calculate standard deviation
-//     double sumSquaredDiff = 0.0;
-//     for (double ret : returns) {
-//         sumSquaredDiff += std::pow(ret - mean, 2);
-//     }
-    
-//     double stdDev = std::sqrt(sumSquaredDiff / returns.size());
-    
-//     // Annualize based on timeframe
-//     double annualizationFactor = 252.0;  // Daily data
-//     if (timeframe == "1h") {
-//         annualizationFactor = 252.0 * 24.0;  // Hourly data
-//     } else if (timeframe == "1m") {
-//         annualizationFactor = 252.0 * 24.0 * 60.0;  // Minute data
-//     }
-    
-//     return stdDev * std::sqrt(annualizationFactor);
-// }
+ 
 
 // MarketDataInterface implementation
 MarketDataInterface::MarketDataInterface() : DataInterface() {
@@ -126,68 +91,65 @@ bool MarketDataInterface::initialize() {
         return false;
     }
 }
-
-MarketData MarketDataInterface::getMarketData(
-    const std::string& tradingPair, 
-    const std::optional<std::string>& exchangeId) {
-    
-    std::string exchange = exchangeId.value_or(DEFAULT_EXCHANGE);
-    std::string cacheKey = createCacheKey(exchange, tradingPair);
-    
-    // Check cache
-    {
-        std::shared_lock<std::shared_mutex> lock(cacheMutex_);
-        auto it = marketDataCache_.find(cacheKey);
-        if (it != marketDataCache_.end()) {
-            const auto& entry = it->second;
-            
-            // Check if cache is still valid (within 10ms)
-            auto now = std::chrono::system_clock::now();
-            auto age = std::chrono::duration_cast<std::chrono::milliseconds>(
-                now - entry.lastUpdate).count();
-            
-            if (age <= cacheValidityDuration_.count() && entry.isValid) {
-                return entry.data;
-            }
-        }
-    }
-    
-    // If not in cache or expired, try to get from order book normalizer
-    try {
-        auto orderBookUpdate = normalizer_->getOrderBook(exchange, tradingPair);
-        
-        // Convert to MarketData
-        MarketData marketData = convertOrderBookToMarketData(orderBookUpdate);
-        
-        // Update cache
-        {
-            std::unique_lock<std::shared_mutex> lock(cacheMutex_);
-            marketDataCache_[cacheKey] = MarketDataCacheEntry{
-                marketData,
-                std::chrono::system_clock::now(),
-                true
-            };
-        }
-        
-        return marketData;
-        
-    } catch (const std::exception& e) {
-        LOG_ERROR("Failed to get market data: " + std::string(e.what()));
-        
-        // Return empty market data
-        MarketData empty;
-        empty.tradingPair = tradingPair;
-        empty.exchangeId = exchange;
-        empty.timestamp = std::chrono::system_clock::now();
-        return empty;
-    }
+std::optional<MarketData> MarketDataInterface::getMarketData(
+   const std::string& tradingPair,
+   const std::optional<std::string>& exchangeId) {
+   
+   std::string exchange = exchangeId.value_or(DEFAULT_EXCHANGE);
+   std::string cacheKey = createCacheKey(exchange, tradingPair);
+   
+   // Check cache
+   {
+       std::shared_lock<std::shared_mutex> lock(cacheMutex_);
+       auto it = marketDataCache_.find(cacheKey);
+       if (it != marketDataCache_.end()) {
+           const auto& entry = it->second;
+           // Check if cache is still valid (within 10ms)
+           auto now = std::chrono::system_clock::now();
+           auto age = std::chrono::duration_cast<std::chrono::milliseconds>(
+               now - entry.lastUpdate).count();
+           if (age <= cacheValidityDuration_.count() && entry.isValid) {
+               return entry.data;  // Automatic conversion to std::optional
+           }
+       }
+   }
+   
+   // If not in cache or expired, try to get from order book normalizer
+   try {
+       auto orderBookUpdate = normalizer_->getOrderBook(exchange, tradingPair);
+       // Convert to MarketData
+       MarketData marketData = convertOrderBookToMarketData(orderBookUpdate);
+       
+       // Update cache
+       {
+           std::unique_lock<std::shared_mutex> lock(cacheMutex_);
+           marketDataCache_[cacheKey] = MarketDataCacheEntry{
+               marketData,
+               std::chrono::system_clock::now(),
+               true
+           };
+       }
+       
+       return marketData;  // Automatic conversion to std::optional
+       
+   } catch (const std::exception& e) {
+       LOG_ERROR("Failed to get market data: " + std::string(e.what()));
+       return std::nullopt;  // Proper way to indicate failure
+   }
 }
 
 double MarketDataInterface::getCurrentPrice(
-    const std::string& tradingPair, 
+    const std::string& tradingPair,
     const std::optional<std::string>& exchangeId) {
     
-    auto marketData = getMarketData(tradingPair, exchangeId);
+    auto marketDataOpt = getMarketData(tradingPair, exchangeId);
+    
+    // Check if we got valid market data
+    if (!marketDataOpt.has_value()) {
+        return 0.0; // or throw exception, depending on your error handling strategy
+    }
+    
+    const auto& marketData = marketDataOpt.value();
     
     // Use mid-price if available
     if (marketData.bid > 0 && marketData.ask > 0) {

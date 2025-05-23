@@ -8,6 +8,7 @@
 #pragma once
 
 #include "risk_types.hpp"
+#include "execution/models/execution_report.hpp"
 #include <string>
 #include <vector>
 #include <memory>
@@ -19,33 +20,34 @@ namespace risk {
 
 // Forward declarations
 struct OrderRequest;
-struct ExecutionReport;
+using ExecutionReport = execution::models::ExecutionReport;
+// struct ExecutionReport;
 
-/**
- * Execution report structure for risk interface
- */
-struct ExecutionReport {
-    std::string orderId;
-    std::string clientOrderId;
-    std::string exchangeOrderId;
-    std::string exchangeId;
-    std::string tradingPair;
-    OrderSide side;
-    std::string type;
-    std::string status;
-    double quantity;
-    double filledQuantity;
-    double price;
-    double averageFillPrice;
-    Timestamp timestamp;
-    double fee;
-    std::string feeCurrency;
-    std::string rejectReason;
+// /**
+//  * Execution report structure for risk interface
+//  */
+// struct ExecutionReport {
+//     std::string orderId;
+//     std::string clientOrderId;
+//     std::string exchangeOrderId;
+//     std::string exchangeId;
+//     std::string tradingPair;
+//     OrderSide side;
+//     std::string type;
+//     std::string status;
+//     double quantity;
+//     double filledQuantity;
+//     double price;
+//     double averageFillPrice;
+//     Timestamp timestamp;
+//     double fee;
+//     std::string feeCurrency;
+//     std::string rejectReason;
     
-    ExecutionReport() 
-        : side(OrderSide::BUY), quantity(0.0), filledQuantity(0.0), 
-          price(0.0), averageFillPrice(0.0), fee(0.0) {}
-};
+//     ExecutionReport() 
+//         : side(OrderSide::BUY), quantity(0.0), filledQuantity(0.0), 
+//           price(0.0), averageFillPrice(0.0), fee(0.0) {}
+// };
 
 /**
  * Interface for communication with the execution engine
