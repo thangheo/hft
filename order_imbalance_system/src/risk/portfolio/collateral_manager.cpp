@@ -452,7 +452,7 @@ double CollateralManager::calculateMarginRequirement(const ExchangeId& exchangeI
         
         // Get exchange-specific margin requirements
         double marginRate = 1.0; // Default is 100% (no leverage)
-        auto it = m_collateralConfig.exchangeMarginRates.find(exchangeId);
+        auto it = m_collateralConfig.exchangeMarginRates.find(exchangeId.toString());
         if (it != m_collateralConfig.exchangeMarginRates.end()) {
             auto pairIt = it->second.find(tradingPair.symbol);
             if (pairIt != it->second.end()) {

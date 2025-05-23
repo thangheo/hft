@@ -6,6 +6,8 @@
 #include "execution/algorithms/pov_algorithm.hpp"
 #include "execution/execution_forward_decl.hpp"
 #include "execution/execution_types.hpp"
+#include <core/market_types.hpp>
+
 #include "models/order.hpp"
 #include <memory>
 #include <string>
@@ -16,6 +18,7 @@
 namespace trading {
 namespace execution {
 
+    using namespace core;
 /**
  * Enumeration of supported execution algorithm types
  */
@@ -40,7 +43,7 @@ struct AlgorithmParams {
  * Default algorithm parameters with basic trading information
  */
 struct DefaultAlgorithmParams : public AlgorithmParams {
-    std::string exchangeId;
+    ExchangeId exchangeId;
     std::string tradingPair;
     models::OrderSide side;
     models::OrderType order_type;

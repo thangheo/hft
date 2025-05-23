@@ -12,7 +12,11 @@
 
  #include <chrono>
  #include <string>
- #include "core/types.hpp"
+//  #include "core/types.hpp"
+    #include "core/market_types.hpp"
+    #include "core/direction.hpp"
+    #include "core/confidence.hpp"
+
  #include "execution/models/order.hpp"
  namespace trading {
  namespace strategy {

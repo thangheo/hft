@@ -1,7 +1,6 @@
 // src/data_ingestion/order_book_normalizer.cpp
 #include "data_ingestion/normalization/order_book_normalizer.hpp"
 #include "data_ingestion/protocol/adapter_interface.hpp"
-#include "core/market_types.hpp"
 #include <iostream>
 #include <sstream>
 #include <nlohmann/json.hpp>
@@ -29,7 +28,7 @@ void OrderBookNormalizer::initAdapters() {
 // Add to order_book_normalizer.cpp 
 
 OrderBookUpdate OrderBookNormalizer::getOrderBook(
-    const std::string& exchangeId,
+    const ExchangeId exchangeId,
     const std::string& tradingPair,
     int depth) const {
     
@@ -53,9 +52,9 @@ OrderBookUpdate OrderBookNormalizer::getOrderBook(
 }
 void OrderBookNormalizer::processMarketData(const MarketDataUpdate& update) {
     // Find adapter for this exchange
-    auto it = exchange_adapters_.find(update.exchangeId);
+    auto it = exchange_adapters_.find(update.exchangeId.toString());
     if (it == exchange_adapters_.end()) {
-        std::cerr << "No adapter found for exchange: " << update.exchangeId << std::endl;
+        std::cerr << "No adapter found for exchange: " << update.exchangeId.toString() << std::endl;
         return;
     }
     
@@ -64,7 +63,7 @@ void OrderBookNormalizer::processMarketData(const MarketDataUpdate& update) {
     // Check if adapter can handle this update
     if (!adapter->canHandle(update)) {
         std::cerr << "Adapter cannot handle update type for exchange: " 
-                  << update.exchangeId << std::endl;
+                  << update.exchangeId.toString() << std::endl;
         return;
     }
     
@@ -106,7 +105,7 @@ void OrderBookNormalizer::processMarketData(const MarketDataUpdate& update) {
 
 // Modified version of getOrCreateOrderBook method
 std::shared_ptr<OrderBook> OrderBookNormalizer::getOrCreateOrderBook(
-    const std::string& exchangeId, 
+    const ExchangeId& exchangeId, 
     const std::string& tradingPair) {
     // Create a key for the map
     std::string key = createOrderBookKey(exchangeId, tradingPair);
@@ -118,7 +117,7 @@ std::shared_ptr<OrderBook> OrderBookNormalizer::getOrCreateOrderBook(
     }
 
     // Create a new order book
-    std::cout << "Creating new order book for " << exchangeId << ":" << tradingPair << std::endl;
+    std::cout << "Creating new order book for " << exchangeId.toString() << ":" << tradingPair << std::endl;
 
     // Parse trading pair into base/quote (assuming format like "BTC/USDT")
     Symbol symbol;
@@ -147,22 +146,34 @@ std::shared_ptr<OrderBook> OrderBookNormalizer::getOrCreateOrderBook(
     return order_book;
 }
 
-std::string OrderBookNormalizer::createOrderBookKey(const std::string& exchangeId, 
-  const std::string& tradingPair) const {
-    return exchangeId + ":" + tradingPair;
+std::string OrderBookNormalizer::createOrderBookKey(const ExchangeId& exchangeId, 
+                                                   const std::string& tradingPair) const {
+    // Create a unique key for the order book using exchange ID and trading pair
+    return exchangeId.toString() + ":" + tradingPair;
 }
-
 
 void OrderBookNormalizer::processExchangeData(const MarketDataUpdate& update, 
-                                            const std::string& exchangeId) {
-    // Implementation will be exchange-specific
-    // This method would handle parsing/processing for each exchange
-}
-
+                                                const ExchangeId exchangeId) {
+        // Find the appropriate adapter for the exchange
+        auto it = exchange_adapters_.find(exchangeId.toString());
+        if (it != exchange_adapters_.end()) {
+            auto adapter = it->second;
+            
+            // Normalize the data
+            OrderBookUpdate normalized = adapter->normalize(update);
+            
+            // Forward to callback
+            callback_(normalized);
+        } else {
+            std::cerr << "No adapter found for exchange: " << exchangeId.toString() << std::endl;
+        }
+    }
 // BinanceAdapter implementation
 
 bool BinanceAdapter::canHandle(const MarketDataUpdate& update) const {
-    if (update.exchangeId != "binance") return false;
+    if (update.exchangeId != ExchangeId::binance()) {
+        return false;
+    }
     
     return update.updateType == "orderbook" || 
            update.updateType == "orderbook_snapshot";
@@ -180,7 +191,7 @@ OrderBookUpdate BinanceAdapter::normalize(const MarketDataUpdate& update) const 
         json data = json::parse(json_str);
         
         // Fill basic fields
-        result.exchangeId = "binance";
+        result.exchangeId = update.exchangeId;
         result.tradingPair = update.tradingPair;
         result.exchange_timestamp = update.exchange_timestamp;
         result.received_timestamp = update.received_timestamp;
@@ -264,14 +275,14 @@ std::string BinanceAdapter::standardizeTradingPair(const std::string& pair) cons
 
 // AdapterFactory implementation
 
-std::shared_ptr<ExchangeAdapter> AdapterFactory::createAdapter(const std::string& exchangeId) {
-    if (exchangeId == "binance") {
+std::shared_ptr<ExchangeAdapter> AdapterFactory::createAdapter(const ExchangeId& exchangeId) {
+    if (exchangeId == ExchangeId::binance()) {
         return std::make_shared<BinanceAdapter>();
     }
     
     // Add other exchanges as needed
     
-    throw std::runtime_error("No adapter available for exchange: " + exchangeId);
+    throw std::runtime_error("No adapter available for exchange: " + exchangeId.toString());
 }
 
 } // namespace data_ingestion

@@ -143,7 +143,7 @@ public:
         }
     }
     
-    std::vector<OrderRequest> getOrderHistory(const std::string& exchangeId, 
+    std::vector<OrderRequest> getOrderHistory(const core::ExchangeId& exchangeId, 
                                             const std::string& tradingPair, 
                                             int limit) override {
         if (!initialized_) {
@@ -167,7 +167,7 @@ public:
         }
     }
     
-    std::map<std::string, double> getExchangeBalances(const std::string& exchangeId) override {
+    std::map<std::string, double> getExchangeBalances(const core::ExchangeId& exchangeId) override {
         if (!initialized_) {
             LOG_ERROR("DataInterface not initialized");
             return {};
@@ -248,7 +248,7 @@ public:
         }
     }
     
-    std::map<std::string, double> getTradingFees(const std::string& exchangeId, 
+    std::map<std::string, double> getTradingFees(const core::ExchangeId& exchangeId, 
                                                 const std::optional<std::string>& tradingPair) override {
         if (!initialized_) {
             LOG_ERROR("DataInterface not initialized");
@@ -264,7 +264,7 @@ public:
     }
     
     // Additional helper methods for enhanced functionality
-    void updateBalance(const std::string& exchangeId, const std::string& asset, double balance) {
+    void updateBalance(const core::ExchangeId& exchangeId, const std::string& asset, double balance) {
         if (initialized_ && marketDataInterface_) {
             try {
                 marketDataInterface_->updateBalance(exchangeId, asset, balance);
@@ -275,7 +275,7 @@ public:
         }
     }
     
-    double getBalance(const std::string& exchangeId, const std::string& asset) const {
+    double getBalance(const core::ExchangeId& exchangeId, const std::string& asset) const {
         if (initialized_ && marketDataInterface_) {
             try {
                 return marketDataInterface_->getBalance(exchangeId, asset);

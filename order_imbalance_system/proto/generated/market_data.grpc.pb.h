@@ -25,9 +25,13 @@
 #include <grpcpp/support/stub_options.h>
 #include <grpcpp/support/sync_stream.h>
 
+namespace trading {
 namespace market_data {
+namespace proto {
 
+}  // namespace proto
 }  // namespace market_data
+}  // namespace trading
 
 
 #endif  // GRPC_market_5fdata_2eproto__INCLUDED

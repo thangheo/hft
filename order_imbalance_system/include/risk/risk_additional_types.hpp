@@ -21,7 +21,7 @@ namespace risk {
  */
 // struct MarketData {
 //     std::string symbol;
-//     std::string exchangeId;
+//     ExchangeId exchangeId;
 //     double price = 0.0;
 //     double volume = 0.0;
 //     double volatility = 0.0;
@@ -32,10 +32,10 @@ namespace risk {
     
 //     MarketData() = default;
     
-//     MarketData(const std::string& symbol, const std::string& exchangeId, double price)
+//     MarketData(const std::string& symbol, const core::ExchangeId& exchangeId, double price)
 //         : symbol(symbol), exchangeId(exchangeId), price(price) {}
     
-//     MarketData(const std::string& symbol, const std::string& exchangeId, 
+//     MarketData(const std::string& symbol, const core::ExchangeId& exchangeId, 
 //                double price, double volume, double volatility)
 //         : symbol(symbol), exchangeId(exchangeId), price(price), volume(volume), volatility(volatility) {}
     
@@ -111,7 +111,7 @@ struct RebalancingResult {
  */
 struct Balance {
     std::string asset;
-    std::string exchangeId;
+    ExchangeId exchangeId;
     double available = 0.0;
     double locked = 0.0;
     double total = 0.0;
@@ -119,7 +119,7 @@ struct Balance {
     
     Balance() = default;
     
-    Balance(const std::string& asset, const std::string& exchangeId, 
+    Balance(const std::string& asset, const core::ExchangeId& exchangeId, 
             double available, double locked = 0.0)
         : asset(asset), exchangeId(exchangeId), available(available), locked(locked) {
         total = available + locked;

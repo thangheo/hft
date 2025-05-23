@@ -6,7 +6,7 @@
 namespace trading {
 namespace execution {
 
-RateLimitController::RateLimitController(const std::string& exchangeId)
+RateLimitController::RateLimitController(const core::ExchangeId& exchangeId)
     : exchangeId_(exchangeId), running_(true) {
     
     // Start the worker thread

@@ -288,7 +288,7 @@ double MarketDataInterface::getVolatility(
 
 
 std::vector<OrderRequest> MarketDataInterface::getOrderHistory(
-    const std::string& exchangeId, 
+    const core::ExchangeId& exchangeId, 
     const std::string& tradingPair, 
     int limit) {
     
@@ -317,7 +317,7 @@ std::vector<OrderRequest> MarketDataInterface::getOrderHistory(
 }
 
 std::map<std::string, double> MarketDataInterface::getExchangeBalances(
-    const std::string& exchangeId) {
+    const core::ExchangeId& exchangeId) {
     
     // This would typically query the exchange API or execution engine
     // For now, return empty map
@@ -382,7 +382,7 @@ bool MarketDataInterface::unsubscribeMarketData(
 }
 
 std::map<std::string, double> MarketDataInterface::getTradingFees(
-    const std::string& exchangeId, 
+    const core::ExchangeId& exchangeId, 
     const std::optional<std::string>& tradingPair) {
     
     // Default fee structure for Binance
@@ -402,7 +402,7 @@ std::map<std::string, double> MarketDataInterface::getTradingFees(
 
 // Helper methods
 std::string MarketDataInterface::createCacheKey(
-    const std::string& exchangeId, 
+    const core::ExchangeId& exchangeId, 
     const std::string& tradingPair) const {
     
     return exchangeId + ":" + tradingPair;
@@ -453,7 +453,7 @@ void MarketDataInterface::processTradeUpdate(
 }
 
 void MarketDataInterface::updateMarketDataCache(
-    const std::string& exchangeId, 
+    const core::ExchangeId& exchangeId, 
     const std::string& tradingPair, 
     const data_ingestion::OrderBookUpdate& update) {
     
@@ -542,18 +542,18 @@ std::unique_ptr<DataInterface> createDataInterface() {
 }
 
 // Implementation
-void MarketDataInterface::updateBalance(const std::string& exchangeId, 
+void MarketDataInterface::updateBalance(const core::ExchangeId& exchangeId, 
                                        const std::string& asset, 
                                        double balance) {
     std::unique_lock<std::shared_mutex> lock(balanceMutex_);
     exchangeBalances_[exchangeId][asset] = balance;
 }
 
-double MarketDataInterface::getBalance(const std::string& exchangeId, 
+double MarketDataInterface::getBalance(const core::ExchangeId& exchangeId, 
                                       const std::string& asset) const {
     std::shared_lock<std::shared_mutex> lock(balanceMutex_);
     
-    auto exchangeIt = exchangeBalances_.find(exchangeId);
+    auto exchangeIt = exchangeBalances_.find(exchangeId.toString());
     if (exchangeIt != exchangeBalances_.end()) {
         auto assetIt = exchangeIt->second.find(asset);
         if (assetIt != exchangeIt->second.end()) {
@@ -565,11 +565,11 @@ double MarketDataInterface::getBalance(const std::string& exchangeId,
 
 // Update getExchangeBalances to use cached data
 std::map<std::string, double> MarketDataInterface::getExchangeBalances(
-    const std::string& exchangeId) {
+    const core::ExchangeId& exchangeId) {
     
     std::shared_lock<std::shared_mutex> lock(balanceMutex_);
     
-    auto it = exchangeBalances_.find(exchangeId);
+    auto it = exchangeBalances_.find(exchangeId.toString());
     if (it != exchangeBalances_.end()) {
         return it->second;
     }

@@ -2,6 +2,7 @@ set(PROTO_FILES
     market_data.proto
     order_book.proto
     execution_service.proto
+    common.proto
 )
 
 # Set explicit paths for required executables
@@ -135,6 +136,7 @@ target_include_directories(proto_lib
     PUBLIC 
     ${BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}  # To include from proto/generated
+    cxx_std_20
 )
 
 # Add compile definitions

@@ -325,7 +325,7 @@ public:
         }
     }
     
-    int cancelAllOrders(const std::string& exchangeId) override {
+    int cancelAllOrders(const core::ExchangeId& exchangeId) override {
         if (!initialized_) {
             logWithTimestamp("ERROR", "Execution interface not initialized");
             return 0;
@@ -353,7 +353,7 @@ public:
         }
     }
     
-    int cancelAllOrders(const std::string& exchangeId, const std::string& tradingPair) override {
+    int cancelAllOrders(const core::ExchangeId& exchangeId, const std::string& tradingPair) override {
         if (!initialized_) {
             logWithTimestamp("ERROR", "Execution interface not initialized");
             return 0;
@@ -447,7 +447,7 @@ public:
         }
     }
     
-    bool isExchangeAvailable(const std::string& exchangeId) override {
+    bool isExchangeAvailable(const core::ExchangeId& exchangeId) override {
         if (!initialized_) {
             logWithTimestamp("ERROR", "Execution interface not initialized");
             return false;
@@ -475,7 +475,7 @@ public:
         }
     }
     
-    std::string getExchangeStatus(const std::string& exchangeId) override {
+    std::string getExchangeStatus(const core::ExchangeId& exchangeId) override {
         if (!initialized_) {
             logWithTimestamp("ERROR", "Execution interface not initialized");
             return "{}";

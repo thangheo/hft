@@ -9,6 +9,7 @@
 #include <mutex>
 #include <optional>
 #include <unordered_map>
+#include <core/market_types.hpp>
 
 namespace trading {
 namespace execution {
@@ -69,6 +70,7 @@ struct Fill {
     std::string fill_id;
     std::string orderId;
     std::string exchangeOrderId;
+    core::ExchangeId exchangeId;                 // Which exchange (e.g., ExchangeId::binance())
     double quantity;
     double price;
     double fee;
@@ -85,39 +87,6 @@ public:
     Order();
     explicit Order(const std::string& client_order_id);
     Order(const Order& other);
-    // Copy constructor - properly implemented
-    // Order(const Order& other) {
-    //     std::lock_guard<std::mutex> lock(other.mutex_);
-        
-    //     // Copy all regular members
-    //     order_id_ = other.order_id_;
-    //     client_order_id_ = other.client_order_id_;
-    //     exchangeId_ = other.exchangeId_;
-    //     exchange_order_id_ = other.exchange_order_id_;
-    //     trading_pair_ = other.trading_pair_;
-    //     side_ = other.side_;
-    //     type_ = other.type_;
-    //     quantity_ = other.quantity_;
-    //     price_ = other.price_;
-    //     stop_price_ = other.stop_price_;
-    //     time_in_force_ = other.time_in_force_;
-    //     expiry_time_ = other.expiry_time_;
-        
-    //     // Initialize atomic state with the value from other's state
-    //     state_.store(other.state_.load());
-        
-    //     rejection_reason_ = other.rejection_reason_;
-    //     created_at_ = other.created_at_;
-    //     updated_at_ = other.updated_at_;
-    //     strategy_id_ = other.strategy_id_;
-    //     signal_id_ = other.signal_id_;
-    //     fills_ = other.fills_;
-    //     filled_quantity_ = other.filled_quantity_;
-    //     average_fill_price_ = other.average_fill_price_;
-    //     extra_params_ = other.extra_params_;
-        
-    //     // mutex_ is already initialized with default constructor
-    // }
     
     // Factory methods for common order types
     static std::shared_ptr<Order> createMarketOrder(
@@ -134,7 +103,7 @@ public:
     // Getters
     const std::string& getOrderId() const;
     const std::string& getClientOrderId() const;
-    const std::string& getExchangeId() const;
+    const core::ExchangeId& getExchangeId() const;
     const std::string& getExchangeOrderId() const;
     const std::string& getTradingPair() const;
     const std::string& getSymbol() const;
@@ -159,7 +128,7 @@ public:
     
     // Setters
     void setOrderId(const std::string& order_id);
-    void setExchangeId(const std::string& exchangeId);
+    void setExchangeId(const core::ExchangeId& exchangeId);
     void setExchangeOrderId(const std::string& exchange_order_id);
     void setClientOrderId(const std::string& client_order_id);
     void setTradingPair(const std::string& tradingPair);
@@ -192,7 +161,7 @@ private:
     // Order identification
     std::string order_id_;
     std::string client_order_id_;
-    std::string exchangeId_;
+    core::ExchangeId exchangeId_;
     std::string exchange_order_id_;
     
     // Order details

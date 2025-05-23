@@ -19,10 +19,10 @@ public:
     ~ApiClientManager();
     
     // Get a client for a specific exchange
-    std::shared_ptr<ExchangeApiClient> getClient(const std::string& exchangeId);
+    std::shared_ptr<ExchangeApiClient> getClient(const core::ExchangeId& exchangeId);
     // 
     // Check if a client for a specific exchange exists
-    bool hasClient(const std::string& exchangeId) const;
+    bool hasClient(const core::ExchangeId& exchangeId) const;
     
     // Get all available exchange clients
     std::vector<std::string> getAvailableExchanges() const;
@@ -34,13 +34,13 @@ public:
     std::unordered_map<std::string, bool> checkConnections() const;
     
     // Add a new exchange client
-    void addClient(const std::string& exchangeId, std::shared_ptr<ExchangeApiClient> client);
+    void addClient(const core::ExchangeId& exchangeId, std::shared_ptr<ExchangeApiClient> client);
     
     // Remove an exchange client
-    void removeClient(const std::string& exchangeId);
+    void removeClient(const core::ExchangeId& exchangeId);
     
     // Get rate limit status for an exchange
-    RateLimitStatus getRateLimitStatus(const std::string& exchangeId, ExchangeRequestType requestType) const;
+    RateLimitStatus getRateLimitStatus(const core::ExchangeId& exchangeId, ExchangeRequestType requestType) const;
     bool initialize() ;
     void shutdown() ;
     
@@ -53,7 +53,7 @@ private:
     mutable std::mutex mutex_;
     
     // Create a new exchange client based on exchange ID
-    std::shared_ptr<ExchangeApiClient> createClient(const std::string& exchangeId);
+    std::shared_ptr<ExchangeApiClient> createClient(const core::ExchangeId& exchangeId);
 };
 
 } // namespace execution

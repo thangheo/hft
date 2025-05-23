@@ -19,7 +19,11 @@
 #include <grpcpp/server_context.h>
 #include <grpcpp/impl/service_type.h>
 #include <grpcpp/support/sync_stream.h>
+namespace trading {
 namespace market_data {
+namespace proto {
 
+}  // namespace trading
 }  // namespace market_data
+}  // namespace proto
 

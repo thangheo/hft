@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <uuid/uuid.h>
 #include <mutex>
+#include <core/market_types.hpp>
 
 namespace trading {
 namespace execution {
@@ -100,7 +101,7 @@ const std::string& Order::getClientOrderId() const {
     return client_order_id_;
 }
 
-const std::string& Order::getExchangeId() const {
+const core::ExchangeId& Order::getExchangeId() const {
     std::lock_guard<std::mutex> lock(mutex_);
     return exchangeId_;
 }
@@ -219,7 +220,7 @@ void Order::setClientOrderId(const std::string& client_order_id) {
     client_order_id_ = client_order_id;
     updated_at_ = std::chrono::system_clock::now();
 }
-void Order::setExchangeId(const std::string& exchangeId) {
+void Order::setExchangeId(const core::ExchangeId& exchangeId) {
     std::lock_guard<std::mutex> lock(mutex_);
     exchangeId_ = exchangeId;
     updated_at_ = std::chrono::system_clock::now();
@@ -461,7 +462,7 @@ std::string Order::toString() const {
     std::ostringstream oss;
     oss << "Order[id=" << order_id_ 
         << ", clientId=" << client_order_id_
-        << ", exchange=" << exchangeId_
+        << ", exchange=" << exchangeId_.toString()
         << ", exchangeOrderId=" << exchange_order_id_
         << ", pair=" << trading_pair_
         << ", side=" << (side_ == OrderSide::BUY ? "BUY" : "SELL")

@@ -11,7 +11,7 @@
 #include "position_tracker.hpp"
 #include "../interfaces/execution_interface.hpp"
 #include "../interfaces/data_interface.hpp"
-
+#include "core/market_types.hpp"
 #include <map>
 #include <unordered_map>
 #include <string>
@@ -19,10 +19,11 @@
 #include <vector>
 #include <memory>
 #include <functional>
-
+#include <common/exchange_types.hpp>
 namespace trading {
 namespace risk {
-
+using ExchangeId = common::ExchangeId;
+using namespace core;
 /**
  * Structure to represent an exchange balance
  */

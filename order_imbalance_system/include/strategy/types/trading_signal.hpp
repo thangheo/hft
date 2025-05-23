@@ -53,7 +53,7 @@
      std::map<std::string, double> signal_metrics;     // Metrics associated with this signal
      core::Symbol symbol;                              // Trading pair symbol
      core::Exchange exchange;                          // Exchange where signal was detected
-     std::string exchangeId;                        // Exchange identifier (if needed)
+     ExchangeId exchangeId;                        // Exchange identifier (if needed)
     double decayRate;                            // Decay rate for the signal (if applicable)
     double expectedPriceImpact;                     // Expected price impact of the signal (if applicable)     
     // expirationTime

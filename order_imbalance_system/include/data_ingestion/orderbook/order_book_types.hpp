@@ -34,7 +34,7 @@ struct OrderBookKey {
 struct OrderBookKeyHash {
     std::size_t operator()(const OrderBookKey& key) const {
         // Hash the exchange ID directly as a string
-        std::size_t h1 = std::hash<std::string>()(key.exchange);
+        std::size_t h1 = std::hash<std::string>()(key.exchange.toString());
         // For Symbol, use the toString() method
         std::size_t h2 = std::hash<std::string>()(key.symbol.toString());
         
@@ -47,7 +47,7 @@ struct OrderBookKeyHash {
  */
 
 // struct MarketDataUpdate {
-//     std::string exchangeId;           // Exchange identifier
+//     ExchangeId exchangeId;           // Exchange identifier
 //     std::string tradingPair;          // Trading pair (e.g., "BTCUSDT")
 //     std::string updateType;           // Type of update ("orderbook", "trade", "ticker")
 //     std::chrono::system_clock::time_point timestamp;  // Update timestamp
@@ -60,7 +60,7 @@ struct OrderBookKeyHash {
 
 // Normalized order book update
 struct OrderBookUpdate {
-    std::string exchangeId; //this is incorrect, should be ExchangeId or string if exchange
+    ExchangeId exchangeId;  // Identifier for the exchange (e.g., "binance")
     std::string tradingPair;
     int64_t exchange_timestamp;
     int64_t received_timestamp;
@@ -77,7 +77,7 @@ struct OrderBookUpdate {
     std::unordered_map<std::string, std::string> additional_fields;
     // Constructor
     OrderBookUpdate() = default;
-    OrderBookUpdate(const std::string& exchangeId, const std::string& tradingPair,
+    OrderBookUpdate(const ExchangeId& exchangeId, const std::string& tradingPair,
                     int64_t exchange_timestamp, int64_t received_timestamp,
                     int64_t sequence_number, bool is_snapshot,
                     const std::vector<PriceLevel>& bids,

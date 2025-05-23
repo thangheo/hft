@@ -6,7 +6,7 @@
 namespace trading {
 namespace data_ingestion {
 
-ExchangeConnector::ExchangeConnector(const std::string& exchangeId, 
+ExchangeConnector::ExchangeConnector(const core::ExchangeId& exchangeId, 
                                      MarketDataCallback callback)
     : exchangeId_(exchangeId), 
       data_callback_(std::move(callback)), 

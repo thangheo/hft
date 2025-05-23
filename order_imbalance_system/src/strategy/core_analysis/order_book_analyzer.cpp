@@ -15,7 +15,7 @@
  namespace trading {
  namespace strategy {
  
- OrderBookAnalyzer::OrderBookAnalyzer(const std::string& exchangeId, const std::string& tradingPair,
+ OrderBookAnalyzer::OrderBookAnalyzer(const core::ExchangeId& exchangeId, const std::string& tradingPair,
                                     const ParameterSet& params)
      : exchangeId_(exchangeId),
        trading_pair_(tradingPair),
@@ -31,7 +31,7 @@
      historical_imbalances_.reserve(100);
  }
  
- OrderBookAnalyzer::OrderBookAnalyzer(const std::string& exchangeId, const std::string& tradingPair,
+ OrderBookAnalyzer::OrderBookAnalyzer(const core::ExchangeId& exchangeId, const std::string& tradingPair,
                                     int depth_levels, double price_grouping_factor)
      : exchangeId_(exchangeId),
        trading_pair_(tradingPair),
@@ -635,7 +635,7 @@
  }
  
  std::shared_ptr<OrderBookAnalyzer> createOrderBookAnalyzer(
-     const std::string& exchangeId, 
+     const core::ExchangeId& exchangeId, 
      const std::string& tradingPair,
      const ParameterSet& params) {
      

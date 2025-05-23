@@ -17,7 +17,7 @@
  namespace strategy {
  
  VolumeProfileAnalyzer::VolumeProfileAnalyzer(
-     const std::string& exchangeId, 
+     const core::ExchangeId& exchangeId, 
      const std::string& tradingPair, 
      const ParameterSet& params)
      : exchangeId_(exchangeId),
@@ -54,7 +54,7 @@
     timeframe_profiles_["1d"] = VolumeProfile(config.exchangeId, config.tradingPair);
 }
  VolumeProfileAnalyzer::VolumeProfileAnalyzer(
-     const std::string& exchangeId, 
+     const core::ExchangeId& exchangeId, 
      const std::string& tradingPair, 
      int num_price_ranges, 
      double range_size_percent)
@@ -616,7 +616,7 @@
  }
  
  std::shared_ptr<VolumeProfileAnalyzer> createVolumeProfileAnalyzer(
-     const std::string& exchangeId, 
+     const core::ExchangeId& exchangeId, 
      const std::string& tradingPair,
      const ParameterSet& params) {
      

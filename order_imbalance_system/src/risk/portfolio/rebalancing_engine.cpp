@@ -125,11 +125,11 @@
              size_t colonPos = key.find(':');
              if (colonPos == std::string::npos) continue;
              
-             std::string exchangeId = key.substr(0, colonPos);
+             ExchangeId exchangeId; = key.substr(0, colonPos);
              std::string tradingPair = key.substr(colonPos + 1);
              
              // Check if this allocation exists in current allocations
-            auto exchangeIt = currentAllocations.find(exchangeId);
+            auto exchangeIt = currentAllocations.find(exchangeId.toString());
             if (exchangeIt == currentAllocations.end() || 
                 exchangeIt->second.find(tradingPair) == exchangeIt->second.end()) {
                 
@@ -200,7 +200,7 @@ std::vector<RebalancingOrder> RebalancingEngine::calculateRebalancingNeeds() con
             size_t colonPos = key.find(':');
             if (colonPos == std::string::npos) continue;
             
-            std::string exchangeId = key.substr(0, colonPos);
+            ExchangeId exchangeId; = key.substr(0, colonPos);
             std::string tradingPair = key.substr(colonPos + 1);
             
             // Calculate target notional value
@@ -209,7 +209,7 @@ std::vector<RebalancingOrder> RebalancingEngine::calculateRebalancingNeeds() con
             
             // Get current notional value (or 0 if not present)
             double currentNotional = 0.0;
-            if (notionalValues.find(exchangeId) != notionalValues.end() && 
+            if (notionalValues.find(exchangeId.toString()) != notionalValues.end() && 
                 notionalValues[exchangeId].find(tradingPair) != notionalValues[exchangeId].end()) {
                 currentNotional = notionalValues[exchangeId][tradingPair];
             }

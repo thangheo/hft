@@ -1,6 +1,7 @@
 #pragma once
 
 #include "models/order.hpp"
+#include <core/market_types.hpp>
 #include <memory>
 #include <string>
 #include <functional>
@@ -8,6 +9,7 @@
 namespace trading {
 namespace execution {
 
+using namespace core;
 /**
  * Parameters for order generation
  */
@@ -25,7 +27,7 @@ struct OrderGenerationParams {
     double signal_strength = 0.0;
     double target_size = 0.0;
     std::chrono::milliseconds signal_ttl = std::chrono::milliseconds(0);
-    std::string exchangeId;
+    ExchangeId exchangeId;
 
 };
 

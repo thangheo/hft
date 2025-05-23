@@ -21,7 +21,7 @@
      // Nothing to initialize
  }
  // Implementation in the .cpp file
-std::string OrderLifecycleTracker::getClientOrderId(const std::string& exchange_order_id, const std::string& exchangeId) const {
+std::string OrderLifecycleTracker::getClientOrderId(const std::string& exchange_order_id, const core::ExchangeId& exchangeId) const {
     std::lock_guard<std::mutex> lock(mutex_);
     
     // Find order with matching exchange order ID and exchange ID

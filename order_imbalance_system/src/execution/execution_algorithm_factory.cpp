@@ -6,6 +6,7 @@
 #include "execution/algorithms/iceberg_algorithm.hpp"
 #include "execution/algorithms/pov_algorithm.hpp"
 #include "execution/algorithms/pov_config.hpp"
+#include <core/market_types.hpp>
 
 #include <chrono>
 #include <iostream>
@@ -14,6 +15,7 @@
 namespace trading {
 namespace execution {
 
+    using namespace core;
 // Generate a unique ID for algorithms
 std::string generateUniqueId() {
     uuid_t uuid;
@@ -467,7 +469,7 @@ std::shared_ptr<ExecutionAlgorithm> ExecutionAlgorithmFactory::createAlgorithm(
             }
             
             // Use exchange ID if available
-            if (!params->exchangeId.empty()) {
+            if (!params->exchangeId.toString().empty()) {
                 pov_config.exchangeId = params->exchangeId;
             }
             

@@ -15,6 +15,7 @@
 #include "strategy/pattern/analyzer.hpp"
 #include "strategy/types.hpp"
 #include "data_ingestion/orderbook/order_book.hpp"
+#include "core/market_types.hpp"
 #include <vector>
 #include <deque>
 #include <memory>
@@ -27,7 +28,7 @@
 
 namespace trading {
 namespace strategy {
-
+using ExchangeId = core::ExchangeId;
 // Forward declarations
 class HawkesMarkovConfig;
 
@@ -39,7 +40,7 @@ struct OrderBookEvent {
     uint8_t type;               // 0: small buy, 1: small sell, 2: large buy, 3: large sell, 4: buy cancel, 5: sell cancel
     double timestamp;           // Event timestamp in seconds
     double volume;              // Event volume
-    std::string exchangeId;     // Exchange ID
+    ExchangeId exchangeId;     // Exchange ID
     core::Symbol symbol;         // Trading pair symbol
 };
 

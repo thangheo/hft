@@ -100,12 +100,12 @@ public:
         const std::optional<std::string>& exchangeId = std::nullopt) override;
     
     std::vector<OrderRequest> getOrderHistory(
-        const std::string& exchangeId, 
+        const core::ExchangeId& exchangeId, 
         const std::string& tradingPair, 
         int limit) override;
     
     std::map<std::string, double> getExchangeBalances(
-        const std::string& exchangeId) override;
+        const core::ExchangeId& exchangeId) override;
     
     void registerMarketDataCallback(
         const std::function<void(const MarketData&)>& callback) override;
@@ -119,21 +119,21 @@ public:
         const std::optional<std::string>& exchangeId = std::nullopt) override;
     
     std::map<std::string, double> getTradingFees(
-        const std::string& exchangeId, 
+        const core::ExchangeId& exchangeId, 
         const std::optional<std::string>& tradingPair = std::nullopt) override;
-    void updateBalance(const std::string& exchangeId, 
+    void updateBalance(const core::ExchangeId& exchangeId, 
                       const std::string& asset, 
                       double balance);
     
-    double getBalance(const std::string& exchangeId, 
+    double getBalance(const core::ExchangeId& exchangeId, 
                      const std::string& asset) const;
 private:
     VolatilityCalculator volatilityCalculator_;
     // Helper methods
-    std::string createCacheKey(const std::string& exchangeId, const std::string& tradingPair) const;
+    std::string createCacheKey(const core::ExchangeId& exchangeId, const std::string& tradingPair) const;
     void processOrderBookUpdate(const std::string& topic, const std::string& message);
     void processTradeUpdate(const std::string& topic, const std::string& message);
-    void updateMarketDataCache(const std::string& exchangeId, const std::string& tradingPair, 
+    void updateMarketDataCache(const core::ExchangeId& exchangeId, const std::string& tradingPair, 
                               const data_ingestion::OrderBookUpdate& update);
     core::MarketData convertOrderBookToMarketData(const data_ingestion::OrderBookUpdate& orderBook) const;
     

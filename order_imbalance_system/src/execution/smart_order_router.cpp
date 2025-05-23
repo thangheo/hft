@@ -74,11 +74,11 @@ RoutingResult SmartOrderRouter::routeOrder(const models::OrderPtr& order) const 
     return routing_strategy_(order, available_exchanges, routing_factors_);
 }
 
-bool SmartOrderRouter::routeToExchange(models::OrderPtr& order, const std::string& exchangeId) const {
+bool SmartOrderRouter::routeToExchange(models::OrderPtr& order, const core::ExchangeId& exchangeId) const {
     std::lock_guard<std::mutex> lock(mutex_);
     
     // Check if exchange exists and supports this trading pair and order type
-    auto it = exchanges_.find(exchangeId);
+    auto it = exchanges_.find(exchangeId.toString());
     if (it == exchanges_.end()) {
         return false;
     }

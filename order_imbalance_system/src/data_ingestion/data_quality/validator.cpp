@@ -126,7 +126,7 @@ bool DataValidator::validateRequiredFields(const OrderBookUpdate& update, std::s
     std::stringstream ss;
     bool valid = true;
     
-    if (update.exchangeId.empty()) {
+    if (update.exchangeId.toString().empty()) {
         ss << "Missing exchangeId; ";
         valid = false;
     }

@@ -66,10 +66,10 @@ bool DataSourceManager::start() {
     // Start all WebSocket clients
     for (auto& [exchangeId, client] : webSocketClients_) {
         if (!client->connect()) {
-            LOG_ERROR("Failed to connect WebSocket client for exchange: " + exchangeId);
+            LOG_ERROR("Failed to connect WebSocket client for exchange: " + exchangeId.toString());
             return false;
         }
-        LOG_INFO("Connected to exchange: " + exchangeId);
+        LOG_INFO("Connected to exchange: " + exchangeId.toString());
     }
     
     running_.store(true);
@@ -89,7 +89,7 @@ void DataSourceManager::stop() {
     // Disconnect all WebSocket clients
     for (auto& [exchangeId, client] : webSocketClients_) {
         client->disconnect();
-        LOG_INFO("Disconnected from exchange: " + exchangeId);
+        LOG_INFO("Disconnected from exchange: " + exchangeId.toString());
     }
     
     // Stop publisher
@@ -111,7 +111,7 @@ bool DataSourceManager::subscribe(const DataSubscription& subscription) {
     // Find the WebSocket client for this exchange
     auto clientIt = webSocketClients_.find(subscription.exchangeId);
     if (clientIt == webSocketClients_.end()) {
-        LOG_ERROR("No WebSocket client registered for exchange: " + subscription.exchangeId);
+        LOG_ERROR("No WebSocket client registered for exchange: " + subscription.exchangeId.toString());
         return false;
     }
     
@@ -123,11 +123,11 @@ bool DataSourceManager::subscribe(const DataSubscription& subscription) {
     if (binanceClient) {
         // Pass the symbols directly from the subscription instead of the stream names
         if (!binanceClient->subscribe(subscription.symbols)) {
-            LOG_ERROR("Failed to subscribe to streams for exchange: " + subscription.exchangeId);
+            LOG_ERROR("Failed to subscribe to streams for exchange: " + subscription.exchangeId.toString());
             return false;
         }
     } else {
-        LOG_ERROR("WebSocket client type not supported for exchange: " + subscription.exchangeId);
+        LOG_ERROR("WebSocket client type not supported for exchange: " + subscription.exchangeId.toString());
         return false;
     }
     
@@ -135,7 +135,7 @@ bool DataSourceManager::subscribe(const DataSubscription& subscription) {
     activeSubscriptions_[subscription.exchangeId] = subscription;
     
     LOG_INFO("Successfully subscribed to " + std::to_string(streams.size()) + 
-             " streams for exchange: " + subscription.exchangeId);
+             " streams for exchange: " + subscription.exchangeId.toString());
     
     return true;
 }
@@ -145,7 +145,7 @@ bool DataSourceManager::unsubscribe(const ExchangeId& exchangeId, const std::vec
     
     auto clientIt = webSocketClients_.find(exchangeId);
     if (clientIt == webSocketClients_.end()) {
-        LOG_ERROR("No WebSocket client registered for exchange: " + exchangeId);
+        LOG_ERROR("No WebSocket client registered for exchange: " + exchangeId.toString());
         return false;
     }
     
@@ -153,7 +153,7 @@ bool DataSourceManager::unsubscribe(const ExchangeId& exchangeId, const std::vec
     // In a more sophisticated implementation, you'd remove only specific symbols
     activeSubscriptions_.erase(exchangeId);
     
-    LOG_INFO("Unsubscribed from exchange: " + exchangeId);
+    LOG_INFO("Unsubscribed from exchange: " + exchangeId.toString());
     return true;
 }
 
@@ -189,7 +189,7 @@ bool DataSourceManager::registerWebSocketClient(const ExchangeId& exchangeId,
     webSocketClients_[exchangeId] = client;
     exchangeStats_[exchangeId].startTime = std::chrono::system_clock::now();
     
-    LOG_INFO("Registered WebSocket client for exchange: " + exchangeId);
+    LOG_INFO("Registered WebSocket client for exchange: " + exchangeId.toString());
     return true;
 }
 
@@ -203,7 +203,7 @@ bool DataSourceManager::registerProtocolAdapter(const ExchangeId& exchangeId,
     }
     
     protocolAdapters_[exchangeId] = adapter;
-    LOG_INFO("Registered protocol adapter for exchange: " + exchangeId);
+    LOG_INFO("Registered protocol adapter for exchange: " + exchangeId.toString());
     return true;
 }
 
@@ -245,23 +245,25 @@ void DataSourceManager::onWebSocketMessage(const ExchangeId& exchangeId,
         std::lock_guard<std::mutex> lock(componentsMutex_);
         auto adapterIt = protocolAdapters_.find(exchangeId);
         if (adapterIt == protocolAdapters_.end()) {
-            LOG_WARN("No protocol adapter registered for exchange: " + exchangeId);
+            LOG_WARN("No protocol adapter registered for exchange: " + exchangeId.toString());
             return;
         }
         adapter = adapterIt->second;
     }
     
-    // Create ExchangeData structure
-    core::ExchangeData exchangeData;
-    exchangeData.exchangeId = exchangeId;
-    exchangeData.data = message;
-    exchangeData.receivedTime = std::chrono::duration_cast<std::chrono::nanoseconds>(
-        receivedTime.time_since_epoch()).count();
-    exchangeData.sourceType = "websocket";
+    // Create ExchangeData structure with required fields
+    Symbol symbol; // Create a proper symbol object based on message content
+    core::ExchangeData exchangeData(
+        exchangeId,
+        symbol,
+        message,
+        std::chrono::duration_cast<std::chrono::nanoseconds>(receivedTime.time_since_epoch()).count(),
+        "websocket"
+    );
     
     // Check if adapter can handle this data
     if (!adapter->canHandle(exchangeData)) {
-        LOG_DEBUG("Adapter cannot handle message from exchange: " + exchangeId);
+        LOG_DEBUG("Adapter cannot handle message from exchange: " + exchangeId.toString());
         return;
     }
     
@@ -291,7 +293,7 @@ void DataSourceManager::onWebSocketMessage(const ExchangeId& exchangeId,
         }
         
     } catch (const std::exception& e) {
-        LOG_ERROR("Error processing message from " + exchangeId + ": " + e.what());
+        LOG_ERROR("Error processing message from " + exchangeId.toString() + ": " + e.what());
         updateStats(exchangeId, message.size(), false);
     }
 }
@@ -301,16 +303,16 @@ void DataSourceManager::onWebSocketConnection(const ExchangeId& exchangeId,
                                              const std::string& message) {
     switch (status) {
         case ConnectionStatus::CONNECTED:
-            LOG_INFO("WebSocket connected to " + exchangeId + ": " + message);
+            LOG_INFO("WebSocket connected to " + exchangeId.toString() + ": " + message);
             break;
         case ConnectionStatus::DISCONNECTED:
-            LOG_WARN("WebSocket disconnected from " + exchangeId + ": " + message);
+            LOG_WARN("WebSocket disconnected from " + exchangeId.toString() + ": " + message);
             break;
         case ConnectionStatus::ERROR:
-            LOG_ERROR("WebSocket error for " + exchangeId + ": " + message);
+            LOG_ERROR("WebSocket error for " + exchangeId.toString() + ": " + message);
             break;
         default:
-            LOG_DEBUG("WebSocket status change for " + exchangeId + ": " + message);
+            LOG_DEBUG("WebSocket status change for " + exchangeId.toString() + ": " + message);
             break;
     }
 }
@@ -347,7 +349,7 @@ std::string DataSourceManager::buildZeroMQTopic(const ExchangeId& exchangeId,
         default: dataTypeStr = "orderbook"; break;
     }
     
-    return "market." + dataTypeStr + "." + exchangeId + "." + symbol.toString();
+    return "market." + dataTypeStr + "." + exchangeId.toString() + "." + symbol.toString();
 }
 
 std::vector<std::string> DataSourceManager::buildSubscriptionStreams(const DataSubscription& subscription) const {
@@ -410,7 +412,7 @@ std::unique_ptr<DataSourceManager> createDataSourceManager(
     
     // Register components for each exchange
     for (const auto& exchangeId : exchanges) {
-        if (exchangeId == "binance") {
+        if (exchangeId == ExchangeId::binance()) {
             try {
                 // Create Binance WebSocket client
                 auto wsClient = std::make_shared<BinanceWebSocketClient>(
@@ -424,25 +426,25 @@ std::unique_ptr<DataSourceManager> createDataSourceManager(
                 
                 // Register with manager
                 if (!manager->registerWebSocketClient(exchangeId, wsClient)) {
-                    LOG_ERROR("Failed to register WebSocket client for exchange: " + exchangeId);
+                    LOG_ERROR("Failed to register WebSocket client for exchange: " + exchangeId.toString());
                     return nullptr;
                 }
                 
                 if (!manager->registerProtocolAdapter(exchangeId, adapter)) {
-                    LOG_ERROR("Failed to register protocol adapter for exchange: " + exchangeId);
+                    LOG_ERROR("Failed to register protocol adapter for exchange: " + exchangeId.toString());
                     return nullptr;
                 }
                 
-                LOG_INFO("Successfully registered components for exchange: " + exchangeId);
+                LOG_INFO("Successfully registered components for exchange: " + exchangeId.toString());
                 
             } catch (const std::exception& e) {
-                LOG_ERROR("Exception while creating components for " + exchangeId + ": " + e.what());
+                LOG_ERROR("Exception while creating components for " + exchangeId.toString() + ": " + e.what());
                 return nullptr;
             }
         }
         // Add other exchanges here...
         else {
-            LOG_WARN("Unsupported exchange: " + exchangeId);
+            LOG_WARN("Unsupported exchange: " + exchangeId.toString());
         }
     }
     

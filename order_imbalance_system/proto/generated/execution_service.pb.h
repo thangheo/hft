@@ -35,6 +35,7 @@
 #include <google/protobuf/map_field_inl.h>
 #include <google/protobuf/generated_enum_reflection.h>
 #include <google/protobuf/unknown_field_set.h>
+#include "common.pb.h"
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
 #define PROTOBUF_INTERNAL_EXPORT_execution_5fservice_2eproto
@@ -130,13 +131,14 @@ namespace execution {
 namespace grpc {
 
 enum TradingSignalProto_OrderSide : int {
-  TradingSignalProto_OrderSide_BUY = 0,
-  TradingSignalProto_OrderSide_SELL = 1,
+  TradingSignalProto_OrderSide_UNKNOWN_SIDE = 0,
+  TradingSignalProto_OrderSide_BUY = 1,
+  TradingSignalProto_OrderSide_SELL = 2,
   TradingSignalProto_OrderSide_TradingSignalProto_OrderSide_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   TradingSignalProto_OrderSide_TradingSignalProto_OrderSide_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
 bool TradingSignalProto_OrderSide_IsValid(int value);
-constexpr TradingSignalProto_OrderSide TradingSignalProto_OrderSide_OrderSide_MIN = TradingSignalProto_OrderSide_BUY;
+constexpr TradingSignalProto_OrderSide TradingSignalProto_OrderSide_OrderSide_MIN = TradingSignalProto_OrderSide_UNKNOWN_SIDE;
 constexpr TradingSignalProto_OrderSide TradingSignalProto_OrderSide_OrderSide_MAX = TradingSignalProto_OrderSide_SELL;
 constexpr int TradingSignalProto_OrderSide_OrderSide_ARRAYSIZE = TradingSignalProto_OrderSide_OrderSide_MAX + 1;
 
@@ -155,13 +157,14 @@ inline bool TradingSignalProto_OrderSide_Parse(
     TradingSignalProto_OrderSide_descriptor(), name, value);
 }
 enum OrderProto_OrderSide : int {
-  OrderProto_OrderSide_BUY = 0,
-  OrderProto_OrderSide_SELL = 1,
+  OrderProto_OrderSide_UNKNOWN_SIDE = 0,
+  OrderProto_OrderSide_BUY = 1,
+  OrderProto_OrderSide_SELL = 2,
   OrderProto_OrderSide_OrderProto_OrderSide_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   OrderProto_OrderSide_OrderProto_OrderSide_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
 bool OrderProto_OrderSide_IsValid(int value);
-constexpr OrderProto_OrderSide OrderProto_OrderSide_OrderSide_MIN = OrderProto_OrderSide_BUY;
+constexpr OrderProto_OrderSide OrderProto_OrderSide_OrderSide_MIN = OrderProto_OrderSide_UNKNOWN_SIDE;
 constexpr OrderProto_OrderSide OrderProto_OrderSide_OrderSide_MAX = OrderProto_OrderSide_SELL;
 constexpr int OrderProto_OrderSide_OrderSide_ARRAYSIZE = OrderProto_OrderSide_OrderSide_MAX + 1;
 
@@ -180,20 +183,21 @@ inline bool OrderProto_OrderSide_Parse(
     OrderProto_OrderSide_descriptor(), name, value);
 }
 enum OrderProto_OrderType : int {
-  OrderProto_OrderType_MARKET = 0,
-  OrderProto_OrderType_LIMIT = 1,
-  OrderProto_OrderType_STOP = 2,
-  OrderProto_OrderType_STOP_LIMIT = 3,
-  OrderProto_OrderType_ICEBERG = 4,
-  OrderProto_OrderType_TRAILING_STOP = 5,
-  OrderProto_OrderType_FILL_OR_KILL = 6,
-  OrderProto_OrderType_IMMEDIATE_OR_CANCEL = 7,
-  OrderProto_OrderType_POST_ONLY = 8,
+  OrderProto_OrderType_UNKNOWN_TYPE = 0,
+  OrderProto_OrderType_MARKET = 1,
+  OrderProto_OrderType_LIMIT = 2,
+  OrderProto_OrderType_STOP = 3,
+  OrderProto_OrderType_STOP_LIMIT = 4,
+  OrderProto_OrderType_ICEBERG = 5,
+  OrderProto_OrderType_TRAILING_STOP = 6,
+  OrderProto_OrderType_FILL_OR_KILL = 7,
+  OrderProto_OrderType_IMMEDIATE_OR_CANCEL = 8,
+  OrderProto_OrderType_POST_ONLY = 9,
   OrderProto_OrderType_OrderProto_OrderType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   OrderProto_OrderType_OrderProto_OrderType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
 bool OrderProto_OrderType_IsValid(int value);
-constexpr OrderProto_OrderType OrderProto_OrderType_OrderType_MIN = OrderProto_OrderType_MARKET;
+constexpr OrderProto_OrderType OrderProto_OrderType_OrderType_MIN = OrderProto_OrderType_UNKNOWN_TYPE;
 constexpr OrderProto_OrderType OrderProto_OrderType_OrderType_MAX = OrderProto_OrderType_POST_ONLY;
 constexpr int OrderProto_OrderType_OrderType_ARRAYSIZE = OrderProto_OrderType_OrderType_MAX + 1;
 
@@ -212,15 +216,16 @@ inline bool OrderProto_OrderType_Parse(
     OrderProto_OrderType_descriptor(), name, value);
 }
 enum OrderProto_TimeInForce : int {
-  OrderProto_TimeInForce_GTC = 0,
-  OrderProto_TimeInForce_IOC = 1,
-  OrderProto_TimeInForce_FOK = 2,
-  OrderProto_TimeInForce_GTD = 3,
+  OrderProto_TimeInForce_UNKNOWN_TIF = 0,
+  OrderProto_TimeInForce_GTC = 1,
+  OrderProto_TimeInForce_IOC = 2,
+  OrderProto_TimeInForce_FOK = 3,
+  OrderProto_TimeInForce_GTD = 4,
   OrderProto_TimeInForce_OrderProto_TimeInForce_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   OrderProto_TimeInForce_OrderProto_TimeInForce_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
 bool OrderProto_TimeInForce_IsValid(int value);
-constexpr OrderProto_TimeInForce OrderProto_TimeInForce_TimeInForce_MIN = OrderProto_TimeInForce_GTC;
+constexpr OrderProto_TimeInForce OrderProto_TimeInForce_TimeInForce_MIN = OrderProto_TimeInForce_UNKNOWN_TIF;
 constexpr OrderProto_TimeInForce OrderProto_TimeInForce_TimeInForce_MAX = OrderProto_TimeInForce_GTD;
 constexpr int OrderProto_TimeInForce_TimeInForce_ARRAYSIZE = OrderProto_TimeInForce_TimeInForce_MAX + 1;
 
@@ -239,20 +244,21 @@ inline bool OrderProto_TimeInForce_Parse(
     OrderProto_TimeInForce_descriptor(), name, value);
 }
 enum OrderStateProto : int {
-  CREATED = 0,
-  PENDING = 1,
-  PENDING_CANCEL = 2,
-  OPEN = 3,
-  PARTIALLY_FILLED = 4,
-  FILLED = 5,
-  CANCELED = 6,
-  REJECTED = 7,
-  EXPIRED = 8,
+  UNKNOWN_STATE = 0,
+  CREATED = 1,
+  PENDING = 2,
+  PENDING_CANCEL = 3,
+  OPEN = 4,
+  PARTIALLY_FILLED = 5,
+  FILLED = 6,
+  CANCELED = 7,
+  REJECTED = 8,
+  EXPIRED = 9,
   OrderStateProto_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   OrderStateProto_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
 bool OrderStateProto_IsValid(int value);
-constexpr OrderStateProto OrderStateProto_MIN = CREATED;
+constexpr OrderStateProto OrderStateProto_MIN = UNKNOWN_STATE;
 constexpr OrderStateProto OrderStateProto_MAX = EXPIRED;
 constexpr int OrderStateProto_ARRAYSIZE = OrderStateProto_MAX + 1;
 
@@ -420,6 +426,8 @@ class TradingSignalProto final :
 
 
   typedef TradingSignalProto_OrderSide OrderSide;
+  static constexpr OrderSide UNKNOWN_SIDE =
+    TradingSignalProto_OrderSide_UNKNOWN_SIDE;
   static constexpr OrderSide BUY =
     TradingSignalProto_OrderSide_BUY;
   static constexpr OrderSide SELL =
@@ -454,9 +462,9 @@ class TradingSignalProto final :
   enum : int {
     kSignalMetricsFieldNumber = 9,
     kSignalIdFieldNumber = 1,
-    kTradingPairFieldNumber = 2,
     kStrategyIdFieldNumber = 7,
     kStrategyVersionFieldNumber = 8,
+    kSymbolFieldNumber = 2,
     kStrengthFieldNumber = 4,
     kTargetSizeFieldNumber = 5,
     kSignalTtlMsFieldNumber = 6,
@@ -493,20 +501,6 @@ class TradingSignalProto final :
   std::string* _internal_mutable_signal_id();
   public:
 
-  // string tradingPair = 2;
-  void clear_trading_pair();
-  const std::string& tradingPair() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_trading_pair(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_trading_pair();
-  PROTOBUF_NODISCARD std::string* release_trading_pair();
-  void set_allocated_trading_pair(std::string* tradingPair);
-  private:
-  const std::string& _internal_trading_pair() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_trading_pair(const std::string& value);
-  std::string* _internal_mutable_trading_pair();
-  public:
-
   // string strategy_id = 7;
   void clear_strategy_id();
   const std::string& strategy_id() const;
@@ -534,6 +528,24 @@ class TradingSignalProto final :
   inline PROTOBUF_ALWAYS_INLINE void _internal_set_strategy_version(const std::string& value);
   std::string* _internal_mutable_strategy_version();
   public:
+
+  // .trading.common.proto.SymbolProto symbol = 2;
+  bool has_symbol() const;
+  private:
+  bool _internal_has_symbol() const;
+  public:
+  void clear_symbol();
+  const ::trading::common::proto::SymbolProto& symbol() const;
+  PROTOBUF_NODISCARD ::trading::common::proto::SymbolProto* release_symbol();
+  ::trading::common::proto::SymbolProto* mutable_symbol();
+  void set_allocated_symbol(::trading::common::proto::SymbolProto* symbol);
+  private:
+  const ::trading::common::proto::SymbolProto& _internal_symbol() const;
+  ::trading::common::proto::SymbolProto* _internal_mutable_symbol();
+  public:
+  void unsafe_arena_set_allocated_symbol(
+      ::trading::common::proto::SymbolProto* symbol);
+  ::trading::common::proto::SymbolProto* unsafe_arena_release_symbol();
 
   // double strength = 4;
   void clear_strength();
@@ -585,9 +597,9 @@ class TradingSignalProto final :
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING,
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_DOUBLE> signal_metrics_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr signal_id_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr trading_pair_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr strategy_id_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr strategy_version_;
+    ::trading::common::proto::SymbolProto* symbol_;
     double strength_;
     double target_size_;
     int64_t signal_ttl_ms_;
@@ -723,9 +735,9 @@ class ExecutionResponseProto final :
     kClientOrderIdFieldNumber = 1,
     kExchangeOrderIdFieldNumber = 2,
     kErrorMessageFieldNumber = 4,
-    kOrderStatusFieldNumber = 6,
     kTimestampFieldNumber = 5,
     kSuccessFieldNumber = 3,
+    kOrderStatusFieldNumber = 6,
   };
   // string client_order_id = 1;
   void clear_client_order_id();
@@ -769,28 +781,23 @@ class ExecutionResponseProto final :
   std::string* _internal_mutable_error_message();
   public:
 
-  // string order_status = 6;
-  void clear_order_status();
-  const std::string& order_status() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_order_status(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_order_status();
-  PROTOBUF_NODISCARD std::string* release_order_status();
-  void set_allocated_order_status(std::string* order_status);
+  // .trading.common.proto.TimestampProto timestamp = 5;
+  bool has_timestamp() const;
   private:
-  const std::string& _internal_order_status() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_order_status(const std::string& value);
-  std::string* _internal_mutable_order_status();
+  bool _internal_has_timestamp() const;
   public:
-
-  // int64 timestamp = 5;
   void clear_timestamp();
-  int64_t timestamp() const;
-  void set_timestamp(int64_t value);
+  const ::trading::common::proto::TimestampProto& timestamp() const;
+  PROTOBUF_NODISCARD ::trading::common::proto::TimestampProto* release_timestamp();
+  ::trading::common::proto::TimestampProto* mutable_timestamp();
+  void set_allocated_timestamp(::trading::common::proto::TimestampProto* timestamp);
   private:
-  int64_t _internal_timestamp() const;
-  void _internal_set_timestamp(int64_t value);
+  const ::trading::common::proto::TimestampProto& _internal_timestamp() const;
+  ::trading::common::proto::TimestampProto* _internal_mutable_timestamp();
   public:
+  void unsafe_arena_set_allocated_timestamp(
+      ::trading::common::proto::TimestampProto* timestamp);
+  ::trading::common::proto::TimestampProto* unsafe_arena_release_timestamp();
 
   // bool success = 3;
   void clear_success();
@@ -799,6 +806,15 @@ class ExecutionResponseProto final :
   private:
   bool _internal_success() const;
   void _internal_set_success(bool value);
+  public:
+
+  // .trading.execution.grpc.OrderStateProto order_status = 6;
+  void clear_order_status();
+  ::trading::execution::grpc::OrderStateProto order_status() const;
+  void set_order_status(::trading::execution::grpc::OrderStateProto value);
+  private:
+  ::trading::execution::grpc::OrderStateProto _internal_order_status() const;
+  void _internal_set_order_status(::trading::execution::grpc::OrderStateProto value);
   public:
 
   // @@protoc_insertion_point(class_scope:trading.execution.grpc.ExecutionResponseProto)
@@ -812,9 +828,9 @@ class ExecutionResponseProto final :
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr client_order_id_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr exchange_order_id_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr error_message_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr order_status_;
-    int64_t timestamp_;
+    ::trading::common::proto::TimestampProto* timestamp_;
     bool success_;
+    int order_status_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -991,14 +1007,23 @@ class CancelResponseProto final :
   std::string* _internal_mutable_error_message();
   public:
 
-  // int64 timestamp = 5;
-  void clear_timestamp();
-  int64_t timestamp() const;
-  void set_timestamp(int64_t value);
+  // .trading.common.proto.TimestampProto timestamp = 5;
+  bool has_timestamp() const;
   private:
-  int64_t _internal_timestamp() const;
-  void _internal_set_timestamp(int64_t value);
+  bool _internal_has_timestamp() const;
   public:
+  void clear_timestamp();
+  const ::trading::common::proto::TimestampProto& timestamp() const;
+  PROTOBUF_NODISCARD ::trading::common::proto::TimestampProto* release_timestamp();
+  ::trading::common::proto::TimestampProto* mutable_timestamp();
+  void set_allocated_timestamp(::trading::common::proto::TimestampProto* timestamp);
+  private:
+  const ::trading::common::proto::TimestampProto& _internal_timestamp() const;
+  ::trading::common::proto::TimestampProto* _internal_mutable_timestamp();
+  public:
+  void unsafe_arena_set_allocated_timestamp(
+      ::trading::common::proto::TimestampProto* timestamp);
+  ::trading::common::proto::TimestampProto* unsafe_arena_release_timestamp();
 
   // bool success = 3;
   void clear_success();
@@ -1020,7 +1045,7 @@ class CancelResponseProto final :
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr client_order_id_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr exchange_order_id_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr error_message_;
-    int64_t timestamp_;
+    ::trading::common::proto::TimestampProto* timestamp_;
     bool success_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
@@ -1152,11 +1177,13 @@ class FillProto final :
   enum : int {
     kFillIdFieldNumber = 1,
     kOrderIdFieldNumber = 2,
-    kFeeCurrencyFieldNumber = 6,
-    kQuantityFieldNumber = 3,
-    kPriceFieldNumber = 4,
-    kFeeFieldNumber = 5,
-    kTimestampFieldNumber = 7,
+    kExchangeOrderIdFieldNumber = 3,
+    kFeeCurrencyFieldNumber = 8,
+    kTimestampFieldNumber = 9,
+    kQuantityFieldNumber = 5,
+    kPriceFieldNumber = 6,
+    kFeeFieldNumber = 7,
+    kExchangeIdFieldNumber = 4,
   };
   // string fill_id = 1;
   void clear_fill_id();
@@ -1186,7 +1213,21 @@ class FillProto final :
   std::string* _internal_mutable_order_id();
   public:
 
-  // string fee_currency = 6;
+  // string exchange_order_id = 3;
+  void clear_exchange_order_id();
+  const std::string& exchange_order_id() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_exchange_order_id(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_exchange_order_id();
+  PROTOBUF_NODISCARD std::string* release_exchange_order_id();
+  void set_allocated_exchange_order_id(std::string* exchange_order_id);
+  private:
+  const std::string& _internal_exchange_order_id() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_exchange_order_id(const std::string& value);
+  std::string* _internal_mutable_exchange_order_id();
+  public:
+
+  // string fee_currency = 8;
   void clear_fee_currency();
   const std::string& fee_currency() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
@@ -1200,7 +1241,25 @@ class FillProto final :
   std::string* _internal_mutable_fee_currency();
   public:
 
-  // double quantity = 3;
+  // .trading.common.proto.TimestampProto timestamp = 9;
+  bool has_timestamp() const;
+  private:
+  bool _internal_has_timestamp() const;
+  public:
+  void clear_timestamp();
+  const ::trading::common::proto::TimestampProto& timestamp() const;
+  PROTOBUF_NODISCARD ::trading::common::proto::TimestampProto* release_timestamp();
+  ::trading::common::proto::TimestampProto* mutable_timestamp();
+  void set_allocated_timestamp(::trading::common::proto::TimestampProto* timestamp);
+  private:
+  const ::trading::common::proto::TimestampProto& _internal_timestamp() const;
+  ::trading::common::proto::TimestampProto* _internal_mutable_timestamp();
+  public:
+  void unsafe_arena_set_allocated_timestamp(
+      ::trading::common::proto::TimestampProto* timestamp);
+  ::trading::common::proto::TimestampProto* unsafe_arena_release_timestamp();
+
+  // double quantity = 5;
   void clear_quantity();
   double quantity() const;
   void set_quantity(double value);
@@ -1209,7 +1268,7 @@ class FillProto final :
   void _internal_set_quantity(double value);
   public:
 
-  // double price = 4;
+  // double price = 6;
   void clear_price();
   double price() const;
   void set_price(double value);
@@ -1218,7 +1277,7 @@ class FillProto final :
   void _internal_set_price(double value);
   public:
 
-  // double fee = 5;
+  // double fee = 7;
   void clear_fee();
   double fee() const;
   void set_fee(double value);
@@ -1227,13 +1286,13 @@ class FillProto final :
   void _internal_set_fee(double value);
   public:
 
-  // int64 timestamp = 7;
-  void clear_timestamp();
-  int64_t timestamp() const;
-  void set_timestamp(int64_t value);
+  // .trading.common.proto.ExchangeIdProto exchange_id = 4;
+  void clear_exchange_id();
+  ::trading::common::proto::ExchangeIdProto exchange_id() const;
+  void set_exchange_id(::trading::common::proto::ExchangeIdProto value);
   private:
-  int64_t _internal_timestamp() const;
-  void _internal_set_timestamp(int64_t value);
+  ::trading::common::proto::ExchangeIdProto _internal_exchange_id() const;
+  void _internal_set_exchange_id(::trading::common::proto::ExchangeIdProto value);
   public:
 
   // @@protoc_insertion_point(class_scope:trading.execution.grpc.FillProto)
@@ -1246,11 +1305,13 @@ class FillProto final :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr fill_id_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr order_id_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr exchange_order_id_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr fee_currency_;
+    ::trading::common::proto::TimestampProto* timestamp_;
     double quantity_;
     double price_;
     double fee_;
-    int64_t timestamp_;
+    int exchange_id_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -1408,6 +1469,8 @@ class OrderProto final :
 
 
   typedef OrderProto_OrderSide OrderSide;
+  static constexpr OrderSide UNKNOWN_SIDE =
+    OrderProto_OrderSide_UNKNOWN_SIDE;
   static constexpr OrderSide BUY =
     OrderProto_OrderSide_BUY;
   static constexpr OrderSide SELL =
@@ -1438,6 +1501,8 @@ class OrderProto final :
   }
 
   typedef OrderProto_OrderType OrderType;
+  static constexpr OrderType UNKNOWN_TYPE =
+    OrderProto_OrderType_UNKNOWN_TYPE;
   static constexpr OrderType MARKET =
     OrderProto_OrderType_MARKET;
   static constexpr OrderType LIMIT =
@@ -1482,6 +1547,8 @@ class OrderProto final :
   }
 
   typedef OrderProto_TimeInForce TimeInForce;
+  static constexpr TimeInForce UNKNOWN_TIF =
+    OrderProto_TimeInForce_UNKNOWN_TIF;
   static constexpr TimeInForce GTC =
     OrderProto_TimeInForce_GTC;
   static constexpr TimeInForce IOC =
@@ -1522,22 +1589,22 @@ class OrderProto final :
     kExtraParamsFieldNumber = 20,
     kOrderIdFieldNumber = 1,
     kClientOrderIdFieldNumber = 2,
-    kExchangeIdFieldNumber = 3,
     kExchangeOrderIdFieldNumber = 4,
-    kTradingPairFieldNumber = 5,
     kStrategyIdFieldNumber = 13,
     kSignalIdFieldNumber = 14,
-    kSideFieldNumber = 6,
-    kTypeFieldNumber = 7,
-    kQuantityFieldNumber = 8,
-    kPriceFieldNumber = 9,
-    kStopPriceFieldNumber = 10,
-    kTimeInForceFieldNumber = 11,
-    kStateFieldNumber = 12,
+    kSymbolFieldNumber = 5,
     kCreatedAtFieldNumber = 15,
     kUpdatedAtFieldNumber = 16,
+    kExchangeIdFieldNumber = 3,
+    kSideFieldNumber = 6,
+    kQuantityFieldNumber = 8,
+    kPriceFieldNumber = 9,
+    kTypeFieldNumber = 7,
+    kTimeInForceFieldNumber = 11,
+    kStopPriceFieldNumber = 10,
     kFilledQuantityFieldNumber = 18,
     kAverageFillPriceFieldNumber = 19,
+    kStateFieldNumber = 12,
   };
   // repeated .trading.execution.grpc.FillProto fills = 17;
   int fills_size() const;
@@ -1602,20 +1669,6 @@ class OrderProto final :
   std::string* _internal_mutable_client_order_id();
   public:
 
-  // string exchangeId = 3;
-  void clear_exchangeid();
-  const std::string& exchangeid() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_exchangeid(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_exchangeid();
-  PROTOBUF_NODISCARD std::string* release_exchangeid();
-  void set_allocated_exchangeid(std::string* exchangeid);
-  private:
-  const std::string& _internal_exchangeid() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_exchangeid(const std::string& value);
-  std::string* _internal_mutable_exchangeid();
-  public:
-
   // string exchange_order_id = 4;
   void clear_exchange_order_id();
   const std::string& exchange_order_id() const;
@@ -1628,20 +1681,6 @@ class OrderProto final :
   const std::string& _internal_exchange_order_id() const;
   inline PROTOBUF_ALWAYS_INLINE void _internal_set_exchange_order_id(const std::string& value);
   std::string* _internal_mutable_exchange_order_id();
-  public:
-
-  // string tradingPair = 5;
-  void clear_trading_pair();
-  const std::string& tradingPair() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_trading_pair(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_trading_pair();
-  PROTOBUF_NODISCARD std::string* release_trading_pair();
-  void set_allocated_trading_pair(std::string* tradingPair);
-  private:
-  const std::string& _internal_trading_pair() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_trading_pair(const std::string& value);
-  std::string* _internal_mutable_trading_pair();
   public:
 
   // string strategy_id = 13;
@@ -1672,6 +1711,69 @@ class OrderProto final :
   std::string* _internal_mutable_signal_id();
   public:
 
+  // .trading.common.proto.SymbolProto symbol = 5;
+  bool has_symbol() const;
+  private:
+  bool _internal_has_symbol() const;
+  public:
+  void clear_symbol();
+  const ::trading::common::proto::SymbolProto& symbol() const;
+  PROTOBUF_NODISCARD ::trading::common::proto::SymbolProto* release_symbol();
+  ::trading::common::proto::SymbolProto* mutable_symbol();
+  void set_allocated_symbol(::trading::common::proto::SymbolProto* symbol);
+  private:
+  const ::trading::common::proto::SymbolProto& _internal_symbol() const;
+  ::trading::common::proto::SymbolProto* _internal_mutable_symbol();
+  public:
+  void unsafe_arena_set_allocated_symbol(
+      ::trading::common::proto::SymbolProto* symbol);
+  ::trading::common::proto::SymbolProto* unsafe_arena_release_symbol();
+
+  // .trading.common.proto.TimestampProto created_at = 15;
+  bool has_created_at() const;
+  private:
+  bool _internal_has_created_at() const;
+  public:
+  void clear_created_at();
+  const ::trading::common::proto::TimestampProto& created_at() const;
+  PROTOBUF_NODISCARD ::trading::common::proto::TimestampProto* release_created_at();
+  ::trading::common::proto::TimestampProto* mutable_created_at();
+  void set_allocated_created_at(::trading::common::proto::TimestampProto* created_at);
+  private:
+  const ::trading::common::proto::TimestampProto& _internal_created_at() const;
+  ::trading::common::proto::TimestampProto* _internal_mutable_created_at();
+  public:
+  void unsafe_arena_set_allocated_created_at(
+      ::trading::common::proto::TimestampProto* created_at);
+  ::trading::common::proto::TimestampProto* unsafe_arena_release_created_at();
+
+  // .trading.common.proto.TimestampProto updated_at = 16;
+  bool has_updated_at() const;
+  private:
+  bool _internal_has_updated_at() const;
+  public:
+  void clear_updated_at();
+  const ::trading::common::proto::TimestampProto& updated_at() const;
+  PROTOBUF_NODISCARD ::trading::common::proto::TimestampProto* release_updated_at();
+  ::trading::common::proto::TimestampProto* mutable_updated_at();
+  void set_allocated_updated_at(::trading::common::proto::TimestampProto* updated_at);
+  private:
+  const ::trading::common::proto::TimestampProto& _internal_updated_at() const;
+  ::trading::common::proto::TimestampProto* _internal_mutable_updated_at();
+  public:
+  void unsafe_arena_set_allocated_updated_at(
+      ::trading::common::proto::TimestampProto* updated_at);
+  ::trading::common::proto::TimestampProto* unsafe_arena_release_updated_at();
+
+  // .trading.common.proto.ExchangeIdProto exchange_id = 3;
+  void clear_exchange_id();
+  ::trading::common::proto::ExchangeIdProto exchange_id() const;
+  void set_exchange_id(::trading::common::proto::ExchangeIdProto value);
+  private:
+  ::trading::common::proto::ExchangeIdProto _internal_exchange_id() const;
+  void _internal_set_exchange_id(::trading::common::proto::ExchangeIdProto value);
+  public:
+
   // .trading.execution.grpc.OrderProto.OrderSide side = 6;
   void clear_side();
   ::trading::execution::grpc::OrderProto_OrderSide side() const;
@@ -1679,15 +1781,6 @@ class OrderProto final :
   private:
   ::trading::execution::grpc::OrderProto_OrderSide _internal_side() const;
   void _internal_set_side(::trading::execution::grpc::OrderProto_OrderSide value);
-  public:
-
-  // .trading.execution.grpc.OrderProto.OrderType type = 7;
-  void clear_type();
-  ::trading::execution::grpc::OrderProto_OrderType type() const;
-  void set_type(::trading::execution::grpc::OrderProto_OrderType value);
-  private:
-  ::trading::execution::grpc::OrderProto_OrderType _internal_type() const;
-  void _internal_set_type(::trading::execution::grpc::OrderProto_OrderType value);
   public:
 
   // double quantity = 8;
@@ -1708,13 +1801,13 @@ class OrderProto final :
   void _internal_set_price(double value);
   public:
 
-  // double stop_price = 10;
-  void clear_stop_price();
-  double stop_price() const;
-  void set_stop_price(double value);
+  // .trading.execution.grpc.OrderProto.OrderType type = 7;
+  void clear_type();
+  ::trading::execution::grpc::OrderProto_OrderType type() const;
+  void set_type(::trading::execution::grpc::OrderProto_OrderType value);
   private:
-  double _internal_stop_price() const;
-  void _internal_set_stop_price(double value);
+  ::trading::execution::grpc::OrderProto_OrderType _internal_type() const;
+  void _internal_set_type(::trading::execution::grpc::OrderProto_OrderType value);
   public:
 
   // .trading.execution.grpc.OrderProto.TimeInForce time_in_force = 11;
@@ -1726,31 +1819,13 @@ class OrderProto final :
   void _internal_set_time_in_force(::trading::execution::grpc::OrderProto_TimeInForce value);
   public:
 
-  // .trading.execution.grpc.OrderStateProto state = 12;
-  void clear_state();
-  ::trading::execution::grpc::OrderStateProto state() const;
-  void set_state(::trading::execution::grpc::OrderStateProto value);
+  // double stop_price = 10;
+  void clear_stop_price();
+  double stop_price() const;
+  void set_stop_price(double value);
   private:
-  ::trading::execution::grpc::OrderStateProto _internal_state() const;
-  void _internal_set_state(::trading::execution::grpc::OrderStateProto value);
-  public:
-
-  // int64 created_at = 15;
-  void clear_created_at();
-  int64_t created_at() const;
-  void set_created_at(int64_t value);
-  private:
-  int64_t _internal_created_at() const;
-  void _internal_set_created_at(int64_t value);
-  public:
-
-  // int64 updated_at = 16;
-  void clear_updated_at();
-  int64_t updated_at() const;
-  void set_updated_at(int64_t value);
-  private:
-  int64_t _internal_updated_at() const;
-  void _internal_set_updated_at(int64_t value);
+  double _internal_stop_price() const;
+  void _internal_set_stop_price(double value);
   public:
 
   // double filled_quantity = 18;
@@ -1771,6 +1846,15 @@ class OrderProto final :
   void _internal_set_average_fill_price(double value);
   public:
 
+  // .trading.execution.grpc.OrderStateProto state = 12;
+  void clear_state();
+  ::trading::execution::grpc::OrderStateProto state() const;
+  void set_state(::trading::execution::grpc::OrderStateProto value);
+  private:
+  ::trading::execution::grpc::OrderStateProto _internal_state() const;
+  void _internal_set_state(::trading::execution::grpc::OrderStateProto value);
+  public:
+
   // @@protoc_insertion_point(class_scope:trading.execution.grpc.OrderProto)
  private:
   class _Internal;
@@ -1787,22 +1871,22 @@ class OrderProto final :
         ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_STRING> extra_params_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr order_id_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr client_order_id_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr exchangeid_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr exchange_order_id_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr trading_pair_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr strategy_id_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr signal_id_;
+    ::trading::common::proto::SymbolProto* symbol_;
+    ::trading::common::proto::TimestampProto* created_at_;
+    ::trading::common::proto::TimestampProto* updated_at_;
+    int exchange_id_;
     int side_;
-    int type_;
     double quantity_;
     double price_;
-    double stop_price_;
+    int type_;
     int time_in_force_;
-    int state_;
-    int64_t created_at_;
-    int64_t updated_at_;
+    double stop_price_;
     double filled_quantity_;
     double average_fill_price_;
+    int state_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -2556,18 +2640,13 @@ class CancelOrderByExchangeIdRequestProto final :
   std::string* _internal_mutable_exchange_order_id();
   public:
 
-  // string exchangeId = 2;
-  void clear_exchangeid();
-  const std::string& exchangeid() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_exchangeid(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_exchangeid();
-  PROTOBUF_NODISCARD std::string* release_exchangeid();
-  void set_allocated_exchangeid(std::string* exchangeid);
+  // .trading.common.proto.ExchangeIdProto exchange_id = 2;
+  void clear_exchange_id();
+  ::trading::common::proto::ExchangeIdProto exchange_id() const;
+  void set_exchange_id(::trading::common::proto::ExchangeIdProto value);
   private:
-  const std::string& _internal_exchangeid() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_exchangeid(const std::string& value);
-  std::string* _internal_mutable_exchangeid();
+  ::trading::common::proto::ExchangeIdProto _internal_exchange_id() const;
+  void _internal_set_exchange_id(::trading::common::proto::ExchangeIdProto value);
   public:
 
   // @@protoc_insertion_point(class_scope:trading.execution.grpc.CancelOrderByExchangeIdRequestProto)
@@ -2579,7 +2658,7 @@ class CancelOrderByExchangeIdRequestProto final :
   typedef void DestructorSkippable_;
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr exchange_order_id_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr exchangeid_;
+    int exchange_id_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -2708,35 +2787,34 @@ class CancelAllOrdersRequestProto final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kTradingPairFieldNumber = 1,
+    kSymbolFieldNumber = 1,
     kExchangeIdFieldNumber = 2,
   };
-  // string tradingPair = 1;
-  void clear_trading_pair();
-  const std::string& tradingPair() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_trading_pair(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_trading_pair();
-  PROTOBUF_NODISCARD std::string* release_trading_pair();
-  void set_allocated_trading_pair(std::string* tradingPair);
+  // .trading.common.proto.SymbolProto symbol = 1;
+  bool has_symbol() const;
   private:
-  const std::string& _internal_trading_pair() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_trading_pair(const std::string& value);
-  std::string* _internal_mutable_trading_pair();
+  bool _internal_has_symbol() const;
   public:
-
-  // string exchangeId = 2;
-  void clear_exchangeid();
-  const std::string& exchangeid() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_exchangeid(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_exchangeid();
-  PROTOBUF_NODISCARD std::string* release_exchangeid();
-  void set_allocated_exchangeid(std::string* exchangeid);
+  void clear_symbol();
+  const ::trading::common::proto::SymbolProto& symbol() const;
+  PROTOBUF_NODISCARD ::trading::common::proto::SymbolProto* release_symbol();
+  ::trading::common::proto::SymbolProto* mutable_symbol();
+  void set_allocated_symbol(::trading::common::proto::SymbolProto* symbol);
   private:
-  const std::string& _internal_exchangeid() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_exchangeid(const std::string& value);
-  std::string* _internal_mutable_exchangeid();
+  const ::trading::common::proto::SymbolProto& _internal_symbol() const;
+  ::trading::common::proto::SymbolProto* _internal_mutable_symbol();
+  public:
+  void unsafe_arena_set_allocated_symbol(
+      ::trading::common::proto::SymbolProto* symbol);
+  ::trading::common::proto::SymbolProto* unsafe_arena_release_symbol();
+
+  // .trading.common.proto.ExchangeIdProto exchange_id = 2;
+  void clear_exchange_id();
+  ::trading::common::proto::ExchangeIdProto exchange_id() const;
+  void set_exchange_id(::trading::common::proto::ExchangeIdProto value);
+  private:
+  ::trading::common::proto::ExchangeIdProto _internal_exchange_id() const;
+  void _internal_set_exchange_id(::trading::common::proto::ExchangeIdProto value);
   public:
 
   // @@protoc_insertion_point(class_scope:trading.execution.grpc.CancelAllOrdersRequestProto)
@@ -2747,8 +2825,8 @@ class CancelAllOrdersRequestProto final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr trading_pair_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr exchangeid_;
+    ::trading::common::proto::SymbolProto* symbol_;
+    int exchange_id_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -3067,9 +3145,10 @@ class OrderStatusRequestProto final :
 // -------------------------------------------------------------------
 
 class ActiveOrdersRequestProto final :
-    public ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase /* @@protoc_insertion_point(class_definition:trading.execution.grpc.ActiveOrdersRequestProto) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.execution.grpc.ActiveOrdersRequestProto) */ {
  public:
   inline ActiveOrdersRequestProto() : ActiveOrdersRequestProto(nullptr) {}
+  ~ActiveOrdersRequestProto() override;
   explicit PROTOBUF_CONSTEXPR ActiveOrdersRequestProto(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
 
   ActiveOrdersRequestProto(const ActiveOrdersRequestProto& from);
@@ -3142,15 +3221,29 @@ class ActiveOrdersRequestProto final :
   ActiveOrdersRequestProto* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
     return CreateMaybeMessage<ActiveOrdersRequestProto>(arena);
   }
-  using ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::CopyFrom;
-  inline void CopyFrom(const ActiveOrdersRequestProto& from) {
-    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::CopyImpl(*this, from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const ActiveOrdersRequestProto& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const ActiveOrdersRequestProto& from) {
+    ActiveOrdersRequestProto::MergeImpl(*this, from);
   }
-  using ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::MergeFrom;
-  void MergeFrom(const ActiveOrdersRequestProto& from) {
-    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::MergeImpl(*this, from);
-  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
   public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ActiveOrdersRequestProto* other);
 
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
@@ -3171,6 +3264,37 @@ class ActiveOrdersRequestProto final :
 
   // accessors -------------------------------------------------------
 
+  enum : int {
+    kSymbolFieldNumber = 2,
+    kExchangeIdFieldNumber = 1,
+  };
+  // .trading.common.proto.SymbolProto symbol = 2;
+  bool has_symbol() const;
+  private:
+  bool _internal_has_symbol() const;
+  public:
+  void clear_symbol();
+  const ::trading::common::proto::SymbolProto& symbol() const;
+  PROTOBUF_NODISCARD ::trading::common::proto::SymbolProto* release_symbol();
+  ::trading::common::proto::SymbolProto* mutable_symbol();
+  void set_allocated_symbol(::trading::common::proto::SymbolProto* symbol);
+  private:
+  const ::trading::common::proto::SymbolProto& _internal_symbol() const;
+  ::trading::common::proto::SymbolProto* _internal_mutable_symbol();
+  public:
+  void unsafe_arena_set_allocated_symbol(
+      ::trading::common::proto::SymbolProto* symbol);
+  ::trading::common::proto::SymbolProto* unsafe_arena_release_symbol();
+
+  // .trading.common.proto.ExchangeIdProto exchange_id = 1;
+  void clear_exchange_id();
+  ::trading::common::proto::ExchangeIdProto exchange_id() const;
+  void set_exchange_id(::trading::common::proto::ExchangeIdProto value);
+  private:
+  ::trading::common::proto::ExchangeIdProto _internal_exchange_id() const;
+  void _internal_set_exchange_id(::trading::common::proto::ExchangeIdProto value);
+  public:
+
   // @@protoc_insertion_point(class_scope:trading.execution.grpc.ActiveOrdersRequestProto)
  private:
   class _Internal;
@@ -3179,7 +3303,11 @@ class ActiveOrdersRequestProto final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
+    ::trading::common::proto::SymbolProto* symbol_;
+    int exchange_id_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
+  union { Impl_ _impl_; };
   friend struct ::TableStruct_execution_5fservice_2eproto;
 };
 // -------------------------------------------------------------------
@@ -3402,54 +3530,89 @@ inline void TradingSignalProto::set_allocated_signal_id(std::string* signal_id) 
   // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.TradingSignalProto.signal_id)
 }
 
-// string tradingPair = 2;
-inline void TradingSignalProto::clear_trading_pair() {
-  _impl_.trading_pair_.ClearToEmpty();
+// .trading.common.proto.SymbolProto symbol = 2;
+inline bool TradingSignalProto::_internal_has_symbol() const {
+  return this != internal_default_instance() && _impl_.symbol_ != nullptr;
 }
-inline const std::string& TradingSignalProto::tradingPair() const {
-  // @@protoc_insertion_point(field_get:trading.execution.grpc.TradingSignalProto.tradingPair)
-  return _internal_trading_pair();
+inline bool TradingSignalProto::has_symbol() const {
+  return _internal_has_symbol();
 }
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void TradingSignalProto::set_trading_pair(ArgT0&& arg0, ArgT... args) {
- 
- _impl_.trading_pair_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.grpc.TradingSignalProto.tradingPair)
+inline const ::trading::common::proto::SymbolProto& TradingSignalProto::_internal_symbol() const {
+  const ::trading::common::proto::SymbolProto* p = _impl_.symbol_;
+  return p != nullptr ? *p : reinterpret_cast<const ::trading::common::proto::SymbolProto&>(
+      ::trading::common::proto::_SymbolProto_default_instance_);
 }
-inline std::string* TradingSignalProto::mutable_trading_pair() {
-  std::string* _s = _internal_mutable_trading_pair();
-  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.TradingSignalProto.tradingPair)
-  return _s;
+inline const ::trading::common::proto::SymbolProto& TradingSignalProto::symbol() const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.TradingSignalProto.symbol)
+  return _internal_symbol();
 }
-inline const std::string& TradingSignalProto::_internal_trading_pair() const {
-  return _impl_.trading_pair_.Get();
-}
-inline void TradingSignalProto::_internal_set_trading_pair(const std::string& value) {
-  
-  _impl_.trading_pair_.Set(value, GetArenaForAllocation());
-}
-inline std::string* TradingSignalProto::_internal_mutable_trading_pair() {
-  
-  return _impl_.trading_pair_.Mutable(GetArenaForAllocation());
-}
-inline std::string* TradingSignalProto::release_trading_pair() {
-  // @@protoc_insertion_point(field_release:trading.execution.grpc.TradingSignalProto.tradingPair)
-  return _impl_.trading_pair_.Release();
-}
-inline void TradingSignalProto::set_allocated_trading_pair(std::string* tradingPair) {
-  if (tradingPair != nullptr) {
+inline void TradingSignalProto::unsafe_arena_set_allocated_symbol(
+    ::trading::common::proto::SymbolProto* symbol) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.symbol_);
+  }
+  _impl_.symbol_ = symbol;
+  if (symbol) {
     
   } else {
     
   }
-  _impl_.trading_pair_.SetAllocated(tradingPair, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.trading_pair_.IsDefault()) {
-    _impl_.trading_pair_.Set("", GetArenaForAllocation());
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:trading.execution.grpc.TradingSignalProto.symbol)
+}
+inline ::trading::common::proto::SymbolProto* TradingSignalProto::release_symbol() {
+  
+  ::trading::common::proto::SymbolProto* temp = _impl_.symbol_;
+  _impl_.symbol_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
   }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.TradingSignalProto.tradingPair)
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::trading::common::proto::SymbolProto* TradingSignalProto::unsafe_arena_release_symbol() {
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.TradingSignalProto.symbol)
+  
+  ::trading::common::proto::SymbolProto* temp = _impl_.symbol_;
+  _impl_.symbol_ = nullptr;
+  return temp;
+}
+inline ::trading::common::proto::SymbolProto* TradingSignalProto::_internal_mutable_symbol() {
+  
+  if (_impl_.symbol_ == nullptr) {
+    auto* p = CreateMaybeMessage<::trading::common::proto::SymbolProto>(GetArenaForAllocation());
+    _impl_.symbol_ = p;
+  }
+  return _impl_.symbol_;
+}
+inline ::trading::common::proto::SymbolProto* TradingSignalProto::mutable_symbol() {
+  ::trading::common::proto::SymbolProto* _msg = _internal_mutable_symbol();
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.TradingSignalProto.symbol)
+  return _msg;
+}
+inline void TradingSignalProto::set_allocated_symbol(::trading::common::proto::SymbolProto* symbol) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.symbol_);
+  }
+  if (symbol) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(symbol));
+    if (message_arena != submessage_arena) {
+      symbol = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, symbol, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  _impl_.symbol_ = symbol;
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.TradingSignalProto.symbol)
 }
 
 // .trading.execution.grpc.TradingSignalProto.OrderSide direction = 3;
@@ -3835,74 +3998,109 @@ inline void ExecutionResponseProto::set_allocated_error_message(std::string* err
   // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.ExecutionResponseProto.error_message)
 }
 
-// int64 timestamp = 5;
-inline void ExecutionResponseProto::clear_timestamp() {
-  _impl_.timestamp_ = int64_t{0};
+// .trading.common.proto.TimestampProto timestamp = 5;
+inline bool ExecutionResponseProto::_internal_has_timestamp() const {
+  return this != internal_default_instance() && _impl_.timestamp_ != nullptr;
 }
-inline int64_t ExecutionResponseProto::_internal_timestamp() const {
-  return _impl_.timestamp_;
+inline bool ExecutionResponseProto::has_timestamp() const {
+  return _internal_has_timestamp();
 }
-inline int64_t ExecutionResponseProto::timestamp() const {
+inline const ::trading::common::proto::TimestampProto& ExecutionResponseProto::_internal_timestamp() const {
+  const ::trading::common::proto::TimestampProto* p = _impl_.timestamp_;
+  return p != nullptr ? *p : reinterpret_cast<const ::trading::common::proto::TimestampProto&>(
+      ::trading::common::proto::_TimestampProto_default_instance_);
+}
+inline const ::trading::common::proto::TimestampProto& ExecutionResponseProto::timestamp() const {
   // @@protoc_insertion_point(field_get:trading.execution.grpc.ExecutionResponseProto.timestamp)
   return _internal_timestamp();
 }
-inline void ExecutionResponseProto::_internal_set_timestamp(int64_t value) {
-  
-  _impl_.timestamp_ = value;
-}
-inline void ExecutionResponseProto::set_timestamp(int64_t value) {
-  _internal_set_timestamp(value);
-  // @@protoc_insertion_point(field_set:trading.execution.grpc.ExecutionResponseProto.timestamp)
-}
-
-// string order_status = 6;
-inline void ExecutionResponseProto::clear_order_status() {
-  _impl_.order_status_.ClearToEmpty();
-}
-inline const std::string& ExecutionResponseProto::order_status() const {
-  // @@protoc_insertion_point(field_get:trading.execution.grpc.ExecutionResponseProto.order_status)
-  return _internal_order_status();
-}
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void ExecutionResponseProto::set_order_status(ArgT0&& arg0, ArgT... args) {
- 
- _impl_.order_status_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.grpc.ExecutionResponseProto.order_status)
-}
-inline std::string* ExecutionResponseProto::mutable_order_status() {
-  std::string* _s = _internal_mutable_order_status();
-  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.ExecutionResponseProto.order_status)
-  return _s;
-}
-inline const std::string& ExecutionResponseProto::_internal_order_status() const {
-  return _impl_.order_status_.Get();
-}
-inline void ExecutionResponseProto::_internal_set_order_status(const std::string& value) {
-  
-  _impl_.order_status_.Set(value, GetArenaForAllocation());
-}
-inline std::string* ExecutionResponseProto::_internal_mutable_order_status() {
-  
-  return _impl_.order_status_.Mutable(GetArenaForAllocation());
-}
-inline std::string* ExecutionResponseProto::release_order_status() {
-  // @@protoc_insertion_point(field_release:trading.execution.grpc.ExecutionResponseProto.order_status)
-  return _impl_.order_status_.Release();
-}
-inline void ExecutionResponseProto::set_allocated_order_status(std::string* order_status) {
-  if (order_status != nullptr) {
+inline void ExecutionResponseProto::unsafe_arena_set_allocated_timestamp(
+    ::trading::common::proto::TimestampProto* timestamp) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.timestamp_);
+  }
+  _impl_.timestamp_ = timestamp;
+  if (timestamp) {
     
   } else {
     
   }
-  _impl_.order_status_.SetAllocated(order_status, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.order_status_.IsDefault()) {
-    _impl_.order_status_.Set("", GetArenaForAllocation());
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:trading.execution.grpc.ExecutionResponseProto.timestamp)
+}
+inline ::trading::common::proto::TimestampProto* ExecutionResponseProto::release_timestamp() {
+  
+  ::trading::common::proto::TimestampProto* temp = _impl_.timestamp_;
+  _impl_.timestamp_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
   }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.ExecutionResponseProto.order_status)
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::trading::common::proto::TimestampProto* ExecutionResponseProto::unsafe_arena_release_timestamp() {
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.ExecutionResponseProto.timestamp)
+  
+  ::trading::common::proto::TimestampProto* temp = _impl_.timestamp_;
+  _impl_.timestamp_ = nullptr;
+  return temp;
+}
+inline ::trading::common::proto::TimestampProto* ExecutionResponseProto::_internal_mutable_timestamp() {
+  
+  if (_impl_.timestamp_ == nullptr) {
+    auto* p = CreateMaybeMessage<::trading::common::proto::TimestampProto>(GetArenaForAllocation());
+    _impl_.timestamp_ = p;
+  }
+  return _impl_.timestamp_;
+}
+inline ::trading::common::proto::TimestampProto* ExecutionResponseProto::mutable_timestamp() {
+  ::trading::common::proto::TimestampProto* _msg = _internal_mutable_timestamp();
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.ExecutionResponseProto.timestamp)
+  return _msg;
+}
+inline void ExecutionResponseProto::set_allocated_timestamp(::trading::common::proto::TimestampProto* timestamp) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.timestamp_);
+  }
+  if (timestamp) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(timestamp));
+    if (message_arena != submessage_arena) {
+      timestamp = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, timestamp, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  _impl_.timestamp_ = timestamp;
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.ExecutionResponseProto.timestamp)
+}
+
+// .trading.execution.grpc.OrderStateProto order_status = 6;
+inline void ExecutionResponseProto::clear_order_status() {
+  _impl_.order_status_ = 0;
+}
+inline ::trading::execution::grpc::OrderStateProto ExecutionResponseProto::_internal_order_status() const {
+  return static_cast< ::trading::execution::grpc::OrderStateProto >(_impl_.order_status_);
+}
+inline ::trading::execution::grpc::OrderStateProto ExecutionResponseProto::order_status() const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.ExecutionResponseProto.order_status)
+  return _internal_order_status();
+}
+inline void ExecutionResponseProto::_internal_set_order_status(::trading::execution::grpc::OrderStateProto value) {
+  
+  _impl_.order_status_ = value;
+}
+inline void ExecutionResponseProto::set_order_status(::trading::execution::grpc::OrderStateProto value) {
+  _internal_set_order_status(value);
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.ExecutionResponseProto.order_status)
 }
 
 // -------------------------------------------------------------------
@@ -4079,24 +4277,89 @@ inline void CancelResponseProto::set_allocated_error_message(std::string* error_
   // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.CancelResponseProto.error_message)
 }
 
-// int64 timestamp = 5;
-inline void CancelResponseProto::clear_timestamp() {
-  _impl_.timestamp_ = int64_t{0};
+// .trading.common.proto.TimestampProto timestamp = 5;
+inline bool CancelResponseProto::_internal_has_timestamp() const {
+  return this != internal_default_instance() && _impl_.timestamp_ != nullptr;
 }
-inline int64_t CancelResponseProto::_internal_timestamp() const {
-  return _impl_.timestamp_;
+inline bool CancelResponseProto::has_timestamp() const {
+  return _internal_has_timestamp();
 }
-inline int64_t CancelResponseProto::timestamp() const {
+inline const ::trading::common::proto::TimestampProto& CancelResponseProto::_internal_timestamp() const {
+  const ::trading::common::proto::TimestampProto* p = _impl_.timestamp_;
+  return p != nullptr ? *p : reinterpret_cast<const ::trading::common::proto::TimestampProto&>(
+      ::trading::common::proto::_TimestampProto_default_instance_);
+}
+inline const ::trading::common::proto::TimestampProto& CancelResponseProto::timestamp() const {
   // @@protoc_insertion_point(field_get:trading.execution.grpc.CancelResponseProto.timestamp)
   return _internal_timestamp();
 }
-inline void CancelResponseProto::_internal_set_timestamp(int64_t value) {
-  
-  _impl_.timestamp_ = value;
+inline void CancelResponseProto::unsafe_arena_set_allocated_timestamp(
+    ::trading::common::proto::TimestampProto* timestamp) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.timestamp_);
+  }
+  _impl_.timestamp_ = timestamp;
+  if (timestamp) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:trading.execution.grpc.CancelResponseProto.timestamp)
 }
-inline void CancelResponseProto::set_timestamp(int64_t value) {
-  _internal_set_timestamp(value);
-  // @@protoc_insertion_point(field_set:trading.execution.grpc.CancelResponseProto.timestamp)
+inline ::trading::common::proto::TimestampProto* CancelResponseProto::release_timestamp() {
+  
+  ::trading::common::proto::TimestampProto* temp = _impl_.timestamp_;
+  _impl_.timestamp_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::trading::common::proto::TimestampProto* CancelResponseProto::unsafe_arena_release_timestamp() {
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.CancelResponseProto.timestamp)
+  
+  ::trading::common::proto::TimestampProto* temp = _impl_.timestamp_;
+  _impl_.timestamp_ = nullptr;
+  return temp;
+}
+inline ::trading::common::proto::TimestampProto* CancelResponseProto::_internal_mutable_timestamp() {
+  
+  if (_impl_.timestamp_ == nullptr) {
+    auto* p = CreateMaybeMessage<::trading::common::proto::TimestampProto>(GetArenaForAllocation());
+    _impl_.timestamp_ = p;
+  }
+  return _impl_.timestamp_;
+}
+inline ::trading::common::proto::TimestampProto* CancelResponseProto::mutable_timestamp() {
+  ::trading::common::proto::TimestampProto* _msg = _internal_mutable_timestamp();
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.CancelResponseProto.timestamp)
+  return _msg;
+}
+inline void CancelResponseProto::set_allocated_timestamp(::trading::common::proto::TimestampProto* timestamp) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.timestamp_);
+  }
+  if (timestamp) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(timestamp));
+    if (message_arena != submessage_arena) {
+      timestamp = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, timestamp, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  _impl_.timestamp_ = timestamp;
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.CancelResponseProto.timestamp)
 }
 
 // -------------------------------------------------------------------
@@ -4203,7 +4466,77 @@ inline void FillProto::set_allocated_order_id(std::string* order_id) {
   // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.FillProto.order_id)
 }
 
-// double quantity = 3;
+// string exchange_order_id = 3;
+inline void FillProto::clear_exchange_order_id() {
+  _impl_.exchange_order_id_.ClearToEmpty();
+}
+inline const std::string& FillProto::exchange_order_id() const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.FillProto.exchange_order_id)
+  return _internal_exchange_order_id();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void FillProto::set_exchange_order_id(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.exchange_order_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.FillProto.exchange_order_id)
+}
+inline std::string* FillProto::mutable_exchange_order_id() {
+  std::string* _s = _internal_mutable_exchange_order_id();
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.FillProto.exchange_order_id)
+  return _s;
+}
+inline const std::string& FillProto::_internal_exchange_order_id() const {
+  return _impl_.exchange_order_id_.Get();
+}
+inline void FillProto::_internal_set_exchange_order_id(const std::string& value) {
+  
+  _impl_.exchange_order_id_.Set(value, GetArenaForAllocation());
+}
+inline std::string* FillProto::_internal_mutable_exchange_order_id() {
+  
+  return _impl_.exchange_order_id_.Mutable(GetArenaForAllocation());
+}
+inline std::string* FillProto::release_exchange_order_id() {
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.FillProto.exchange_order_id)
+  return _impl_.exchange_order_id_.Release();
+}
+inline void FillProto::set_allocated_exchange_order_id(std::string* exchange_order_id) {
+  if (exchange_order_id != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.exchange_order_id_.SetAllocated(exchange_order_id, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.exchange_order_id_.IsDefault()) {
+    _impl_.exchange_order_id_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.FillProto.exchange_order_id)
+}
+
+// .trading.common.proto.ExchangeIdProto exchange_id = 4;
+inline void FillProto::clear_exchange_id() {
+  _impl_.exchange_id_ = 0;
+}
+inline ::trading::common::proto::ExchangeIdProto FillProto::_internal_exchange_id() const {
+  return static_cast< ::trading::common::proto::ExchangeIdProto >(_impl_.exchange_id_);
+}
+inline ::trading::common::proto::ExchangeIdProto FillProto::exchange_id() const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.FillProto.exchange_id)
+  return _internal_exchange_id();
+}
+inline void FillProto::_internal_set_exchange_id(::trading::common::proto::ExchangeIdProto value) {
+  
+  _impl_.exchange_id_ = value;
+}
+inline void FillProto::set_exchange_id(::trading::common::proto::ExchangeIdProto value) {
+  _internal_set_exchange_id(value);
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.FillProto.exchange_id)
+}
+
+// double quantity = 5;
 inline void FillProto::clear_quantity() {
   _impl_.quantity_ = 0;
 }
@@ -4223,7 +4556,7 @@ inline void FillProto::set_quantity(double value) {
   // @@protoc_insertion_point(field_set:trading.execution.grpc.FillProto.quantity)
 }
 
-// double price = 4;
+// double price = 6;
 inline void FillProto::clear_price() {
   _impl_.price_ = 0;
 }
@@ -4243,7 +4576,7 @@ inline void FillProto::set_price(double value) {
   // @@protoc_insertion_point(field_set:trading.execution.grpc.FillProto.price)
 }
 
-// double fee = 5;
+// double fee = 7;
 inline void FillProto::clear_fee() {
   _impl_.fee_ = 0;
 }
@@ -4263,7 +4596,7 @@ inline void FillProto::set_fee(double value) {
   // @@protoc_insertion_point(field_set:trading.execution.grpc.FillProto.fee)
 }
 
-// string fee_currency = 6;
+// string fee_currency = 8;
 inline void FillProto::clear_fee_currency() {
   _impl_.fee_currency_.ClearToEmpty();
 }
@@ -4313,24 +4646,89 @@ inline void FillProto::set_allocated_fee_currency(std::string* fee_currency) {
   // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.FillProto.fee_currency)
 }
 
-// int64 timestamp = 7;
-inline void FillProto::clear_timestamp() {
-  _impl_.timestamp_ = int64_t{0};
+// .trading.common.proto.TimestampProto timestamp = 9;
+inline bool FillProto::_internal_has_timestamp() const {
+  return this != internal_default_instance() && _impl_.timestamp_ != nullptr;
 }
-inline int64_t FillProto::_internal_timestamp() const {
-  return _impl_.timestamp_;
+inline bool FillProto::has_timestamp() const {
+  return _internal_has_timestamp();
 }
-inline int64_t FillProto::timestamp() const {
+inline const ::trading::common::proto::TimestampProto& FillProto::_internal_timestamp() const {
+  const ::trading::common::proto::TimestampProto* p = _impl_.timestamp_;
+  return p != nullptr ? *p : reinterpret_cast<const ::trading::common::proto::TimestampProto&>(
+      ::trading::common::proto::_TimestampProto_default_instance_);
+}
+inline const ::trading::common::proto::TimestampProto& FillProto::timestamp() const {
   // @@protoc_insertion_point(field_get:trading.execution.grpc.FillProto.timestamp)
   return _internal_timestamp();
 }
-inline void FillProto::_internal_set_timestamp(int64_t value) {
-  
-  _impl_.timestamp_ = value;
+inline void FillProto::unsafe_arena_set_allocated_timestamp(
+    ::trading::common::proto::TimestampProto* timestamp) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.timestamp_);
+  }
+  _impl_.timestamp_ = timestamp;
+  if (timestamp) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:trading.execution.grpc.FillProto.timestamp)
 }
-inline void FillProto::set_timestamp(int64_t value) {
-  _internal_set_timestamp(value);
-  // @@protoc_insertion_point(field_set:trading.execution.grpc.FillProto.timestamp)
+inline ::trading::common::proto::TimestampProto* FillProto::release_timestamp() {
+  
+  ::trading::common::proto::TimestampProto* temp = _impl_.timestamp_;
+  _impl_.timestamp_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::trading::common::proto::TimestampProto* FillProto::unsafe_arena_release_timestamp() {
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.FillProto.timestamp)
+  
+  ::trading::common::proto::TimestampProto* temp = _impl_.timestamp_;
+  _impl_.timestamp_ = nullptr;
+  return temp;
+}
+inline ::trading::common::proto::TimestampProto* FillProto::_internal_mutable_timestamp() {
+  
+  if (_impl_.timestamp_ == nullptr) {
+    auto* p = CreateMaybeMessage<::trading::common::proto::TimestampProto>(GetArenaForAllocation());
+    _impl_.timestamp_ = p;
+  }
+  return _impl_.timestamp_;
+}
+inline ::trading::common::proto::TimestampProto* FillProto::mutable_timestamp() {
+  ::trading::common::proto::TimestampProto* _msg = _internal_mutable_timestamp();
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.FillProto.timestamp)
+  return _msg;
+}
+inline void FillProto::set_allocated_timestamp(::trading::common::proto::TimestampProto* timestamp) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.timestamp_);
+  }
+  if (timestamp) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(timestamp));
+    if (message_arena != submessage_arena) {
+      timestamp = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, timestamp, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  _impl_.timestamp_ = timestamp;
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.FillProto.timestamp)
 }
 
 // -------------------------------------------------------------------
@@ -4439,54 +4837,24 @@ inline void OrderProto::set_allocated_client_order_id(std::string* client_order_
   // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.OrderProto.client_order_id)
 }
 
-// string exchangeId = 3;
-inline void OrderProto::clear_exchangeid() {
-  _impl_.exchangeid_.ClearToEmpty();
+// .trading.common.proto.ExchangeIdProto exchange_id = 3;
+inline void OrderProto::clear_exchange_id() {
+  _impl_.exchange_id_ = 0;
 }
-inline const std::string& OrderProto::exchangeid() const {
-  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.exchangeId)
-  return _internal_exchangeid();
+inline ::trading::common::proto::ExchangeIdProto OrderProto::_internal_exchange_id() const {
+  return static_cast< ::trading::common::proto::ExchangeIdProto >(_impl_.exchange_id_);
 }
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void OrderProto::set_exchangeid(ArgT0&& arg0, ArgT... args) {
- 
- _impl_.exchangeid_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.exchangeId)
+inline ::trading::common::proto::ExchangeIdProto OrderProto::exchange_id() const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.exchange_id)
+  return _internal_exchange_id();
 }
-inline std::string* OrderProto::mutable_exchangeid() {
-  std::string* _s = _internal_mutable_exchangeid();
-  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.OrderProto.exchangeId)
-  return _s;
-}
-inline const std::string& OrderProto::_internal_exchangeid() const {
-  return _impl_.exchangeid_.Get();
-}
-inline void OrderProto::_internal_set_exchangeid(const std::string& value) {
+inline void OrderProto::_internal_set_exchange_id(::trading::common::proto::ExchangeIdProto value) {
   
-  _impl_.exchangeid_.Set(value, GetArenaForAllocation());
+  _impl_.exchange_id_ = value;
 }
-inline std::string* OrderProto::_internal_mutable_exchangeid() {
-  
-  return _impl_.exchangeid_.Mutable(GetArenaForAllocation());
-}
-inline std::string* OrderProto::release_exchangeid() {
-  // @@protoc_insertion_point(field_release:trading.execution.grpc.OrderProto.exchangeId)
-  return _impl_.exchangeid_.Release();
-}
-inline void OrderProto::set_allocated_exchangeid(std::string* exchangeid) {
-  if (exchangeid != nullptr) {
-    
-  } else {
-    
-  }
-  _impl_.exchangeid_.SetAllocated(exchangeid, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.exchangeid_.IsDefault()) {
-    _impl_.exchangeid_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.OrderProto.exchangeId)
+inline void OrderProto::set_exchange_id(::trading::common::proto::ExchangeIdProto value) {
+  _internal_set_exchange_id(value);
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.exchange_id)
 }
 
 // string exchange_order_id = 4;
@@ -4539,54 +4907,89 @@ inline void OrderProto::set_allocated_exchange_order_id(std::string* exchange_or
   // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.OrderProto.exchange_order_id)
 }
 
-// string tradingPair = 5;
-inline void OrderProto::clear_trading_pair() {
-  _impl_.trading_pair_.ClearToEmpty();
+// .trading.common.proto.SymbolProto symbol = 5;
+inline bool OrderProto::_internal_has_symbol() const {
+  return this != internal_default_instance() && _impl_.symbol_ != nullptr;
 }
-inline const std::string& OrderProto::tradingPair() const {
-  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.tradingPair)
-  return _internal_trading_pair();
+inline bool OrderProto::has_symbol() const {
+  return _internal_has_symbol();
 }
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void OrderProto::set_trading_pair(ArgT0&& arg0, ArgT... args) {
- 
- _impl_.trading_pair_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.tradingPair)
+inline const ::trading::common::proto::SymbolProto& OrderProto::_internal_symbol() const {
+  const ::trading::common::proto::SymbolProto* p = _impl_.symbol_;
+  return p != nullptr ? *p : reinterpret_cast<const ::trading::common::proto::SymbolProto&>(
+      ::trading::common::proto::_SymbolProto_default_instance_);
 }
-inline std::string* OrderProto::mutable_trading_pair() {
-  std::string* _s = _internal_mutable_trading_pair();
-  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.OrderProto.tradingPair)
-  return _s;
+inline const ::trading::common::proto::SymbolProto& OrderProto::symbol() const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.symbol)
+  return _internal_symbol();
 }
-inline const std::string& OrderProto::_internal_trading_pair() const {
-  return _impl_.trading_pair_.Get();
-}
-inline void OrderProto::_internal_set_trading_pair(const std::string& value) {
-  
-  _impl_.trading_pair_.Set(value, GetArenaForAllocation());
-}
-inline std::string* OrderProto::_internal_mutable_trading_pair() {
-  
-  return _impl_.trading_pair_.Mutable(GetArenaForAllocation());
-}
-inline std::string* OrderProto::release_trading_pair() {
-  // @@protoc_insertion_point(field_release:trading.execution.grpc.OrderProto.tradingPair)
-  return _impl_.trading_pair_.Release();
-}
-inline void OrderProto::set_allocated_trading_pair(std::string* tradingPair) {
-  if (tradingPair != nullptr) {
+inline void OrderProto::unsafe_arena_set_allocated_symbol(
+    ::trading::common::proto::SymbolProto* symbol) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.symbol_);
+  }
+  _impl_.symbol_ = symbol;
+  if (symbol) {
     
   } else {
     
   }
-  _impl_.trading_pair_.SetAllocated(tradingPair, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.trading_pair_.IsDefault()) {
-    _impl_.trading_pair_.Set("", GetArenaForAllocation());
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:trading.execution.grpc.OrderProto.symbol)
+}
+inline ::trading::common::proto::SymbolProto* OrderProto::release_symbol() {
+  
+  ::trading::common::proto::SymbolProto* temp = _impl_.symbol_;
+  _impl_.symbol_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
   }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.OrderProto.tradingPair)
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::trading::common::proto::SymbolProto* OrderProto::unsafe_arena_release_symbol() {
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.OrderProto.symbol)
+  
+  ::trading::common::proto::SymbolProto* temp = _impl_.symbol_;
+  _impl_.symbol_ = nullptr;
+  return temp;
+}
+inline ::trading::common::proto::SymbolProto* OrderProto::_internal_mutable_symbol() {
+  
+  if (_impl_.symbol_ == nullptr) {
+    auto* p = CreateMaybeMessage<::trading::common::proto::SymbolProto>(GetArenaForAllocation());
+    _impl_.symbol_ = p;
+  }
+  return _impl_.symbol_;
+}
+inline ::trading::common::proto::SymbolProto* OrderProto::mutable_symbol() {
+  ::trading::common::proto::SymbolProto* _msg = _internal_mutable_symbol();
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.OrderProto.symbol)
+  return _msg;
+}
+inline void OrderProto::set_allocated_symbol(::trading::common::proto::SymbolProto* symbol) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.symbol_);
+  }
+  if (symbol) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(symbol));
+    if (message_arena != submessage_arena) {
+      symbol = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, symbol, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  _impl_.symbol_ = symbol;
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.OrderProto.symbol)
 }
 
 // .trading.execution.grpc.OrderProto.OrderSide side = 6;
@@ -4829,44 +5232,174 @@ inline void OrderProto::set_allocated_signal_id(std::string* signal_id) {
   // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.OrderProto.signal_id)
 }
 
-// int64 created_at = 15;
-inline void OrderProto::clear_created_at() {
-  _impl_.created_at_ = int64_t{0};
+// .trading.common.proto.TimestampProto created_at = 15;
+inline bool OrderProto::_internal_has_created_at() const {
+  return this != internal_default_instance() && _impl_.created_at_ != nullptr;
 }
-inline int64_t OrderProto::_internal_created_at() const {
-  return _impl_.created_at_;
+inline bool OrderProto::has_created_at() const {
+  return _internal_has_created_at();
 }
-inline int64_t OrderProto::created_at() const {
+inline const ::trading::common::proto::TimestampProto& OrderProto::_internal_created_at() const {
+  const ::trading::common::proto::TimestampProto* p = _impl_.created_at_;
+  return p != nullptr ? *p : reinterpret_cast<const ::trading::common::proto::TimestampProto&>(
+      ::trading::common::proto::_TimestampProto_default_instance_);
+}
+inline const ::trading::common::proto::TimestampProto& OrderProto::created_at() const {
   // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.created_at)
   return _internal_created_at();
 }
-inline void OrderProto::_internal_set_created_at(int64_t value) {
-  
-  _impl_.created_at_ = value;
+inline void OrderProto::unsafe_arena_set_allocated_created_at(
+    ::trading::common::proto::TimestampProto* created_at) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.created_at_);
+  }
+  _impl_.created_at_ = created_at;
+  if (created_at) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:trading.execution.grpc.OrderProto.created_at)
 }
-inline void OrderProto::set_created_at(int64_t value) {
-  _internal_set_created_at(value);
-  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.created_at)
+inline ::trading::common::proto::TimestampProto* OrderProto::release_created_at() {
+  
+  ::trading::common::proto::TimestampProto* temp = _impl_.created_at_;
+  _impl_.created_at_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::trading::common::proto::TimestampProto* OrderProto::unsafe_arena_release_created_at() {
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.OrderProto.created_at)
+  
+  ::trading::common::proto::TimestampProto* temp = _impl_.created_at_;
+  _impl_.created_at_ = nullptr;
+  return temp;
+}
+inline ::trading::common::proto::TimestampProto* OrderProto::_internal_mutable_created_at() {
+  
+  if (_impl_.created_at_ == nullptr) {
+    auto* p = CreateMaybeMessage<::trading::common::proto::TimestampProto>(GetArenaForAllocation());
+    _impl_.created_at_ = p;
+  }
+  return _impl_.created_at_;
+}
+inline ::trading::common::proto::TimestampProto* OrderProto::mutable_created_at() {
+  ::trading::common::proto::TimestampProto* _msg = _internal_mutable_created_at();
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.OrderProto.created_at)
+  return _msg;
+}
+inline void OrderProto::set_allocated_created_at(::trading::common::proto::TimestampProto* created_at) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.created_at_);
+  }
+  if (created_at) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(created_at));
+    if (message_arena != submessage_arena) {
+      created_at = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, created_at, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  _impl_.created_at_ = created_at;
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.OrderProto.created_at)
 }
 
-// int64 updated_at = 16;
-inline void OrderProto::clear_updated_at() {
-  _impl_.updated_at_ = int64_t{0};
+// .trading.common.proto.TimestampProto updated_at = 16;
+inline bool OrderProto::_internal_has_updated_at() const {
+  return this != internal_default_instance() && _impl_.updated_at_ != nullptr;
 }
-inline int64_t OrderProto::_internal_updated_at() const {
-  return _impl_.updated_at_;
+inline bool OrderProto::has_updated_at() const {
+  return _internal_has_updated_at();
 }
-inline int64_t OrderProto::updated_at() const {
+inline const ::trading::common::proto::TimestampProto& OrderProto::_internal_updated_at() const {
+  const ::trading::common::proto::TimestampProto* p = _impl_.updated_at_;
+  return p != nullptr ? *p : reinterpret_cast<const ::trading::common::proto::TimestampProto&>(
+      ::trading::common::proto::_TimestampProto_default_instance_);
+}
+inline const ::trading::common::proto::TimestampProto& OrderProto::updated_at() const {
   // @@protoc_insertion_point(field_get:trading.execution.grpc.OrderProto.updated_at)
   return _internal_updated_at();
 }
-inline void OrderProto::_internal_set_updated_at(int64_t value) {
-  
-  _impl_.updated_at_ = value;
+inline void OrderProto::unsafe_arena_set_allocated_updated_at(
+    ::trading::common::proto::TimestampProto* updated_at) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.updated_at_);
+  }
+  _impl_.updated_at_ = updated_at;
+  if (updated_at) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:trading.execution.grpc.OrderProto.updated_at)
 }
-inline void OrderProto::set_updated_at(int64_t value) {
-  _internal_set_updated_at(value);
-  // @@protoc_insertion_point(field_set:trading.execution.grpc.OrderProto.updated_at)
+inline ::trading::common::proto::TimestampProto* OrderProto::release_updated_at() {
+  
+  ::trading::common::proto::TimestampProto* temp = _impl_.updated_at_;
+  _impl_.updated_at_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::trading::common::proto::TimestampProto* OrderProto::unsafe_arena_release_updated_at() {
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.OrderProto.updated_at)
+  
+  ::trading::common::proto::TimestampProto* temp = _impl_.updated_at_;
+  _impl_.updated_at_ = nullptr;
+  return temp;
+}
+inline ::trading::common::proto::TimestampProto* OrderProto::_internal_mutable_updated_at() {
+  
+  if (_impl_.updated_at_ == nullptr) {
+    auto* p = CreateMaybeMessage<::trading::common::proto::TimestampProto>(GetArenaForAllocation());
+    _impl_.updated_at_ = p;
+  }
+  return _impl_.updated_at_;
+}
+inline ::trading::common::proto::TimestampProto* OrderProto::mutable_updated_at() {
+  ::trading::common::proto::TimestampProto* _msg = _internal_mutable_updated_at();
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.OrderProto.updated_at)
+  return _msg;
+}
+inline void OrderProto::set_allocated_updated_at(::trading::common::proto::TimestampProto* updated_at) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.updated_at_);
+  }
+  if (updated_at) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(updated_at));
+    if (message_arena != submessage_arena) {
+      updated_at = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, updated_at, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  _impl_.updated_at_ = updated_at;
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.OrderProto.updated_at)
 }
 
 // repeated .trading.execution.grpc.FillProto fills = 17;
@@ -5308,158 +5841,133 @@ inline void CancelOrderByExchangeIdRequestProto::set_allocated_exchange_order_id
   // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_order_id)
 }
 
-// string exchangeId = 2;
-inline void CancelOrderByExchangeIdRequestProto::clear_exchangeid() {
-  _impl_.exchangeid_.ClearToEmpty();
+// .trading.common.proto.ExchangeIdProto exchange_id = 2;
+inline void CancelOrderByExchangeIdRequestProto::clear_exchange_id() {
+  _impl_.exchange_id_ = 0;
 }
-inline const std::string& CancelOrderByExchangeIdRequestProto::exchangeid() const {
-  // @@protoc_insertion_point(field_get:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchangeId)
-  return _internal_exchangeid();
+inline ::trading::common::proto::ExchangeIdProto CancelOrderByExchangeIdRequestProto::_internal_exchange_id() const {
+  return static_cast< ::trading::common::proto::ExchangeIdProto >(_impl_.exchange_id_);
 }
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void CancelOrderByExchangeIdRequestProto::set_exchangeid(ArgT0&& arg0, ArgT... args) {
- 
- _impl_.exchangeid_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchangeId)
+inline ::trading::common::proto::ExchangeIdProto CancelOrderByExchangeIdRequestProto::exchange_id() const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_id)
+  return _internal_exchange_id();
 }
-inline std::string* CancelOrderByExchangeIdRequestProto::mutable_exchangeid() {
-  std::string* _s = _internal_mutable_exchangeid();
-  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchangeId)
-  return _s;
-}
-inline const std::string& CancelOrderByExchangeIdRequestProto::_internal_exchangeid() const {
-  return _impl_.exchangeid_.Get();
-}
-inline void CancelOrderByExchangeIdRequestProto::_internal_set_exchangeid(const std::string& value) {
+inline void CancelOrderByExchangeIdRequestProto::_internal_set_exchange_id(::trading::common::proto::ExchangeIdProto value) {
   
-  _impl_.exchangeid_.Set(value, GetArenaForAllocation());
+  _impl_.exchange_id_ = value;
 }
-inline std::string* CancelOrderByExchangeIdRequestProto::_internal_mutable_exchangeid() {
-  
-  return _impl_.exchangeid_.Mutable(GetArenaForAllocation());
-}
-inline std::string* CancelOrderByExchangeIdRequestProto::release_exchangeid() {
-  // @@protoc_insertion_point(field_release:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchangeId)
-  return _impl_.exchangeid_.Release();
-}
-inline void CancelOrderByExchangeIdRequestProto::set_allocated_exchangeid(std::string* exchangeid) {
-  if (exchangeid != nullptr) {
-    
-  } else {
-    
-  }
-  _impl_.exchangeid_.SetAllocated(exchangeid, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.exchangeid_.IsDefault()) {
-    _impl_.exchangeid_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchangeId)
+inline void CancelOrderByExchangeIdRequestProto::set_exchange_id(::trading::common::proto::ExchangeIdProto value) {
+  _internal_set_exchange_id(value);
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchange_id)
 }
 
 // -------------------------------------------------------------------
 
 // CancelAllOrdersRequestProto
 
-// string tradingPair = 1;
-inline void CancelAllOrdersRequestProto::clear_trading_pair() {
-  _impl_.trading_pair_.ClearToEmpty();
+// .trading.common.proto.SymbolProto symbol = 1;
+inline bool CancelAllOrdersRequestProto::_internal_has_symbol() const {
+  return this != internal_default_instance() && _impl_.symbol_ != nullptr;
 }
-inline const std::string& CancelAllOrdersRequestProto::tradingPair() const {
-  // @@protoc_insertion_point(field_get:trading.execution.grpc.CancelAllOrdersRequestProto.tradingPair)
-  return _internal_trading_pair();
+inline bool CancelAllOrdersRequestProto::has_symbol() const {
+  return _internal_has_symbol();
 }
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void CancelAllOrdersRequestProto::set_trading_pair(ArgT0&& arg0, ArgT... args) {
- 
- _impl_.trading_pair_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.grpc.CancelAllOrdersRequestProto.tradingPair)
+inline const ::trading::common::proto::SymbolProto& CancelAllOrdersRequestProto::_internal_symbol() const {
+  const ::trading::common::proto::SymbolProto* p = _impl_.symbol_;
+  return p != nullptr ? *p : reinterpret_cast<const ::trading::common::proto::SymbolProto&>(
+      ::trading::common::proto::_SymbolProto_default_instance_);
 }
-inline std::string* CancelAllOrdersRequestProto::mutable_trading_pair() {
-  std::string* _s = _internal_mutable_trading_pair();
-  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.CancelAllOrdersRequestProto.tradingPair)
-  return _s;
+inline const ::trading::common::proto::SymbolProto& CancelAllOrdersRequestProto::symbol() const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.CancelAllOrdersRequestProto.symbol)
+  return _internal_symbol();
 }
-inline const std::string& CancelAllOrdersRequestProto::_internal_trading_pair() const {
-  return _impl_.trading_pair_.Get();
-}
-inline void CancelAllOrdersRequestProto::_internal_set_trading_pair(const std::string& value) {
-  
-  _impl_.trading_pair_.Set(value, GetArenaForAllocation());
-}
-inline std::string* CancelAllOrdersRequestProto::_internal_mutable_trading_pair() {
-  
-  return _impl_.trading_pair_.Mutable(GetArenaForAllocation());
-}
-inline std::string* CancelAllOrdersRequestProto::release_trading_pair() {
-  // @@protoc_insertion_point(field_release:trading.execution.grpc.CancelAllOrdersRequestProto.tradingPair)
-  return _impl_.trading_pair_.Release();
-}
-inline void CancelAllOrdersRequestProto::set_allocated_trading_pair(std::string* tradingPair) {
-  if (tradingPair != nullptr) {
+inline void CancelAllOrdersRequestProto::unsafe_arena_set_allocated_symbol(
+    ::trading::common::proto::SymbolProto* symbol) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.symbol_);
+  }
+  _impl_.symbol_ = symbol;
+  if (symbol) {
     
   } else {
     
   }
-  _impl_.trading_pair_.SetAllocated(tradingPair, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.trading_pair_.IsDefault()) {
-    _impl_.trading_pair_.Set("", GetArenaForAllocation());
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:trading.execution.grpc.CancelAllOrdersRequestProto.symbol)
+}
+inline ::trading::common::proto::SymbolProto* CancelAllOrdersRequestProto::release_symbol() {
+  
+  ::trading::common::proto::SymbolProto* temp = _impl_.symbol_;
+  _impl_.symbol_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
   }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.CancelAllOrdersRequestProto.tradingPair)
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::trading::common::proto::SymbolProto* CancelAllOrdersRequestProto::unsafe_arena_release_symbol() {
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.CancelAllOrdersRequestProto.symbol)
+  
+  ::trading::common::proto::SymbolProto* temp = _impl_.symbol_;
+  _impl_.symbol_ = nullptr;
+  return temp;
+}
+inline ::trading::common::proto::SymbolProto* CancelAllOrdersRequestProto::_internal_mutable_symbol() {
+  
+  if (_impl_.symbol_ == nullptr) {
+    auto* p = CreateMaybeMessage<::trading::common::proto::SymbolProto>(GetArenaForAllocation());
+    _impl_.symbol_ = p;
+  }
+  return _impl_.symbol_;
+}
+inline ::trading::common::proto::SymbolProto* CancelAllOrdersRequestProto::mutable_symbol() {
+  ::trading::common::proto::SymbolProto* _msg = _internal_mutable_symbol();
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.CancelAllOrdersRequestProto.symbol)
+  return _msg;
+}
+inline void CancelAllOrdersRequestProto::set_allocated_symbol(::trading::common::proto::SymbolProto* symbol) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.symbol_);
+  }
+  if (symbol) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(symbol));
+    if (message_arena != submessage_arena) {
+      symbol = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, symbol, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  _impl_.symbol_ = symbol;
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.CancelAllOrdersRequestProto.symbol)
 }
 
-// string exchangeId = 2;
-inline void CancelAllOrdersRequestProto::clear_exchangeid() {
-  _impl_.exchangeid_.ClearToEmpty();
+// .trading.common.proto.ExchangeIdProto exchange_id = 2;
+inline void CancelAllOrdersRequestProto::clear_exchange_id() {
+  _impl_.exchange_id_ = 0;
 }
-inline const std::string& CancelAllOrdersRequestProto::exchangeid() const {
-  // @@protoc_insertion_point(field_get:trading.execution.grpc.CancelAllOrdersRequestProto.exchangeId)
-  return _internal_exchangeid();
+inline ::trading::common::proto::ExchangeIdProto CancelAllOrdersRequestProto::_internal_exchange_id() const {
+  return static_cast< ::trading::common::proto::ExchangeIdProto >(_impl_.exchange_id_);
 }
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void CancelAllOrdersRequestProto::set_exchangeid(ArgT0&& arg0, ArgT... args) {
- 
- _impl_.exchangeid_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:trading.execution.grpc.CancelAllOrdersRequestProto.exchangeId)
+inline ::trading::common::proto::ExchangeIdProto CancelAllOrdersRequestProto::exchange_id() const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.CancelAllOrdersRequestProto.exchange_id)
+  return _internal_exchange_id();
 }
-inline std::string* CancelAllOrdersRequestProto::mutable_exchangeid() {
-  std::string* _s = _internal_mutable_exchangeid();
-  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.CancelAllOrdersRequestProto.exchangeId)
-  return _s;
-}
-inline const std::string& CancelAllOrdersRequestProto::_internal_exchangeid() const {
-  return _impl_.exchangeid_.Get();
-}
-inline void CancelAllOrdersRequestProto::_internal_set_exchangeid(const std::string& value) {
+inline void CancelAllOrdersRequestProto::_internal_set_exchange_id(::trading::common::proto::ExchangeIdProto value) {
   
-  _impl_.exchangeid_.Set(value, GetArenaForAllocation());
+  _impl_.exchange_id_ = value;
 }
-inline std::string* CancelAllOrdersRequestProto::_internal_mutable_exchangeid() {
-  
-  return _impl_.exchangeid_.Mutable(GetArenaForAllocation());
-}
-inline std::string* CancelAllOrdersRequestProto::release_exchangeid() {
-  // @@protoc_insertion_point(field_release:trading.execution.grpc.CancelAllOrdersRequestProto.exchangeId)
-  return _impl_.exchangeid_.Release();
-}
-inline void CancelAllOrdersRequestProto::set_allocated_exchangeid(std::string* exchangeid) {
-  if (exchangeid != nullptr) {
-    
-  } else {
-    
-  }
-  _impl_.exchangeid_.SetAllocated(exchangeid, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.exchangeid_.IsDefault()) {
-    _impl_.exchangeid_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.CancelAllOrdersRequestProto.exchangeId)
+inline void CancelAllOrdersRequestProto::set_exchange_id(::trading::common::proto::ExchangeIdProto value) {
+  _internal_set_exchange_id(value);
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.CancelAllOrdersRequestProto.exchange_id)
 }
 
 // -------------------------------------------------------------------
@@ -5563,6 +6071,111 @@ inline void OrderStatusRequestProto::set_allocated_client_order_id(std::string* 
 // -------------------------------------------------------------------
 
 // ActiveOrdersRequestProto
+
+// .trading.common.proto.ExchangeIdProto exchange_id = 1;
+inline void ActiveOrdersRequestProto::clear_exchange_id() {
+  _impl_.exchange_id_ = 0;
+}
+inline ::trading::common::proto::ExchangeIdProto ActiveOrdersRequestProto::_internal_exchange_id() const {
+  return static_cast< ::trading::common::proto::ExchangeIdProto >(_impl_.exchange_id_);
+}
+inline ::trading::common::proto::ExchangeIdProto ActiveOrdersRequestProto::exchange_id() const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.ActiveOrdersRequestProto.exchange_id)
+  return _internal_exchange_id();
+}
+inline void ActiveOrdersRequestProto::_internal_set_exchange_id(::trading::common::proto::ExchangeIdProto value) {
+  
+  _impl_.exchange_id_ = value;
+}
+inline void ActiveOrdersRequestProto::set_exchange_id(::trading::common::proto::ExchangeIdProto value) {
+  _internal_set_exchange_id(value);
+  // @@protoc_insertion_point(field_set:trading.execution.grpc.ActiveOrdersRequestProto.exchange_id)
+}
+
+// .trading.common.proto.SymbolProto symbol = 2;
+inline bool ActiveOrdersRequestProto::_internal_has_symbol() const {
+  return this != internal_default_instance() && _impl_.symbol_ != nullptr;
+}
+inline bool ActiveOrdersRequestProto::has_symbol() const {
+  return _internal_has_symbol();
+}
+inline const ::trading::common::proto::SymbolProto& ActiveOrdersRequestProto::_internal_symbol() const {
+  const ::trading::common::proto::SymbolProto* p = _impl_.symbol_;
+  return p != nullptr ? *p : reinterpret_cast<const ::trading::common::proto::SymbolProto&>(
+      ::trading::common::proto::_SymbolProto_default_instance_);
+}
+inline const ::trading::common::proto::SymbolProto& ActiveOrdersRequestProto::symbol() const {
+  // @@protoc_insertion_point(field_get:trading.execution.grpc.ActiveOrdersRequestProto.symbol)
+  return _internal_symbol();
+}
+inline void ActiveOrdersRequestProto::unsafe_arena_set_allocated_symbol(
+    ::trading::common::proto::SymbolProto* symbol) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.symbol_);
+  }
+  _impl_.symbol_ = symbol;
+  if (symbol) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:trading.execution.grpc.ActiveOrdersRequestProto.symbol)
+}
+inline ::trading::common::proto::SymbolProto* ActiveOrdersRequestProto::release_symbol() {
+  
+  ::trading::common::proto::SymbolProto* temp = _impl_.symbol_;
+  _impl_.symbol_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::trading::common::proto::SymbolProto* ActiveOrdersRequestProto::unsafe_arena_release_symbol() {
+  // @@protoc_insertion_point(field_release:trading.execution.grpc.ActiveOrdersRequestProto.symbol)
+  
+  ::trading::common::proto::SymbolProto* temp = _impl_.symbol_;
+  _impl_.symbol_ = nullptr;
+  return temp;
+}
+inline ::trading::common::proto::SymbolProto* ActiveOrdersRequestProto::_internal_mutable_symbol() {
+  
+  if (_impl_.symbol_ == nullptr) {
+    auto* p = CreateMaybeMessage<::trading::common::proto::SymbolProto>(GetArenaForAllocation());
+    _impl_.symbol_ = p;
+  }
+  return _impl_.symbol_;
+}
+inline ::trading::common::proto::SymbolProto* ActiveOrdersRequestProto::mutable_symbol() {
+  ::trading::common::proto::SymbolProto* _msg = _internal_mutable_symbol();
+  // @@protoc_insertion_point(field_mutable:trading.execution.grpc.ActiveOrdersRequestProto.symbol)
+  return _msg;
+}
+inline void ActiveOrdersRequestProto::set_allocated_symbol(::trading::common::proto::SymbolProto* symbol) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.symbol_);
+  }
+  if (symbol) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(symbol));
+    if (message_arena != submessage_arena) {
+      symbol = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, symbol, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  _impl_.symbol_ = symbol;
+  // @@protoc_insertion_point(field_set_allocated:trading.execution.grpc.ActiveOrdersRequestProto.symbol)
+}
 
 // -------------------------------------------------------------------
 

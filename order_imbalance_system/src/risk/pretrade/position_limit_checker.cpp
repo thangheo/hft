@@ -66,7 +66,7 @@
      TradingPair tradingPair = signal.tradingPair;
      std::string asset = tradingPair.getBaseAsset();
      std::string strategyId = signal.strategyId;
-     std::string exchangeId = signal.exchangeId;
+     ExchangeId exchangeId; = signal.exchangeId;
      
      // Calculate new position after this trade
      double newPosition = calculateNewPosition(

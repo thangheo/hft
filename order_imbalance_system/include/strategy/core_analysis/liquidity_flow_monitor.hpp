@@ -28,11 +28,12 @@
  namespace strategy {
  using trading::data_ingestion::PriceLevel;
  using trading::data_ingestion::OrderBookDelta;
+ using ExchangeId = core::ExchangeId;
  /**
   * Metrics related to liquidity flow
   */
  struct LiquidityMetrics {
-     std::string exchangeId;
+     ExchangeId exchangeId;
      std::string tradingPair;
      core::Timestamp timestamp;
      
@@ -72,7 +73,7 @@
      };
      
      Type type;
-     std::string exchangeId;
+     ExchangeId exchangeId;
      std::string tradingPair;
      core::Timestamp timestamp;
      core::Direction direction;          // core::Direction implied by this event
@@ -125,14 +126,14 @@
      /**
       * Creates a liquidity flow monitor for a specific exchange and trading pair
       */
-     LiquidityFlowMonitor(const std::string& exchangeId, const std::string& tradingPair, 
+     LiquidityFlowMonitor(const core::ExchangeId& exchangeId, const std::string& tradingPair, 
                           const ParameterSet& params = ParameterSet());
      LiquidityFlowMonitor(const LiquidityFlowConfig& config);
 
      /**
       * Creates a liquidity flow monitor with parameters explicitly specified
       */
-     LiquidityFlowMonitor(const std::string& exchangeId, const std::string& tradingPair, 
+     LiquidityFlowMonitor(const core::ExchangeId& exchangeId, const std::string& tradingPair, 
                           double large_order_threshold, int history_window_seconds);
      
      virtual ~LiquidityFlowMonitor() = default;
@@ -304,7 +305,7 @@
  
  // Factory function to create LiquidityFlowMonitor instances
  std::shared_ptr<LiquidityFlowMonitor> createLiquidityFlowMonitor(
-     const std::string& exchangeId, 
+     const core::ExchangeId& exchangeId, 
      const std::string& tradingPair,
      const ParameterSet& params = ParameterSet());
  

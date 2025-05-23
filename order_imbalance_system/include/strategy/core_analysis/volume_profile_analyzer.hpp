@@ -76,7 +76,7 @@
   * Represents a complete volume profile for a trading pair
   */
  struct VolumeProfile {
-     std::string exchangeId;
+     ExchangeId exchangeId;
      std::string tradingPair;
      core::Timestamp start_time;
      core::Timestamp end_time;
@@ -123,14 +123,14 @@
      /**
       * Creates a volume profile analyzer for a specific exchange and trading pair
       */
-     VolumeProfileAnalyzer(const std::string& exchangeId, const std::string& tradingPair, 
+     VolumeProfileAnalyzer(const core::ExchangeId& exchangeId, const std::string& tradingPair, 
                            const ParameterSet& params = ParameterSet());
     VolumeProfileAnalyzer(const VolumeProfileConfig& config);
 
      /**
       * Creates a volume profile analyzer with parameters explicitly specified
       */
-     VolumeProfileAnalyzer(const std::string& exchangeId, const std::string& tradingPair, 
+     VolumeProfileAnalyzer(const core::ExchangeId& exchangeId, const std::string& tradingPair, 
                            int num_price_ranges, double range_size_percent);
      
      virtual ~VolumeProfileAnalyzer() = default;
@@ -300,7 +300,7 @@
  
  // Factory function to create VolumeProfileAnalyzer instances
  std::shared_ptr<VolumeProfileAnalyzer> createVolumeProfileAnalyzer(
-     const std::string& exchangeId, 
+     const core::ExchangeId& exchangeId, 
      const std::string& tradingPair,
      const ParameterSet& params = ParameterSet());
  

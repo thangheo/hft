@@ -25,7 +25,7 @@ struct RateLimitStatus {
 
 class RateLimitController {
 public:
-    explicit RateLimitController(const std::string& exchangeId);
+    explicit RateLimitController(const core::ExchangeId& exchangeId);
     ~RateLimitController();
     
     // Set the rate limit rules for different request types

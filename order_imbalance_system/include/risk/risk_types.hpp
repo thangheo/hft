@@ -51,7 +51,7 @@ enum class OrderSide {
 struct OrderRequest {
     std::string orderId;
     std::string clientOrderId;
-    std::string exchangeId;
+    ExchangeId exchangeId;
     std::string tradingPair;
     OrderSide side;
     std::string type;
@@ -133,17 +133,17 @@ struct RiskViolation {
 /**
  * Struct for exchange identification
  */
-struct ExchangeId {
-    std::string id;
+// struct ExchangeId {
+//     std::string id;
     
-    bool operator==(const ExchangeId& other) const {
-        return id == other.id;
-    }
+//     bool operator==(const ExchangeId& other) const {
+//         return id == other.id;
+//     }
     
-    bool operator<(const ExchangeId& other) const {
-        return id < other.id;
-    }
-};
+//     bool operator<(const ExchangeId& other) const {
+//         return id < other.id;
+//     }
+// };
 /**
  * Struct for trading pair (symbol)
  */

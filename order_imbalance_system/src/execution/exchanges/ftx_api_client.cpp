@@ -605,7 +605,7 @@ models::ExecutionReport FtxApiClient::parseOrderResponse(const std::string& resp
     models::ExecutionReport report;
     
     // Set exchange info
-    report.setExchangeId("FTX");
+    report.setExchangeId(core::ExchangeId::ftx());
     report.setExchangeOrderId(result["id"].asString());
     
     // Set client order ID if present

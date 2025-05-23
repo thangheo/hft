@@ -560,7 +560,7 @@ models::ExecutionReport BinanceApiClient::parseOrderResponse(const std::string& 
     }
     
     // Parse successful response
-    report.setExchangeId("BINANCE");
+    report.setExchangeId(core::ExchangeId::binance());
     report.setOrderId(root["clientOrderId"].asString());
     report.setExchangeOrderId(root["orderId"].asString());
     report.setSymbol(root["symbol"].asString());

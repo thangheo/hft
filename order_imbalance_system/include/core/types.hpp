@@ -13,7 +13,12 @@
  #include <string>
  #include <chrono>
  #include <functional>
- 
+//  #include <core/confidence.hpp>
+// #include <core/exchange_types.hpp>
+//     #include <core/market_types.hpp>
+//     #include <core/market_state.hpp>
+//     #include <core/price_level.hpp>
+//     #include <core
  namespace trading {
  namespace core {
  
@@ -23,7 +28,6 @@
  using StrategyId = std::string;
  using SignalId = std::string;
  using ExperimentId = std::string;
- using ExchangeId = std::string;
 //  using Symbol = std::string;
 // Forward declaration of Symbol struct defined in market_types.hpp
 struct Symbol;

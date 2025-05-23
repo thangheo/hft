@@ -87,7 +87,7 @@ public:
 
     //updateOrderWithExchangeId method
     void updateOrderWithExchangeId(models::Order& order, const std::string& exchange_order_id);
-    std::string getClientOrderId(const std::string& exchange_order_id, const std::string& exchangeId) const;
+    std::string getClientOrderId(const std::string& exchange_order_id, const core::ExchangeId& exchangeId) const;
                         
     /**
      * @brief Record a fill for an order

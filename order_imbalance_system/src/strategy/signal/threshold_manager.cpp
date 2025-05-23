@@ -131,7 +131,7 @@
      std::lock_guard<std::mutex> lock(mutex_);
      
      // Check if we have exchange-specific thresholds
-     auto it = exchange_thresholds_.find(exchangeId);
+     auto it = exchange_thresholds_.find(exchangeId.toString());
      if (it != exchange_thresholds_.end()) {
          // Start with exchange-specific base thresholds
          ThresholdSet current = it->second;

@@ -23,7 +23,7 @@ bool StopLossManager::initialize() {
     
     // Initialize stop losses based on default configuration
     for (const auto& position : positions) {
-        const std::string& exchangeId = position.exchangeId;
+        const core::ExchangeId& exchangeId = position.exchangeId;
         const std::string& tradingPair = position.tradingPair;
         
         // Skip zero positions
@@ -54,7 +54,7 @@ bool StopLossManager::initialize() {
 
 void StopLossManager::processExecutionReport(const ExecutionReport& executionReport) {
     // When new trades occur, we may need to set or adjust stop losses
-    const std::string& exchangeId = executionReport.exchangeId;
+    const core::ExchangeId& exchangeId = executionReport.exchangeId;
     const std::string& tradingPair = executionReport.tradingPair;
     
     // Check if position has been closed

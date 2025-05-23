@@ -21,7 +21,7 @@ void signalHandler(int signum) {
 }
 
 // Generate a random order book update for testing
-OrderBookUpdate generateRandomOrderBookUpdate(const std::string& exchangeId, 
+OrderBookUpdate generateRandomOrderBookUpdate(const core::ExchangeId& exchangeId, 
                                              const std::string& tradingPair) {
     static std::random_device rd;
     static std::mt19937 gen(rd());

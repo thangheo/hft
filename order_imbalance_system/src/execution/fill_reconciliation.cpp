@@ -19,7 +19,7 @@
  
  std::string FillDiscrepancy::toString() const {
      std::stringstream ss;
-     ss << "Discrepancy detected for order " << order_id << " on " << exchangeId << ":\n";
+     ss << "Discrepancy detected for order " << order_id << " on " << exchangeId.toString() << "\n";
      ss << "  Trading pair: " << tradingPair << "\n";
      ss << "  Type: " << discrepancy_type << "\n";
      
@@ -113,7 +113,7 @@
      if (!reconciled) {
          FillDiscrepancy discrepancy;
          discrepancy.order_id = order_id;
-         discrepancy.exchangeId = actual_fill.exchangeOrderId;
+         discrepancy.exchangeId = actual_fill.exchangeId;
          discrepancy.tradingPair = "";  // We don't have this info in the Fill struct
          discrepancy.actual_quantity = actual_fill.quantity;
          discrepancy.actual_price = actual_fill.price;
@@ -181,7 +181,7 @@
                  // Create a discrepancy
                  FillDiscrepancy discrepancy;
                  discrepancy.order_id = order_id;
-                 discrepancy.exchangeId = exp_record.fill.exchangeOrderId;
+                 discrepancy.exchangeId = exp_record.fill.exchangeId;
                  discrepancy.tradingPair = "";  // We don't have this info
                  discrepancy.expected_quantity = exp_record.fill.quantity;
                  discrepancy.expected_price = exp_record.fill.price;
@@ -219,7 +219,7 @@
              // Create a discrepancy
              FillDiscrepancy discrepancy;
              discrepancy.order_id = order_id;
-             discrepancy.exchangeId = act_record.fill.exchangeOrderId;
+             discrepancy.exchangeId = act_record.fill.exchangeId;
              discrepancy.tradingPair = "";  // We don't have this info
              discrepancy.expected_quantity = 0.0;
              discrepancy.expected_price = 0.0;

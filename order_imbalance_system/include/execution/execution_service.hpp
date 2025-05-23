@@ -16,11 +16,12 @@
 #include "execution/order_type_selector.hpp"
 #include "execution/execution_algorithm_factory.hpp"
 #include "execution/execution_forward_decl.hpp"
+#include <core/market_types.hpp>
 
 #include "execution/order_lifecycle_tracker.hpp"
 #include "execution/fill_reconciliation.hpp"
 #include "execution/api_client_manager.hpp"
-// #include "execution/exchanges/binance_api_client.hpp"
+#include <core/market_types.hpp>
 // #include "execution/execution_types.hpp"
 
 #include <memory>
@@ -32,6 +33,7 @@
 
 namespace trading {
 namespace execution {
+    using namespace core;
 /**
  * @brief ExecutionService is the main service interface for the execution engine
  * 
@@ -125,7 +127,7 @@ public:
      * @return CancelResponse containing cancellation status and details
      */
     CancelResponse cancelOrderByExchangeId(const std::string& exchange_order_id, 
-                                          const std::string& exchangeId);
+                                          const core::ExchangeId& exchangeId);
     
     /**
      * @brief Cancel all orders for a trading pair
@@ -135,7 +137,7 @@ public:
      * @return Vector of CancelResponse for each order
      */
     std::vector<CancelResponse> cancelAllOrdersForSymbol(const std::string& tradingPair,
-                                                        const std::string& exchangeId = "");
+                                                        const core::ExchangeId& exchangeId);
     
     /**
      * @brief Get order status

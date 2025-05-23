@@ -205,7 +205,7 @@
      }
      
      if (params.maxExposure <= 0 && !exchangeId.empty()) {
-         auto it = exposureLimits.exchangeExposureLimits.find(exchangeId);
+         auto it = exposureLimits.exchangeExposureLimits.find(exchangeId.toString());
          if (it != exposureLimits.exchangeExposureLimits.end()) {
              params.maxExposure = it->second;
          }

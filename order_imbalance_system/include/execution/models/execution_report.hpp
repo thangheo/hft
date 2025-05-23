@@ -41,7 +41,7 @@ public:
     const std::string& orderId() const { return orderId_; }
     const std::string& clientOrderId() const { return clientOrderId_; }
     const std::string& exchangeOrderId() const { return exchangeOrderId_; }
-    const std::string& exchangeId() const { return exchangeId_; }
+    const core::ExchangeId& exchangeId() const { return exchangeId_; }
     const std::string& symbol() const { return symbol_; }
     OrderSide side() const { return side_; }
     OrderType type() const { return type_; }
@@ -62,7 +62,7 @@ public:
     void setOrderId(const std::string& orderId) { orderId_ = orderId; }
     void setClientOrderId(const std::string& clientOrderId) { clientOrderId_ = clientOrderId; }
     void setExchangeOrderId(const std::string& exchangeOrderId) { exchangeOrderId_ = exchangeOrderId; }
-    void setExchangeId(const std::string& exchangeId) { exchangeId_ = exchangeId; }
+    void setExchangeId(const core::ExchangeId& exchangeId) { exchangeId_ = exchangeId; }
     void setSymbol(const std::string& symbol) { symbol_ = symbol; }
     void setSide(OrderSide side) { side_ = side; }
     void setType(OrderType type) { type_ = type; }
@@ -113,7 +113,7 @@ private:
     std::string orderId_;                // Internal order ID
     std::string clientOrderId_;          // Client-specified ID
     std::string exchangeOrderId_;        // Exchange-assigned ID
-    std::string exchangeId_;             // Exchange where order is placed
+    core::ExchangeId exchangeId_;             // Exchange where order is placed
     std::string symbol_;                 // Trading pair
     OrderSide side_ = OrderSide::BUY;    // Buy or sell
     OrderType type_ = OrderType::MARKET; // Order type

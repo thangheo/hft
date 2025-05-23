@@ -142,8 +142,8 @@
     
     auto order_ptr = std::make_shared<models::Order>(order);
     RoutingResult routing_result = smart_order_router_->routeOrder(order_ptr);
-    std::string exchangeId = routing_result.exchangeId;
-    if (exchangeId.empty()) {
+    ExchangeId exchangeId = routing_result.exchangeId;
+    if (exchangeId.isValid()) {
         return ExecutionResponse{
             order.getClientOrderId(), "", false, 
             "No suitable exchange found",  
@@ -379,7 +379,7 @@ std::string ExecutionService::orderStateToString(models::OrderState state) {
  
  CancelResponse ExecutionService::cancelOrderByExchangeId(
      const std::string& exchange_order_id, 
-     const std::string& exchangeId) {
+     const core::ExchangeId& exchangeId) {
      
      // Validate service state
      if (!is_running_) {
@@ -406,7 +406,7 @@ std::string ExecutionService::orderStateToString(models::OrderState state) {
   
     std::vector<CancelResponse> ExecutionService::cancelAllOrdersForSymbol(
     const std::string& tradingPair,
-    const std::string& exchangeId) {
+    const core::ExchangeId& exchangeId) {
     
     std::vector<CancelResponse> responses;
     
@@ -429,7 +429,7 @@ std::string ExecutionService::orderStateToString(models::OrderState state) {
     // Filter by trading pair and exchange if needed
     for (const auto& order : all_active_orders) {
         if (order->getTradingPair() == tradingPair) {
-            if (exchangeId.empty() || order->getExchangeId() == exchangeId) {
+            if (exchangeId.toString().empty() || order->getExchangeId() == exchangeId) {
                 active_orders.push_back(order);
             }
         }
@@ -443,8 +443,8 @@ std::string ExecutionService::orderStateToString(models::OrderState state) {
     // If no orders were found, add a response indicating that
     if (responses.empty()) {
         std::string message = "No active orders found for " + tradingPair;
-        if (!exchangeId.empty()) {
-            message += " on exchange " + exchangeId;
+        if (!exchangeId.toString().empty()) {
+            message += " on exchange " + exchangeId.toString();
         }
         
         responses.push_back(CancelResponse{
@@ -570,8 +570,8 @@ OrderStatusResponse ExecutionService::getOrderStatus(const std::string& client_o
     
     // Select the best exchange
     RoutingResult routing_result = smart_order_router_->selectExchange(order);
-    std::string exchangeId = routing_result.exchangeId;
-    if (exchangeId.empty()) {
+    ExchangeId exchangeId = routing_result.exchangeId;
+    if (exchangeId.isValid()) {
         // logger_->error("No suitable exchange found for order generation");
         throw std::runtime_error("No suitable exchange found for order generation");
     }

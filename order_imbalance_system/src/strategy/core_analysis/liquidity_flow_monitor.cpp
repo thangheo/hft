@@ -16,7 +16,7 @@
  namespace strategy {
  
  LiquidityFlowMonitor::LiquidityFlowMonitor(
-     const std::string& exchangeId, 
+     const core::ExchangeId& exchangeId, 
      const std::string& tradingPair, 
      const ParameterSet& params)
      : exchangeId_(exchangeId),
@@ -45,7 +45,7 @@
     current_metrics_.timestamp = std::chrono::system_clock::now();
 }
  LiquidityFlowMonitor::LiquidityFlowMonitor(
-     const std::string& exchangeId, 
+     const core::ExchangeId& exchangeId, 
      const std::string& tradingPair, 
      double large_order_threshold, 
      int history_window_seconds)
@@ -867,7 +867,7 @@ double LiquidityFlowMonitor::calculateTypicalOrderSize() const {
 }
 
 std::shared_ptr<LiquidityFlowMonitor> createLiquidityFlowMonitor(
-    const std::string& exchangeId, 
+    const core::ExchangeId& exchangeId, 
     const std::string& tradingPair,
     const ParameterSet& params) {
     

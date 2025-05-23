@@ -13,6 +13,8 @@
 #include <thread>
 #include <atomic>
 #include <condition_variable>
+#include <core/market_types.hpp>
+
 namespace trading {
 namespace execution {
 namespace algorithms {

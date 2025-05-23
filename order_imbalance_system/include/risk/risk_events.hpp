@@ -8,6 +8,7 @@
 #pragma once
 
 #include "risk_types.hpp"
+#include "core/market_types.hpp"
 #include <functional>
 #include <string>
 #include <variant>
@@ -17,6 +18,7 @@
 namespace trading {
 namespace risk {
 
+    using namespace core;
 /**
  * Enum for different types of risk events
  */

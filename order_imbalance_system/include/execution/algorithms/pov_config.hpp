@@ -2,11 +2,12 @@
 
 #include <chrono>
 #include <string>
-
+#include <core/market_types.hpp>
 namespace trading {
 namespace execution {
 namespace algorithms {
 
+using namespace core;
 /**
  * Configuration parameters for POV (Percentage of Volume) execution algorithm
  */
@@ -28,7 +29,7 @@ struct PovConfig {
     double urgency_factor = 1.0;         // Factor to adjust participation rate (higher = more urgent)
     double deviation_pct = 0.0;          // Allowed deviation from participation rate
     
-    std::string exchangeId;             // Optional exchange ID
+    ExchangeId exchangeId;             // Optional exchange ID
 };
 
 } // namespace algorithms

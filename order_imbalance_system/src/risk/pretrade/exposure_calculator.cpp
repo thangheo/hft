@@ -49,7 +49,7 @@
      TradingPair tradingPair = signal.tradingPair;
      std::string asset = tradingPair.getBaseAsset();
      std::string strategyId = signal.strategyId;
-     std::string exchangeId = signal.exchangeId;
+     ExchangeId exchangeId; = signal.exchangeId;
      
      // Calculate notional value of this trade
      double tradeNotional = calculateNotionalValue(tradingPair, signal.targetSize);
@@ -84,7 +84,7 @@
      
      // Find exchange-specific limit or use default
      double exchangeExposureLimit = m_exposureLimits.defaultExchangeExposureLimit;
-     auto exchangeLimitIt = m_exposureLimits.exchangeExposureLimits.find(exchangeId);
+     auto exchangeLimitIt = m_exposureLimits.exchangeExposureLimits.find(exchangeId.toString());
      if (exchangeLimitIt != m_exposureLimits.exchangeExposureLimits.end()) {
          exchangeExposureLimit = exchangeLimitIt->second;
      }
@@ -260,7 +260,7 @@
      // Check if we have a valid cached value
      {
          std::lock_guard<std::mutex> lock(m_exposureCacheMutex);
-         auto it = m_exchangeExposureCache.find(exchangeId);
+         auto it = m_exchangeExposureCache.find(exchangeId.toString());
          if (m_exposureCacheValid && it != m_exchangeExposureCache.end()) {
              return it->second;
          }

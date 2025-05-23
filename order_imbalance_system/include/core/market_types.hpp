@@ -23,18 +23,18 @@
  #include <functional>
  #include <unordered_map>
  #include <ostream>
+ #include <common/exchange_types.hpp>
  
  namespace trading {
  namespace core {
  
  // Common timestamp definition
  using Timestamp = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
- using ExchangeId = std::string;
-
+ using ExchangeId = common::ExchangeId;
 
 // Raw market data from an exchange
 struct MarketDataUpdate {
-    std::string exchangeId;
+    ExchangeId exchangeId;
     std::string tradingPair;
     std::string updateType;  // "orderbook", "trade", "ticker"
     int64_t exchange_timestamp;
@@ -52,7 +52,7 @@ struct MarketDataUpdate {
  */
 struct MarketData {
     std::string tradingPair;              // Trading pair symbol (e.g., "BTC/USDT")
-    std::string exchangeId;               // Exchange identifier
+    ExchangeId exchangeId;               // Exchange identifier
     Timestamp timestamp;                  // Timestamp of the data
     double price;                         // Current market price
     double volume;                        // Trading volume
@@ -88,7 +88,7 @@ struct TradeData {
   * Market state information
   */
  struct MarketState {
-    std::string exchangeId;               // Exchange identifier
+    ExchangeId exchangeId;               // Exchange identifier
     std::string tradingPair;              // Trading pair
     core::Timestamp timestamp;                   // Timestamp of this state
     double trendStrength;                // Trend strength (0-1)
@@ -101,12 +101,12 @@ struct TradeData {
     
     // Default constructor
     MarketState()
-        : exchangeId(""), tradingPair(""), timestamp(std::chrono::system_clock::now()),
+        : exchangeId(), tradingPair(""), timestamp(std::chrono::system_clock::now()),
           price(0.0), volatility(0.0), volume_24h(0.0), price_change_24h(0.0),
           market_regime("unknown") {}
     
     // Constructor with exchange and trading pair
-    MarketState(const std::string& exchange, const std::string& pair)
+    MarketState(const ExchangeId& exchange, const std::string& pair)
         : exchangeId(exchange), tradingPair(pair), timestamp(std::chrono::system_clock::now()),
           price(0.0), volatility(0.0), volume_24h(0.0), price_change_24h(0.0),
           market_regime("unknown") {}
@@ -116,45 +116,45 @@ struct TradeData {
  /**
   * Represents a cryptocurrency exchange
   */
- enum class Exchange {
-     BINANCE,
-     COINBASE,
-     FTX,
-     KRAKEN,
-     HUOBI,
-     UNKNOWN
- };
+//  enum class Exchange {
+//      BINANCE,
+//      COINBASE,
+//      FTX,
+//      KRAKEN,
+//      HUOBI,
+//      UNKNOWN
+//  };
  
- /**
-  * Converts Exchange enum to string
-  */
- inline std::string exchangeToString(Exchange exchange) {
-     switch (exchange) {
-         case Exchange::BINANCE:  return "binance";
-         case Exchange::COINBASE: return "coinbase";
-         case Exchange::FTX:      return "ftx";
-         case Exchange::KRAKEN:   return "kraken";
-         case Exchange::HUOBI:    return "huobi";
-         case Exchange::UNKNOWN:  return "unknown";
-         default:                 return "unknown";
-     }
- }
+//  /**
+//   * Converts Exchange enum to string
+//   */
+//  inline std::string exchangeToString(Exchange exchange) {
+//      switch (exchange) {
+//          case Exchange::BINANCE:  return "binance";
+//          case Exchange::COINBASE: return "coinbase";
+//          case Exchange::FTX:      return "ftx";
+//          case Exchange::KRAKEN:   return "kraken";
+//          case Exchange::HUOBI:    return "huobi";
+//          case Exchange::UNKNOWN:  return "unknown";
+//          default:                 return "unknown";
+//      }
+//  }
  
- /**
-  * Converts string to Exchange enum
-  */
- inline Exchange exchangeFromString(const std::string& str) {
-     auto lower = str;
-     std::transform(lower.begin(), lower.end(), lower.begin(), 
-         [](unsigned char c) { return std::tolower(c); });
+//  /**
+//   * Converts string to Exchange enum
+//   */
+//  inline Exchange exchangeFromString(const std::string& str) {
+//      auto lower = str;
+//      std::transform(lower.begin(), lower.end(), lower.begin(), 
+//          [](unsigned char c) { return std::tolower(c); });
      
-     if (lower == "binance")  return Exchange::BINANCE;
-     if (lower == "coinbase") return Exchange::COINBASE;
-     if (lower == "ftx")      return Exchange::FTX;
-     if (lower == "kraken")   return Exchange::KRAKEN;
-     if (lower == "huobi")    return Exchange::HUOBI;
-     return Exchange::UNKNOWN;
- }
+//      if (lower == "binance")  return Exchange::BINANCE;
+//      if (lower == "coinbase") return Exchange::COINBASE;
+//      if (lower == "ftx")      return Exchange::FTX;
+//      if (lower == "kraken")   return Exchange::KRAKEN;
+//      if (lower == "huobi")    return Exchange::HUOBI;
+//      return Exchange::UNKNOWN;
+//  }
  
  // Using Exchange as the universal exchange identifier to replace data_ingestion::ExchangeId
 //  using ExchangeId = Exchange;
@@ -162,17 +162,6 @@ struct TradeData {
   * @struct ExchangeData
   * @brief Represents raw data received from an exchange
   */
- struct ExchangeData {
-     std::string exchangeId;        // Identifier for the exchange (e.g., "binance")
-     std::string symbol;            // Trading pair symbol (e.g., "BTCUSDT")
-     std::string data;              // Raw data received (e.g., JSON string)
-     uint64_t receivedTime;         // Timestamp when data was received
-     std::string dataType;          // Type of data (e.g., "orderbook", "trade")
-     
-     // Other potentially useful fields
-     bool isSnapshot{false};        // Whether this is a full snapshot or an update
-     std::string sourceType;        // "websocket" or "rest"
- };
  
  /**
   * Represents a trading symbol (trading pair)
@@ -241,17 +230,6 @@ struct TradeData {
      return os << symbol.toString();
  }
 
-// Add to market_types.hpp (replace the existing functions)
-inline std::string exchangeIdToString(const ExchangeId& exchangeId) {
-    // ExchangeId is already a string, so just return it
-    return exchangeId;
-}
-
-inline ExchangeId exchangeIdFromString(const std::string& str) {
-    // ExchangeId is a string, so just return the input
-    return str;
-}
-
 /**
   * VolatilityLevel enum for categorizing market volatility
   */
@@ -261,6 +239,17 @@ inline ExchangeId exchangeIdFromString(const std::string& str) {
      NORMAL,
      HIGH,
      VERY_HIGH
+ };
+ struct ExchangeData {
+     ExchangeId exchangeId;        // Identifier for the exchange (e.g., "binance")
+     Symbol symbol;            // Trading pair symbol (e.g., "BTCUSDT")
+     std::string data;              // Raw data received (e.g., JSON string)
+     uint64_t receivedTime;         // Timestamp when data was received
+     std::string dataType;          // Type of data (e.g., "orderbook", "trade")
+     
+     // Other potentially useful fields
+     bool isSnapshot{false};        // Whether this is a full snapshot or an update
+     std::string sourceType;        // "websocket" or "rest"
  };
  
  /**

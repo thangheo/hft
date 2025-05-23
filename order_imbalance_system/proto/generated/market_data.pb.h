@@ -31,6 +31,7 @@
 #include <google/protobuf/extension_set.h>  // IWYU pragma: export
 #include <google/protobuf/generated_enum_reflection.h>
 #include <google/protobuf/unknown_field_set.h>
+#include "common.pb.h"
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
 #define PROTOBUF_INTERNAL_EXPORT_market_5fdata_2eproto
@@ -45,7 +46,9 @@ struct TableStruct_market_5fdata_2eproto {
   static const uint32_t offsets[];
 };
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_market_5fdata_2eproto;
+namespace trading {
 namespace market_data {
+namespace proto {
 class OrderBook;
 struct OrderBookDefaultTypeInternal;
 extern OrderBookDefaultTypeInternal _OrderBook_default_instance_;
@@ -55,30 +58,31 @@ extern OrderBookUpdateDefaultTypeInternal _OrderBookUpdate_default_instance_;
 class PriceLevel;
 struct PriceLevelDefaultTypeInternal;
 extern PriceLevelDefaultTypeInternal _PriceLevel_default_instance_;
-class Timestamp;
-struct TimestampDefaultTypeInternal;
-extern TimestampDefaultTypeInternal _Timestamp_default_instance_;
 class TradingSignal;
 struct TradingSignalDefaultTypeInternal;
 extern TradingSignalDefaultTypeInternal _TradingSignal_default_instance_;
+}  // namespace proto
 }  // namespace market_data
+}  // namespace trading
 PROTOBUF_NAMESPACE_OPEN
-template<> ::market_data::OrderBook* Arena::CreateMaybeMessage<::market_data::OrderBook>(Arena*);
-template<> ::market_data::OrderBookUpdate* Arena::CreateMaybeMessage<::market_data::OrderBookUpdate>(Arena*);
-template<> ::market_data::PriceLevel* Arena::CreateMaybeMessage<::market_data::PriceLevel>(Arena*);
-template<> ::market_data::Timestamp* Arena::CreateMaybeMessage<::market_data::Timestamp>(Arena*);
-template<> ::market_data::TradingSignal* Arena::CreateMaybeMessage<::market_data::TradingSignal>(Arena*);
+template<> ::trading::market_data::proto::OrderBook* Arena::CreateMaybeMessage<::trading::market_data::proto::OrderBook>(Arena*);
+template<> ::trading::market_data::proto::OrderBookUpdate* Arena::CreateMaybeMessage<::trading::market_data::proto::OrderBookUpdate>(Arena*);
+template<> ::trading::market_data::proto::PriceLevel* Arena::CreateMaybeMessage<::trading::market_data::proto::PriceLevel>(Arena*);
+template<> ::trading::market_data::proto::TradingSignal* Arena::CreateMaybeMessage<::trading::market_data::proto::TradingSignal>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
+namespace trading {
 namespace market_data {
+namespace proto {
 
 enum TradingSignal_Side : int {
-  TradingSignal_Side_BUY = 0,
-  TradingSignal_Side_SELL = 1,
+  TradingSignal_Side_UNKNOWN_SIDE = 0,
+  TradingSignal_Side_BUY = 1,
+  TradingSignal_Side_SELL = 2,
   TradingSignal_Side_TradingSignal_Side_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   TradingSignal_Side_TradingSignal_Side_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
 bool TradingSignal_Side_IsValid(int value);
-constexpr TradingSignal_Side TradingSignal_Side_Side_MIN = TradingSignal_Side_BUY;
+constexpr TradingSignal_Side TradingSignal_Side_Side_MIN = TradingSignal_Side_UNKNOWN_SIDE;
 constexpr TradingSignal_Side TradingSignal_Side_Side_MAX = TradingSignal_Side_SELL;
 constexpr int TradingSignal_Side_Side_ARRAYSIZE = TradingSignal_Side_Side_MAX + 1;
 
@@ -98,167 +102,8 @@ inline bool TradingSignal_Side_Parse(
 }
 // ===================================================================
 
-class Timestamp final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:market_data.Timestamp) */ {
- public:
-  inline Timestamp() : Timestamp(nullptr) {}
-  ~Timestamp() override;
-  explicit PROTOBUF_CONSTEXPR Timestamp(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
-
-  Timestamp(const Timestamp& from);
-  Timestamp(Timestamp&& from) noexcept
-    : Timestamp() {
-    *this = ::std::move(from);
-  }
-
-  inline Timestamp& operator=(const Timestamp& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline Timestamp& operator=(Timestamp&& from) noexcept {
-    if (this == &from) return *this;
-    if (GetOwningArena() == from.GetOwningArena()
-  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
-        && GetOwningArena() != nullptr
-  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
-    ) {
-      InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
-    return GetDescriptor();
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
-    return default_instance().GetMetadata().descriptor;
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
-    return default_instance().GetMetadata().reflection;
-  }
-  static const Timestamp& default_instance() {
-    return *internal_default_instance();
-  }
-  static inline const Timestamp* internal_default_instance() {
-    return reinterpret_cast<const Timestamp*>(
-               &_Timestamp_default_instance_);
-  }
-  static constexpr int kIndexInFileMessages =
-    0;
-
-  friend void swap(Timestamp& a, Timestamp& b) {
-    a.Swap(&b);
-  }
-  inline void Swap(Timestamp* other) {
-    if (other == this) return;
-  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() != nullptr &&
-        GetOwningArena() == other->GetOwningArena()) {
-   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() == other->GetOwningArena()) {
-  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
-      InternalSwap(other);
-    } else {
-      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
-    }
-  }
-  void UnsafeArenaSwap(Timestamp* other) {
-    if (other == this) return;
-    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  Timestamp* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<Timestamp>(arena);
-  }
-  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
-  void CopyFrom(const Timestamp& from);
-  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
-  void MergeFrom( const Timestamp& from) {
-    Timestamp::MergeImpl(*this, from);
-  }
-  private:
-  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
-  public:
-  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
-  bool IsInitialized() const final;
-
-  size_t ByteSizeLong() const final;
-  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
-  uint8_t* _InternalSerialize(
-      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
-  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
-
-  private:
-  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
-  void SharedDtor();
-  void SetCachedSize(int size) const final;
-  void InternalSwap(Timestamp* other);
-
-  private:
-  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
-  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "market_data.Timestamp";
-  }
-  protected:
-  explicit Timestamp(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                       bool is_message_owned = false);
-  public:
-
-  static const ClassData _class_data_;
-  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
-
-  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  enum : int {
-    kSecondsFieldNumber = 1,
-    kNanosFieldNumber = 2,
-  };
-  // int64 seconds = 1;
-  void clear_seconds();
-  int64_t seconds() const;
-  void set_seconds(int64_t value);
-  private:
-  int64_t _internal_seconds() const;
-  void _internal_set_seconds(int64_t value);
-  public:
-
-  // int32 nanos = 2;
-  void clear_nanos();
-  int32_t nanos() const;
-  void set_nanos(int32_t value);
-  private:
-  int32_t _internal_nanos() const;
-  void _internal_set_nanos(int32_t value);
-  public:
-
-  // @@protoc_insertion_point(class_scope:market_data.Timestamp)
- private:
-  class _Internal;
-
-  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
-  typedef void InternalArenaConstructable_;
-  typedef void DestructorSkippable_;
-  struct Impl_ {
-    int64_t seconds_;
-    int32_t nanos_;
-    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-  };
-  union { Impl_ _impl_; };
-  friend struct ::TableStruct_market_5fdata_2eproto;
-};
-// -------------------------------------------------------------------
-
 class PriceLevel final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:market_data.PriceLevel) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.market_data.proto.PriceLevel) */ {
  public:
   inline PriceLevel() : PriceLevel(nullptr) {}
   ~PriceLevel() override;
@@ -305,7 +150,7 @@ class PriceLevel final :
                &_PriceLevel_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    1;
+    0;
 
   friend void swap(PriceLevel& a, PriceLevel& b) {
     a.Swap(&b);
@@ -361,7 +206,7 @@ class PriceLevel final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "market_data.PriceLevel";
+    return "trading.market_data.proto.PriceLevel";
   }
   protected:
   explicit PriceLevel(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -409,7 +254,7 @@ class PriceLevel final :
   void _internal_set_order_count(int32_t value);
   public:
 
-  // @@protoc_insertion_point(class_scope:market_data.PriceLevel)
+  // @@protoc_insertion_point(class_scope:trading.market_data.proto.PriceLevel)
  private:
   class _Internal;
 
@@ -428,7 +273,7 @@ class PriceLevel final :
 // -------------------------------------------------------------------
 
 class OrderBook final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:market_data.OrderBook) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.market_data.proto.OrderBook) */ {
  public:
   inline OrderBook() : OrderBook(nullptr) {}
   ~OrderBook() override;
@@ -475,7 +320,7 @@ class OrderBook final :
                &_OrderBook_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    2;
+    1;
 
   friend void swap(OrderBook& a, OrderBook& b) {
     a.Swap(&b);
@@ -531,7 +376,7 @@ class OrderBook final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "market_data.OrderBook";
+    return "trading.market_data.proto.OrderBook";
   }
   protected:
   explicit OrderBook(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -550,93 +395,92 @@ class OrderBook final :
   enum : int {
     kBidsFieldNumber = 4,
     kAsksFieldNumber = 5,
-    kInstrumentFieldNumber = 1,
-    kExchangeFieldNumber = 2,
+    kSymbolFieldNumber = 1,
     kTimestampFieldNumber = 3,
+    kExchangeIdFieldNumber = 2,
   };
-  // repeated .market_data.PriceLevel bids = 4;
+  // repeated .trading.market_data.proto.PriceLevel bids = 4;
   int bids_size() const;
   private:
   int _internal_bids_size() const;
   public:
   void clear_bids();
-  ::market_data::PriceLevel* mutable_bids(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel >*
+  ::trading::market_data::proto::PriceLevel* mutable_bids(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel >*
       mutable_bids();
   private:
-  const ::market_data::PriceLevel& _internal_bids(int index) const;
-  ::market_data::PriceLevel* _internal_add_bids();
+  const ::trading::market_data::proto::PriceLevel& _internal_bids(int index) const;
+  ::trading::market_data::proto::PriceLevel* _internal_add_bids();
   public:
-  const ::market_data::PriceLevel& bids(int index) const;
-  ::market_data::PriceLevel* add_bids();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel >&
+  const ::trading::market_data::proto::PriceLevel& bids(int index) const;
+  ::trading::market_data::proto::PriceLevel* add_bids();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel >&
       bids() const;
 
-  // repeated .market_data.PriceLevel asks = 5;
+  // repeated .trading.market_data.proto.PriceLevel asks = 5;
   int asks_size() const;
   private:
   int _internal_asks_size() const;
   public:
   void clear_asks();
-  ::market_data::PriceLevel* mutable_asks(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel >*
+  ::trading::market_data::proto::PriceLevel* mutable_asks(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel >*
       mutable_asks();
   private:
-  const ::market_data::PriceLevel& _internal_asks(int index) const;
-  ::market_data::PriceLevel* _internal_add_asks();
+  const ::trading::market_data::proto::PriceLevel& _internal_asks(int index) const;
+  ::trading::market_data::proto::PriceLevel* _internal_add_asks();
   public:
-  const ::market_data::PriceLevel& asks(int index) const;
-  ::market_data::PriceLevel* add_asks();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel >&
+  const ::trading::market_data::proto::PriceLevel& asks(int index) const;
+  ::trading::market_data::proto::PriceLevel* add_asks();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel >&
       asks() const;
 
-  // string instrument = 1;
-  void clear_instrument();
-  const std::string& instrument() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_instrument(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_instrument();
-  PROTOBUF_NODISCARD std::string* release_instrument();
-  void set_allocated_instrument(std::string* instrument);
+  // .trading.common.proto.SymbolProto symbol = 1;
+  bool has_symbol() const;
   private:
-  const std::string& _internal_instrument() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_instrument(const std::string& value);
-  std::string* _internal_mutable_instrument();
+  bool _internal_has_symbol() const;
   public:
-
-  // string exchange = 2;
-  void clear_exchange();
-  const std::string& exchange() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_exchange(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_exchange();
-  PROTOBUF_NODISCARD std::string* release_exchange();
-  void set_allocated_exchange(std::string* exchange);
+  void clear_symbol();
+  const ::trading::common::proto::SymbolProto& symbol() const;
+  PROTOBUF_NODISCARD ::trading::common::proto::SymbolProto* release_symbol();
+  ::trading::common::proto::SymbolProto* mutable_symbol();
+  void set_allocated_symbol(::trading::common::proto::SymbolProto* symbol);
   private:
-  const std::string& _internal_exchange() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_exchange(const std::string& value);
-  std::string* _internal_mutable_exchange();
+  const ::trading::common::proto::SymbolProto& _internal_symbol() const;
+  ::trading::common::proto::SymbolProto* _internal_mutable_symbol();
   public:
+  void unsafe_arena_set_allocated_symbol(
+      ::trading::common::proto::SymbolProto* symbol);
+  ::trading::common::proto::SymbolProto* unsafe_arena_release_symbol();
 
-  // .market_data.Timestamp timestamp = 3;
+  // .trading.common.proto.TimestampProto timestamp = 3;
   bool has_timestamp() const;
   private:
   bool _internal_has_timestamp() const;
   public:
   void clear_timestamp();
-  const ::market_data::Timestamp& timestamp() const;
-  PROTOBUF_NODISCARD ::market_data::Timestamp* release_timestamp();
-  ::market_data::Timestamp* mutable_timestamp();
-  void set_allocated_timestamp(::market_data::Timestamp* timestamp);
+  const ::trading::common::proto::TimestampProto& timestamp() const;
+  PROTOBUF_NODISCARD ::trading::common::proto::TimestampProto* release_timestamp();
+  ::trading::common::proto::TimestampProto* mutable_timestamp();
+  void set_allocated_timestamp(::trading::common::proto::TimestampProto* timestamp);
   private:
-  const ::market_data::Timestamp& _internal_timestamp() const;
-  ::market_data::Timestamp* _internal_mutable_timestamp();
+  const ::trading::common::proto::TimestampProto& _internal_timestamp() const;
+  ::trading::common::proto::TimestampProto* _internal_mutable_timestamp();
   public:
   void unsafe_arena_set_allocated_timestamp(
-      ::market_data::Timestamp* timestamp);
-  ::market_data::Timestamp* unsafe_arena_release_timestamp();
+      ::trading::common::proto::TimestampProto* timestamp);
+  ::trading::common::proto::TimestampProto* unsafe_arena_release_timestamp();
 
-  // @@protoc_insertion_point(class_scope:market_data.OrderBook)
+  // .trading.common.proto.ExchangeIdProto exchange_id = 2;
+  void clear_exchange_id();
+  ::trading::common::proto::ExchangeIdProto exchange_id() const;
+  void set_exchange_id(::trading::common::proto::ExchangeIdProto value);
+  private:
+  ::trading::common::proto::ExchangeIdProto _internal_exchange_id() const;
+  void _internal_set_exchange_id(::trading::common::proto::ExchangeIdProto value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:trading.market_data.proto.OrderBook)
  private:
   class _Internal;
 
@@ -644,11 +488,11 @@ class OrderBook final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel > bids_;
-    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel > asks_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr instrument_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr exchange_;
-    ::market_data::Timestamp* timestamp_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel > bids_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel > asks_;
+    ::trading::common::proto::SymbolProto* symbol_;
+    ::trading::common::proto::TimestampProto* timestamp_;
+    int exchange_id_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -657,7 +501,7 @@ class OrderBook final :
 // -------------------------------------------------------------------
 
 class OrderBookUpdate final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:market_data.OrderBookUpdate) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.market_data.proto.OrderBookUpdate) */ {
  public:
   inline OrderBookUpdate() : OrderBookUpdate(nullptr) {}
   ~OrderBookUpdate() override;
@@ -704,7 +548,7 @@ class OrderBookUpdate final :
                &_OrderBookUpdate_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    3;
+    2;
 
   friend void swap(OrderBookUpdate& a, OrderBookUpdate& b) {
     a.Swap(&b);
@@ -760,7 +604,7 @@ class OrderBookUpdate final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "market_data.OrderBookUpdate";
+    return "trading.market_data.proto.OrderBookUpdate";
   }
   protected:
   explicit OrderBookUpdate(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -781,129 +625,128 @@ class OrderBookUpdate final :
     kBidsRemovedFieldNumber = 5,
     kAsksAddedFieldNumber = 6,
     kAsksRemovedFieldNumber = 7,
-    kInstrumentFieldNumber = 1,
-    kExchangeFieldNumber = 2,
+    kSymbolFieldNumber = 1,
     kTimestampFieldNumber = 3,
+    kExchangeIdFieldNumber = 2,
   };
-  // repeated .market_data.PriceLevel bids_added = 4;
+  // repeated .trading.market_data.proto.PriceLevel bids_added = 4;
   int bids_added_size() const;
   private:
   int _internal_bids_added_size() const;
   public:
   void clear_bids_added();
-  ::market_data::PriceLevel* mutable_bids_added(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel >*
+  ::trading::market_data::proto::PriceLevel* mutable_bids_added(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel >*
       mutable_bids_added();
   private:
-  const ::market_data::PriceLevel& _internal_bids_added(int index) const;
-  ::market_data::PriceLevel* _internal_add_bids_added();
+  const ::trading::market_data::proto::PriceLevel& _internal_bids_added(int index) const;
+  ::trading::market_data::proto::PriceLevel* _internal_add_bids_added();
   public:
-  const ::market_data::PriceLevel& bids_added(int index) const;
-  ::market_data::PriceLevel* add_bids_added();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel >&
+  const ::trading::market_data::proto::PriceLevel& bids_added(int index) const;
+  ::trading::market_data::proto::PriceLevel* add_bids_added();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel >&
       bids_added() const;
 
-  // repeated .market_data.PriceLevel bids_removed = 5;
+  // repeated .trading.market_data.proto.PriceLevel bids_removed = 5;
   int bids_removed_size() const;
   private:
   int _internal_bids_removed_size() const;
   public:
   void clear_bids_removed();
-  ::market_data::PriceLevel* mutable_bids_removed(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel >*
+  ::trading::market_data::proto::PriceLevel* mutable_bids_removed(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel >*
       mutable_bids_removed();
   private:
-  const ::market_data::PriceLevel& _internal_bids_removed(int index) const;
-  ::market_data::PriceLevel* _internal_add_bids_removed();
+  const ::trading::market_data::proto::PriceLevel& _internal_bids_removed(int index) const;
+  ::trading::market_data::proto::PriceLevel* _internal_add_bids_removed();
   public:
-  const ::market_data::PriceLevel& bids_removed(int index) const;
-  ::market_data::PriceLevel* add_bids_removed();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel >&
+  const ::trading::market_data::proto::PriceLevel& bids_removed(int index) const;
+  ::trading::market_data::proto::PriceLevel* add_bids_removed();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel >&
       bids_removed() const;
 
-  // repeated .market_data.PriceLevel asks_added = 6;
+  // repeated .trading.market_data.proto.PriceLevel asks_added = 6;
   int asks_added_size() const;
   private:
   int _internal_asks_added_size() const;
   public:
   void clear_asks_added();
-  ::market_data::PriceLevel* mutable_asks_added(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel >*
+  ::trading::market_data::proto::PriceLevel* mutable_asks_added(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel >*
       mutable_asks_added();
   private:
-  const ::market_data::PriceLevel& _internal_asks_added(int index) const;
-  ::market_data::PriceLevel* _internal_add_asks_added();
+  const ::trading::market_data::proto::PriceLevel& _internal_asks_added(int index) const;
+  ::trading::market_data::proto::PriceLevel* _internal_add_asks_added();
   public:
-  const ::market_data::PriceLevel& asks_added(int index) const;
-  ::market_data::PriceLevel* add_asks_added();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel >&
+  const ::trading::market_data::proto::PriceLevel& asks_added(int index) const;
+  ::trading::market_data::proto::PriceLevel* add_asks_added();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel >&
       asks_added() const;
 
-  // repeated .market_data.PriceLevel asks_removed = 7;
+  // repeated .trading.market_data.proto.PriceLevel asks_removed = 7;
   int asks_removed_size() const;
   private:
   int _internal_asks_removed_size() const;
   public:
   void clear_asks_removed();
-  ::market_data::PriceLevel* mutable_asks_removed(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel >*
+  ::trading::market_data::proto::PriceLevel* mutable_asks_removed(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel >*
       mutable_asks_removed();
   private:
-  const ::market_data::PriceLevel& _internal_asks_removed(int index) const;
-  ::market_data::PriceLevel* _internal_add_asks_removed();
+  const ::trading::market_data::proto::PriceLevel& _internal_asks_removed(int index) const;
+  ::trading::market_data::proto::PriceLevel* _internal_add_asks_removed();
   public:
-  const ::market_data::PriceLevel& asks_removed(int index) const;
-  ::market_data::PriceLevel* add_asks_removed();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel >&
+  const ::trading::market_data::proto::PriceLevel& asks_removed(int index) const;
+  ::trading::market_data::proto::PriceLevel* add_asks_removed();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel >&
       asks_removed() const;
 
-  // string instrument = 1;
-  void clear_instrument();
-  const std::string& instrument() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_instrument(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_instrument();
-  PROTOBUF_NODISCARD std::string* release_instrument();
-  void set_allocated_instrument(std::string* instrument);
+  // .trading.common.proto.SymbolProto symbol = 1;
+  bool has_symbol() const;
   private:
-  const std::string& _internal_instrument() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_instrument(const std::string& value);
-  std::string* _internal_mutable_instrument();
+  bool _internal_has_symbol() const;
   public:
-
-  // string exchange = 2;
-  void clear_exchange();
-  const std::string& exchange() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_exchange(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_exchange();
-  PROTOBUF_NODISCARD std::string* release_exchange();
-  void set_allocated_exchange(std::string* exchange);
+  void clear_symbol();
+  const ::trading::common::proto::SymbolProto& symbol() const;
+  PROTOBUF_NODISCARD ::trading::common::proto::SymbolProto* release_symbol();
+  ::trading::common::proto::SymbolProto* mutable_symbol();
+  void set_allocated_symbol(::trading::common::proto::SymbolProto* symbol);
   private:
-  const std::string& _internal_exchange() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_exchange(const std::string& value);
-  std::string* _internal_mutable_exchange();
+  const ::trading::common::proto::SymbolProto& _internal_symbol() const;
+  ::trading::common::proto::SymbolProto* _internal_mutable_symbol();
   public:
+  void unsafe_arena_set_allocated_symbol(
+      ::trading::common::proto::SymbolProto* symbol);
+  ::trading::common::proto::SymbolProto* unsafe_arena_release_symbol();
 
-  // .market_data.Timestamp timestamp = 3;
+  // .trading.common.proto.TimestampProto timestamp = 3;
   bool has_timestamp() const;
   private:
   bool _internal_has_timestamp() const;
   public:
   void clear_timestamp();
-  const ::market_data::Timestamp& timestamp() const;
-  PROTOBUF_NODISCARD ::market_data::Timestamp* release_timestamp();
-  ::market_data::Timestamp* mutable_timestamp();
-  void set_allocated_timestamp(::market_data::Timestamp* timestamp);
+  const ::trading::common::proto::TimestampProto& timestamp() const;
+  PROTOBUF_NODISCARD ::trading::common::proto::TimestampProto* release_timestamp();
+  ::trading::common::proto::TimestampProto* mutable_timestamp();
+  void set_allocated_timestamp(::trading::common::proto::TimestampProto* timestamp);
   private:
-  const ::market_data::Timestamp& _internal_timestamp() const;
-  ::market_data::Timestamp* _internal_mutable_timestamp();
+  const ::trading::common::proto::TimestampProto& _internal_timestamp() const;
+  ::trading::common::proto::TimestampProto* _internal_mutable_timestamp();
   public:
   void unsafe_arena_set_allocated_timestamp(
-      ::market_data::Timestamp* timestamp);
-  ::market_data::Timestamp* unsafe_arena_release_timestamp();
+      ::trading::common::proto::TimestampProto* timestamp);
+  ::trading::common::proto::TimestampProto* unsafe_arena_release_timestamp();
 
-  // @@protoc_insertion_point(class_scope:market_data.OrderBookUpdate)
+  // .trading.common.proto.ExchangeIdProto exchange_id = 2;
+  void clear_exchange_id();
+  ::trading::common::proto::ExchangeIdProto exchange_id() const;
+  void set_exchange_id(::trading::common::proto::ExchangeIdProto value);
+  private:
+  ::trading::common::proto::ExchangeIdProto _internal_exchange_id() const;
+  void _internal_set_exchange_id(::trading::common::proto::ExchangeIdProto value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:trading.market_data.proto.OrderBookUpdate)
  private:
   class _Internal;
 
@@ -911,13 +754,13 @@ class OrderBookUpdate final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel > bids_added_;
-    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel > bids_removed_;
-    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel > asks_added_;
-    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel > asks_removed_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr instrument_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr exchange_;
-    ::market_data::Timestamp* timestamp_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel > bids_added_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel > bids_removed_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel > asks_added_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel > asks_removed_;
+    ::trading::common::proto::SymbolProto* symbol_;
+    ::trading::common::proto::TimestampProto* timestamp_;
+    int exchange_id_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -926,7 +769,7 @@ class OrderBookUpdate final :
 // -------------------------------------------------------------------
 
 class TradingSignal final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:market_data.TradingSignal) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:trading.market_data.proto.TradingSignal) */ {
  public:
   inline TradingSignal() : TradingSignal(nullptr) {}
   ~TradingSignal() override;
@@ -973,7 +816,7 @@ class TradingSignal final :
                &_TradingSignal_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    4;
+    3;
 
   friend void swap(TradingSignal& a, TradingSignal& b) {
     a.Swap(&b);
@@ -1029,7 +872,7 @@ class TradingSignal final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "market_data.TradingSignal";
+    return "trading.market_data.proto.TradingSignal";
   }
   protected:
   explicit TradingSignal(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -1044,6 +887,8 @@ class TradingSignal final :
   // nested types ----------------------------------------------------
 
   typedef TradingSignal_Side Side;
+  static constexpr Side UNKNOWN_SIDE =
+    TradingSignal_Side_UNKNOWN_SIDE;
   static constexpr Side BUY =
     TradingSignal_Side_BUY;
   static constexpr Side SELL =
@@ -1076,7 +921,8 @@ class TradingSignal final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kInstrumentFieldNumber = 1,
+    kStrategyIdFieldNumber = 8,
+    kSymbolFieldNumber = 1,
     kExpiryFieldNumber = 6,
     kTimestampFieldNumber = 7,
     kConfidenceFieldNumber = 3,
@@ -1084,55 +930,73 @@ class TradingSignal final :
     kStopPriceFieldNumber = 5,
     kSideFieldNumber = 2,
   };
-  // string instrument = 1;
-  void clear_instrument();
-  const std::string& instrument() const;
+  // string strategy_id = 8;
+  void clear_strategy_id();
+  const std::string& strategy_id() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_instrument(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_instrument();
-  PROTOBUF_NODISCARD std::string* release_instrument();
-  void set_allocated_instrument(std::string* instrument);
+  void set_strategy_id(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_strategy_id();
+  PROTOBUF_NODISCARD std::string* release_strategy_id();
+  void set_allocated_strategy_id(std::string* strategy_id);
   private:
-  const std::string& _internal_instrument() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_instrument(const std::string& value);
-  std::string* _internal_mutable_instrument();
+  const std::string& _internal_strategy_id() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_strategy_id(const std::string& value);
+  std::string* _internal_mutable_strategy_id();
   public:
 
-  // .market_data.Timestamp expiry = 6;
+  // .trading.common.proto.SymbolProto symbol = 1;
+  bool has_symbol() const;
+  private:
+  bool _internal_has_symbol() const;
+  public:
+  void clear_symbol();
+  const ::trading::common::proto::SymbolProto& symbol() const;
+  PROTOBUF_NODISCARD ::trading::common::proto::SymbolProto* release_symbol();
+  ::trading::common::proto::SymbolProto* mutable_symbol();
+  void set_allocated_symbol(::trading::common::proto::SymbolProto* symbol);
+  private:
+  const ::trading::common::proto::SymbolProto& _internal_symbol() const;
+  ::trading::common::proto::SymbolProto* _internal_mutable_symbol();
+  public:
+  void unsafe_arena_set_allocated_symbol(
+      ::trading::common::proto::SymbolProto* symbol);
+  ::trading::common::proto::SymbolProto* unsafe_arena_release_symbol();
+
+  // .trading.common.proto.TimestampProto expiry = 6;
   bool has_expiry() const;
   private:
   bool _internal_has_expiry() const;
   public:
   void clear_expiry();
-  const ::market_data::Timestamp& expiry() const;
-  PROTOBUF_NODISCARD ::market_data::Timestamp* release_expiry();
-  ::market_data::Timestamp* mutable_expiry();
-  void set_allocated_expiry(::market_data::Timestamp* expiry);
+  const ::trading::common::proto::TimestampProto& expiry() const;
+  PROTOBUF_NODISCARD ::trading::common::proto::TimestampProto* release_expiry();
+  ::trading::common::proto::TimestampProto* mutable_expiry();
+  void set_allocated_expiry(::trading::common::proto::TimestampProto* expiry);
   private:
-  const ::market_data::Timestamp& _internal_expiry() const;
-  ::market_data::Timestamp* _internal_mutable_expiry();
+  const ::trading::common::proto::TimestampProto& _internal_expiry() const;
+  ::trading::common::proto::TimestampProto* _internal_mutable_expiry();
   public:
   void unsafe_arena_set_allocated_expiry(
-      ::market_data::Timestamp* expiry);
-  ::market_data::Timestamp* unsafe_arena_release_expiry();
+      ::trading::common::proto::TimestampProto* expiry);
+  ::trading::common::proto::TimestampProto* unsafe_arena_release_expiry();
 
-  // .market_data.Timestamp timestamp = 7;
+  // .trading.common.proto.TimestampProto timestamp = 7;
   bool has_timestamp() const;
   private:
   bool _internal_has_timestamp() const;
   public:
   void clear_timestamp();
-  const ::market_data::Timestamp& timestamp() const;
-  PROTOBUF_NODISCARD ::market_data::Timestamp* release_timestamp();
-  ::market_data::Timestamp* mutable_timestamp();
-  void set_allocated_timestamp(::market_data::Timestamp* timestamp);
+  const ::trading::common::proto::TimestampProto& timestamp() const;
+  PROTOBUF_NODISCARD ::trading::common::proto::TimestampProto* release_timestamp();
+  ::trading::common::proto::TimestampProto* mutable_timestamp();
+  void set_allocated_timestamp(::trading::common::proto::TimestampProto* timestamp);
   private:
-  const ::market_data::Timestamp& _internal_timestamp() const;
-  ::market_data::Timestamp* _internal_mutable_timestamp();
+  const ::trading::common::proto::TimestampProto& _internal_timestamp() const;
+  ::trading::common::proto::TimestampProto* _internal_mutable_timestamp();
   public:
   void unsafe_arena_set_allocated_timestamp(
-      ::market_data::Timestamp* timestamp);
-  ::market_data::Timestamp* unsafe_arena_release_timestamp();
+      ::trading::common::proto::TimestampProto* timestamp);
+  ::trading::common::proto::TimestampProto* unsafe_arena_release_timestamp();
 
   // double confidence = 3;
   void clear_confidence();
@@ -1161,16 +1025,16 @@ class TradingSignal final :
   void _internal_set_stop_price(double value);
   public:
 
-  // .market_data.TradingSignal.Side side = 2;
+  // .trading.market_data.proto.TradingSignal.Side side = 2;
   void clear_side();
-  ::market_data::TradingSignal_Side side() const;
-  void set_side(::market_data::TradingSignal_Side value);
+  ::trading::market_data::proto::TradingSignal_Side side() const;
+  void set_side(::trading::market_data::proto::TradingSignal_Side value);
   private:
-  ::market_data::TradingSignal_Side _internal_side() const;
-  void _internal_set_side(::market_data::TradingSignal_Side value);
+  ::trading::market_data::proto::TradingSignal_Side _internal_side() const;
+  void _internal_set_side(::trading::market_data::proto::TradingSignal_Side value);
   public:
 
-  // @@protoc_insertion_point(class_scope:market_data.TradingSignal)
+  // @@protoc_insertion_point(class_scope:trading.market_data.proto.TradingSignal)
  private:
   class _Internal;
 
@@ -1178,9 +1042,10 @@ class TradingSignal final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr instrument_;
-    ::market_data::Timestamp* expiry_;
-    ::market_data::Timestamp* timestamp_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr strategy_id_;
+    ::trading::common::proto::SymbolProto* symbol_;
+    ::trading::common::proto::TimestampProto* expiry_;
+    ::trading::common::proto::TimestampProto* timestamp_;
     double confidence_;
     double target_price_;
     double stop_price_;
@@ -1199,50 +1064,6 @@ class TradingSignal final :
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
-// Timestamp
-
-// int64 seconds = 1;
-inline void Timestamp::clear_seconds() {
-  _impl_.seconds_ = int64_t{0};
-}
-inline int64_t Timestamp::_internal_seconds() const {
-  return _impl_.seconds_;
-}
-inline int64_t Timestamp::seconds() const {
-  // @@protoc_insertion_point(field_get:market_data.Timestamp.seconds)
-  return _internal_seconds();
-}
-inline void Timestamp::_internal_set_seconds(int64_t value) {
-  
-  _impl_.seconds_ = value;
-}
-inline void Timestamp::set_seconds(int64_t value) {
-  _internal_set_seconds(value);
-  // @@protoc_insertion_point(field_set:market_data.Timestamp.seconds)
-}
-
-// int32 nanos = 2;
-inline void Timestamp::clear_nanos() {
-  _impl_.nanos_ = 0;
-}
-inline int32_t Timestamp::_internal_nanos() const {
-  return _impl_.nanos_;
-}
-inline int32_t Timestamp::nanos() const {
-  // @@protoc_insertion_point(field_get:market_data.Timestamp.nanos)
-  return _internal_nanos();
-}
-inline void Timestamp::_internal_set_nanos(int32_t value) {
-  
-  _impl_.nanos_ = value;
-}
-inline void Timestamp::set_nanos(int32_t value) {
-  _internal_set_nanos(value);
-  // @@protoc_insertion_point(field_set:market_data.Timestamp.nanos)
-}
-
-// -------------------------------------------------------------------
-
 // PriceLevel
 
 // double price = 1;
@@ -1253,7 +1074,7 @@ inline double PriceLevel::_internal_price() const {
   return _impl_.price_;
 }
 inline double PriceLevel::price() const {
-  // @@protoc_insertion_point(field_get:market_data.PriceLevel.price)
+  // @@protoc_insertion_point(field_get:trading.market_data.proto.PriceLevel.price)
   return _internal_price();
 }
 inline void PriceLevel::_internal_set_price(double value) {
@@ -1262,7 +1083,7 @@ inline void PriceLevel::_internal_set_price(double value) {
 }
 inline void PriceLevel::set_price(double value) {
   _internal_set_price(value);
-  // @@protoc_insertion_point(field_set:market_data.PriceLevel.price)
+  // @@protoc_insertion_point(field_set:trading.market_data.proto.PriceLevel.price)
 }
 
 // double quantity = 2;
@@ -1273,7 +1094,7 @@ inline double PriceLevel::_internal_quantity() const {
   return _impl_.quantity_;
 }
 inline double PriceLevel::quantity() const {
-  // @@protoc_insertion_point(field_get:market_data.PriceLevel.quantity)
+  // @@protoc_insertion_point(field_get:trading.market_data.proto.PriceLevel.quantity)
   return _internal_quantity();
 }
 inline void PriceLevel::_internal_set_quantity(double value) {
@@ -1282,7 +1103,7 @@ inline void PriceLevel::_internal_set_quantity(double value) {
 }
 inline void PriceLevel::set_quantity(double value) {
   _internal_set_quantity(value);
-  // @@protoc_insertion_point(field_set:market_data.PriceLevel.quantity)
+  // @@protoc_insertion_point(field_set:trading.market_data.proto.PriceLevel.quantity)
 }
 
 // int32 order_count = 3;
@@ -1293,7 +1114,7 @@ inline int32_t PriceLevel::_internal_order_count() const {
   return _impl_.order_count_;
 }
 inline int32_t PriceLevel::order_count() const {
-  // @@protoc_insertion_point(field_get:market_data.PriceLevel.order_count)
+  // @@protoc_insertion_point(field_get:trading.market_data.proto.PriceLevel.order_count)
   return _internal_order_count();
 }
 inline void PriceLevel::_internal_set_order_count(int32_t value) {
@@ -1302,137 +1123,136 @@ inline void PriceLevel::_internal_set_order_count(int32_t value) {
 }
 inline void PriceLevel::set_order_count(int32_t value) {
   _internal_set_order_count(value);
-  // @@protoc_insertion_point(field_set:market_data.PriceLevel.order_count)
+  // @@protoc_insertion_point(field_set:trading.market_data.proto.PriceLevel.order_count)
 }
 
 // -------------------------------------------------------------------
 
 // OrderBook
 
-// string instrument = 1;
-inline void OrderBook::clear_instrument() {
-  _impl_.instrument_.ClearToEmpty();
+// .trading.common.proto.SymbolProto symbol = 1;
+inline bool OrderBook::_internal_has_symbol() const {
+  return this != internal_default_instance() && _impl_.symbol_ != nullptr;
 }
-inline const std::string& OrderBook::instrument() const {
-  // @@protoc_insertion_point(field_get:market_data.OrderBook.instrument)
-  return _internal_instrument();
+inline bool OrderBook::has_symbol() const {
+  return _internal_has_symbol();
 }
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void OrderBook::set_instrument(ArgT0&& arg0, ArgT... args) {
- 
- _impl_.instrument_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:market_data.OrderBook.instrument)
+inline const ::trading::common::proto::SymbolProto& OrderBook::_internal_symbol() const {
+  const ::trading::common::proto::SymbolProto* p = _impl_.symbol_;
+  return p != nullptr ? *p : reinterpret_cast<const ::trading::common::proto::SymbolProto&>(
+      ::trading::common::proto::_SymbolProto_default_instance_);
 }
-inline std::string* OrderBook::mutable_instrument() {
-  std::string* _s = _internal_mutable_instrument();
-  // @@protoc_insertion_point(field_mutable:market_data.OrderBook.instrument)
-  return _s;
+inline const ::trading::common::proto::SymbolProto& OrderBook::symbol() const {
+  // @@protoc_insertion_point(field_get:trading.market_data.proto.OrderBook.symbol)
+  return _internal_symbol();
 }
-inline const std::string& OrderBook::_internal_instrument() const {
-  return _impl_.instrument_.Get();
-}
-inline void OrderBook::_internal_set_instrument(const std::string& value) {
-  
-  _impl_.instrument_.Set(value, GetArenaForAllocation());
-}
-inline std::string* OrderBook::_internal_mutable_instrument() {
-  
-  return _impl_.instrument_.Mutable(GetArenaForAllocation());
-}
-inline std::string* OrderBook::release_instrument() {
-  // @@protoc_insertion_point(field_release:market_data.OrderBook.instrument)
-  return _impl_.instrument_.Release();
-}
-inline void OrderBook::set_allocated_instrument(std::string* instrument) {
-  if (instrument != nullptr) {
+inline void OrderBook::unsafe_arena_set_allocated_symbol(
+    ::trading::common::proto::SymbolProto* symbol) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.symbol_);
+  }
+  _impl_.symbol_ = symbol;
+  if (symbol) {
     
   } else {
     
   }
-  _impl_.instrument_.SetAllocated(instrument, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.instrument_.IsDefault()) {
-    _impl_.instrument_.Set("", GetArenaForAllocation());
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:trading.market_data.proto.OrderBook.symbol)
+}
+inline ::trading::common::proto::SymbolProto* OrderBook::release_symbol() {
+  
+  ::trading::common::proto::SymbolProto* temp = _impl_.symbol_;
+  _impl_.symbol_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
   }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:market_data.OrderBook.instrument)
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
 }
-
-// string exchange = 2;
-inline void OrderBook::clear_exchange() {
-  _impl_.exchange_.ClearToEmpty();
-}
-inline const std::string& OrderBook::exchange() const {
-  // @@protoc_insertion_point(field_get:market_data.OrderBook.exchange)
-  return _internal_exchange();
-}
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void OrderBook::set_exchange(ArgT0&& arg0, ArgT... args) {
- 
- _impl_.exchange_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:market_data.OrderBook.exchange)
-}
-inline std::string* OrderBook::mutable_exchange() {
-  std::string* _s = _internal_mutable_exchange();
-  // @@protoc_insertion_point(field_mutable:market_data.OrderBook.exchange)
-  return _s;
-}
-inline const std::string& OrderBook::_internal_exchange() const {
-  return _impl_.exchange_.Get();
-}
-inline void OrderBook::_internal_set_exchange(const std::string& value) {
+inline ::trading::common::proto::SymbolProto* OrderBook::unsafe_arena_release_symbol() {
+  // @@protoc_insertion_point(field_release:trading.market_data.proto.OrderBook.symbol)
   
-  _impl_.exchange_.Set(value, GetArenaForAllocation());
+  ::trading::common::proto::SymbolProto* temp = _impl_.symbol_;
+  _impl_.symbol_ = nullptr;
+  return temp;
 }
-inline std::string* OrderBook::_internal_mutable_exchange() {
+inline ::trading::common::proto::SymbolProto* OrderBook::_internal_mutable_symbol() {
   
-  return _impl_.exchange_.Mutable(GetArenaForAllocation());
+  if (_impl_.symbol_ == nullptr) {
+    auto* p = CreateMaybeMessage<::trading::common::proto::SymbolProto>(GetArenaForAllocation());
+    _impl_.symbol_ = p;
+  }
+  return _impl_.symbol_;
 }
-inline std::string* OrderBook::release_exchange() {
-  // @@protoc_insertion_point(field_release:market_data.OrderBook.exchange)
-  return _impl_.exchange_.Release();
+inline ::trading::common::proto::SymbolProto* OrderBook::mutable_symbol() {
+  ::trading::common::proto::SymbolProto* _msg = _internal_mutable_symbol();
+  // @@protoc_insertion_point(field_mutable:trading.market_data.proto.OrderBook.symbol)
+  return _msg;
 }
-inline void OrderBook::set_allocated_exchange(std::string* exchange) {
-  if (exchange != nullptr) {
+inline void OrderBook::set_allocated_symbol(::trading::common::proto::SymbolProto* symbol) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.symbol_);
+  }
+  if (symbol) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(symbol));
+    if (message_arena != submessage_arena) {
+      symbol = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, symbol, submessage_arena);
+    }
     
   } else {
     
   }
-  _impl_.exchange_.SetAllocated(exchange, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.exchange_.IsDefault()) {
-    _impl_.exchange_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:market_data.OrderBook.exchange)
+  _impl_.symbol_ = symbol;
+  // @@protoc_insertion_point(field_set_allocated:trading.market_data.proto.OrderBook.symbol)
 }
 
-// .market_data.Timestamp timestamp = 3;
+// .trading.common.proto.ExchangeIdProto exchange_id = 2;
+inline void OrderBook::clear_exchange_id() {
+  _impl_.exchange_id_ = 0;
+}
+inline ::trading::common::proto::ExchangeIdProto OrderBook::_internal_exchange_id() const {
+  return static_cast< ::trading::common::proto::ExchangeIdProto >(_impl_.exchange_id_);
+}
+inline ::trading::common::proto::ExchangeIdProto OrderBook::exchange_id() const {
+  // @@protoc_insertion_point(field_get:trading.market_data.proto.OrderBook.exchange_id)
+  return _internal_exchange_id();
+}
+inline void OrderBook::_internal_set_exchange_id(::trading::common::proto::ExchangeIdProto value) {
+  
+  _impl_.exchange_id_ = value;
+}
+inline void OrderBook::set_exchange_id(::trading::common::proto::ExchangeIdProto value) {
+  _internal_set_exchange_id(value);
+  // @@protoc_insertion_point(field_set:trading.market_data.proto.OrderBook.exchange_id)
+}
+
+// .trading.common.proto.TimestampProto timestamp = 3;
 inline bool OrderBook::_internal_has_timestamp() const {
   return this != internal_default_instance() && _impl_.timestamp_ != nullptr;
 }
 inline bool OrderBook::has_timestamp() const {
   return _internal_has_timestamp();
 }
-inline void OrderBook::clear_timestamp() {
-  if (GetArenaForAllocation() == nullptr && _impl_.timestamp_ != nullptr) {
-    delete _impl_.timestamp_;
-  }
-  _impl_.timestamp_ = nullptr;
+inline const ::trading::common::proto::TimestampProto& OrderBook::_internal_timestamp() const {
+  const ::trading::common::proto::TimestampProto* p = _impl_.timestamp_;
+  return p != nullptr ? *p : reinterpret_cast<const ::trading::common::proto::TimestampProto&>(
+      ::trading::common::proto::_TimestampProto_default_instance_);
 }
-inline const ::market_data::Timestamp& OrderBook::_internal_timestamp() const {
-  const ::market_data::Timestamp* p = _impl_.timestamp_;
-  return p != nullptr ? *p : reinterpret_cast<const ::market_data::Timestamp&>(
-      ::market_data::_Timestamp_default_instance_);
-}
-inline const ::market_data::Timestamp& OrderBook::timestamp() const {
-  // @@protoc_insertion_point(field_get:market_data.OrderBook.timestamp)
+inline const ::trading::common::proto::TimestampProto& OrderBook::timestamp() const {
+  // @@protoc_insertion_point(field_get:trading.market_data.proto.OrderBook.timestamp)
   return _internal_timestamp();
 }
 inline void OrderBook::unsafe_arena_set_allocated_timestamp(
-    ::market_data::Timestamp* timestamp) {
+    ::trading::common::proto::TimestampProto* timestamp) {
   if (GetArenaForAllocation() == nullptr) {
     delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.timestamp_);
   }
@@ -1442,11 +1262,11 @@ inline void OrderBook::unsafe_arena_set_allocated_timestamp(
   } else {
     
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:market_data.OrderBook.timestamp)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:trading.market_data.proto.OrderBook.timestamp)
 }
-inline ::market_data::Timestamp* OrderBook::release_timestamp() {
+inline ::trading::common::proto::TimestampProto* OrderBook::release_timestamp() {
   
-  ::market_data::Timestamp* temp = _impl_.timestamp_;
+  ::trading::common::proto::TimestampProto* temp = _impl_.timestamp_;
   _impl_.timestamp_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
   auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
@@ -1459,34 +1279,35 @@ inline ::market_data::Timestamp* OrderBook::release_timestamp() {
 #endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
   return temp;
 }
-inline ::market_data::Timestamp* OrderBook::unsafe_arena_release_timestamp() {
-  // @@protoc_insertion_point(field_release:market_data.OrderBook.timestamp)
+inline ::trading::common::proto::TimestampProto* OrderBook::unsafe_arena_release_timestamp() {
+  // @@protoc_insertion_point(field_release:trading.market_data.proto.OrderBook.timestamp)
   
-  ::market_data::Timestamp* temp = _impl_.timestamp_;
+  ::trading::common::proto::TimestampProto* temp = _impl_.timestamp_;
   _impl_.timestamp_ = nullptr;
   return temp;
 }
-inline ::market_data::Timestamp* OrderBook::_internal_mutable_timestamp() {
+inline ::trading::common::proto::TimestampProto* OrderBook::_internal_mutable_timestamp() {
   
   if (_impl_.timestamp_ == nullptr) {
-    auto* p = CreateMaybeMessage<::market_data::Timestamp>(GetArenaForAllocation());
+    auto* p = CreateMaybeMessage<::trading::common::proto::TimestampProto>(GetArenaForAllocation());
     _impl_.timestamp_ = p;
   }
   return _impl_.timestamp_;
 }
-inline ::market_data::Timestamp* OrderBook::mutable_timestamp() {
-  ::market_data::Timestamp* _msg = _internal_mutable_timestamp();
-  // @@protoc_insertion_point(field_mutable:market_data.OrderBook.timestamp)
+inline ::trading::common::proto::TimestampProto* OrderBook::mutable_timestamp() {
+  ::trading::common::proto::TimestampProto* _msg = _internal_mutable_timestamp();
+  // @@protoc_insertion_point(field_mutable:trading.market_data.proto.OrderBook.timestamp)
   return _msg;
 }
-inline void OrderBook::set_allocated_timestamp(::market_data::Timestamp* timestamp) {
+inline void OrderBook::set_allocated_timestamp(::trading::common::proto::TimestampProto* timestamp) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   if (message_arena == nullptr) {
-    delete _impl_.timestamp_;
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.timestamp_);
   }
   if (timestamp) {
     ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(timestamp);
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(timestamp));
     if (message_arena != submessage_arena) {
       timestamp = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
           message_arena, timestamp, submessage_arena);
@@ -1496,10 +1317,10 @@ inline void OrderBook::set_allocated_timestamp(::market_data::Timestamp* timesta
     
   }
   _impl_.timestamp_ = timestamp;
-  // @@protoc_insertion_point(field_set_allocated:market_data.OrderBook.timestamp)
+  // @@protoc_insertion_point(field_set_allocated:trading.market_data.proto.OrderBook.timestamp)
 }
 
-// repeated .market_data.PriceLevel bids = 4;
+// repeated .trading.market_data.proto.PriceLevel bids = 4;
 inline int OrderBook::_internal_bids_size() const {
   return _impl_.bids_.size();
 }
@@ -1509,37 +1330,37 @@ inline int OrderBook::bids_size() const {
 inline void OrderBook::clear_bids() {
   _impl_.bids_.Clear();
 }
-inline ::market_data::PriceLevel* OrderBook::mutable_bids(int index) {
-  // @@protoc_insertion_point(field_mutable:market_data.OrderBook.bids)
+inline ::trading::market_data::proto::PriceLevel* OrderBook::mutable_bids(int index) {
+  // @@protoc_insertion_point(field_mutable:trading.market_data.proto.OrderBook.bids)
   return _impl_.bids_.Mutable(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel >*
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel >*
 OrderBook::mutable_bids() {
-  // @@protoc_insertion_point(field_mutable_list:market_data.OrderBook.bids)
+  // @@protoc_insertion_point(field_mutable_list:trading.market_data.proto.OrderBook.bids)
   return &_impl_.bids_;
 }
-inline const ::market_data::PriceLevel& OrderBook::_internal_bids(int index) const {
+inline const ::trading::market_data::proto::PriceLevel& OrderBook::_internal_bids(int index) const {
   return _impl_.bids_.Get(index);
 }
-inline const ::market_data::PriceLevel& OrderBook::bids(int index) const {
-  // @@protoc_insertion_point(field_get:market_data.OrderBook.bids)
+inline const ::trading::market_data::proto::PriceLevel& OrderBook::bids(int index) const {
+  // @@protoc_insertion_point(field_get:trading.market_data.proto.OrderBook.bids)
   return _internal_bids(index);
 }
-inline ::market_data::PriceLevel* OrderBook::_internal_add_bids() {
+inline ::trading::market_data::proto::PriceLevel* OrderBook::_internal_add_bids() {
   return _impl_.bids_.Add();
 }
-inline ::market_data::PriceLevel* OrderBook::add_bids() {
-  ::market_data::PriceLevel* _add = _internal_add_bids();
-  // @@protoc_insertion_point(field_add:market_data.OrderBook.bids)
+inline ::trading::market_data::proto::PriceLevel* OrderBook::add_bids() {
+  ::trading::market_data::proto::PriceLevel* _add = _internal_add_bids();
+  // @@protoc_insertion_point(field_add:trading.market_data.proto.OrderBook.bids)
   return _add;
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel >&
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel >&
 OrderBook::bids() const {
-  // @@protoc_insertion_point(field_list:market_data.OrderBook.bids)
+  // @@protoc_insertion_point(field_list:trading.market_data.proto.OrderBook.bids)
   return _impl_.bids_;
 }
 
-// repeated .market_data.PriceLevel asks = 5;
+// repeated .trading.market_data.proto.PriceLevel asks = 5;
 inline int OrderBook::_internal_asks_size() const {
   return _impl_.asks_.size();
 }
@@ -1549,33 +1370,33 @@ inline int OrderBook::asks_size() const {
 inline void OrderBook::clear_asks() {
   _impl_.asks_.Clear();
 }
-inline ::market_data::PriceLevel* OrderBook::mutable_asks(int index) {
-  // @@protoc_insertion_point(field_mutable:market_data.OrderBook.asks)
+inline ::trading::market_data::proto::PriceLevel* OrderBook::mutable_asks(int index) {
+  // @@protoc_insertion_point(field_mutable:trading.market_data.proto.OrderBook.asks)
   return _impl_.asks_.Mutable(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel >*
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel >*
 OrderBook::mutable_asks() {
-  // @@protoc_insertion_point(field_mutable_list:market_data.OrderBook.asks)
+  // @@protoc_insertion_point(field_mutable_list:trading.market_data.proto.OrderBook.asks)
   return &_impl_.asks_;
 }
-inline const ::market_data::PriceLevel& OrderBook::_internal_asks(int index) const {
+inline const ::trading::market_data::proto::PriceLevel& OrderBook::_internal_asks(int index) const {
   return _impl_.asks_.Get(index);
 }
-inline const ::market_data::PriceLevel& OrderBook::asks(int index) const {
-  // @@protoc_insertion_point(field_get:market_data.OrderBook.asks)
+inline const ::trading::market_data::proto::PriceLevel& OrderBook::asks(int index) const {
+  // @@protoc_insertion_point(field_get:trading.market_data.proto.OrderBook.asks)
   return _internal_asks(index);
 }
-inline ::market_data::PriceLevel* OrderBook::_internal_add_asks() {
+inline ::trading::market_data::proto::PriceLevel* OrderBook::_internal_add_asks() {
   return _impl_.asks_.Add();
 }
-inline ::market_data::PriceLevel* OrderBook::add_asks() {
-  ::market_data::PriceLevel* _add = _internal_add_asks();
-  // @@protoc_insertion_point(field_add:market_data.OrderBook.asks)
+inline ::trading::market_data::proto::PriceLevel* OrderBook::add_asks() {
+  ::trading::market_data::proto::PriceLevel* _add = _internal_add_asks();
+  // @@protoc_insertion_point(field_add:trading.market_data.proto.OrderBook.asks)
   return _add;
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel >&
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel >&
 OrderBook::asks() const {
-  // @@protoc_insertion_point(field_list:market_data.OrderBook.asks)
+  // @@protoc_insertion_point(field_list:trading.market_data.proto.OrderBook.asks)
   return _impl_.asks_;
 }
 
@@ -1583,130 +1404,129 @@ OrderBook::asks() const {
 
 // OrderBookUpdate
 
-// string instrument = 1;
-inline void OrderBookUpdate::clear_instrument() {
-  _impl_.instrument_.ClearToEmpty();
+// .trading.common.proto.SymbolProto symbol = 1;
+inline bool OrderBookUpdate::_internal_has_symbol() const {
+  return this != internal_default_instance() && _impl_.symbol_ != nullptr;
 }
-inline const std::string& OrderBookUpdate::instrument() const {
-  // @@protoc_insertion_point(field_get:market_data.OrderBookUpdate.instrument)
-  return _internal_instrument();
+inline bool OrderBookUpdate::has_symbol() const {
+  return _internal_has_symbol();
 }
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void OrderBookUpdate::set_instrument(ArgT0&& arg0, ArgT... args) {
- 
- _impl_.instrument_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:market_data.OrderBookUpdate.instrument)
+inline const ::trading::common::proto::SymbolProto& OrderBookUpdate::_internal_symbol() const {
+  const ::trading::common::proto::SymbolProto* p = _impl_.symbol_;
+  return p != nullptr ? *p : reinterpret_cast<const ::trading::common::proto::SymbolProto&>(
+      ::trading::common::proto::_SymbolProto_default_instance_);
 }
-inline std::string* OrderBookUpdate::mutable_instrument() {
-  std::string* _s = _internal_mutable_instrument();
-  // @@protoc_insertion_point(field_mutable:market_data.OrderBookUpdate.instrument)
-  return _s;
+inline const ::trading::common::proto::SymbolProto& OrderBookUpdate::symbol() const {
+  // @@protoc_insertion_point(field_get:trading.market_data.proto.OrderBookUpdate.symbol)
+  return _internal_symbol();
 }
-inline const std::string& OrderBookUpdate::_internal_instrument() const {
-  return _impl_.instrument_.Get();
-}
-inline void OrderBookUpdate::_internal_set_instrument(const std::string& value) {
-  
-  _impl_.instrument_.Set(value, GetArenaForAllocation());
-}
-inline std::string* OrderBookUpdate::_internal_mutable_instrument() {
-  
-  return _impl_.instrument_.Mutable(GetArenaForAllocation());
-}
-inline std::string* OrderBookUpdate::release_instrument() {
-  // @@protoc_insertion_point(field_release:market_data.OrderBookUpdate.instrument)
-  return _impl_.instrument_.Release();
-}
-inline void OrderBookUpdate::set_allocated_instrument(std::string* instrument) {
-  if (instrument != nullptr) {
+inline void OrderBookUpdate::unsafe_arena_set_allocated_symbol(
+    ::trading::common::proto::SymbolProto* symbol) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.symbol_);
+  }
+  _impl_.symbol_ = symbol;
+  if (symbol) {
     
   } else {
     
   }
-  _impl_.instrument_.SetAllocated(instrument, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.instrument_.IsDefault()) {
-    _impl_.instrument_.Set("", GetArenaForAllocation());
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:trading.market_data.proto.OrderBookUpdate.symbol)
+}
+inline ::trading::common::proto::SymbolProto* OrderBookUpdate::release_symbol() {
+  
+  ::trading::common::proto::SymbolProto* temp = _impl_.symbol_;
+  _impl_.symbol_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
   }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:market_data.OrderBookUpdate.instrument)
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
 }
-
-// string exchange = 2;
-inline void OrderBookUpdate::clear_exchange() {
-  _impl_.exchange_.ClearToEmpty();
-}
-inline const std::string& OrderBookUpdate::exchange() const {
-  // @@protoc_insertion_point(field_get:market_data.OrderBookUpdate.exchange)
-  return _internal_exchange();
-}
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void OrderBookUpdate::set_exchange(ArgT0&& arg0, ArgT... args) {
- 
- _impl_.exchange_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:market_data.OrderBookUpdate.exchange)
-}
-inline std::string* OrderBookUpdate::mutable_exchange() {
-  std::string* _s = _internal_mutable_exchange();
-  // @@protoc_insertion_point(field_mutable:market_data.OrderBookUpdate.exchange)
-  return _s;
-}
-inline const std::string& OrderBookUpdate::_internal_exchange() const {
-  return _impl_.exchange_.Get();
-}
-inline void OrderBookUpdate::_internal_set_exchange(const std::string& value) {
+inline ::trading::common::proto::SymbolProto* OrderBookUpdate::unsafe_arena_release_symbol() {
+  // @@protoc_insertion_point(field_release:trading.market_data.proto.OrderBookUpdate.symbol)
   
-  _impl_.exchange_.Set(value, GetArenaForAllocation());
+  ::trading::common::proto::SymbolProto* temp = _impl_.symbol_;
+  _impl_.symbol_ = nullptr;
+  return temp;
 }
-inline std::string* OrderBookUpdate::_internal_mutable_exchange() {
+inline ::trading::common::proto::SymbolProto* OrderBookUpdate::_internal_mutable_symbol() {
   
-  return _impl_.exchange_.Mutable(GetArenaForAllocation());
+  if (_impl_.symbol_ == nullptr) {
+    auto* p = CreateMaybeMessage<::trading::common::proto::SymbolProto>(GetArenaForAllocation());
+    _impl_.symbol_ = p;
+  }
+  return _impl_.symbol_;
 }
-inline std::string* OrderBookUpdate::release_exchange() {
-  // @@protoc_insertion_point(field_release:market_data.OrderBookUpdate.exchange)
-  return _impl_.exchange_.Release();
+inline ::trading::common::proto::SymbolProto* OrderBookUpdate::mutable_symbol() {
+  ::trading::common::proto::SymbolProto* _msg = _internal_mutable_symbol();
+  // @@protoc_insertion_point(field_mutable:trading.market_data.proto.OrderBookUpdate.symbol)
+  return _msg;
 }
-inline void OrderBookUpdate::set_allocated_exchange(std::string* exchange) {
-  if (exchange != nullptr) {
+inline void OrderBookUpdate::set_allocated_symbol(::trading::common::proto::SymbolProto* symbol) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.symbol_);
+  }
+  if (symbol) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(symbol));
+    if (message_arena != submessage_arena) {
+      symbol = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, symbol, submessage_arena);
+    }
     
   } else {
     
   }
-  _impl_.exchange_.SetAllocated(exchange, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.exchange_.IsDefault()) {
-    _impl_.exchange_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:market_data.OrderBookUpdate.exchange)
+  _impl_.symbol_ = symbol;
+  // @@protoc_insertion_point(field_set_allocated:trading.market_data.proto.OrderBookUpdate.symbol)
 }
 
-// .market_data.Timestamp timestamp = 3;
+// .trading.common.proto.ExchangeIdProto exchange_id = 2;
+inline void OrderBookUpdate::clear_exchange_id() {
+  _impl_.exchange_id_ = 0;
+}
+inline ::trading::common::proto::ExchangeIdProto OrderBookUpdate::_internal_exchange_id() const {
+  return static_cast< ::trading::common::proto::ExchangeIdProto >(_impl_.exchange_id_);
+}
+inline ::trading::common::proto::ExchangeIdProto OrderBookUpdate::exchange_id() const {
+  // @@protoc_insertion_point(field_get:trading.market_data.proto.OrderBookUpdate.exchange_id)
+  return _internal_exchange_id();
+}
+inline void OrderBookUpdate::_internal_set_exchange_id(::trading::common::proto::ExchangeIdProto value) {
+  
+  _impl_.exchange_id_ = value;
+}
+inline void OrderBookUpdate::set_exchange_id(::trading::common::proto::ExchangeIdProto value) {
+  _internal_set_exchange_id(value);
+  // @@protoc_insertion_point(field_set:trading.market_data.proto.OrderBookUpdate.exchange_id)
+}
+
+// .trading.common.proto.TimestampProto timestamp = 3;
 inline bool OrderBookUpdate::_internal_has_timestamp() const {
   return this != internal_default_instance() && _impl_.timestamp_ != nullptr;
 }
 inline bool OrderBookUpdate::has_timestamp() const {
   return _internal_has_timestamp();
 }
-inline void OrderBookUpdate::clear_timestamp() {
-  if (GetArenaForAllocation() == nullptr && _impl_.timestamp_ != nullptr) {
-    delete _impl_.timestamp_;
-  }
-  _impl_.timestamp_ = nullptr;
+inline const ::trading::common::proto::TimestampProto& OrderBookUpdate::_internal_timestamp() const {
+  const ::trading::common::proto::TimestampProto* p = _impl_.timestamp_;
+  return p != nullptr ? *p : reinterpret_cast<const ::trading::common::proto::TimestampProto&>(
+      ::trading::common::proto::_TimestampProto_default_instance_);
 }
-inline const ::market_data::Timestamp& OrderBookUpdate::_internal_timestamp() const {
-  const ::market_data::Timestamp* p = _impl_.timestamp_;
-  return p != nullptr ? *p : reinterpret_cast<const ::market_data::Timestamp&>(
-      ::market_data::_Timestamp_default_instance_);
-}
-inline const ::market_data::Timestamp& OrderBookUpdate::timestamp() const {
-  // @@protoc_insertion_point(field_get:market_data.OrderBookUpdate.timestamp)
+inline const ::trading::common::proto::TimestampProto& OrderBookUpdate::timestamp() const {
+  // @@protoc_insertion_point(field_get:trading.market_data.proto.OrderBookUpdate.timestamp)
   return _internal_timestamp();
 }
 inline void OrderBookUpdate::unsafe_arena_set_allocated_timestamp(
-    ::market_data::Timestamp* timestamp) {
+    ::trading::common::proto::TimestampProto* timestamp) {
   if (GetArenaForAllocation() == nullptr) {
     delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.timestamp_);
   }
@@ -1716,11 +1536,11 @@ inline void OrderBookUpdate::unsafe_arena_set_allocated_timestamp(
   } else {
     
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:market_data.OrderBookUpdate.timestamp)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:trading.market_data.proto.OrderBookUpdate.timestamp)
 }
-inline ::market_data::Timestamp* OrderBookUpdate::release_timestamp() {
+inline ::trading::common::proto::TimestampProto* OrderBookUpdate::release_timestamp() {
   
-  ::market_data::Timestamp* temp = _impl_.timestamp_;
+  ::trading::common::proto::TimestampProto* temp = _impl_.timestamp_;
   _impl_.timestamp_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
   auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
@@ -1733,34 +1553,35 @@ inline ::market_data::Timestamp* OrderBookUpdate::release_timestamp() {
 #endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
   return temp;
 }
-inline ::market_data::Timestamp* OrderBookUpdate::unsafe_arena_release_timestamp() {
-  // @@protoc_insertion_point(field_release:market_data.OrderBookUpdate.timestamp)
+inline ::trading::common::proto::TimestampProto* OrderBookUpdate::unsafe_arena_release_timestamp() {
+  // @@protoc_insertion_point(field_release:trading.market_data.proto.OrderBookUpdate.timestamp)
   
-  ::market_data::Timestamp* temp = _impl_.timestamp_;
+  ::trading::common::proto::TimestampProto* temp = _impl_.timestamp_;
   _impl_.timestamp_ = nullptr;
   return temp;
 }
-inline ::market_data::Timestamp* OrderBookUpdate::_internal_mutable_timestamp() {
+inline ::trading::common::proto::TimestampProto* OrderBookUpdate::_internal_mutable_timestamp() {
   
   if (_impl_.timestamp_ == nullptr) {
-    auto* p = CreateMaybeMessage<::market_data::Timestamp>(GetArenaForAllocation());
+    auto* p = CreateMaybeMessage<::trading::common::proto::TimestampProto>(GetArenaForAllocation());
     _impl_.timestamp_ = p;
   }
   return _impl_.timestamp_;
 }
-inline ::market_data::Timestamp* OrderBookUpdate::mutable_timestamp() {
-  ::market_data::Timestamp* _msg = _internal_mutable_timestamp();
-  // @@protoc_insertion_point(field_mutable:market_data.OrderBookUpdate.timestamp)
+inline ::trading::common::proto::TimestampProto* OrderBookUpdate::mutable_timestamp() {
+  ::trading::common::proto::TimestampProto* _msg = _internal_mutable_timestamp();
+  // @@protoc_insertion_point(field_mutable:trading.market_data.proto.OrderBookUpdate.timestamp)
   return _msg;
 }
-inline void OrderBookUpdate::set_allocated_timestamp(::market_data::Timestamp* timestamp) {
+inline void OrderBookUpdate::set_allocated_timestamp(::trading::common::proto::TimestampProto* timestamp) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   if (message_arena == nullptr) {
-    delete _impl_.timestamp_;
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.timestamp_);
   }
   if (timestamp) {
     ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(timestamp);
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(timestamp));
     if (message_arena != submessage_arena) {
       timestamp = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
           message_arena, timestamp, submessage_arena);
@@ -1770,10 +1591,10 @@ inline void OrderBookUpdate::set_allocated_timestamp(::market_data::Timestamp* t
     
   }
   _impl_.timestamp_ = timestamp;
-  // @@protoc_insertion_point(field_set_allocated:market_data.OrderBookUpdate.timestamp)
+  // @@protoc_insertion_point(field_set_allocated:trading.market_data.proto.OrderBookUpdate.timestamp)
 }
 
-// repeated .market_data.PriceLevel bids_added = 4;
+// repeated .trading.market_data.proto.PriceLevel bids_added = 4;
 inline int OrderBookUpdate::_internal_bids_added_size() const {
   return _impl_.bids_added_.size();
 }
@@ -1783,37 +1604,37 @@ inline int OrderBookUpdate::bids_added_size() const {
 inline void OrderBookUpdate::clear_bids_added() {
   _impl_.bids_added_.Clear();
 }
-inline ::market_data::PriceLevel* OrderBookUpdate::mutable_bids_added(int index) {
-  // @@protoc_insertion_point(field_mutable:market_data.OrderBookUpdate.bids_added)
+inline ::trading::market_data::proto::PriceLevel* OrderBookUpdate::mutable_bids_added(int index) {
+  // @@protoc_insertion_point(field_mutable:trading.market_data.proto.OrderBookUpdate.bids_added)
   return _impl_.bids_added_.Mutable(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel >*
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel >*
 OrderBookUpdate::mutable_bids_added() {
-  // @@protoc_insertion_point(field_mutable_list:market_data.OrderBookUpdate.bids_added)
+  // @@protoc_insertion_point(field_mutable_list:trading.market_data.proto.OrderBookUpdate.bids_added)
   return &_impl_.bids_added_;
 }
-inline const ::market_data::PriceLevel& OrderBookUpdate::_internal_bids_added(int index) const {
+inline const ::trading::market_data::proto::PriceLevel& OrderBookUpdate::_internal_bids_added(int index) const {
   return _impl_.bids_added_.Get(index);
 }
-inline const ::market_data::PriceLevel& OrderBookUpdate::bids_added(int index) const {
-  // @@protoc_insertion_point(field_get:market_data.OrderBookUpdate.bids_added)
+inline const ::trading::market_data::proto::PriceLevel& OrderBookUpdate::bids_added(int index) const {
+  // @@protoc_insertion_point(field_get:trading.market_data.proto.OrderBookUpdate.bids_added)
   return _internal_bids_added(index);
 }
-inline ::market_data::PriceLevel* OrderBookUpdate::_internal_add_bids_added() {
+inline ::trading::market_data::proto::PriceLevel* OrderBookUpdate::_internal_add_bids_added() {
   return _impl_.bids_added_.Add();
 }
-inline ::market_data::PriceLevel* OrderBookUpdate::add_bids_added() {
-  ::market_data::PriceLevel* _add = _internal_add_bids_added();
-  // @@protoc_insertion_point(field_add:market_data.OrderBookUpdate.bids_added)
+inline ::trading::market_data::proto::PriceLevel* OrderBookUpdate::add_bids_added() {
+  ::trading::market_data::proto::PriceLevel* _add = _internal_add_bids_added();
+  // @@protoc_insertion_point(field_add:trading.market_data.proto.OrderBookUpdate.bids_added)
   return _add;
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel >&
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel >&
 OrderBookUpdate::bids_added() const {
-  // @@protoc_insertion_point(field_list:market_data.OrderBookUpdate.bids_added)
+  // @@protoc_insertion_point(field_list:trading.market_data.proto.OrderBookUpdate.bids_added)
   return _impl_.bids_added_;
 }
 
-// repeated .market_data.PriceLevel bids_removed = 5;
+// repeated .trading.market_data.proto.PriceLevel bids_removed = 5;
 inline int OrderBookUpdate::_internal_bids_removed_size() const {
   return _impl_.bids_removed_.size();
 }
@@ -1823,37 +1644,37 @@ inline int OrderBookUpdate::bids_removed_size() const {
 inline void OrderBookUpdate::clear_bids_removed() {
   _impl_.bids_removed_.Clear();
 }
-inline ::market_data::PriceLevel* OrderBookUpdate::mutable_bids_removed(int index) {
-  // @@protoc_insertion_point(field_mutable:market_data.OrderBookUpdate.bids_removed)
+inline ::trading::market_data::proto::PriceLevel* OrderBookUpdate::mutable_bids_removed(int index) {
+  // @@protoc_insertion_point(field_mutable:trading.market_data.proto.OrderBookUpdate.bids_removed)
   return _impl_.bids_removed_.Mutable(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel >*
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel >*
 OrderBookUpdate::mutable_bids_removed() {
-  // @@protoc_insertion_point(field_mutable_list:market_data.OrderBookUpdate.bids_removed)
+  // @@protoc_insertion_point(field_mutable_list:trading.market_data.proto.OrderBookUpdate.bids_removed)
   return &_impl_.bids_removed_;
 }
-inline const ::market_data::PriceLevel& OrderBookUpdate::_internal_bids_removed(int index) const {
+inline const ::trading::market_data::proto::PriceLevel& OrderBookUpdate::_internal_bids_removed(int index) const {
   return _impl_.bids_removed_.Get(index);
 }
-inline const ::market_data::PriceLevel& OrderBookUpdate::bids_removed(int index) const {
-  // @@protoc_insertion_point(field_get:market_data.OrderBookUpdate.bids_removed)
+inline const ::trading::market_data::proto::PriceLevel& OrderBookUpdate::bids_removed(int index) const {
+  // @@protoc_insertion_point(field_get:trading.market_data.proto.OrderBookUpdate.bids_removed)
   return _internal_bids_removed(index);
 }
-inline ::market_data::PriceLevel* OrderBookUpdate::_internal_add_bids_removed() {
+inline ::trading::market_data::proto::PriceLevel* OrderBookUpdate::_internal_add_bids_removed() {
   return _impl_.bids_removed_.Add();
 }
-inline ::market_data::PriceLevel* OrderBookUpdate::add_bids_removed() {
-  ::market_data::PriceLevel* _add = _internal_add_bids_removed();
-  // @@protoc_insertion_point(field_add:market_data.OrderBookUpdate.bids_removed)
+inline ::trading::market_data::proto::PriceLevel* OrderBookUpdate::add_bids_removed() {
+  ::trading::market_data::proto::PriceLevel* _add = _internal_add_bids_removed();
+  // @@protoc_insertion_point(field_add:trading.market_data.proto.OrderBookUpdate.bids_removed)
   return _add;
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel >&
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel >&
 OrderBookUpdate::bids_removed() const {
-  // @@protoc_insertion_point(field_list:market_data.OrderBookUpdate.bids_removed)
+  // @@protoc_insertion_point(field_list:trading.market_data.proto.OrderBookUpdate.bids_removed)
   return _impl_.bids_removed_;
 }
 
-// repeated .market_data.PriceLevel asks_added = 6;
+// repeated .trading.market_data.proto.PriceLevel asks_added = 6;
 inline int OrderBookUpdate::_internal_asks_added_size() const {
   return _impl_.asks_added_.size();
 }
@@ -1863,37 +1684,37 @@ inline int OrderBookUpdate::asks_added_size() const {
 inline void OrderBookUpdate::clear_asks_added() {
   _impl_.asks_added_.Clear();
 }
-inline ::market_data::PriceLevel* OrderBookUpdate::mutable_asks_added(int index) {
-  // @@protoc_insertion_point(field_mutable:market_data.OrderBookUpdate.asks_added)
+inline ::trading::market_data::proto::PriceLevel* OrderBookUpdate::mutable_asks_added(int index) {
+  // @@protoc_insertion_point(field_mutable:trading.market_data.proto.OrderBookUpdate.asks_added)
   return _impl_.asks_added_.Mutable(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel >*
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel >*
 OrderBookUpdate::mutable_asks_added() {
-  // @@protoc_insertion_point(field_mutable_list:market_data.OrderBookUpdate.asks_added)
+  // @@protoc_insertion_point(field_mutable_list:trading.market_data.proto.OrderBookUpdate.asks_added)
   return &_impl_.asks_added_;
 }
-inline const ::market_data::PriceLevel& OrderBookUpdate::_internal_asks_added(int index) const {
+inline const ::trading::market_data::proto::PriceLevel& OrderBookUpdate::_internal_asks_added(int index) const {
   return _impl_.asks_added_.Get(index);
 }
-inline const ::market_data::PriceLevel& OrderBookUpdate::asks_added(int index) const {
-  // @@protoc_insertion_point(field_get:market_data.OrderBookUpdate.asks_added)
+inline const ::trading::market_data::proto::PriceLevel& OrderBookUpdate::asks_added(int index) const {
+  // @@protoc_insertion_point(field_get:trading.market_data.proto.OrderBookUpdate.asks_added)
   return _internal_asks_added(index);
 }
-inline ::market_data::PriceLevel* OrderBookUpdate::_internal_add_asks_added() {
+inline ::trading::market_data::proto::PriceLevel* OrderBookUpdate::_internal_add_asks_added() {
   return _impl_.asks_added_.Add();
 }
-inline ::market_data::PriceLevel* OrderBookUpdate::add_asks_added() {
-  ::market_data::PriceLevel* _add = _internal_add_asks_added();
-  // @@protoc_insertion_point(field_add:market_data.OrderBookUpdate.asks_added)
+inline ::trading::market_data::proto::PriceLevel* OrderBookUpdate::add_asks_added() {
+  ::trading::market_data::proto::PriceLevel* _add = _internal_add_asks_added();
+  // @@protoc_insertion_point(field_add:trading.market_data.proto.OrderBookUpdate.asks_added)
   return _add;
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel >&
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel >&
 OrderBookUpdate::asks_added() const {
-  // @@protoc_insertion_point(field_list:market_data.OrderBookUpdate.asks_added)
+  // @@protoc_insertion_point(field_list:trading.market_data.proto.OrderBookUpdate.asks_added)
   return _impl_.asks_added_;
 }
 
-// repeated .market_data.PriceLevel asks_removed = 7;
+// repeated .trading.market_data.proto.PriceLevel asks_removed = 7;
 inline int OrderBookUpdate::_internal_asks_removed_size() const {
   return _impl_.asks_removed_.size();
 }
@@ -1903,33 +1724,33 @@ inline int OrderBookUpdate::asks_removed_size() const {
 inline void OrderBookUpdate::clear_asks_removed() {
   _impl_.asks_removed_.Clear();
 }
-inline ::market_data::PriceLevel* OrderBookUpdate::mutable_asks_removed(int index) {
-  // @@protoc_insertion_point(field_mutable:market_data.OrderBookUpdate.asks_removed)
+inline ::trading::market_data::proto::PriceLevel* OrderBookUpdate::mutable_asks_removed(int index) {
+  // @@protoc_insertion_point(field_mutable:trading.market_data.proto.OrderBookUpdate.asks_removed)
   return _impl_.asks_removed_.Mutable(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel >*
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel >*
 OrderBookUpdate::mutable_asks_removed() {
-  // @@protoc_insertion_point(field_mutable_list:market_data.OrderBookUpdate.asks_removed)
+  // @@protoc_insertion_point(field_mutable_list:trading.market_data.proto.OrderBookUpdate.asks_removed)
   return &_impl_.asks_removed_;
 }
-inline const ::market_data::PriceLevel& OrderBookUpdate::_internal_asks_removed(int index) const {
+inline const ::trading::market_data::proto::PriceLevel& OrderBookUpdate::_internal_asks_removed(int index) const {
   return _impl_.asks_removed_.Get(index);
 }
-inline const ::market_data::PriceLevel& OrderBookUpdate::asks_removed(int index) const {
-  // @@protoc_insertion_point(field_get:market_data.OrderBookUpdate.asks_removed)
+inline const ::trading::market_data::proto::PriceLevel& OrderBookUpdate::asks_removed(int index) const {
+  // @@protoc_insertion_point(field_get:trading.market_data.proto.OrderBookUpdate.asks_removed)
   return _internal_asks_removed(index);
 }
-inline ::market_data::PriceLevel* OrderBookUpdate::_internal_add_asks_removed() {
+inline ::trading::market_data::proto::PriceLevel* OrderBookUpdate::_internal_add_asks_removed() {
   return _impl_.asks_removed_.Add();
 }
-inline ::market_data::PriceLevel* OrderBookUpdate::add_asks_removed() {
-  ::market_data::PriceLevel* _add = _internal_add_asks_removed();
-  // @@protoc_insertion_point(field_add:market_data.OrderBookUpdate.asks_removed)
+inline ::trading::market_data::proto::PriceLevel* OrderBookUpdate::add_asks_removed() {
+  ::trading::market_data::proto::PriceLevel* _add = _internal_add_asks_removed();
+  // @@protoc_insertion_point(field_add:trading.market_data.proto.OrderBookUpdate.asks_removed)
   return _add;
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::market_data::PriceLevel >&
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::trading::market_data::proto::PriceLevel >&
 OrderBookUpdate::asks_removed() const {
-  // @@protoc_insertion_point(field_list:market_data.OrderBookUpdate.asks_removed)
+  // @@protoc_insertion_point(field_list:trading.market_data.proto.OrderBookUpdate.asks_removed)
   return _impl_.asks_removed_;
 }
 
@@ -1937,74 +1758,109 @@ OrderBookUpdate::asks_removed() const {
 
 // TradingSignal
 
-// string instrument = 1;
-inline void TradingSignal::clear_instrument() {
-  _impl_.instrument_.ClearToEmpty();
+// .trading.common.proto.SymbolProto symbol = 1;
+inline bool TradingSignal::_internal_has_symbol() const {
+  return this != internal_default_instance() && _impl_.symbol_ != nullptr;
 }
-inline const std::string& TradingSignal::instrument() const {
-  // @@protoc_insertion_point(field_get:market_data.TradingSignal.instrument)
-  return _internal_instrument();
+inline bool TradingSignal::has_symbol() const {
+  return _internal_has_symbol();
 }
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void TradingSignal::set_instrument(ArgT0&& arg0, ArgT... args) {
- 
- _impl_.instrument_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:market_data.TradingSignal.instrument)
+inline const ::trading::common::proto::SymbolProto& TradingSignal::_internal_symbol() const {
+  const ::trading::common::proto::SymbolProto* p = _impl_.symbol_;
+  return p != nullptr ? *p : reinterpret_cast<const ::trading::common::proto::SymbolProto&>(
+      ::trading::common::proto::_SymbolProto_default_instance_);
 }
-inline std::string* TradingSignal::mutable_instrument() {
-  std::string* _s = _internal_mutable_instrument();
-  // @@protoc_insertion_point(field_mutable:market_data.TradingSignal.instrument)
-  return _s;
+inline const ::trading::common::proto::SymbolProto& TradingSignal::symbol() const {
+  // @@protoc_insertion_point(field_get:trading.market_data.proto.TradingSignal.symbol)
+  return _internal_symbol();
 }
-inline const std::string& TradingSignal::_internal_instrument() const {
-  return _impl_.instrument_.Get();
-}
-inline void TradingSignal::_internal_set_instrument(const std::string& value) {
-  
-  _impl_.instrument_.Set(value, GetArenaForAllocation());
-}
-inline std::string* TradingSignal::_internal_mutable_instrument() {
-  
-  return _impl_.instrument_.Mutable(GetArenaForAllocation());
-}
-inline std::string* TradingSignal::release_instrument() {
-  // @@protoc_insertion_point(field_release:market_data.TradingSignal.instrument)
-  return _impl_.instrument_.Release();
-}
-inline void TradingSignal::set_allocated_instrument(std::string* instrument) {
-  if (instrument != nullptr) {
+inline void TradingSignal::unsafe_arena_set_allocated_symbol(
+    ::trading::common::proto::SymbolProto* symbol) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.symbol_);
+  }
+  _impl_.symbol_ = symbol;
+  if (symbol) {
     
   } else {
     
   }
-  _impl_.instrument_.SetAllocated(instrument, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.instrument_.IsDefault()) {
-    _impl_.instrument_.Set("", GetArenaForAllocation());
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:trading.market_data.proto.TradingSignal.symbol)
+}
+inline ::trading::common::proto::SymbolProto* TradingSignal::release_symbol() {
+  
+  ::trading::common::proto::SymbolProto* temp = _impl_.symbol_;
+  _impl_.symbol_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
   }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:market_data.TradingSignal.instrument)
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::trading::common::proto::SymbolProto* TradingSignal::unsafe_arena_release_symbol() {
+  // @@protoc_insertion_point(field_release:trading.market_data.proto.TradingSignal.symbol)
+  
+  ::trading::common::proto::SymbolProto* temp = _impl_.symbol_;
+  _impl_.symbol_ = nullptr;
+  return temp;
+}
+inline ::trading::common::proto::SymbolProto* TradingSignal::_internal_mutable_symbol() {
+  
+  if (_impl_.symbol_ == nullptr) {
+    auto* p = CreateMaybeMessage<::trading::common::proto::SymbolProto>(GetArenaForAllocation());
+    _impl_.symbol_ = p;
+  }
+  return _impl_.symbol_;
+}
+inline ::trading::common::proto::SymbolProto* TradingSignal::mutable_symbol() {
+  ::trading::common::proto::SymbolProto* _msg = _internal_mutable_symbol();
+  // @@protoc_insertion_point(field_mutable:trading.market_data.proto.TradingSignal.symbol)
+  return _msg;
+}
+inline void TradingSignal::set_allocated_symbol(::trading::common::proto::SymbolProto* symbol) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.symbol_);
+  }
+  if (symbol) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(symbol));
+    if (message_arena != submessage_arena) {
+      symbol = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, symbol, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  _impl_.symbol_ = symbol;
+  // @@protoc_insertion_point(field_set_allocated:trading.market_data.proto.TradingSignal.symbol)
 }
 
-// .market_data.TradingSignal.Side side = 2;
+// .trading.market_data.proto.TradingSignal.Side side = 2;
 inline void TradingSignal::clear_side() {
   _impl_.side_ = 0;
 }
-inline ::market_data::TradingSignal_Side TradingSignal::_internal_side() const {
-  return static_cast< ::market_data::TradingSignal_Side >(_impl_.side_);
+inline ::trading::market_data::proto::TradingSignal_Side TradingSignal::_internal_side() const {
+  return static_cast< ::trading::market_data::proto::TradingSignal_Side >(_impl_.side_);
 }
-inline ::market_data::TradingSignal_Side TradingSignal::side() const {
-  // @@protoc_insertion_point(field_get:market_data.TradingSignal.side)
+inline ::trading::market_data::proto::TradingSignal_Side TradingSignal::side() const {
+  // @@protoc_insertion_point(field_get:trading.market_data.proto.TradingSignal.side)
   return _internal_side();
 }
-inline void TradingSignal::_internal_set_side(::market_data::TradingSignal_Side value) {
+inline void TradingSignal::_internal_set_side(::trading::market_data::proto::TradingSignal_Side value) {
   
   _impl_.side_ = value;
 }
-inline void TradingSignal::set_side(::market_data::TradingSignal_Side value) {
+inline void TradingSignal::set_side(::trading::market_data::proto::TradingSignal_Side value) {
   _internal_set_side(value);
-  // @@protoc_insertion_point(field_set:market_data.TradingSignal.side)
+  // @@protoc_insertion_point(field_set:trading.market_data.proto.TradingSignal.side)
 }
 
 // double confidence = 3;
@@ -2015,7 +1871,7 @@ inline double TradingSignal::_internal_confidence() const {
   return _impl_.confidence_;
 }
 inline double TradingSignal::confidence() const {
-  // @@protoc_insertion_point(field_get:market_data.TradingSignal.confidence)
+  // @@protoc_insertion_point(field_get:trading.market_data.proto.TradingSignal.confidence)
   return _internal_confidence();
 }
 inline void TradingSignal::_internal_set_confidence(double value) {
@@ -2024,7 +1880,7 @@ inline void TradingSignal::_internal_set_confidence(double value) {
 }
 inline void TradingSignal::set_confidence(double value) {
   _internal_set_confidence(value);
-  // @@protoc_insertion_point(field_set:market_data.TradingSignal.confidence)
+  // @@protoc_insertion_point(field_set:trading.market_data.proto.TradingSignal.confidence)
 }
 
 // double target_price = 4;
@@ -2035,7 +1891,7 @@ inline double TradingSignal::_internal_target_price() const {
   return _impl_.target_price_;
 }
 inline double TradingSignal::target_price() const {
-  // @@protoc_insertion_point(field_get:market_data.TradingSignal.target_price)
+  // @@protoc_insertion_point(field_get:trading.market_data.proto.TradingSignal.target_price)
   return _internal_target_price();
 }
 inline void TradingSignal::_internal_set_target_price(double value) {
@@ -2044,7 +1900,7 @@ inline void TradingSignal::_internal_set_target_price(double value) {
 }
 inline void TradingSignal::set_target_price(double value) {
   _internal_set_target_price(value);
-  // @@protoc_insertion_point(field_set:market_data.TradingSignal.target_price)
+  // @@protoc_insertion_point(field_set:trading.market_data.proto.TradingSignal.target_price)
 }
 
 // double stop_price = 5;
@@ -2055,7 +1911,7 @@ inline double TradingSignal::_internal_stop_price() const {
   return _impl_.stop_price_;
 }
 inline double TradingSignal::stop_price() const {
-  // @@protoc_insertion_point(field_get:market_data.TradingSignal.stop_price)
+  // @@protoc_insertion_point(field_get:trading.market_data.proto.TradingSignal.stop_price)
   return _internal_stop_price();
 }
 inline void TradingSignal::_internal_set_stop_price(double value) {
@@ -2064,33 +1920,27 @@ inline void TradingSignal::_internal_set_stop_price(double value) {
 }
 inline void TradingSignal::set_stop_price(double value) {
   _internal_set_stop_price(value);
-  // @@protoc_insertion_point(field_set:market_data.TradingSignal.stop_price)
+  // @@protoc_insertion_point(field_set:trading.market_data.proto.TradingSignal.stop_price)
 }
 
-// .market_data.Timestamp expiry = 6;
+// .trading.common.proto.TimestampProto expiry = 6;
 inline bool TradingSignal::_internal_has_expiry() const {
   return this != internal_default_instance() && _impl_.expiry_ != nullptr;
 }
 inline bool TradingSignal::has_expiry() const {
   return _internal_has_expiry();
 }
-inline void TradingSignal::clear_expiry() {
-  if (GetArenaForAllocation() == nullptr && _impl_.expiry_ != nullptr) {
-    delete _impl_.expiry_;
-  }
-  _impl_.expiry_ = nullptr;
+inline const ::trading::common::proto::TimestampProto& TradingSignal::_internal_expiry() const {
+  const ::trading::common::proto::TimestampProto* p = _impl_.expiry_;
+  return p != nullptr ? *p : reinterpret_cast<const ::trading::common::proto::TimestampProto&>(
+      ::trading::common::proto::_TimestampProto_default_instance_);
 }
-inline const ::market_data::Timestamp& TradingSignal::_internal_expiry() const {
-  const ::market_data::Timestamp* p = _impl_.expiry_;
-  return p != nullptr ? *p : reinterpret_cast<const ::market_data::Timestamp&>(
-      ::market_data::_Timestamp_default_instance_);
-}
-inline const ::market_data::Timestamp& TradingSignal::expiry() const {
-  // @@protoc_insertion_point(field_get:market_data.TradingSignal.expiry)
+inline const ::trading::common::proto::TimestampProto& TradingSignal::expiry() const {
+  // @@protoc_insertion_point(field_get:trading.market_data.proto.TradingSignal.expiry)
   return _internal_expiry();
 }
 inline void TradingSignal::unsafe_arena_set_allocated_expiry(
-    ::market_data::Timestamp* expiry) {
+    ::trading::common::proto::TimestampProto* expiry) {
   if (GetArenaForAllocation() == nullptr) {
     delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.expiry_);
   }
@@ -2100,11 +1950,11 @@ inline void TradingSignal::unsafe_arena_set_allocated_expiry(
   } else {
     
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:market_data.TradingSignal.expiry)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:trading.market_data.proto.TradingSignal.expiry)
 }
-inline ::market_data::Timestamp* TradingSignal::release_expiry() {
+inline ::trading::common::proto::TimestampProto* TradingSignal::release_expiry() {
   
-  ::market_data::Timestamp* temp = _impl_.expiry_;
+  ::trading::common::proto::TimestampProto* temp = _impl_.expiry_;
   _impl_.expiry_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
   auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
@@ -2117,34 +1967,35 @@ inline ::market_data::Timestamp* TradingSignal::release_expiry() {
 #endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
   return temp;
 }
-inline ::market_data::Timestamp* TradingSignal::unsafe_arena_release_expiry() {
-  // @@protoc_insertion_point(field_release:market_data.TradingSignal.expiry)
+inline ::trading::common::proto::TimestampProto* TradingSignal::unsafe_arena_release_expiry() {
+  // @@protoc_insertion_point(field_release:trading.market_data.proto.TradingSignal.expiry)
   
-  ::market_data::Timestamp* temp = _impl_.expiry_;
+  ::trading::common::proto::TimestampProto* temp = _impl_.expiry_;
   _impl_.expiry_ = nullptr;
   return temp;
 }
-inline ::market_data::Timestamp* TradingSignal::_internal_mutable_expiry() {
+inline ::trading::common::proto::TimestampProto* TradingSignal::_internal_mutable_expiry() {
   
   if (_impl_.expiry_ == nullptr) {
-    auto* p = CreateMaybeMessage<::market_data::Timestamp>(GetArenaForAllocation());
+    auto* p = CreateMaybeMessage<::trading::common::proto::TimestampProto>(GetArenaForAllocation());
     _impl_.expiry_ = p;
   }
   return _impl_.expiry_;
 }
-inline ::market_data::Timestamp* TradingSignal::mutable_expiry() {
-  ::market_data::Timestamp* _msg = _internal_mutable_expiry();
-  // @@protoc_insertion_point(field_mutable:market_data.TradingSignal.expiry)
+inline ::trading::common::proto::TimestampProto* TradingSignal::mutable_expiry() {
+  ::trading::common::proto::TimestampProto* _msg = _internal_mutable_expiry();
+  // @@protoc_insertion_point(field_mutable:trading.market_data.proto.TradingSignal.expiry)
   return _msg;
 }
-inline void TradingSignal::set_allocated_expiry(::market_data::Timestamp* expiry) {
+inline void TradingSignal::set_allocated_expiry(::trading::common::proto::TimestampProto* expiry) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   if (message_arena == nullptr) {
-    delete _impl_.expiry_;
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.expiry_);
   }
   if (expiry) {
     ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(expiry);
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(expiry));
     if (message_arena != submessage_arena) {
       expiry = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
           message_arena, expiry, submessage_arena);
@@ -2154,33 +2005,27 @@ inline void TradingSignal::set_allocated_expiry(::market_data::Timestamp* expiry
     
   }
   _impl_.expiry_ = expiry;
-  // @@protoc_insertion_point(field_set_allocated:market_data.TradingSignal.expiry)
+  // @@protoc_insertion_point(field_set_allocated:trading.market_data.proto.TradingSignal.expiry)
 }
 
-// .market_data.Timestamp timestamp = 7;
+// .trading.common.proto.TimestampProto timestamp = 7;
 inline bool TradingSignal::_internal_has_timestamp() const {
   return this != internal_default_instance() && _impl_.timestamp_ != nullptr;
 }
 inline bool TradingSignal::has_timestamp() const {
   return _internal_has_timestamp();
 }
-inline void TradingSignal::clear_timestamp() {
-  if (GetArenaForAllocation() == nullptr && _impl_.timestamp_ != nullptr) {
-    delete _impl_.timestamp_;
-  }
-  _impl_.timestamp_ = nullptr;
+inline const ::trading::common::proto::TimestampProto& TradingSignal::_internal_timestamp() const {
+  const ::trading::common::proto::TimestampProto* p = _impl_.timestamp_;
+  return p != nullptr ? *p : reinterpret_cast<const ::trading::common::proto::TimestampProto&>(
+      ::trading::common::proto::_TimestampProto_default_instance_);
 }
-inline const ::market_data::Timestamp& TradingSignal::_internal_timestamp() const {
-  const ::market_data::Timestamp* p = _impl_.timestamp_;
-  return p != nullptr ? *p : reinterpret_cast<const ::market_data::Timestamp&>(
-      ::market_data::_Timestamp_default_instance_);
-}
-inline const ::market_data::Timestamp& TradingSignal::timestamp() const {
-  // @@protoc_insertion_point(field_get:market_data.TradingSignal.timestamp)
+inline const ::trading::common::proto::TimestampProto& TradingSignal::timestamp() const {
+  // @@protoc_insertion_point(field_get:trading.market_data.proto.TradingSignal.timestamp)
   return _internal_timestamp();
 }
 inline void TradingSignal::unsafe_arena_set_allocated_timestamp(
-    ::market_data::Timestamp* timestamp) {
+    ::trading::common::proto::TimestampProto* timestamp) {
   if (GetArenaForAllocation() == nullptr) {
     delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.timestamp_);
   }
@@ -2190,11 +2035,11 @@ inline void TradingSignal::unsafe_arena_set_allocated_timestamp(
   } else {
     
   }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:market_data.TradingSignal.timestamp)
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:trading.market_data.proto.TradingSignal.timestamp)
 }
-inline ::market_data::Timestamp* TradingSignal::release_timestamp() {
+inline ::trading::common::proto::TimestampProto* TradingSignal::release_timestamp() {
   
-  ::market_data::Timestamp* temp = _impl_.timestamp_;
+  ::trading::common::proto::TimestampProto* temp = _impl_.timestamp_;
   _impl_.timestamp_ = nullptr;
 #ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
   auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
@@ -2207,34 +2052,35 @@ inline ::market_data::Timestamp* TradingSignal::release_timestamp() {
 #endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
   return temp;
 }
-inline ::market_data::Timestamp* TradingSignal::unsafe_arena_release_timestamp() {
-  // @@protoc_insertion_point(field_release:market_data.TradingSignal.timestamp)
+inline ::trading::common::proto::TimestampProto* TradingSignal::unsafe_arena_release_timestamp() {
+  // @@protoc_insertion_point(field_release:trading.market_data.proto.TradingSignal.timestamp)
   
-  ::market_data::Timestamp* temp = _impl_.timestamp_;
+  ::trading::common::proto::TimestampProto* temp = _impl_.timestamp_;
   _impl_.timestamp_ = nullptr;
   return temp;
 }
-inline ::market_data::Timestamp* TradingSignal::_internal_mutable_timestamp() {
+inline ::trading::common::proto::TimestampProto* TradingSignal::_internal_mutable_timestamp() {
   
   if (_impl_.timestamp_ == nullptr) {
-    auto* p = CreateMaybeMessage<::market_data::Timestamp>(GetArenaForAllocation());
+    auto* p = CreateMaybeMessage<::trading::common::proto::TimestampProto>(GetArenaForAllocation());
     _impl_.timestamp_ = p;
   }
   return _impl_.timestamp_;
 }
-inline ::market_data::Timestamp* TradingSignal::mutable_timestamp() {
-  ::market_data::Timestamp* _msg = _internal_mutable_timestamp();
-  // @@protoc_insertion_point(field_mutable:market_data.TradingSignal.timestamp)
+inline ::trading::common::proto::TimestampProto* TradingSignal::mutable_timestamp() {
+  ::trading::common::proto::TimestampProto* _msg = _internal_mutable_timestamp();
+  // @@protoc_insertion_point(field_mutable:trading.market_data.proto.TradingSignal.timestamp)
   return _msg;
 }
-inline void TradingSignal::set_allocated_timestamp(::market_data::Timestamp* timestamp) {
+inline void TradingSignal::set_allocated_timestamp(::trading::common::proto::TimestampProto* timestamp) {
   ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
   if (message_arena == nullptr) {
-    delete _impl_.timestamp_;
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.timestamp_);
   }
   if (timestamp) {
     ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(timestamp);
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(timestamp));
     if (message_arena != submessage_arena) {
       timestamp = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
           message_arena, timestamp, submessage_arena);
@@ -2244,7 +2090,57 @@ inline void TradingSignal::set_allocated_timestamp(::market_data::Timestamp* tim
     
   }
   _impl_.timestamp_ = timestamp;
-  // @@protoc_insertion_point(field_set_allocated:market_data.TradingSignal.timestamp)
+  // @@protoc_insertion_point(field_set_allocated:trading.market_data.proto.TradingSignal.timestamp)
+}
+
+// string strategy_id = 8;
+inline void TradingSignal::clear_strategy_id() {
+  _impl_.strategy_id_.ClearToEmpty();
+}
+inline const std::string& TradingSignal::strategy_id() const {
+  // @@protoc_insertion_point(field_get:trading.market_data.proto.TradingSignal.strategy_id)
+  return _internal_strategy_id();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void TradingSignal::set_strategy_id(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.strategy_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:trading.market_data.proto.TradingSignal.strategy_id)
+}
+inline std::string* TradingSignal::mutable_strategy_id() {
+  std::string* _s = _internal_mutable_strategy_id();
+  // @@protoc_insertion_point(field_mutable:trading.market_data.proto.TradingSignal.strategy_id)
+  return _s;
+}
+inline const std::string& TradingSignal::_internal_strategy_id() const {
+  return _impl_.strategy_id_.Get();
+}
+inline void TradingSignal::_internal_set_strategy_id(const std::string& value) {
+  
+  _impl_.strategy_id_.Set(value, GetArenaForAllocation());
+}
+inline std::string* TradingSignal::_internal_mutable_strategy_id() {
+  
+  return _impl_.strategy_id_.Mutable(GetArenaForAllocation());
+}
+inline std::string* TradingSignal::release_strategy_id() {
+  // @@protoc_insertion_point(field_release:trading.market_data.proto.TradingSignal.strategy_id)
+  return _impl_.strategy_id_.Release();
+}
+inline void TradingSignal::set_allocated_strategy_id(std::string* strategy_id) {
+  if (strategy_id != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.strategy_id_.SetAllocated(strategy_id, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.strategy_id_.IsDefault()) {
+    _impl_.strategy_id_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:trading.market_data.proto.TradingSignal.strategy_id)
 }
 
 #ifdef __GNUC__
@@ -2256,19 +2152,19 @@ inline void TradingSignal::set_allocated_timestamp(::market_data::Timestamp* tim
 
 // -------------------------------------------------------------------
 
-// -------------------------------------------------------------------
-
 
 // @@protoc_insertion_point(namespace_scope)
 
+}  // namespace proto
 }  // namespace market_data
+}  // namespace trading
 
 PROTOBUF_NAMESPACE_OPEN
 
-template <> struct is_proto_enum< ::market_data::TradingSignal_Side> : ::std::true_type {};
+template <> struct is_proto_enum< ::trading::market_data::proto::TradingSignal_Side> : ::std::true_type {};
 template <>
-inline const EnumDescriptor* GetEnumDescriptor< ::market_data::TradingSignal_Side>() {
-  return ::market_data::TradingSignal_Side_descriptor();
+inline const EnumDescriptor* GetEnumDescriptor< ::trading::market_data::proto::TradingSignal_Side>() {
+  return ::trading::market_data::proto::TradingSignal_Side_descriptor();
 }
 
 PROTOBUF_NAMESPACE_CLOSE

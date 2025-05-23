@@ -16,19 +16,19 @@ public:
     ~AuthenticationService();
     
     // Get credentials for a specific exchange
-    std::optional<ExchangeCredentials> getCredentials(const std::string& exchangeId) const;
+    std::optional<ExchangeCredentials> getCredentials(const core::ExchangeId& exchangeId) const;
     
     // Add or update credentials for an exchange
-    void setCredentials(const std::string& exchangeId, const ExchangeCredentials& credentials);
+    void setCredentials(const core::ExchangeId& exchangeId, const ExchangeCredentials& credentials);
     
     // Remove credentials for an exchange
-    void removeCredentials(const std::string& exchangeId);
+    void removeCredentials(const core::ExchangeId& exchangeId);
     
     // Check if credentials exist for an exchange
-    bool hasCredentials(const std::string& exchangeId) const;
+    bool hasCredentials(const core::ExchangeId& exchangeId) const;
     
     // Validate that credentials are correct and working
-    bool validateCredentials(const std::string& exchangeId, const ExchangeCredentials& credentials);
+    bool validateCredentials(const core::ExchangeId& exchangeId, const ExchangeCredentials& credentials);
 
 private:
     mutable std::mutex mutex_;

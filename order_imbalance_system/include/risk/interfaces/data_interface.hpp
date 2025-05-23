@@ -94,7 +94,7 @@ public:
      * @param limit Maximum number of orders to retrieve
      * @return Vector of order requests
      */
-    virtual std::vector<OrderRequest> getOrderHistory(const std::string& exchangeId, const std::string& tradingPair, int limit) = 0;
+    virtual std::vector<OrderRequest> getOrderHistory(const core::ExchangeId& exchangeId, const std::string& tradingPair, int limit) = 0;
     
     /**
      * Get exchange balances
@@ -102,7 +102,7 @@ public:
      * @param exchangeId Exchange ID
      * @return Map of asset to balance
      */
-    virtual std::map<std::string, double> getExchangeBalances(const std::string& exchangeId) = 0;
+    virtual std::map<std::string, double> getExchangeBalances(const core::ExchangeId& exchangeId) = 0;
     
     /**
      * Register callback for market data updates
@@ -136,7 +136,7 @@ public:
      * @param tradingPair Optional trading pair
      * @return Map of fee types to fee values
      */
-    virtual std::map<std::string, double> getTradingFees(const std::string& exchangeId, const std::optional<std::string>& tradingPair = std::nullopt) = 0;
+    virtual std::map<std::string, double> getTradingFees(const core::ExchangeId& exchangeId, const std::optional<std::string>& tradingPair = std::nullopt) = 0;
 };
 
 /**

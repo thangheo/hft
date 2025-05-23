@@ -38,9 +38,9 @@ PROTOBUF_CONSTEXPR TradingSignalProto::TradingSignalProto(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_.signal_metrics_)*/{::_pbi::ConstantInitialized()}
   , /*decltype(_impl_.signal_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.trading_pair_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.strategy_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.strategy_version_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.symbol_)*/nullptr
   , /*decltype(_impl_.strength_)*/0
   , /*decltype(_impl_.target_size_)*/0
   , /*decltype(_impl_.signal_ttl_ms_)*/int64_t{0}
@@ -60,9 +60,9 @@ PROTOBUF_CONSTEXPR ExecutionResponseProto::ExecutionResponseProto(
     /*decltype(_impl_.client_order_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.exchange_order_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.error_message_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.order_status_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.timestamp_)*/int64_t{0}
+  , /*decltype(_impl_.timestamp_)*/nullptr
   , /*decltype(_impl_.success_)*/false
+  , /*decltype(_impl_.order_status_)*/0
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct ExecutionResponseProtoDefaultTypeInternal {
   PROTOBUF_CONSTEXPR ExecutionResponseProtoDefaultTypeInternal()
@@ -78,7 +78,7 @@ PROTOBUF_CONSTEXPR CancelResponseProto::CancelResponseProto(
     /*decltype(_impl_.client_order_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.exchange_order_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.error_message_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.timestamp_)*/int64_t{0}
+  , /*decltype(_impl_.timestamp_)*/nullptr
   , /*decltype(_impl_.success_)*/false
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct CancelResponseProtoDefaultTypeInternal {
@@ -94,11 +94,13 @@ PROTOBUF_CONSTEXPR FillProto::FillProto(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_.fill_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.order_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.exchange_order_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.fee_currency_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.timestamp_)*/nullptr
   , /*decltype(_impl_.quantity_)*/0
   , /*decltype(_impl_.price_)*/0
   , /*decltype(_impl_.fee_)*/0
-  , /*decltype(_impl_.timestamp_)*/int64_t{0}
+  , /*decltype(_impl_.exchange_id_)*/0
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct FillProtoDefaultTypeInternal {
   PROTOBUF_CONSTEXPR FillProtoDefaultTypeInternal()
@@ -126,22 +128,22 @@ PROTOBUF_CONSTEXPR OrderProto::OrderProto(
   , /*decltype(_impl_.extra_params_)*/{::_pbi::ConstantInitialized()}
   , /*decltype(_impl_.order_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.client_order_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.exchangeid_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.exchange_order_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.trading_pair_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.strategy_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
   , /*decltype(_impl_.signal_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.symbol_)*/nullptr
+  , /*decltype(_impl_.created_at_)*/nullptr
+  , /*decltype(_impl_.updated_at_)*/nullptr
+  , /*decltype(_impl_.exchange_id_)*/0
   , /*decltype(_impl_.side_)*/0
-  , /*decltype(_impl_.type_)*/0
   , /*decltype(_impl_.quantity_)*/0
   , /*decltype(_impl_.price_)*/0
-  , /*decltype(_impl_.stop_price_)*/0
+  , /*decltype(_impl_.type_)*/0
   , /*decltype(_impl_.time_in_force_)*/0
-  , /*decltype(_impl_.state_)*/0
-  , /*decltype(_impl_.created_at_)*/int64_t{0}
-  , /*decltype(_impl_.updated_at_)*/int64_t{0}
+  , /*decltype(_impl_.stop_price_)*/0
   , /*decltype(_impl_.filled_quantity_)*/0
   , /*decltype(_impl_.average_fill_price_)*/0
+  , /*decltype(_impl_.state_)*/0
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct OrderProtoDefaultTypeInternal {
   PROTOBUF_CONSTEXPR OrderProtoDefaultTypeInternal()
@@ -207,7 +209,7 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORIT
 PROTOBUF_CONSTEXPR CancelOrderByExchangeIdRequestProto::CancelOrderByExchangeIdRequestProto(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_.exchange_order_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.exchangeid_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.exchange_id_)*/0
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct CancelOrderByExchangeIdRequestProtoDefaultTypeInternal {
   PROTOBUF_CONSTEXPR CancelOrderByExchangeIdRequestProtoDefaultTypeInternal()
@@ -220,8 +222,8 @@ struct CancelOrderByExchangeIdRequestProtoDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CancelOrderByExchangeIdRequestProtoDefaultTypeInternal _CancelOrderByExchangeIdRequestProto_default_instance_;
 PROTOBUF_CONSTEXPR CancelAllOrdersRequestProto::CancelAllOrdersRequestProto(
     ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.trading_pair_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_.exchangeid_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+    /*decltype(_impl_.symbol_)*/nullptr
+  , /*decltype(_impl_.exchange_id_)*/0
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct CancelAllOrdersRequestProtoDefaultTypeInternal {
   PROTOBUF_CONSTEXPR CancelAllOrdersRequestProtoDefaultTypeInternal()
@@ -259,7 +261,10 @@ struct OrderStatusRequestProtoDefaultTypeInternal {
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 OrderStatusRequestProtoDefaultTypeInternal _OrderStatusRequestProto_default_instance_;
 PROTOBUF_CONSTEXPR ActiveOrdersRequestProto::ActiveOrdersRequestProto(
-    ::_pbi::ConstantInitialized) {}
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_.symbol_)*/nullptr
+  , /*decltype(_impl_.exchange_id_)*/0
+  , /*decltype(_impl_._cached_size_)*/{}} {}
 struct ActiveOrdersRequestProtoDefaultTypeInternal {
   PROTOBUF_CONSTEXPR ActiveOrdersRequestProtoDefaultTypeInternal()
       : _instance(::_pbi::ConstantInitialized{}) {}
@@ -307,7 +312,7 @@ const uint32_t TableStruct_execution_5fservice_2eproto::offsets[] PROTOBUF_SECTI
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::TradingSignalProto, _impl_.signal_id_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::TradingSignalProto, _impl_.trading_pair_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::TradingSignalProto, _impl_.symbol_),
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::TradingSignalProto, _impl_.direction_),
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::TradingSignalProto, _impl_.strength_),
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::TradingSignalProto, _impl_.target_size_),
@@ -346,6 +351,8 @@ const uint32_t TableStruct_execution_5fservice_2eproto::offsets[] PROTOBUF_SECTI
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::FillProto, _impl_.fill_id_),
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::FillProto, _impl_.order_id_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::FillProto, _impl_.exchange_order_id_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::FillProto, _impl_.exchange_id_),
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::FillProto, _impl_.quantity_),
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::FillProto, _impl_.price_),
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::FillProto, _impl_.fee_),
@@ -369,9 +376,9 @@ const uint32_t TableStruct_execution_5fservice_2eproto::offsets[] PROTOBUF_SECTI
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.order_id_),
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.client_order_id_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.exchangeid_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.exchange_id_),
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.exchange_order_id_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.trading_pair_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.symbol_),
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.side_),
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.type_),
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::OrderProto, _impl_.quantity_),
@@ -423,15 +430,15 @@ const uint32_t TableStruct_execution_5fservice_2eproto::offsets[] PROTOBUF_SECTI
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelOrderByExchangeIdRequestProto, _impl_.exchange_order_id_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelOrderByExchangeIdRequestProto, _impl_.exchangeid_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelOrderByExchangeIdRequestProto, _impl_.exchange_id_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelAllOrdersRequestProto, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelAllOrdersRequestProto, _impl_.trading_pair_),
-  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelAllOrdersRequestProto, _impl_.exchangeid_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelAllOrdersRequestProto, _impl_.symbol_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelAllOrdersRequestProto, _impl_.exchange_id_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::CancelAllOrdersResponseProto, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -452,6 +459,8 @@ const uint32_t TableStruct_execution_5fservice_2eproto::offsets[] PROTOBUF_SECTI
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::ActiveOrdersRequestProto, _impl_.exchange_id_),
+  PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::ActiveOrdersRequestProto, _impl_.symbol_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::trading::execution::grpc::ActiveOrdersResponseProto, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -466,18 +475,18 @@ static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protode
   { 25, -1, -1, sizeof(::trading::execution::grpc::ExecutionResponseProto)},
   { 37, -1, -1, sizeof(::trading::execution::grpc::CancelResponseProto)},
   { 48, -1, -1, sizeof(::trading::execution::grpc::FillProto)},
-  { 61, 69, -1, sizeof(::trading::execution::grpc::OrderProto_ExtraParamsEntry_DoNotUse)},
-  { 71, -1, -1, sizeof(::trading::execution::grpc::OrderProto)},
-  { 97, -1, -1, sizeof(::trading::execution::grpc::OrderStatusResponseProto)},
-  { 106, -1, -1, sizeof(::trading::execution::grpc::HealthStatusRequestProto)},
-  { 112, -1, -1, sizeof(::trading::execution::grpc::HealthStatusResponseProto)},
-  { 119, -1, -1, sizeof(::trading::execution::grpc::CancelOrderRequestProto)},
-  { 126, -1, -1, sizeof(::trading::execution::grpc::CancelOrderByExchangeIdRequestProto)},
-  { 134, -1, -1, sizeof(::trading::execution::grpc::CancelAllOrdersRequestProto)},
-  { 142, -1, -1, sizeof(::trading::execution::grpc::CancelAllOrdersResponseProto)},
-  { 149, -1, -1, sizeof(::trading::execution::grpc::OrderStatusRequestProto)},
-  { 156, -1, -1, sizeof(::trading::execution::grpc::ActiveOrdersRequestProto)},
-  { 162, -1, -1, sizeof(::trading::execution::grpc::ActiveOrdersResponseProto)},
+  { 63, 71, -1, sizeof(::trading::execution::grpc::OrderProto_ExtraParamsEntry_DoNotUse)},
+  { 73, -1, -1, sizeof(::trading::execution::grpc::OrderProto)},
+  { 99, -1, -1, sizeof(::trading::execution::grpc::OrderStatusResponseProto)},
+  { 108, -1, -1, sizeof(::trading::execution::grpc::HealthStatusRequestProto)},
+  { 114, -1, -1, sizeof(::trading::execution::grpc::HealthStatusResponseProto)},
+  { 121, -1, -1, sizeof(::trading::execution::grpc::CancelOrderRequestProto)},
+  { 128, -1, -1, sizeof(::trading::execution::grpc::CancelOrderByExchangeIdRequestProto)},
+  { 136, -1, -1, sizeof(::trading::execution::grpc::CancelAllOrdersRequestProto)},
+  { 144, -1, -1, sizeof(::trading::execution::grpc::CancelAllOrdersResponseProto)},
+  { 151, -1, -1, sizeof(::trading::execution::grpc::OrderStatusRequestProto)},
+  { 158, -1, -1, sizeof(::trading::execution::grpc::ActiveOrdersRequestProto)},
+  { 166, -1, -1, sizeof(::trading::execution::grpc::ActiveOrdersResponseProto)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -502,100 +511,121 @@ static const ::_pb::Message* const file_default_instances[] = {
 
 const char descriptor_table_protodef_execution_5fservice_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\027execution_service.proto\022\026trading.execu"
-  "tion.grpc\"\240\003\n\022TradingSignalProto\022\021\n\tsign"
-  "al_id\030\001 \001(\t\022\024\n\014trading_pair\030\002 \001(\t\022G\n\tdir"
-  "ection\030\003 \001(\01624.trading.execution.grpc.Tr"
-  "adingSignalProto.OrderSide\022\020\n\010strength\030\004"
-  " \001(\001\022\023\n\013target_size\030\005 \001(\001\022\025\n\rsignal_ttl_"
-  "ms\030\006 \001(\003\022\023\n\013strategy_id\030\007 \001(\t\022\030\n\020strateg"
-  "y_version\030\010 \001(\t\022U\n\016signal_metrics\030\t \003(\0132"
-  "=.trading.execution.grpc.TradingSignalPr"
-  "oto.SignalMetricsEntry\0324\n\022SignalMetricsE"
-  "ntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\001:\0028\001\"\036\n\t"
-  "OrderSide\022\007\n\003BUY\020\000\022\010\n\004SELL\020\001\"\235\001\n\026Executi"
-  "onResponseProto\022\027\n\017client_order_id\030\001 \001(\t"
-  "\022\031\n\021exchange_order_id\030\002 \001(\t\022\017\n\007success\030\003"
-  " \001(\010\022\025\n\rerror_message\030\004 \001(\t\022\021\n\ttimestamp"
-  "\030\005 \001(\003\022\024\n\014order_status\030\006 \001(\t\"\204\001\n\023CancelR"
-  "esponseProto\022\027\n\017client_order_id\030\001 \001(\t\022\031\n"
-  "\021exchange_order_id\030\002 \001(\t\022\017\n\007success\030\003 \001("
-  "\010\022\025\n\rerror_message\030\004 \001(\t\022\021\n\ttimestamp\030\005 "
-  "\001(\003\"\205\001\n\tFillProto\022\017\n\007fill_id\030\001 \001(\t\022\020\n\010or"
-  "der_id\030\002 \001(\t\022\020\n\010quantity\030\003 \001(\001\022\r\n\005price\030"
-  "\004 \001(\001\022\013\n\003fee\030\005 \001(\001\022\024\n\014fee_currency\030\006 \001(\t"
-  "\022\021\n\ttimestamp\030\007 \001(\003\"\312\007\n\nOrderProto\022\020\n\010or"
-  "der_id\030\001 \001(\t\022\027\n\017client_order_id\030\002 \001(\t\022\022\n"
-  "\nexchangeId\030\003 \001(\t\022\031\n\021exchange_order_id\030\004"
-  " \001(\t\022\024\n\014trading_pair\030\005 \001(\t\022:\n\004side\030\006 \001(\016"
-  "2,.trading.execution.grpc.OrderProto.Ord"
-  "erSide\022:\n\004type\030\007 \001(\0162,.trading.execution"
-  ".grpc.OrderProto.OrderType\022\020\n\010quantity\030\010"
-  " \001(\001\022\r\n\005price\030\t \001(\001\022\022\n\nstop_price\030\n \001(\001\022"
-  "E\n\rtime_in_force\030\013 \001(\0162..trading.executi"
-  "on.grpc.OrderProto.TimeInForce\0226\n\005state\030"
-  "\014 \001(\0162\'.trading.execution.grpc.OrderStat"
-  "eProto\022\023\n\013strategy_id\030\r \001(\t\022\021\n\tsignal_id"
-  "\030\016 \001(\t\022\022\n\ncreated_at\030\017 \001(\003\022\022\n\nupdated_at"
-  "\030\020 \001(\003\0220\n\005fills\030\021 \003(\0132!.trading.executio"
-  "n.grpc.FillProto\022\027\n\017filled_quantity\030\022 \001("
-  "\001\022\032\n\022average_fill_price\030\023 \001(\001\022I\n\014extra_p"
-  "arams\030\024 \003(\01323.trading.execution.grpc.Ord"
-  "erProto.ExtraParamsEntry\0322\n\020ExtraParamsE"
-  "ntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\"\036\n\t"
-  "OrderSide\022\007\n\003BUY\020\000\022\010\n\004SELL\020\001\"\226\001\n\tOrderTy"
-  "pe\022\n\n\006MARKET\020\000\022\t\n\005LIMIT\020\001\022\010\n\004STOP\020\002\022\016\n\nS"
-  "TOP_LIMIT\020\003\022\013\n\007ICEBERG\020\004\022\021\n\rTRAILING_STO"
-  "P\020\005\022\020\n\014FILL_OR_KILL\020\006\022\027\n\023IMMEDIATE_OR_CA"
-  "NCEL\020\007\022\r\n\tPOST_ONLY\020\010\"1\n\013TimeInForce\022\007\n\003"
-  "GTC\020\000\022\007\n\003IOC\020\001\022\007\n\003FOK\020\002\022\007\n\003GTD\020\003\"s\n\030Orde"
-  "rStatusResponseProto\0221\n\005order\030\001 \001(\0132\".tr"
-  "ading.execution.grpc.OrderProto\022\r\n\005found"
-  "\030\002 \001(\010\022\025\n\rerror_message\030\003 \001(\t\"\032\n\030HealthS"
-  "tatusRequestProto\"0\n\031HealthStatusRespons"
-  "eProto\022\023\n\013health_json\030\001 \001(\t\"2\n\027CancelOrd"
-  "erRequestProto\022\027\n\017client_order_id\030\001 \001(\t\""
-  "T\n#CancelOrderByExchangeIdRequestProto\022\031"
-  "\n\021exchange_order_id\030\001 \001(\t\022\022\n\nexchangeId\030"
-  "\002 \001(\t\"G\n\033CancelAllOrdersRequestProto\022\024\n\014"
-  "tradingPair\030\001 \001(\t\022\022\n\nexchangeId\030\002 \001(\t\"^"
-  "\n\034CancelAllOrdersResponseProto\022>\n\trespon"
-  "ses\030\001 \003(\0132+.trading.execution.grpc.Cance"
-  "lResponseProto\"2\n\027OrderStatusRequestProt"
-  "o\022\027\n\017client_order_id\030\001 \001(\t\"\032\n\030ActiveOrde"
-  "rsRequestProto\"O\n\031ActiveOrdersResponsePr"
-  "oto\0222\n\006orders\030\001 \003(\0132\".trading.execution."
-  "grpc.OrderProto*\224\001\n\017OrderStateProto\022\013\n\007C"
-  "REATED\020\000\022\013\n\007PENDING\020\001\022\022\n\016PENDING_CANCEL\020"
-  "\002\022\010\n\004OPEN\020\003\022\024\n\020PARTIALLY_FILLED\020\004\022\n\n\006FIL"
-  "LED\020\005\022\014\n\010CANCELED\020\006\022\014\n\010REJECTED\020\007\022\013\n\007EXP"
-  "IRED\020\0102\273\006\n\020ExecutionService\022k\n\rExecuteSi"
-  "gnal\022*.trading.execution.grpc.TradingSig"
-  "nalProto\032..trading.execution.grpc.Execut"
-  "ionResponseProto\022`\n\nPlaceOrder\022\".trading"
-  ".execution.grpc.OrderProto\032..trading.exe"
-  "cution.grpc.ExecutionResponseProto\022k\n\013Ca"
-  "ncelOrder\022/.trading.execution.grpc.Cance"
-  "lOrderRequestProto\032+.trading.execution.g"
-  "rpc.CancelResponseProto\022\205\001\n\030CancelAllOrd"
-  "ersForSymbol\0223.trading.execution.grpc.Ca"
-  "ncelAllOrdersRequestProto\0324.trading.exec"
-  "ution.grpc.CancelAllOrdersResponseProto\022"
-  "s\n\016GetOrderStatus\022/.trading.execution.gr"
-  "pc.OrderStatusRequestProto\0320.trading.exe"
-  "cution.grpc.OrderStatusResponseProto\022v\n\017"
-  "GetActiveOrders\0220.trading.execution.grpc"
-  ".ActiveOrdersRequestProto\0321.trading.exec"
-  "ution.grpc.ActiveOrdersResponseProto\022v\n\017"
-  "GetHealthStatus\0220.trading.execution.grpc"
-  ".HealthStatusRequestProto\0321.trading.exec"
-  "ution.grpc.HealthStatusResponseProtob\006pr"
-  "oto3"
+  "tion.grpc\032\014common.proto\"\317\003\n\022TradingSigna"
+  "lProto\022\021\n\tsignal_id\030\001 \001(\t\0221\n\006symbol\030\002 \001("
+  "\0132!.trading.common.proto.SymbolProto\022G\n\t"
+  "direction\030\003 \001(\01624.trading.execution.grpc"
+  ".TradingSignalProto.OrderSide\022\020\n\010strengt"
+  "h\030\004 \001(\001\022\023\n\013target_size\030\005 \001(\001\022\025\n\rsignal_t"
+  "tl_ms\030\006 \001(\003\022\023\n\013strategy_id\030\007 \001(\t\022\030\n\020stra"
+  "tegy_version\030\010 \001(\t\022U\n\016signal_metrics\030\t \003"
+  "(\0132=.trading.execution.grpc.TradingSigna"
+  "lProto.SignalMetricsEntry\0324\n\022SignalMetri"
+  "csEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\001:\0028\001\""
+  "0\n\tOrderSide\022\020\n\014UNKNOWN_SIDE\020\000\022\007\n\003BUY\020\001\022"
+  "\010\n\004SELL\020\002\"\354\001\n\026ExecutionResponseProto\022\027\n\017"
+  "client_order_id\030\001 \001(\t\022\031\n\021exchange_order_"
+  "id\030\002 \001(\t\022\017\n\007success\030\003 \001(\010\022\025\n\rerror_messa"
+  "ge\030\004 \001(\t\0227\n\ttimestamp\030\005 \001(\0132$.trading.co"
+  "mmon.proto.TimestampProto\022=\n\014order_statu"
+  "s\030\006 \001(\0162\'.trading.execution.grpc.OrderSt"
+  "ateProto\"\252\001\n\023CancelResponseProto\022\027\n\017clie"
+  "nt_order_id\030\001 \001(\t\022\031\n\021exchange_order_id\030\002"
+  " \001(\t\022\017\n\007success\030\003 \001(\010\022\025\n\rerror_message\030\004"
+  " \001(\t\0227\n\ttimestamp\030\005 \001(\0132$.trading.common"
+  ".proto.TimestampProto\"\202\002\n\tFillProto\022\017\n\007f"
+  "ill_id\030\001 \001(\t\022\020\n\010order_id\030\002 \001(\t\022\031\n\021exchan"
+  "ge_order_id\030\003 \001(\t\022:\n\013exchange_id\030\004 \001(\0162%"
+  ".trading.common.proto.ExchangeIdProto\022\020\n"
+  "\010quantity\030\005 \001(\001\022\r\n\005price\030\006 \001(\001\022\013\n\003fee\030\007 "
+  "\001(\001\022\024\n\014fee_currency\030\010 \001(\t\0227\n\ttimestamp\030\t"
+  " \001(\0132$.trading.common.proto.TimestampPro"
+  "to\"\220\t\n\nOrderProto\022\020\n\010order_id\030\001 \001(\t\022\027\n\017c"
+  "lient_order_id\030\002 \001(\t\022:\n\013exchange_id\030\003 \001("
+  "\0162%.trading.common.proto.ExchangeIdProto"
+  "\022\031\n\021exchange_order_id\030\004 \001(\t\0221\n\006symbol\030\005 "
+  "\001(\0132!.trading.common.proto.SymbolProto\022:"
+  "\n\004side\030\006 \001(\0162,.trading.execution.grpc.Or"
+  "derProto.OrderSide\022:\n\004type\030\007 \001(\0162,.tradi"
+  "ng.execution.grpc.OrderProto.OrderType\022\020"
+  "\n\010quantity\030\010 \001(\001\022\r\n\005price\030\t \001(\001\022\022\n\nstop_"
+  "price\030\n \001(\001\022E\n\rtime_in_force\030\013 \001(\0162..tra"
+  "ding.execution.grpc.OrderProto.TimeInFor"
+  "ce\0226\n\005state\030\014 \001(\0162\'.trading.execution.gr"
+  "pc.OrderStateProto\022\023\n\013strategy_id\030\r \001(\t\022"
+  "\021\n\tsignal_id\030\016 \001(\t\0228\n\ncreated_at\030\017 \001(\0132$"
+  ".trading.common.proto.TimestampProto\0228\n\n"
+  "updated_at\030\020 \001(\0132$.trading.common.proto."
+  "TimestampProto\0220\n\005fills\030\021 \003(\0132!.trading."
+  "execution.grpc.FillProto\022\027\n\017filled_quant"
+  "ity\030\022 \001(\001\022\032\n\022average_fill_price\030\023 \001(\001\022I\n"
+  "\014extra_params\030\024 \003(\01323.trading.execution."
+  "grpc.OrderProto.ExtraParamsEntry\0322\n\020Extr"
+  "aParamsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t"
+  ":\0028\001\"0\n\tOrderSide\022\020\n\014UNKNOWN_SIDE\020\000\022\007\n\003B"
+  "UY\020\001\022\010\n\004SELL\020\002\"\250\001\n\tOrderType\022\020\n\014UNKNOWN_"
+  "TYPE\020\000\022\n\n\006MARKET\020\001\022\t\n\005LIMIT\020\002\022\010\n\004STOP\020\003\022"
+  "\016\n\nSTOP_LIMIT\020\004\022\013\n\007ICEBERG\020\005\022\021\n\rTRAILING"
+  "_STOP\020\006\022\020\n\014FILL_OR_KILL\020\007\022\027\n\023IMMEDIATE_O"
+  "R_CANCEL\020\010\022\r\n\tPOST_ONLY\020\t\"B\n\013TimeInForce"
+  "\022\017\n\013UNKNOWN_TIF\020\000\022\007\n\003GTC\020\001\022\007\n\003IOC\020\002\022\007\n\003F"
+  "OK\020\003\022\007\n\003GTD\020\004\"s\n\030OrderStatusResponseProt"
+  "o\0221\n\005order\030\001 \001(\0132\".trading.execution.grp"
+  "c.OrderProto\022\r\n\005found\030\002 \001(\010\022\025\n\rerror_mes"
+  "sage\030\003 \001(\t\"\032\n\030HealthStatusRequestProto\"0"
+  "\n\031HealthStatusResponseProto\022\023\n\013health_js"
+  "on\030\001 \001(\t\"2\n\027CancelOrderRequestProto\022\027\n\017c"
+  "lient_order_id\030\001 \001(\t\"|\n#CancelOrderByExc"
+  "hangeIdRequestProto\022\031\n\021exchange_order_id"
+  "\030\001 \001(\t\022:\n\013exchange_id\030\002 \001(\0162%.trading.co"
+  "mmon.proto.ExchangeIdProto\"\214\001\n\033CancelAll"
+  "OrdersRequestProto\0221\n\006symbol\030\001 \001(\0132!.tra"
+  "ding.common.proto.SymbolProto\022:\n\013exchang"
+  "e_id\030\002 \001(\0162%.trading.common.proto.Exchan"
+  "geIdProto\"^\n\034CancelAllOrdersResponseProt"
+  "o\022>\n\tresponses\030\001 \003(\0132+.trading.execution"
+  ".grpc.CancelResponseProto\"2\n\027OrderStatus"
+  "RequestProto\022\027\n\017client_order_id\030\001 \001(\t\"\211\001"
+  "\n\030ActiveOrdersRequestProto\022:\n\013exchange_i"
+  "d\030\001 \001(\0162%.trading.common.proto.ExchangeI"
+  "dProto\0221\n\006symbol\030\002 \001(\0132!.trading.common."
+  "proto.SymbolProto\"O\n\031ActiveOrdersRespons"
+  "eProto\0222\n\006orders\030\001 \003(\0132\".trading.executi"
+  "on.grpc.OrderProto*\247\001\n\017OrderStateProto\022\021"
+  "\n\rUNKNOWN_STATE\020\000\022\013\n\007CREATED\020\001\022\013\n\007PENDIN"
+  "G\020\002\022\022\n\016PENDING_CANCEL\020\003\022\010\n\004OPEN\020\004\022\024\n\020PAR"
+  "TIALLY_FILLED\020\005\022\n\n\006FILLED\020\006\022\014\n\010CANCELED\020"
+  "\007\022\014\n\010REJECTED\020\010\022\013\n\007EXPIRED\020\t2\273\006\n\020Executi"
+  "onService\022k\n\rExecuteSignal\022*.trading.exe"
+  "cution.grpc.TradingSignalProto\032..trading"
+  ".execution.grpc.ExecutionResponseProto\022`"
+  "\n\nPlaceOrder\022\".trading.execution.grpc.Or"
+  "derProto\032..trading.execution.grpc.Execut"
+  "ionResponseProto\022k\n\013CancelOrder\022/.tradin"
+  "g.execution.grpc.CancelOrderRequestProto"
+  "\032+.trading.execution.grpc.CancelResponse"
+  "Proto\022\205\001\n\030CancelAllOrdersForSymbol\0223.tra"
+  "ding.execution.grpc.CancelAllOrdersReque"
+  "stProto\0324.trading.execution.grpc.CancelA"
+  "llOrdersResponseProto\022s\n\016GetOrderStatus\022"
+  "/.trading.execution.grpc.OrderStatusRequ"
+  "estProto\0320.trading.execution.grpc.OrderS"
+  "tatusResponseProto\022v\n\017GetActiveOrders\0220."
+  "trading.execution.grpc.ActiveOrdersReque"
+  "stProto\0321.trading.execution.grpc.ActiveO"
+  "rdersResponseProto\022v\n\017GetHealthStatus\0220."
+  "trading.execution.grpc.HealthStatusReque"
+  "stProto\0321.trading.execution.grpc.HealthS"
+  "tatusResponseProtob\006proto3"
   ;
+static const ::_pbi::DescriptorTable* const descriptor_table_execution_5fservice_2eproto_deps[1] = {
+  &::descriptor_table_common_2eproto,
+};
 static ::_pbi::once_flag descriptor_table_execution_5fservice_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_execution_5fservice_2eproto = {
-    false, false, 3524, descriptor_table_protodef_execution_5fservice_2eproto,
+    false, false, 4266, descriptor_table_protodef_execution_5fservice_2eproto,
     "execution_service.proto",
-    &descriptor_table_execution_5fservice_2eproto_once, nullptr, 0, 17,
+    &descriptor_table_execution_5fservice_2eproto_once, descriptor_table_execution_5fservice_2eproto_deps, 1, 17,
     schemas, file_default_instances, TableStruct_execution_5fservice_2eproto::offsets,
     file_level_metadata_execution_5fservice_2eproto, file_level_enum_descriptors_execution_5fservice_2eproto,
     file_level_service_descriptors_execution_5fservice_2eproto,
@@ -617,6 +647,7 @@ bool TradingSignalProto_OrderSide_IsValid(int value) {
   switch (value) {
     case 0:
     case 1:
+    case 2:
       return true;
     default:
       return false;
@@ -624,6 +655,7 @@ bool TradingSignalProto_OrderSide_IsValid(int value) {
 }
 
 #if (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
+constexpr TradingSignalProto_OrderSide TradingSignalProto::UNKNOWN_SIDE;
 constexpr TradingSignalProto_OrderSide TradingSignalProto::BUY;
 constexpr TradingSignalProto_OrderSide TradingSignalProto::SELL;
 constexpr TradingSignalProto_OrderSide TradingSignalProto::OrderSide_MIN;
@@ -638,6 +670,7 @@ bool OrderProto_OrderSide_IsValid(int value) {
   switch (value) {
     case 0:
     case 1:
+    case 2:
       return true;
     default:
       return false;
@@ -645,6 +678,7 @@ bool OrderProto_OrderSide_IsValid(int value) {
 }
 
 #if (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
+constexpr OrderProto_OrderSide OrderProto::UNKNOWN_SIDE;
 constexpr OrderProto_OrderSide OrderProto::BUY;
 constexpr OrderProto_OrderSide OrderProto::SELL;
 constexpr OrderProto_OrderSide OrderProto::OrderSide_MIN;
@@ -666,6 +700,7 @@ bool OrderProto_OrderType_IsValid(int value) {
     case 6:
     case 7:
     case 8:
+    case 9:
       return true;
     default:
       return false;
@@ -673,6 +708,7 @@ bool OrderProto_OrderType_IsValid(int value) {
 }
 
 #if (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
+constexpr OrderProto_OrderType OrderProto::UNKNOWN_TYPE;
 constexpr OrderProto_OrderType OrderProto::MARKET;
 constexpr OrderProto_OrderType OrderProto::LIMIT;
 constexpr OrderProto_OrderType OrderProto::STOP;
@@ -696,6 +732,7 @@ bool OrderProto_TimeInForce_IsValid(int value) {
     case 1:
     case 2:
     case 3:
+    case 4:
       return true;
     default:
       return false;
@@ -703,6 +740,7 @@ bool OrderProto_TimeInForce_IsValid(int value) {
 }
 
 #if (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
+constexpr OrderProto_TimeInForce OrderProto::UNKNOWN_TIF;
 constexpr OrderProto_TimeInForce OrderProto::GTC;
 constexpr OrderProto_TimeInForce OrderProto::IOC;
 constexpr OrderProto_TimeInForce OrderProto::FOK;
@@ -726,6 +764,7 @@ bool OrderStateProto_IsValid(int value) {
     case 6:
     case 7:
     case 8:
+    case 9:
       return true;
     default:
       return false;
@@ -751,8 +790,19 @@ void TradingSignalProto_SignalMetricsEntry_DoNotUse::MergeFrom(const TradingSign
 
 class TradingSignalProto::_Internal {
  public:
+  static const ::trading::common::proto::SymbolProto& symbol(const TradingSignalProto* msg);
 };
 
+const ::trading::common::proto::SymbolProto&
+TradingSignalProto::_Internal::symbol(const TradingSignalProto* msg) {
+  return *msg->_impl_.symbol_;
+}
+void TradingSignalProto::clear_symbol() {
+  if (GetArenaForAllocation() == nullptr && _impl_.symbol_ != nullptr) {
+    delete _impl_.symbol_;
+  }
+  _impl_.symbol_ = nullptr;
+}
 TradingSignalProto::TradingSignalProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
@@ -768,9 +818,9 @@ TradingSignalProto::TradingSignalProto(const TradingSignalProto& from)
   new (&_impl_) Impl_{
       /*decltype(_impl_.signal_metrics_)*/{}
     , decltype(_impl_.signal_id_){}
-    , decltype(_impl_.trading_pair_){}
     , decltype(_impl_.strategy_id_){}
     , decltype(_impl_.strategy_version_){}
+    , decltype(_impl_.symbol_){nullptr}
     , decltype(_impl_.strength_){}
     , decltype(_impl_.target_size_){}
     , decltype(_impl_.signal_ttl_ms_){}
@@ -785,14 +835,6 @@ TradingSignalProto::TradingSignalProto(const TradingSignalProto& from)
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   if (!from._internal_signal_id().empty()) {
     _this->_impl_.signal_id_.Set(from._internal_signal_id(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.trading_pair_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.trading_pair_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_trading_pair().empty()) {
-    _this->_impl_.trading_pair_.Set(from._internal_trading_pair(), 
       _this->GetArenaForAllocation());
   }
   _impl_.strategy_id_.InitDefault();
@@ -811,6 +853,9 @@ TradingSignalProto::TradingSignalProto(const TradingSignalProto& from)
     _this->_impl_.strategy_version_.Set(from._internal_strategy_version(), 
       _this->GetArenaForAllocation());
   }
+  if (from._internal_has_symbol()) {
+    _this->_impl_.symbol_ = new ::trading::common::proto::SymbolProto(*from._impl_.symbol_);
+  }
   ::memcpy(&_impl_.strength_, &from._impl_.strength_,
     static_cast<size_t>(reinterpret_cast<char*>(&_impl_.direction_) -
     reinterpret_cast<char*>(&_impl_.strength_)) + sizeof(_impl_.direction_));
@@ -824,9 +869,9 @@ inline void TradingSignalProto::SharedCtor(
   new (&_impl_) Impl_{
       /*decltype(_impl_.signal_metrics_)*/{::_pbi::ArenaInitialized(), arena}
     , decltype(_impl_.signal_id_){}
-    , decltype(_impl_.trading_pair_){}
     , decltype(_impl_.strategy_id_){}
     , decltype(_impl_.strategy_version_){}
+    , decltype(_impl_.symbol_){nullptr}
     , decltype(_impl_.strength_){0}
     , decltype(_impl_.target_size_){0}
     , decltype(_impl_.signal_ttl_ms_){int64_t{0}}
@@ -836,10 +881,6 @@ inline void TradingSignalProto::SharedCtor(
   _impl_.signal_id_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.signal_id_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.trading_pair_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.trading_pair_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   _impl_.strategy_id_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -866,9 +907,9 @@ inline void TradingSignalProto::SharedDtor() {
   _impl_.signal_metrics_.Destruct();
   _impl_.signal_metrics_.~MapField();
   _impl_.signal_id_.Destroy();
-  _impl_.trading_pair_.Destroy();
   _impl_.strategy_id_.Destroy();
   _impl_.strategy_version_.Destroy();
+  if (this != internal_default_instance()) delete _impl_.symbol_;
 }
 
 void TradingSignalProto::ArenaDtor(void* object) {
@@ -887,9 +928,12 @@ void TradingSignalProto::Clear() {
 
   _impl_.signal_metrics_.Clear();
   _impl_.signal_id_.ClearToEmpty();
-  _impl_.trading_pair_.ClearToEmpty();
   _impl_.strategy_id_.ClearToEmpty();
   _impl_.strategy_version_.ClearToEmpty();
+  if (GetArenaForAllocation() == nullptr && _impl_.symbol_ != nullptr) {
+    delete _impl_.symbol_;
+  }
+  _impl_.symbol_ = nullptr;
   ::memset(&_impl_.strength_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&_impl_.direction_) -
       reinterpret_cast<char*>(&_impl_.strength_)) + sizeof(_impl_.direction_));
@@ -912,13 +956,11 @@ const char* TradingSignalProto::_InternalParse(const char* ptr, ::_pbi::ParseCon
         } else
           goto handle_unusual;
         continue;
-      // string tradingPair = 2;
+      // .trading.common.proto.SymbolProto symbol = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
-          auto str = _internal_mutable_trading_pair();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          ptr = ctx->ParseMessage(_internal_mutable_symbol(), ptr);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.TradingSignalProto.tradingPair"));
         } else
           goto handle_unusual;
         continue;
@@ -1027,14 +1069,11 @@ uint8_t* TradingSignalProto::_InternalSerialize(
         1, this->_internal_signal_id(), target);
   }
 
-  // string tradingPair = 2;
-  if (!this->_internal_trading_pair().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_trading_pair().data(), static_cast<int>(this->_internal_trading_pair().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.grpc.TradingSignalProto.tradingPair");
-    target = stream->WriteStringMaybeAliased(
-        2, this->_internal_trading_pair(), target);
+  // .trading.common.proto.SymbolProto symbol = 2;
+  if (this->_internal_has_symbol()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(2, _Internal::symbol(this),
+        _Internal::symbol(this).GetCachedSize(), target, stream);
   }
 
   // .trading.execution.grpc.TradingSignalProto.OrderSide direction = 3;
@@ -1148,13 +1187,6 @@ size_t TradingSignalProto::ByteSizeLong() const {
         this->_internal_signal_id());
   }
 
-  // string tradingPair = 2;
-  if (!this->_internal_trading_pair().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_trading_pair());
-  }
-
   // string strategy_id = 7;
   if (!this->_internal_strategy_id().empty()) {
     total_size += 1 +
@@ -1167,6 +1199,13 @@ size_t TradingSignalProto::ByteSizeLong() const {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
         this->_internal_strategy_version());
+  }
+
+  // .trading.common.proto.SymbolProto symbol = 2;
+  if (this->_internal_has_symbol()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+        *_impl_.symbol_);
   }
 
   // double strength = 4;
@@ -1220,14 +1259,15 @@ void TradingSignalProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, con
   if (!from._internal_signal_id().empty()) {
     _this->_internal_set_signal_id(from._internal_signal_id());
   }
-  if (!from._internal_trading_pair().empty()) {
-    _this->_internal_set_trading_pair(from._internal_trading_pair());
-  }
   if (!from._internal_strategy_id().empty()) {
     _this->_internal_set_strategy_id(from._internal_strategy_id());
   }
   if (!from._internal_strategy_version().empty()) {
     _this->_internal_set_strategy_version(from._internal_strategy_version());
+  }
+  if (from._internal_has_symbol()) {
+    _this->_internal_mutable_symbol()->::trading::common::proto::SymbolProto::MergeFrom(
+        from._internal_symbol());
   }
   static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
   double tmp_strength = from._internal_strength();
@@ -1274,10 +1314,6 @@ void TradingSignalProto::InternalSwap(TradingSignalProto* other) {
       &other->_impl_.signal_id_, rhs_arena
   );
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.trading_pair_, lhs_arena,
-      &other->_impl_.trading_pair_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.strategy_id_, lhs_arena,
       &other->_impl_.strategy_id_, rhs_arena
   );
@@ -1288,9 +1324,9 @@ void TradingSignalProto::InternalSwap(TradingSignalProto* other) {
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
       PROTOBUF_FIELD_OFFSET(TradingSignalProto, _impl_.direction_)
       + sizeof(TradingSignalProto::_impl_.direction_)
-      - PROTOBUF_FIELD_OFFSET(TradingSignalProto, _impl_.strength_)>(
-          reinterpret_cast<char*>(&_impl_.strength_),
-          reinterpret_cast<char*>(&other->_impl_.strength_));
+      - PROTOBUF_FIELD_OFFSET(TradingSignalProto, _impl_.symbol_)>(
+          reinterpret_cast<char*>(&_impl_.symbol_),
+          reinterpret_cast<char*>(&other->_impl_.symbol_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata TradingSignalProto::GetMetadata() const {
@@ -1303,8 +1339,19 @@ void TradingSignalProto::InternalSwap(TradingSignalProto* other) {
 
 class ExecutionResponseProto::_Internal {
  public:
+  static const ::trading::common::proto::TimestampProto& timestamp(const ExecutionResponseProto* msg);
 };
 
+const ::trading::common::proto::TimestampProto&
+ExecutionResponseProto::_Internal::timestamp(const ExecutionResponseProto* msg) {
+  return *msg->_impl_.timestamp_;
+}
+void ExecutionResponseProto::clear_timestamp() {
+  if (GetArenaForAllocation() == nullptr && _impl_.timestamp_ != nullptr) {
+    delete _impl_.timestamp_;
+  }
+  _impl_.timestamp_ = nullptr;
+}
 ExecutionResponseProto::ExecutionResponseProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
@@ -1318,9 +1365,9 @@ ExecutionResponseProto::ExecutionResponseProto(const ExecutionResponseProto& fro
       decltype(_impl_.client_order_id_){}
     , decltype(_impl_.exchange_order_id_){}
     , decltype(_impl_.error_message_){}
-    , decltype(_impl_.order_status_){}
-    , decltype(_impl_.timestamp_){}
+    , decltype(_impl_.timestamp_){nullptr}
     , decltype(_impl_.success_){}
+    , decltype(_impl_.order_status_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
@@ -1348,17 +1395,12 @@ ExecutionResponseProto::ExecutionResponseProto(const ExecutionResponseProto& fro
     _this->_impl_.error_message_.Set(from._internal_error_message(), 
       _this->GetArenaForAllocation());
   }
-  _impl_.order_status_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.order_status_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_order_status().empty()) {
-    _this->_impl_.order_status_.Set(from._internal_order_status(), 
-      _this->GetArenaForAllocation());
+  if (from._internal_has_timestamp()) {
+    _this->_impl_.timestamp_ = new ::trading::common::proto::TimestampProto(*from._impl_.timestamp_);
   }
-  ::memcpy(&_impl_.timestamp_, &from._impl_.timestamp_,
-    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.success_) -
-    reinterpret_cast<char*>(&_impl_.timestamp_)) + sizeof(_impl_.success_));
+  ::memcpy(&_impl_.success_, &from._impl_.success_,
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.order_status_) -
+    reinterpret_cast<char*>(&_impl_.success_)) + sizeof(_impl_.order_status_));
   // @@protoc_insertion_point(copy_constructor:trading.execution.grpc.ExecutionResponseProto)
 }
 
@@ -1370,9 +1412,9 @@ inline void ExecutionResponseProto::SharedCtor(
       decltype(_impl_.client_order_id_){}
     , decltype(_impl_.exchange_order_id_){}
     , decltype(_impl_.error_message_){}
-    , decltype(_impl_.order_status_){}
-    , decltype(_impl_.timestamp_){int64_t{0}}
+    , decltype(_impl_.timestamp_){nullptr}
     , decltype(_impl_.success_){false}
+    , decltype(_impl_.order_status_){0}
     , /*decltype(_impl_._cached_size_)*/{}
   };
   _impl_.client_order_id_.InitDefault();
@@ -1386,10 +1428,6 @@ inline void ExecutionResponseProto::SharedCtor(
   _impl_.error_message_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.error_message_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.order_status_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.order_status_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 }
 
@@ -1407,7 +1445,7 @@ inline void ExecutionResponseProto::SharedDtor() {
   _impl_.client_order_id_.Destroy();
   _impl_.exchange_order_id_.Destroy();
   _impl_.error_message_.Destroy();
-  _impl_.order_status_.Destroy();
+  if (this != internal_default_instance()) delete _impl_.timestamp_;
 }
 
 void ExecutionResponseProto::SetCachedSize(int size) const {
@@ -1423,10 +1461,13 @@ void ExecutionResponseProto::Clear() {
   _impl_.client_order_id_.ClearToEmpty();
   _impl_.exchange_order_id_.ClearToEmpty();
   _impl_.error_message_.ClearToEmpty();
-  _impl_.order_status_.ClearToEmpty();
-  ::memset(&_impl_.timestamp_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&_impl_.success_) -
-      reinterpret_cast<char*>(&_impl_.timestamp_)) + sizeof(_impl_.success_));
+  if (GetArenaForAllocation() == nullptr && _impl_.timestamp_ != nullptr) {
+    delete _impl_.timestamp_;
+  }
+  _impl_.timestamp_ = nullptr;
+  ::memset(&_impl_.success_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&_impl_.order_status_) -
+      reinterpret_cast<char*>(&_impl_.success_)) + sizeof(_impl_.order_status_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -1474,21 +1515,20 @@ const char* ExecutionResponseProto::_InternalParse(const char* ptr, ::_pbi::Pars
         } else
           goto handle_unusual;
         continue;
-      // int64 timestamp = 5;
+      // .trading.common.proto.TimestampProto timestamp = 5;
       case 5:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 40)) {
-          _impl_.timestamp_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
+          ptr = ctx->ParseMessage(_internal_mutable_timestamp(), ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
-      // string order_status = 6;
+      // .trading.execution.grpc.OrderStateProto order_status = 6;
       case 6:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 50)) {
-          auto str = _internal_mutable_order_status();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 48)) {
+          uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.ExecutionResponseProto.order_status"));
+          _internal_set_order_status(static_cast<::trading::execution::grpc::OrderStateProto>(val));
         } else
           goto handle_unusual;
         continue;
@@ -1557,20 +1597,18 @@ uint8_t* ExecutionResponseProto::_InternalSerialize(
         4, this->_internal_error_message(), target);
   }
 
-  // int64 timestamp = 5;
-  if (this->_internal_timestamp() != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteInt64ToArray(5, this->_internal_timestamp(), target);
+  // .trading.common.proto.TimestampProto timestamp = 5;
+  if (this->_internal_has_timestamp()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(5, _Internal::timestamp(this),
+        _Internal::timestamp(this).GetCachedSize(), target, stream);
   }
 
-  // string order_status = 6;
-  if (!this->_internal_order_status().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_order_status().data(), static_cast<int>(this->_internal_order_status().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.grpc.ExecutionResponseProto.order_status");
-    target = stream->WriteStringMaybeAliased(
-        6, this->_internal_order_status(), target);
+  // .trading.execution.grpc.OrderStateProto order_status = 6;
+  if (this->_internal_order_status() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteEnumToArray(
+      6, this->_internal_order_status(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1610,21 +1648,22 @@ size_t ExecutionResponseProto::ByteSizeLong() const {
         this->_internal_error_message());
   }
 
-  // string order_status = 6;
-  if (!this->_internal_order_status().empty()) {
+  // .trading.common.proto.TimestampProto timestamp = 5;
+  if (this->_internal_has_timestamp()) {
     total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_order_status());
-  }
-
-  // int64 timestamp = 5;
-  if (this->_internal_timestamp() != 0) {
-    total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(this->_internal_timestamp());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+        *_impl_.timestamp_);
   }
 
   // bool success = 3;
   if (this->_internal_success() != 0) {
     total_size += 1 + 1;
+  }
+
+  // .trading.execution.grpc.OrderStateProto order_status = 6;
+  if (this->_internal_order_status() != 0) {
+    total_size += 1 +
+      ::_pbi::WireFormatLite::EnumSize(this->_internal_order_status());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
@@ -1654,14 +1693,15 @@ void ExecutionResponseProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg,
   if (!from._internal_error_message().empty()) {
     _this->_internal_set_error_message(from._internal_error_message());
   }
-  if (!from._internal_order_status().empty()) {
-    _this->_internal_set_order_status(from._internal_order_status());
-  }
-  if (from._internal_timestamp() != 0) {
-    _this->_internal_set_timestamp(from._internal_timestamp());
+  if (from._internal_has_timestamp()) {
+    _this->_internal_mutable_timestamp()->::trading::common::proto::TimestampProto::MergeFrom(
+        from._internal_timestamp());
   }
   if (from._internal_success() != 0) {
     _this->_internal_set_success(from._internal_success());
+  }
+  if (from._internal_order_status() != 0) {
+    _this->_internal_set_order_status(from._internal_order_status());
   }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
@@ -1694,13 +1734,9 @@ void ExecutionResponseProto::InternalSwap(ExecutionResponseProto* other) {
       &_impl_.error_message_, lhs_arena,
       &other->_impl_.error_message_, rhs_arena
   );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.order_status_, lhs_arena,
-      &other->_impl_.order_status_, rhs_arena
-  );
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(ExecutionResponseProto, _impl_.success_)
-      + sizeof(ExecutionResponseProto::_impl_.success_)
+      PROTOBUF_FIELD_OFFSET(ExecutionResponseProto, _impl_.order_status_)
+      + sizeof(ExecutionResponseProto::_impl_.order_status_)
       - PROTOBUF_FIELD_OFFSET(ExecutionResponseProto, _impl_.timestamp_)>(
           reinterpret_cast<char*>(&_impl_.timestamp_),
           reinterpret_cast<char*>(&other->_impl_.timestamp_));
@@ -1716,8 +1752,19 @@ void ExecutionResponseProto::InternalSwap(ExecutionResponseProto* other) {
 
 class CancelResponseProto::_Internal {
  public:
+  static const ::trading::common::proto::TimestampProto& timestamp(const CancelResponseProto* msg);
 };
 
+const ::trading::common::proto::TimestampProto&
+CancelResponseProto::_Internal::timestamp(const CancelResponseProto* msg) {
+  return *msg->_impl_.timestamp_;
+}
+void CancelResponseProto::clear_timestamp() {
+  if (GetArenaForAllocation() == nullptr && _impl_.timestamp_ != nullptr) {
+    delete _impl_.timestamp_;
+  }
+  _impl_.timestamp_ = nullptr;
+}
 CancelResponseProto::CancelResponseProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
@@ -1731,7 +1778,7 @@ CancelResponseProto::CancelResponseProto(const CancelResponseProto& from)
       decltype(_impl_.client_order_id_){}
     , decltype(_impl_.exchange_order_id_){}
     , decltype(_impl_.error_message_){}
-    , decltype(_impl_.timestamp_){}
+    , decltype(_impl_.timestamp_){nullptr}
     , decltype(_impl_.success_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
@@ -1760,9 +1807,10 @@ CancelResponseProto::CancelResponseProto(const CancelResponseProto& from)
     _this->_impl_.error_message_.Set(from._internal_error_message(), 
       _this->GetArenaForAllocation());
   }
-  ::memcpy(&_impl_.timestamp_, &from._impl_.timestamp_,
-    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.success_) -
-    reinterpret_cast<char*>(&_impl_.timestamp_)) + sizeof(_impl_.success_));
+  if (from._internal_has_timestamp()) {
+    _this->_impl_.timestamp_ = new ::trading::common::proto::TimestampProto(*from._impl_.timestamp_);
+  }
+  _this->_impl_.success_ = from._impl_.success_;
   // @@protoc_insertion_point(copy_constructor:trading.execution.grpc.CancelResponseProto)
 }
 
@@ -1774,7 +1822,7 @@ inline void CancelResponseProto::SharedCtor(
       decltype(_impl_.client_order_id_){}
     , decltype(_impl_.exchange_order_id_){}
     , decltype(_impl_.error_message_){}
-    , decltype(_impl_.timestamp_){int64_t{0}}
+    , decltype(_impl_.timestamp_){nullptr}
     , decltype(_impl_.success_){false}
     , /*decltype(_impl_._cached_size_)*/{}
   };
@@ -1806,6 +1854,7 @@ inline void CancelResponseProto::SharedDtor() {
   _impl_.client_order_id_.Destroy();
   _impl_.exchange_order_id_.Destroy();
   _impl_.error_message_.Destroy();
+  if (this != internal_default_instance()) delete _impl_.timestamp_;
 }
 
 void CancelResponseProto::SetCachedSize(int size) const {
@@ -1821,9 +1870,11 @@ void CancelResponseProto::Clear() {
   _impl_.client_order_id_.ClearToEmpty();
   _impl_.exchange_order_id_.ClearToEmpty();
   _impl_.error_message_.ClearToEmpty();
-  ::memset(&_impl_.timestamp_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&_impl_.success_) -
-      reinterpret_cast<char*>(&_impl_.timestamp_)) + sizeof(_impl_.success_));
+  if (GetArenaForAllocation() == nullptr && _impl_.timestamp_ != nullptr) {
+    delete _impl_.timestamp_;
+  }
+  _impl_.timestamp_ = nullptr;
+  _impl_.success_ = false;
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -1871,10 +1922,10 @@ const char* CancelResponseProto::_InternalParse(const char* ptr, ::_pbi::ParseCo
         } else
           goto handle_unusual;
         continue;
-      // int64 timestamp = 5;
+      // .trading.common.proto.TimestampProto timestamp = 5;
       case 5:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 40)) {
-          _impl_.timestamp_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
+          ptr = ctx->ParseMessage(_internal_mutable_timestamp(), ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
@@ -1944,10 +1995,11 @@ uint8_t* CancelResponseProto::_InternalSerialize(
         4, this->_internal_error_message(), target);
   }
 
-  // int64 timestamp = 5;
-  if (this->_internal_timestamp() != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteInt64ToArray(5, this->_internal_timestamp(), target);
+  // .trading.common.proto.TimestampProto timestamp = 5;
+  if (this->_internal_has_timestamp()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(5, _Internal::timestamp(this),
+        _Internal::timestamp(this).GetCachedSize(), target, stream);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1987,9 +2039,11 @@ size_t CancelResponseProto::ByteSizeLong() const {
         this->_internal_error_message());
   }
 
-  // int64 timestamp = 5;
-  if (this->_internal_timestamp() != 0) {
-    total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(this->_internal_timestamp());
+  // .trading.common.proto.TimestampProto timestamp = 5;
+  if (this->_internal_has_timestamp()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+        *_impl_.timestamp_);
   }
 
   // bool success = 3;
@@ -2024,8 +2078,9 @@ void CancelResponseProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, co
   if (!from._internal_error_message().empty()) {
     _this->_internal_set_error_message(from._internal_error_message());
   }
-  if (from._internal_timestamp() != 0) {
-    _this->_internal_set_timestamp(from._internal_timestamp());
+  if (from._internal_has_timestamp()) {
+    _this->_internal_mutable_timestamp()->::trading::common::proto::TimestampProto::MergeFrom(
+        from._internal_timestamp());
   }
   if (from._internal_success() != 0) {
     _this->_internal_set_success(from._internal_success());
@@ -2079,8 +2134,19 @@ void CancelResponseProto::InternalSwap(CancelResponseProto* other) {
 
 class FillProto::_Internal {
  public:
+  static const ::trading::common::proto::TimestampProto& timestamp(const FillProto* msg);
 };
 
+const ::trading::common::proto::TimestampProto&
+FillProto::_Internal::timestamp(const FillProto* msg) {
+  return *msg->_impl_.timestamp_;
+}
+void FillProto::clear_timestamp() {
+  if (GetArenaForAllocation() == nullptr && _impl_.timestamp_ != nullptr) {
+    delete _impl_.timestamp_;
+  }
+  _impl_.timestamp_ = nullptr;
+}
 FillProto::FillProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
@@ -2093,11 +2159,13 @@ FillProto::FillProto(const FillProto& from)
   new (&_impl_) Impl_{
       decltype(_impl_.fill_id_){}
     , decltype(_impl_.order_id_){}
+    , decltype(_impl_.exchange_order_id_){}
     , decltype(_impl_.fee_currency_){}
+    , decltype(_impl_.timestamp_){nullptr}
     , decltype(_impl_.quantity_){}
     , decltype(_impl_.price_){}
     , decltype(_impl_.fee_){}
-    , decltype(_impl_.timestamp_){}
+    , decltype(_impl_.exchange_id_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
@@ -2117,6 +2185,14 @@ FillProto::FillProto(const FillProto& from)
     _this->_impl_.order_id_.Set(from._internal_order_id(), 
       _this->GetArenaForAllocation());
   }
+  _impl_.exchange_order_id_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.exchange_order_id_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_exchange_order_id().empty()) {
+    _this->_impl_.exchange_order_id_.Set(from._internal_exchange_order_id(), 
+      _this->GetArenaForAllocation());
+  }
   _impl_.fee_currency_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.fee_currency_.Set("", GetArenaForAllocation());
@@ -2125,9 +2201,12 @@ FillProto::FillProto(const FillProto& from)
     _this->_impl_.fee_currency_.Set(from._internal_fee_currency(), 
       _this->GetArenaForAllocation());
   }
+  if (from._internal_has_timestamp()) {
+    _this->_impl_.timestamp_ = new ::trading::common::proto::TimestampProto(*from._impl_.timestamp_);
+  }
   ::memcpy(&_impl_.quantity_, &from._impl_.quantity_,
-    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.timestamp_) -
-    reinterpret_cast<char*>(&_impl_.quantity_)) + sizeof(_impl_.timestamp_));
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.exchange_id_) -
+    reinterpret_cast<char*>(&_impl_.quantity_)) + sizeof(_impl_.exchange_id_));
   // @@protoc_insertion_point(copy_constructor:trading.execution.grpc.FillProto)
 }
 
@@ -2138,11 +2217,13 @@ inline void FillProto::SharedCtor(
   new (&_impl_) Impl_{
       decltype(_impl_.fill_id_){}
     , decltype(_impl_.order_id_){}
+    , decltype(_impl_.exchange_order_id_){}
     , decltype(_impl_.fee_currency_){}
+    , decltype(_impl_.timestamp_){nullptr}
     , decltype(_impl_.quantity_){0}
     , decltype(_impl_.price_){0}
     , decltype(_impl_.fee_){0}
-    , decltype(_impl_.timestamp_){int64_t{0}}
+    , decltype(_impl_.exchange_id_){0}
     , /*decltype(_impl_._cached_size_)*/{}
   };
   _impl_.fill_id_.InitDefault();
@@ -2152,6 +2233,10 @@ inline void FillProto::SharedCtor(
   _impl_.order_id_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.order_id_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.exchange_order_id_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.exchange_order_id_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   _impl_.fee_currency_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -2172,7 +2257,9 @@ inline void FillProto::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
   _impl_.fill_id_.Destroy();
   _impl_.order_id_.Destroy();
+  _impl_.exchange_order_id_.Destroy();
   _impl_.fee_currency_.Destroy();
+  if (this != internal_default_instance()) delete _impl_.timestamp_;
 }
 
 void FillProto::SetCachedSize(int size) const {
@@ -2187,10 +2274,15 @@ void FillProto::Clear() {
 
   _impl_.fill_id_.ClearToEmpty();
   _impl_.order_id_.ClearToEmpty();
+  _impl_.exchange_order_id_.ClearToEmpty();
   _impl_.fee_currency_.ClearToEmpty();
+  if (GetArenaForAllocation() == nullptr && _impl_.timestamp_ != nullptr) {
+    delete _impl_.timestamp_;
+  }
+  _impl_.timestamp_ = nullptr;
   ::memset(&_impl_.quantity_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&_impl_.timestamp_) -
-      reinterpret_cast<char*>(&_impl_.quantity_)) + sizeof(_impl_.timestamp_));
+      reinterpret_cast<char*>(&_impl_.exchange_id_) -
+      reinterpret_cast<char*>(&_impl_.quantity_)) + sizeof(_impl_.exchange_id_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -2220,33 +2312,52 @@ const char* FillProto::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx
         } else
           goto handle_unusual;
         continue;
-      // double quantity = 3;
+      // string exchange_order_id = 3;
       case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 25)) {
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
+          auto str = _internal_mutable_exchange_order_id();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.FillProto.exchange_order_id"));
+        } else
+          goto handle_unusual;
+        continue;
+      // .trading.common.proto.ExchangeIdProto exchange_id = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 32)) {
+          uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+          _internal_set_exchange_id(static_cast<::trading::common::proto::ExchangeIdProto>(val));
+        } else
+          goto handle_unusual;
+        continue;
+      // double quantity = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 41)) {
           _impl_.quantity_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
           ptr += sizeof(double);
         } else
           goto handle_unusual;
         continue;
-      // double price = 4;
-      case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 33)) {
+      // double price = 6;
+      case 6:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 49)) {
           _impl_.price_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
           ptr += sizeof(double);
         } else
           goto handle_unusual;
         continue;
-      // double fee = 5;
-      case 5:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 41)) {
+      // double fee = 7;
+      case 7:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 57)) {
           _impl_.fee_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
           ptr += sizeof(double);
         } else
           goto handle_unusual;
         continue;
-      // string fee_currency = 6;
-      case 6:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 50)) {
+      // string fee_currency = 8;
+      case 8:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 66)) {
           auto str = _internal_mutable_fee_currency();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
@@ -2254,10 +2365,10 @@ const char* FillProto::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx
         } else
           goto handle_unusual;
         continue;
-      // int64 timestamp = 7;
-      case 7:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 56)) {
-          _impl_.timestamp_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+      // .trading.common.proto.TimestampProto timestamp = 9;
+      case 9:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 74)) {
+          ptr = ctx->ParseMessage(_internal_mutable_timestamp(), ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
@@ -2311,50 +2422,68 @@ uint8_t* FillProto::_InternalSerialize(
         2, this->_internal_order_id(), target);
   }
 
-  // double quantity = 3;
+  // string exchange_order_id = 3;
+  if (!this->_internal_exchange_order_id().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_exchange_order_id().data(), static_cast<int>(this->_internal_exchange_order_id().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "trading.execution.grpc.FillProto.exchange_order_id");
+    target = stream->WriteStringMaybeAliased(
+        3, this->_internal_exchange_order_id(), target);
+  }
+
+  // .trading.common.proto.ExchangeIdProto exchange_id = 4;
+  if (this->_internal_exchange_id() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteEnumToArray(
+      4, this->_internal_exchange_id(), target);
+  }
+
+  // double quantity = 5;
   static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
   double tmp_quantity = this->_internal_quantity();
   uint64_t raw_quantity;
   memcpy(&raw_quantity, &tmp_quantity, sizeof(tmp_quantity));
   if (raw_quantity != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(3, this->_internal_quantity(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(5, this->_internal_quantity(), target);
   }
 
-  // double price = 4;
+  // double price = 6;
   static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
   double tmp_price = this->_internal_price();
   uint64_t raw_price;
   memcpy(&raw_price, &tmp_price, sizeof(tmp_price));
   if (raw_price != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(4, this->_internal_price(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(6, this->_internal_price(), target);
   }
 
-  // double fee = 5;
+  // double fee = 7;
   static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
   double tmp_fee = this->_internal_fee();
   uint64_t raw_fee;
   memcpy(&raw_fee, &tmp_fee, sizeof(tmp_fee));
   if (raw_fee != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteDoubleToArray(5, this->_internal_fee(), target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(7, this->_internal_fee(), target);
   }
 
-  // string fee_currency = 6;
+  // string fee_currency = 8;
   if (!this->_internal_fee_currency().empty()) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
       this->_internal_fee_currency().data(), static_cast<int>(this->_internal_fee_currency().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
       "trading.execution.grpc.FillProto.fee_currency");
     target = stream->WriteStringMaybeAliased(
-        6, this->_internal_fee_currency(), target);
+        8, this->_internal_fee_currency(), target);
   }
 
-  // int64 timestamp = 7;
-  if (this->_internal_timestamp() != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteInt64ToArray(7, this->_internal_timestamp(), target);
+  // .trading.common.proto.TimestampProto timestamp = 9;
+  if (this->_internal_has_timestamp()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(9, _Internal::timestamp(this),
+        _Internal::timestamp(this).GetCachedSize(), target, stream);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -2387,14 +2516,28 @@ size_t FillProto::ByteSizeLong() const {
         this->_internal_order_id());
   }
 
-  // string fee_currency = 6;
+  // string exchange_order_id = 3;
+  if (!this->_internal_exchange_order_id().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_exchange_order_id());
+  }
+
+  // string fee_currency = 8;
   if (!this->_internal_fee_currency().empty()) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
         this->_internal_fee_currency());
   }
 
-  // double quantity = 3;
+  // .trading.common.proto.TimestampProto timestamp = 9;
+  if (this->_internal_has_timestamp()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+        *_impl_.timestamp_);
+  }
+
+  // double quantity = 5;
   static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
   double tmp_quantity = this->_internal_quantity();
   uint64_t raw_quantity;
@@ -2403,7 +2546,7 @@ size_t FillProto::ByteSizeLong() const {
     total_size += 1 + 8;
   }
 
-  // double price = 4;
+  // double price = 6;
   static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
   double tmp_price = this->_internal_price();
   uint64_t raw_price;
@@ -2412,7 +2555,7 @@ size_t FillProto::ByteSizeLong() const {
     total_size += 1 + 8;
   }
 
-  // double fee = 5;
+  // double fee = 7;
   static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
   double tmp_fee = this->_internal_fee();
   uint64_t raw_fee;
@@ -2421,9 +2564,10 @@ size_t FillProto::ByteSizeLong() const {
     total_size += 1 + 8;
   }
 
-  // int64 timestamp = 7;
-  if (this->_internal_timestamp() != 0) {
-    total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(this->_internal_timestamp());
+  // .trading.common.proto.ExchangeIdProto exchange_id = 4;
+  if (this->_internal_exchange_id() != 0) {
+    total_size += 1 +
+      ::_pbi::WireFormatLite::EnumSize(this->_internal_exchange_id());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
@@ -2450,8 +2594,15 @@ void FillProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROT
   if (!from._internal_order_id().empty()) {
     _this->_internal_set_order_id(from._internal_order_id());
   }
+  if (!from._internal_exchange_order_id().empty()) {
+    _this->_internal_set_exchange_order_id(from._internal_exchange_order_id());
+  }
   if (!from._internal_fee_currency().empty()) {
     _this->_internal_set_fee_currency(from._internal_fee_currency());
+  }
+  if (from._internal_has_timestamp()) {
+    _this->_internal_mutable_timestamp()->::trading::common::proto::TimestampProto::MergeFrom(
+        from._internal_timestamp());
   }
   static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
   double tmp_quantity = from._internal_quantity();
@@ -2474,8 +2625,8 @@ void FillProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROT
   if (raw_fee != 0) {
     _this->_internal_set_fee(from._internal_fee());
   }
-  if (from._internal_timestamp() != 0) {
-    _this->_internal_set_timestamp(from._internal_timestamp());
+  if (from._internal_exchange_id() != 0) {
+    _this->_internal_set_exchange_id(from._internal_exchange_id());
   }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
@@ -2505,15 +2656,19 @@ void FillProto::InternalSwap(FillProto* other) {
       &other->_impl_.order_id_, rhs_arena
   );
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.exchange_order_id_, lhs_arena,
+      &other->_impl_.exchange_order_id_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.fee_currency_, lhs_arena,
       &other->_impl_.fee_currency_, rhs_arena
   );
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(FillProto, _impl_.timestamp_)
-      + sizeof(FillProto::_impl_.timestamp_)
-      - PROTOBUF_FIELD_OFFSET(FillProto, _impl_.quantity_)>(
-          reinterpret_cast<char*>(&_impl_.quantity_),
-          reinterpret_cast<char*>(&other->_impl_.quantity_));
+      PROTOBUF_FIELD_OFFSET(FillProto, _impl_.exchange_id_)
+      + sizeof(FillProto::_impl_.exchange_id_)
+      - PROTOBUF_FIELD_OFFSET(FillProto, _impl_.timestamp_)>(
+          reinterpret_cast<char*>(&_impl_.timestamp_),
+          reinterpret_cast<char*>(&other->_impl_.timestamp_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata FillProto::GetMetadata() const {
@@ -2540,8 +2695,41 @@ void OrderProto_ExtraParamsEntry_DoNotUse::MergeFrom(const OrderProto_ExtraParam
 
 class OrderProto::_Internal {
  public:
+  static const ::trading::common::proto::SymbolProto& symbol(const OrderProto* msg);
+  static const ::trading::common::proto::TimestampProto& created_at(const OrderProto* msg);
+  static const ::trading::common::proto::TimestampProto& updated_at(const OrderProto* msg);
 };
 
+const ::trading::common::proto::SymbolProto&
+OrderProto::_Internal::symbol(const OrderProto* msg) {
+  return *msg->_impl_.symbol_;
+}
+const ::trading::common::proto::TimestampProto&
+OrderProto::_Internal::created_at(const OrderProto* msg) {
+  return *msg->_impl_.created_at_;
+}
+const ::trading::common::proto::TimestampProto&
+OrderProto::_Internal::updated_at(const OrderProto* msg) {
+  return *msg->_impl_.updated_at_;
+}
+void OrderProto::clear_symbol() {
+  if (GetArenaForAllocation() == nullptr && _impl_.symbol_ != nullptr) {
+    delete _impl_.symbol_;
+  }
+  _impl_.symbol_ = nullptr;
+}
+void OrderProto::clear_created_at() {
+  if (GetArenaForAllocation() == nullptr && _impl_.created_at_ != nullptr) {
+    delete _impl_.created_at_;
+  }
+  _impl_.created_at_ = nullptr;
+}
+void OrderProto::clear_updated_at() {
+  if (GetArenaForAllocation() == nullptr && _impl_.updated_at_ != nullptr) {
+    delete _impl_.updated_at_;
+  }
+  _impl_.updated_at_ = nullptr;
+}
 OrderProto::OrderProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
@@ -2559,22 +2747,22 @@ OrderProto::OrderProto(const OrderProto& from)
     , /*decltype(_impl_.extra_params_)*/{}
     , decltype(_impl_.order_id_){}
     , decltype(_impl_.client_order_id_){}
-    , decltype(_impl_.exchangeid_){}
     , decltype(_impl_.exchange_order_id_){}
-    , decltype(_impl_.trading_pair_){}
     , decltype(_impl_.strategy_id_){}
     , decltype(_impl_.signal_id_){}
+    , decltype(_impl_.symbol_){nullptr}
+    , decltype(_impl_.created_at_){nullptr}
+    , decltype(_impl_.updated_at_){nullptr}
+    , decltype(_impl_.exchange_id_){}
     , decltype(_impl_.side_){}
-    , decltype(_impl_.type_){}
     , decltype(_impl_.quantity_){}
     , decltype(_impl_.price_){}
-    , decltype(_impl_.stop_price_){}
+    , decltype(_impl_.type_){}
     , decltype(_impl_.time_in_force_){}
-    , decltype(_impl_.state_){}
-    , decltype(_impl_.created_at_){}
-    , decltype(_impl_.updated_at_){}
+    , decltype(_impl_.stop_price_){}
     , decltype(_impl_.filled_quantity_){}
     , decltype(_impl_.average_fill_price_){}
+    , decltype(_impl_.state_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
@@ -2595,28 +2783,12 @@ OrderProto::OrderProto(const OrderProto& from)
     _this->_impl_.client_order_id_.Set(from._internal_client_order_id(), 
       _this->GetArenaForAllocation());
   }
-  _impl_.exchangeid_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.exchangeid_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_exchangeid().empty()) {
-    _this->_impl_.exchangeid_.Set(from._internal_exchangeid(), 
-      _this->GetArenaForAllocation());
-  }
   _impl_.exchange_order_id_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.exchange_order_id_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   if (!from._internal_exchange_order_id().empty()) {
     _this->_impl_.exchange_order_id_.Set(from._internal_exchange_order_id(), 
-      _this->GetArenaForAllocation());
-  }
-  _impl_.trading_pair_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.trading_pair_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_trading_pair().empty()) {
-    _this->_impl_.trading_pair_.Set(from._internal_trading_pair(), 
       _this->GetArenaForAllocation());
   }
   _impl_.strategy_id_.InitDefault();
@@ -2635,9 +2807,18 @@ OrderProto::OrderProto(const OrderProto& from)
     _this->_impl_.signal_id_.Set(from._internal_signal_id(), 
       _this->GetArenaForAllocation());
   }
-  ::memcpy(&_impl_.side_, &from._impl_.side_,
-    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.average_fill_price_) -
-    reinterpret_cast<char*>(&_impl_.side_)) + sizeof(_impl_.average_fill_price_));
+  if (from._internal_has_symbol()) {
+    _this->_impl_.symbol_ = new ::trading::common::proto::SymbolProto(*from._impl_.symbol_);
+  }
+  if (from._internal_has_created_at()) {
+    _this->_impl_.created_at_ = new ::trading::common::proto::TimestampProto(*from._impl_.created_at_);
+  }
+  if (from._internal_has_updated_at()) {
+    _this->_impl_.updated_at_ = new ::trading::common::proto::TimestampProto(*from._impl_.updated_at_);
+  }
+  ::memcpy(&_impl_.exchange_id_, &from._impl_.exchange_id_,
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.state_) -
+    reinterpret_cast<char*>(&_impl_.exchange_id_)) + sizeof(_impl_.state_));
   // @@protoc_insertion_point(copy_constructor:trading.execution.grpc.OrderProto)
 }
 
@@ -2650,22 +2831,22 @@ inline void OrderProto::SharedCtor(
     , /*decltype(_impl_.extra_params_)*/{::_pbi::ArenaInitialized(), arena}
     , decltype(_impl_.order_id_){}
     , decltype(_impl_.client_order_id_){}
-    , decltype(_impl_.exchangeid_){}
     , decltype(_impl_.exchange_order_id_){}
-    , decltype(_impl_.trading_pair_){}
     , decltype(_impl_.strategy_id_){}
     , decltype(_impl_.signal_id_){}
+    , decltype(_impl_.symbol_){nullptr}
+    , decltype(_impl_.created_at_){nullptr}
+    , decltype(_impl_.updated_at_){nullptr}
+    , decltype(_impl_.exchange_id_){0}
     , decltype(_impl_.side_){0}
-    , decltype(_impl_.type_){0}
     , decltype(_impl_.quantity_){0}
     , decltype(_impl_.price_){0}
-    , decltype(_impl_.stop_price_){0}
+    , decltype(_impl_.type_){0}
     , decltype(_impl_.time_in_force_){0}
-    , decltype(_impl_.state_){0}
-    , decltype(_impl_.created_at_){int64_t{0}}
-    , decltype(_impl_.updated_at_){int64_t{0}}
+    , decltype(_impl_.stop_price_){0}
     , decltype(_impl_.filled_quantity_){0}
     , decltype(_impl_.average_fill_price_){0}
+    , decltype(_impl_.state_){0}
     , /*decltype(_impl_._cached_size_)*/{}
   };
   _impl_.order_id_.InitDefault();
@@ -2676,17 +2857,9 @@ inline void OrderProto::SharedCtor(
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.client_order_id_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.exchangeid_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.exchangeid_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   _impl_.exchange_order_id_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.exchange_order_id_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.trading_pair_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.trading_pair_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   _impl_.strategy_id_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -2715,11 +2888,12 @@ inline void OrderProto::SharedDtor() {
   _impl_.extra_params_.~MapField();
   _impl_.order_id_.Destroy();
   _impl_.client_order_id_.Destroy();
-  _impl_.exchangeid_.Destroy();
   _impl_.exchange_order_id_.Destroy();
-  _impl_.trading_pair_.Destroy();
   _impl_.strategy_id_.Destroy();
   _impl_.signal_id_.Destroy();
+  if (this != internal_default_instance()) delete _impl_.symbol_;
+  if (this != internal_default_instance()) delete _impl_.created_at_;
+  if (this != internal_default_instance()) delete _impl_.updated_at_;
 }
 
 void OrderProto::ArenaDtor(void* object) {
@@ -2740,14 +2914,24 @@ void OrderProto::Clear() {
   _impl_.extra_params_.Clear();
   _impl_.order_id_.ClearToEmpty();
   _impl_.client_order_id_.ClearToEmpty();
-  _impl_.exchangeid_.ClearToEmpty();
   _impl_.exchange_order_id_.ClearToEmpty();
-  _impl_.trading_pair_.ClearToEmpty();
   _impl_.strategy_id_.ClearToEmpty();
   _impl_.signal_id_.ClearToEmpty();
-  ::memset(&_impl_.side_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&_impl_.average_fill_price_) -
-      reinterpret_cast<char*>(&_impl_.side_)) + sizeof(_impl_.average_fill_price_));
+  if (GetArenaForAllocation() == nullptr && _impl_.symbol_ != nullptr) {
+    delete _impl_.symbol_;
+  }
+  _impl_.symbol_ = nullptr;
+  if (GetArenaForAllocation() == nullptr && _impl_.created_at_ != nullptr) {
+    delete _impl_.created_at_;
+  }
+  _impl_.created_at_ = nullptr;
+  if (GetArenaForAllocation() == nullptr && _impl_.updated_at_ != nullptr) {
+    delete _impl_.updated_at_;
+  }
+  _impl_.updated_at_ = nullptr;
+  ::memset(&_impl_.exchange_id_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&_impl_.state_) -
+      reinterpret_cast<char*>(&_impl_.exchange_id_)) + sizeof(_impl_.state_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -2777,13 +2961,12 @@ const char* OrderProto::_InternalParse(const char* ptr, ::_pbi::ParseContext* ct
         } else
           goto handle_unusual;
         continue;
-      // string exchangeId = 3;
+      // .trading.common.proto.ExchangeIdProto exchange_id = 3;
       case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
-          auto str = _internal_mutable_exchangeid();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 24)) {
+          uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.OrderProto.exchangeId"));
+          _internal_set_exchange_id(static_cast<::trading::common::proto::ExchangeIdProto>(val));
         } else
           goto handle_unusual;
         continue;
@@ -2797,13 +2980,11 @@ const char* OrderProto::_InternalParse(const char* ptr, ::_pbi::ParseContext* ct
         } else
           goto handle_unusual;
         continue;
-      // string tradingPair = 5;
+      // .trading.common.proto.SymbolProto symbol = 5;
       case 5:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 42)) {
-          auto str = _internal_mutable_trading_pair();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          ptr = ctx->ParseMessage(_internal_mutable_symbol(), ptr);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.OrderProto.tradingPair"));
         } else
           goto handle_unusual;
         continue;
@@ -2887,18 +3068,18 @@ const char* OrderProto::_InternalParse(const char* ptr, ::_pbi::ParseContext* ct
         } else
           goto handle_unusual;
         continue;
-      // int64 created_at = 15;
+      // .trading.common.proto.TimestampProto created_at = 15;
       case 15:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 120)) {
-          _impl_.created_at_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 122)) {
+          ptr = ctx->ParseMessage(_internal_mutable_created_at(), ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
-      // int64 updated_at = 16;
+      // .trading.common.proto.TimestampProto updated_at = 16;
       case 16:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 128)) {
-          _impl_.updated_at_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 130)) {
+          ptr = ctx->ParseMessage(_internal_mutable_updated_at(), ptr);
           CHK_(ptr);
         } else
           goto handle_unusual;
@@ -2994,14 +3175,11 @@ uint8_t* OrderProto::_InternalSerialize(
         2, this->_internal_client_order_id(), target);
   }
 
-  // string exchangeId = 3;
-  if (!this->_internal_exchangeid().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_exchangeid().data(), static_cast<int>(this->_internal_exchangeid().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.grpc.OrderProto.exchangeId");
-    target = stream->WriteStringMaybeAliased(
-        3, this->_internal_exchangeid(), target);
+  // .trading.common.proto.ExchangeIdProto exchange_id = 3;
+  if (this->_internal_exchange_id() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteEnumToArray(
+      3, this->_internal_exchange_id(), target);
   }
 
   // string exchange_order_id = 4;
@@ -3014,14 +3192,11 @@ uint8_t* OrderProto::_InternalSerialize(
         4, this->_internal_exchange_order_id(), target);
   }
 
-  // string tradingPair = 5;
-  if (!this->_internal_trading_pair().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_trading_pair().data(), static_cast<int>(this->_internal_trading_pair().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.grpc.OrderProto.tradingPair");
-    target = stream->WriteStringMaybeAliased(
-        5, this->_internal_trading_pair(), target);
+  // .trading.common.proto.SymbolProto symbol = 5;
+  if (this->_internal_has_symbol()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(5, _Internal::symbol(this),
+        _Internal::symbol(this).GetCachedSize(), target, stream);
   }
 
   // .trading.execution.grpc.OrderProto.OrderSide side = 6;
@@ -3102,16 +3277,18 @@ uint8_t* OrderProto::_InternalSerialize(
         14, this->_internal_signal_id(), target);
   }
 
-  // int64 created_at = 15;
-  if (this->_internal_created_at() != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteInt64ToArray(15, this->_internal_created_at(), target);
+  // .trading.common.proto.TimestampProto created_at = 15;
+  if (this->_internal_has_created_at()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(15, _Internal::created_at(this),
+        _Internal::created_at(this).GetCachedSize(), target, stream);
   }
 
-  // int64 updated_at = 16;
-  if (this->_internal_updated_at() != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteInt64ToArray(16, this->_internal_updated_at(), target);
+  // .trading.common.proto.TimestampProto updated_at = 16;
+  if (this->_internal_has_updated_at()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(16, _Internal::updated_at(this),
+        _Internal::updated_at(this).GetCachedSize(), target, stream);
   }
 
   // repeated .trading.execution.grpc.FillProto fills = 17;
@@ -3218,25 +3395,11 @@ size_t OrderProto::ByteSizeLong() const {
         this->_internal_client_order_id());
   }
 
-  // string exchangeId = 3;
-  if (!this->_internal_exchangeid().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_exchangeid());
-  }
-
   // string exchange_order_id = 4;
   if (!this->_internal_exchange_order_id().empty()) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
         this->_internal_exchange_order_id());
-  }
-
-  // string tradingPair = 5;
-  if (!this->_internal_trading_pair().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_trading_pair());
   }
 
   // string strategy_id = 13;
@@ -3253,16 +3416,37 @@ size_t OrderProto::ByteSizeLong() const {
         this->_internal_signal_id());
   }
 
+  // .trading.common.proto.SymbolProto symbol = 5;
+  if (this->_internal_has_symbol()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+        *_impl_.symbol_);
+  }
+
+  // .trading.common.proto.TimestampProto created_at = 15;
+  if (this->_internal_has_created_at()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+        *_impl_.created_at_);
+  }
+
+  // .trading.common.proto.TimestampProto updated_at = 16;
+  if (this->_internal_has_updated_at()) {
+    total_size += 2 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+        *_impl_.updated_at_);
+  }
+
+  // .trading.common.proto.ExchangeIdProto exchange_id = 3;
+  if (this->_internal_exchange_id() != 0) {
+    total_size += 1 +
+      ::_pbi::WireFormatLite::EnumSize(this->_internal_exchange_id());
+  }
+
   // .trading.execution.grpc.OrderProto.OrderSide side = 6;
   if (this->_internal_side() != 0) {
     total_size += 1 +
       ::_pbi::WireFormatLite::EnumSize(this->_internal_side());
-  }
-
-  // .trading.execution.grpc.OrderProto.OrderType type = 7;
-  if (this->_internal_type() != 0) {
-    total_size += 1 +
-      ::_pbi::WireFormatLite::EnumSize(this->_internal_type());
   }
 
   // double quantity = 8;
@@ -3283,13 +3467,10 @@ size_t OrderProto::ByteSizeLong() const {
     total_size += 1 + 8;
   }
 
-  // double stop_price = 10;
-  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
-  double tmp_stop_price = this->_internal_stop_price();
-  uint64_t raw_stop_price;
-  memcpy(&raw_stop_price, &tmp_stop_price, sizeof(tmp_stop_price));
-  if (raw_stop_price != 0) {
-    total_size += 1 + 8;
+  // .trading.execution.grpc.OrderProto.OrderType type = 7;
+  if (this->_internal_type() != 0) {
+    total_size += 1 +
+      ::_pbi::WireFormatLite::EnumSize(this->_internal_type());
   }
 
   // .trading.execution.grpc.OrderProto.TimeInForce time_in_force = 11;
@@ -3298,22 +3479,13 @@ size_t OrderProto::ByteSizeLong() const {
       ::_pbi::WireFormatLite::EnumSize(this->_internal_time_in_force());
   }
 
-  // .trading.execution.grpc.OrderStateProto state = 12;
-  if (this->_internal_state() != 0) {
-    total_size += 1 +
-      ::_pbi::WireFormatLite::EnumSize(this->_internal_state());
-  }
-
-  // int64 created_at = 15;
-  if (this->_internal_created_at() != 0) {
-    total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(this->_internal_created_at());
-  }
-
-  // int64 updated_at = 16;
-  if (this->_internal_updated_at() != 0) {
-    total_size += 2 +
-      ::_pbi::WireFormatLite::Int64Size(
-        this->_internal_updated_at());
+  // double stop_price = 10;
+  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  double tmp_stop_price = this->_internal_stop_price();
+  uint64_t raw_stop_price;
+  memcpy(&raw_stop_price, &tmp_stop_price, sizeof(tmp_stop_price));
+  if (raw_stop_price != 0) {
+    total_size += 1 + 8;
   }
 
   // double filled_quantity = 18;
@@ -3332,6 +3504,12 @@ size_t OrderProto::ByteSizeLong() const {
   memcpy(&raw_average_fill_price, &tmp_average_fill_price, sizeof(tmp_average_fill_price));
   if (raw_average_fill_price != 0) {
     total_size += 2 + 8;
+  }
+
+  // .trading.execution.grpc.OrderStateProto state = 12;
+  if (this->_internal_state() != 0) {
+    total_size += 1 +
+      ::_pbi::WireFormatLite::EnumSize(this->_internal_state());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
@@ -3360,14 +3538,8 @@ void OrderProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PRO
   if (!from._internal_client_order_id().empty()) {
     _this->_internal_set_client_order_id(from._internal_client_order_id());
   }
-  if (!from._internal_exchangeid().empty()) {
-    _this->_internal_set_exchangeid(from._internal_exchangeid());
-  }
   if (!from._internal_exchange_order_id().empty()) {
     _this->_internal_set_exchange_order_id(from._internal_exchange_order_id());
-  }
-  if (!from._internal_trading_pair().empty()) {
-    _this->_internal_set_trading_pair(from._internal_trading_pair());
   }
   if (!from._internal_strategy_id().empty()) {
     _this->_internal_set_strategy_id(from._internal_strategy_id());
@@ -3375,11 +3547,23 @@ void OrderProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PRO
   if (!from._internal_signal_id().empty()) {
     _this->_internal_set_signal_id(from._internal_signal_id());
   }
+  if (from._internal_has_symbol()) {
+    _this->_internal_mutable_symbol()->::trading::common::proto::SymbolProto::MergeFrom(
+        from._internal_symbol());
+  }
+  if (from._internal_has_created_at()) {
+    _this->_internal_mutable_created_at()->::trading::common::proto::TimestampProto::MergeFrom(
+        from._internal_created_at());
+  }
+  if (from._internal_has_updated_at()) {
+    _this->_internal_mutable_updated_at()->::trading::common::proto::TimestampProto::MergeFrom(
+        from._internal_updated_at());
+  }
+  if (from._internal_exchange_id() != 0) {
+    _this->_internal_set_exchange_id(from._internal_exchange_id());
+  }
   if (from._internal_side() != 0) {
     _this->_internal_set_side(from._internal_side());
-  }
-  if (from._internal_type() != 0) {
-    _this->_internal_set_type(from._internal_type());
   }
   static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
   double tmp_quantity = from._internal_quantity();
@@ -3395,24 +3579,18 @@ void OrderProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PRO
   if (raw_price != 0) {
     _this->_internal_set_price(from._internal_price());
   }
+  if (from._internal_type() != 0) {
+    _this->_internal_set_type(from._internal_type());
+  }
+  if (from._internal_time_in_force() != 0) {
+    _this->_internal_set_time_in_force(from._internal_time_in_force());
+  }
   static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
   double tmp_stop_price = from._internal_stop_price();
   uint64_t raw_stop_price;
   memcpy(&raw_stop_price, &tmp_stop_price, sizeof(tmp_stop_price));
   if (raw_stop_price != 0) {
     _this->_internal_set_stop_price(from._internal_stop_price());
-  }
-  if (from._internal_time_in_force() != 0) {
-    _this->_internal_set_time_in_force(from._internal_time_in_force());
-  }
-  if (from._internal_state() != 0) {
-    _this->_internal_set_state(from._internal_state());
-  }
-  if (from._internal_created_at() != 0) {
-    _this->_internal_set_created_at(from._internal_created_at());
-  }
-  if (from._internal_updated_at() != 0) {
-    _this->_internal_set_updated_at(from._internal_updated_at());
   }
   static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
   double tmp_filled_quantity = from._internal_filled_quantity();
@@ -3427,6 +3605,9 @@ void OrderProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PRO
   memcpy(&raw_average_fill_price, &tmp_average_fill_price, sizeof(tmp_average_fill_price));
   if (raw_average_fill_price != 0) {
     _this->_internal_set_average_fill_price(from._internal_average_fill_price());
+  }
+  if (from._internal_state() != 0) {
+    _this->_internal_set_state(from._internal_state());
   }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
@@ -3458,16 +3639,8 @@ void OrderProto::InternalSwap(OrderProto* other) {
       &other->_impl_.client_order_id_, rhs_arena
   );
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.exchangeid_, lhs_arena,
-      &other->_impl_.exchangeid_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.exchange_order_id_, lhs_arena,
       &other->_impl_.exchange_order_id_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.trading_pair_, lhs_arena,
-      &other->_impl_.trading_pair_, rhs_arena
   );
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
       &_impl_.strategy_id_, lhs_arena,
@@ -3478,11 +3651,11 @@ void OrderProto::InternalSwap(OrderProto* other) {
       &other->_impl_.signal_id_, rhs_arena
   );
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(OrderProto, _impl_.average_fill_price_)
-      + sizeof(OrderProto::_impl_.average_fill_price_)
-      - PROTOBUF_FIELD_OFFSET(OrderProto, _impl_.side_)>(
-          reinterpret_cast<char*>(&_impl_.side_),
-          reinterpret_cast<char*>(&other->_impl_.side_));
+      PROTOBUF_FIELD_OFFSET(OrderProto, _impl_.state_)
+      + sizeof(OrderProto::_impl_.state_)
+      - PROTOBUF_FIELD_OFFSET(OrderProto, _impl_.symbol_)>(
+          reinterpret_cast<char*>(&_impl_.symbol_),
+          reinterpret_cast<char*>(&other->_impl_.symbol_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata OrderProto::GetMetadata() const {
@@ -4230,7 +4403,7 @@ CancelOrderByExchangeIdRequestProto::CancelOrderByExchangeIdRequestProto(const C
   CancelOrderByExchangeIdRequestProto* const _this = this; (void)_this;
   new (&_impl_) Impl_{
       decltype(_impl_.exchange_order_id_){}
-    , decltype(_impl_.exchangeid_){}
+    , decltype(_impl_.exchange_id_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
@@ -4242,14 +4415,7 @@ CancelOrderByExchangeIdRequestProto::CancelOrderByExchangeIdRequestProto(const C
     _this->_impl_.exchange_order_id_.Set(from._internal_exchange_order_id(), 
       _this->GetArenaForAllocation());
   }
-  _impl_.exchangeid_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.exchangeid_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_exchangeid().empty()) {
-    _this->_impl_.exchangeid_.Set(from._internal_exchangeid(), 
-      _this->GetArenaForAllocation());
-  }
+  _this->_impl_.exchange_id_ = from._impl_.exchange_id_;
   // @@protoc_insertion_point(copy_constructor:trading.execution.grpc.CancelOrderByExchangeIdRequestProto)
 }
 
@@ -4259,16 +4425,12 @@ inline void CancelOrderByExchangeIdRequestProto::SharedCtor(
   (void)is_message_owned;
   new (&_impl_) Impl_{
       decltype(_impl_.exchange_order_id_){}
-    , decltype(_impl_.exchangeid_){}
+    , decltype(_impl_.exchange_id_){0}
     , /*decltype(_impl_._cached_size_)*/{}
   };
   _impl_.exchange_order_id_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
     _impl_.exchange_order_id_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.exchangeid_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.exchangeid_.Set("", GetArenaForAllocation());
   #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 }
 
@@ -4284,7 +4446,6 @@ CancelOrderByExchangeIdRequestProto::~CancelOrderByExchangeIdRequestProto() {
 inline void CancelOrderByExchangeIdRequestProto::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
   _impl_.exchange_order_id_.Destroy();
-  _impl_.exchangeid_.Destroy();
 }
 
 void CancelOrderByExchangeIdRequestProto::SetCachedSize(int size) const {
@@ -4298,7 +4459,7 @@ void CancelOrderByExchangeIdRequestProto::Clear() {
   (void) cached_has_bits;
 
   _impl_.exchange_order_id_.ClearToEmpty();
-  _impl_.exchangeid_.ClearToEmpty();
+  _impl_.exchange_id_ = 0;
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -4318,13 +4479,12 @@ const char* CancelOrderByExchangeIdRequestProto::_InternalParse(const char* ptr,
         } else
           goto handle_unusual;
         continue;
-      // string exchangeId = 2;
+      // .trading.common.proto.ExchangeIdProto exchange_id = 2;
       case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
-          auto str = _internal_mutable_exchangeid();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
+          uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchangeId"));
+          _internal_set_exchange_id(static_cast<::trading::common::proto::ExchangeIdProto>(val));
         } else
           goto handle_unusual;
         continue;
@@ -4367,14 +4527,11 @@ uint8_t* CancelOrderByExchangeIdRequestProto::_InternalSerialize(
         1, this->_internal_exchange_order_id(), target);
   }
 
-  // string exchangeId = 2;
-  if (!this->_internal_exchangeid().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_exchangeid().data(), static_cast<int>(this->_internal_exchangeid().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.grpc.CancelOrderByExchangeIdRequestProto.exchangeId");
-    target = stream->WriteStringMaybeAliased(
-        2, this->_internal_exchangeid(), target);
+  // .trading.common.proto.ExchangeIdProto exchange_id = 2;
+  if (this->_internal_exchange_id() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteEnumToArray(
+      2, this->_internal_exchange_id(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -4400,11 +4557,10 @@ size_t CancelOrderByExchangeIdRequestProto::ByteSizeLong() const {
         this->_internal_exchange_order_id());
   }
 
-  // string exchangeId = 2;
-  if (!this->_internal_exchangeid().empty()) {
+  // .trading.common.proto.ExchangeIdProto exchange_id = 2;
+  if (this->_internal_exchange_id() != 0) {
     total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_exchangeid());
+      ::_pbi::WireFormatLite::EnumSize(this->_internal_exchange_id());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
@@ -4428,8 +4584,8 @@ void CancelOrderByExchangeIdRequestProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Mes
   if (!from._internal_exchange_order_id().empty()) {
     _this->_internal_set_exchange_order_id(from._internal_exchange_order_id());
   }
-  if (!from._internal_exchangeid().empty()) {
-    _this->_internal_set_exchangeid(from._internal_exchangeid());
+  if (from._internal_exchange_id() != 0) {
+    _this->_internal_set_exchange_id(from._internal_exchange_id());
   }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
@@ -4454,10 +4610,7 @@ void CancelOrderByExchangeIdRequestProto::InternalSwap(CancelOrderByExchangeIdRe
       &_impl_.exchange_order_id_, lhs_arena,
       &other->_impl_.exchange_order_id_, rhs_arena
   );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.exchangeid_, lhs_arena,
-      &other->_impl_.exchangeid_, rhs_arena
-  );
+  swap(_impl_.exchange_id_, other->_impl_.exchange_id_);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata CancelOrderByExchangeIdRequestProto::GetMetadata() const {
@@ -4470,8 +4623,19 @@ void CancelOrderByExchangeIdRequestProto::InternalSwap(CancelOrderByExchangeIdRe
 
 class CancelAllOrdersRequestProto::_Internal {
  public:
+  static const ::trading::common::proto::SymbolProto& symbol(const CancelAllOrdersRequestProto* msg);
 };
 
+const ::trading::common::proto::SymbolProto&
+CancelAllOrdersRequestProto::_Internal::symbol(const CancelAllOrdersRequestProto* msg) {
+  return *msg->_impl_.symbol_;
+}
+void CancelAllOrdersRequestProto::clear_symbol() {
+  if (GetArenaForAllocation() == nullptr && _impl_.symbol_ != nullptr) {
+    delete _impl_.symbol_;
+  }
+  _impl_.symbol_ = nullptr;
+}
 CancelAllOrdersRequestProto::CancelAllOrdersRequestProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
@@ -4482,27 +4646,15 @@ CancelAllOrdersRequestProto::CancelAllOrdersRequestProto(const CancelAllOrdersRe
   : ::PROTOBUF_NAMESPACE_ID::Message() {
   CancelAllOrdersRequestProto* const _this = this; (void)_this;
   new (&_impl_) Impl_{
-      decltype(_impl_.trading_pair_){}
-    , decltype(_impl_.exchangeid_){}
+      decltype(_impl_.symbol_){nullptr}
+    , decltype(_impl_.exchange_id_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _impl_.trading_pair_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.trading_pair_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_trading_pair().empty()) {
-    _this->_impl_.trading_pair_.Set(from._internal_trading_pair(), 
-      _this->GetArenaForAllocation());
+  if (from._internal_has_symbol()) {
+    _this->_impl_.symbol_ = new ::trading::common::proto::SymbolProto(*from._impl_.symbol_);
   }
-  _impl_.exchangeid_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.exchangeid_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_exchangeid().empty()) {
-    _this->_impl_.exchangeid_.Set(from._internal_exchangeid(), 
-      _this->GetArenaForAllocation());
-  }
+  _this->_impl_.exchange_id_ = from._impl_.exchange_id_;
   // @@protoc_insertion_point(copy_constructor:trading.execution.grpc.CancelAllOrdersRequestProto)
 }
 
@@ -4511,18 +4663,10 @@ inline void CancelAllOrdersRequestProto::SharedCtor(
   (void)arena;
   (void)is_message_owned;
   new (&_impl_) Impl_{
-      decltype(_impl_.trading_pair_){}
-    , decltype(_impl_.exchangeid_){}
+      decltype(_impl_.symbol_){nullptr}
+    , decltype(_impl_.exchange_id_){0}
     , /*decltype(_impl_._cached_size_)*/{}
   };
-  _impl_.trading_pair_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.trading_pair_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  _impl_.exchangeid_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.exchangeid_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 }
 
 CancelAllOrdersRequestProto::~CancelAllOrdersRequestProto() {
@@ -4536,8 +4680,7 @@ CancelAllOrdersRequestProto::~CancelAllOrdersRequestProto() {
 
 inline void CancelAllOrdersRequestProto::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  _impl_.trading_pair_.Destroy();
-  _impl_.exchangeid_.Destroy();
+  if (this != internal_default_instance()) delete _impl_.symbol_;
 }
 
 void CancelAllOrdersRequestProto::SetCachedSize(int size) const {
@@ -4550,8 +4693,11 @@ void CancelAllOrdersRequestProto::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  _impl_.trading_pair_.ClearToEmpty();
-  _impl_.exchangeid_.ClearToEmpty();
+  if (GetArenaForAllocation() == nullptr && _impl_.symbol_ != nullptr) {
+    delete _impl_.symbol_;
+  }
+  _impl_.symbol_ = nullptr;
+  _impl_.exchange_id_ = 0;
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -4561,23 +4707,20 @@ const char* CancelAllOrdersRequestProto::_InternalParse(const char* ptr, ::_pbi:
     uint32_t tag;
     ptr = ::_pbi::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // string tradingPair = 1;
+      // .trading.common.proto.SymbolProto symbol = 1;
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          auto str = _internal_mutable_trading_pair();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          ptr = ctx->ParseMessage(_internal_mutable_symbol(), ptr);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.CancelAllOrdersRequestProto.tradingPair"));
         } else
           goto handle_unusual;
         continue;
-      // string exchangeId = 2;
+      // .trading.common.proto.ExchangeIdProto exchange_id = 2;
       case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
-          auto str = _internal_mutable_exchangeid();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
+          uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "trading.execution.grpc.CancelAllOrdersRequestProto.exchangeId"));
+          _internal_set_exchange_id(static_cast<::trading::common::proto::ExchangeIdProto>(val));
         } else
           goto handle_unusual;
         continue;
@@ -4610,24 +4753,18 @@ uint8_t* CancelAllOrdersRequestProto::_InternalSerialize(
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // string tradingPair = 1;
-  if (!this->_internal_trading_pair().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_trading_pair().data(), static_cast<int>(this->_internal_trading_pair().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.grpc.CancelAllOrdersRequestProto.tradingPair");
-    target = stream->WriteStringMaybeAliased(
-        1, this->_internal_trading_pair(), target);
+  // .trading.common.proto.SymbolProto symbol = 1;
+  if (this->_internal_has_symbol()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(1, _Internal::symbol(this),
+        _Internal::symbol(this).GetCachedSize(), target, stream);
   }
 
-  // string exchangeId = 2;
-  if (!this->_internal_exchangeid().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_exchangeid().data(), static_cast<int>(this->_internal_exchangeid().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "trading.execution.grpc.CancelAllOrdersRequestProto.exchangeId");
-    target = stream->WriteStringMaybeAliased(
-        2, this->_internal_exchangeid(), target);
+  // .trading.common.proto.ExchangeIdProto exchange_id = 2;
+  if (this->_internal_exchange_id() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteEnumToArray(
+      2, this->_internal_exchange_id(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -4646,18 +4783,17 @@ size_t CancelAllOrdersRequestProto::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // string tradingPair = 1;
-  if (!this->_internal_trading_pair().empty()) {
+  // .trading.common.proto.SymbolProto symbol = 1;
+  if (this->_internal_has_symbol()) {
     total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_trading_pair());
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+        *_impl_.symbol_);
   }
 
-  // string exchangeId = 2;
-  if (!this->_internal_exchangeid().empty()) {
+  // .trading.common.proto.ExchangeIdProto exchange_id = 2;
+  if (this->_internal_exchange_id() != 0) {
     total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_exchangeid());
+      ::_pbi::WireFormatLite::EnumSize(this->_internal_exchange_id());
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
@@ -4678,11 +4814,12 @@ void CancelAllOrdersRequestProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (!from._internal_trading_pair().empty()) {
-    _this->_internal_set_trading_pair(from._internal_trading_pair());
+  if (from._internal_has_symbol()) {
+    _this->_internal_mutable_symbol()->::trading::common::proto::SymbolProto::MergeFrom(
+        from._internal_symbol());
   }
-  if (!from._internal_exchangeid().empty()) {
-    _this->_internal_set_exchangeid(from._internal_exchangeid());
+  if (from._internal_exchange_id() != 0) {
+    _this->_internal_set_exchange_id(from._internal_exchange_id());
   }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
@@ -4700,17 +4837,13 @@ bool CancelAllOrdersRequestProto::IsInitialized() const {
 
 void CancelAllOrdersRequestProto::InternalSwap(CancelAllOrdersRequestProto* other) {
   using std::swap;
-  auto* lhs_arena = GetArenaForAllocation();
-  auto* rhs_arena = other->GetArenaForAllocation();
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.trading_pair_, lhs_arena,
-      &other->_impl_.trading_pair_, rhs_arena
-  );
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.exchangeid_, lhs_arena,
-      &other->_impl_.exchangeid_, rhs_arena
-  );
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(CancelAllOrdersRequestProto, _impl_.exchange_id_)
+      + sizeof(CancelAllOrdersRequestProto::_impl_.exchange_id_)
+      - PROTOBUF_FIELD_OFFSET(CancelAllOrdersRequestProto, _impl_.symbol_)>(
+          reinterpret_cast<char*>(&_impl_.symbol_),
+          reinterpret_cast<char*>(&other->_impl_.symbol_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata CancelAllOrdersRequestProto::GetMetadata() const {
@@ -5111,35 +5244,228 @@ void OrderStatusRequestProto::InternalSwap(OrderStatusRequestProto* other) {
 
 class ActiveOrdersRequestProto::_Internal {
  public:
+  static const ::trading::common::proto::SymbolProto& symbol(const ActiveOrdersRequestProto* msg);
 };
 
+const ::trading::common::proto::SymbolProto&
+ActiveOrdersRequestProto::_Internal::symbol(const ActiveOrdersRequestProto* msg) {
+  return *msg->_impl_.symbol_;
+}
+void ActiveOrdersRequestProto::clear_symbol() {
+  if (GetArenaForAllocation() == nullptr && _impl_.symbol_ != nullptr) {
+    delete _impl_.symbol_;
+  }
+  _impl_.symbol_ = nullptr;
+}
 ActiveOrdersRequestProto::ActiveOrdersRequestProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase(arena, is_message_owned) {
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
   // @@protoc_insertion_point(arena_constructor:trading.execution.grpc.ActiveOrdersRequestProto)
 }
 ActiveOrdersRequestProto::ActiveOrdersRequestProto(const ActiveOrdersRequestProto& from)
-  : ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase() {
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
   ActiveOrdersRequestProto* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_.symbol_){nullptr}
+    , decltype(_impl_.exchange_id_){}
+    , /*decltype(_impl_._cached_size_)*/{}};
+
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  if (from._internal_has_symbol()) {
+    _this->_impl_.symbol_ = new ::trading::common::proto::SymbolProto(*from._impl_.symbol_);
+  }
+  _this->_impl_.exchange_id_ = from._impl_.exchange_id_;
   // @@protoc_insertion_point(copy_constructor:trading.execution.grpc.ActiveOrdersRequestProto)
 }
 
+inline void ActiveOrdersRequestProto::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_.symbol_){nullptr}
+    , decltype(_impl_.exchange_id_){0}
+    , /*decltype(_impl_._cached_size_)*/{}
+  };
+}
 
+ActiveOrdersRequestProto::~ActiveOrdersRequestProto() {
+  // @@protoc_insertion_point(destructor:trading.execution.grpc.ActiveOrdersRequestProto)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
 
+inline void ActiveOrdersRequestProto::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  if (this != internal_default_instance()) delete _impl_.symbol_;
+}
 
+void ActiveOrdersRequestProto::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void ActiveOrdersRequestProto::Clear() {
+// @@protoc_insertion_point(message_clear_start:trading.execution.grpc.ActiveOrdersRequestProto)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  if (GetArenaForAllocation() == nullptr && _impl_.symbol_ != nullptr) {
+    delete _impl_.symbol_;
+  }
+  _impl_.symbol_ = nullptr;
+  _impl_.exchange_id_ = 0;
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* ActiveOrdersRequestProto::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // .trading.common.proto.ExchangeIdProto exchange_id = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          uint64_t val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+          _internal_set_exchange_id(static_cast<::trading::common::proto::ExchangeIdProto>(val));
+        } else
+          goto handle_unusual;
+        continue;
+      // .trading.common.proto.SymbolProto symbol = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          ptr = ctx->ParseMessage(_internal_mutable_symbol(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* ActiveOrdersRequestProto::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:trading.execution.grpc.ActiveOrdersRequestProto)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // .trading.common.proto.ExchangeIdProto exchange_id = 1;
+  if (this->_internal_exchange_id() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteEnumToArray(
+      1, this->_internal_exchange_id(), target);
+  }
+
+  // .trading.common.proto.SymbolProto symbol = 2;
+  if (this->_internal_has_symbol()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(2, _Internal::symbol(this),
+        _Internal::symbol(this).GetCachedSize(), target, stream);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:trading.execution.grpc.ActiveOrdersRequestProto)
+  return target;
+}
+
+size_t ActiveOrdersRequestProto::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:trading.execution.grpc.ActiveOrdersRequestProto)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // .trading.common.proto.SymbolProto symbol = 2;
+  if (this->_internal_has_symbol()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+        *_impl_.symbol_);
+  }
+
+  // .trading.common.proto.ExchangeIdProto exchange_id = 1;
+  if (this->_internal_exchange_id() != 0) {
+    total_size += 1 +
+      ::_pbi::WireFormatLite::EnumSize(this->_internal_exchange_id());
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
 
 const ::PROTOBUF_NAMESPACE_ID::Message::ClassData ActiveOrdersRequestProto::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::CopyImpl,
-    ::PROTOBUF_NAMESPACE_ID::internal::ZeroFieldsBase::MergeImpl,
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    ActiveOrdersRequestProto::MergeImpl
 };
 const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ActiveOrdersRequestProto::GetClassData() const { return &_class_data_; }
 
 
+void ActiveOrdersRequestProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<ActiveOrdersRequestProto*>(&to_msg);
+  auto& from = static_cast<const ActiveOrdersRequestProto&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:trading.execution.grpc.ActiveOrdersRequestProto)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
 
+  if (from._internal_has_symbol()) {
+    _this->_internal_mutable_symbol()->::trading::common::proto::SymbolProto::MergeFrom(
+        from._internal_symbol());
+  }
+  if (from._internal_exchange_id() != 0) {
+    _this->_internal_set_exchange_id(from._internal_exchange_id());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
 
+void ActiveOrdersRequestProto::CopyFrom(const ActiveOrdersRequestProto& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:trading.execution.grpc.ActiveOrdersRequestProto)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
 
+bool ActiveOrdersRequestProto::IsInitialized() const {
+  return true;
+}
 
+void ActiveOrdersRequestProto::InternalSwap(ActiveOrdersRequestProto* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(ActiveOrdersRequestProto, _impl_.exchange_id_)
+      + sizeof(ActiveOrdersRequestProto::_impl_.exchange_id_)
+      - PROTOBUF_FIELD_OFFSET(ActiveOrdersRequestProto, _impl_.symbol_)>(
+          reinterpret_cast<char*>(&_impl_.symbol_),
+          reinterpret_cast<char*>(&other->_impl_.symbol_));
+}
 
 ::PROTOBUF_NAMESPACE_ID::Metadata ActiveOrdersRequestProto::GetMetadata() const {
   return ::_pbi::AssignDescriptors(

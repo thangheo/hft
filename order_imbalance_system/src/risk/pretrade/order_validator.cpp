@@ -41,7 +41,7 @@
          std::lock_guard<std::mutex> sizeLock(m_minSizeMutex);
          m_minOrderSizes.clear();
          for (const auto& entry : m_validationConfig.minOrderSizes) {
-             std::string exchangeId = entry.first;
+             ExchangeId exchangeId; = entry.first;
              for (const auto& symbolSize : entry.second) {
                  m_minOrderSizes[exchangeId][symbolSize.first] = symbolSize.second;
              }
@@ -175,7 +175,7 @@
          std::lock_guard<std::mutex> lock(m_minSizeMutex);
          
          // Check if we have exchange-specific minimums
-         auto exchangeIt = m_minOrderSizes.find(exchangeId);
+         auto exchangeIt = m_minOrderSizes.find(exchangeId.toString());
          if (exchangeIt != m_minOrderSizes.end()) {
              // Check if we have symbol-specific minimums for this exchange
              auto symbolIt = exchangeIt->second.find(tradingPair.getSymbol());

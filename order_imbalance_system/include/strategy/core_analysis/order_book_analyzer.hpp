@@ -44,13 +44,13 @@
      /**
       * Creates an order book analyzer for a specific exchange and trading pair
       */
-     OrderBookAnalyzer(const std::string& exchangeId, const std::string& tradingPair, 
+     OrderBookAnalyzer(const core::ExchangeId& exchangeId, const std::string& tradingPair, 
                       const ParameterSet& params = ParameterSet());
      
      /**
       * Creates an order book analyzer with parameters explicitly specified
       */
-     OrderBookAnalyzer(const std::string& exchangeId, const std::string& tradingPair, 
+     OrderBookAnalyzer(const core::ExchangeId& exchangeId, const std::string& tradingPair, 
                       int depth_levels, double price_grouping_factor);
     OrderBookAnalyzer(const OrderBookAnalyzerConfig& config);
 
@@ -316,7 +316,7 @@
  
  // Factory function to create OrderBookAnalyzer instances
  std::shared_ptr<OrderBookAnalyzer> createOrderBookAnalyzer(
-     const std::string& exchangeId, 
+     const core::ExchangeId& exchangeId, 
      const std::string& tradingPair,
      const ParameterSet& params = ParameterSet());
  

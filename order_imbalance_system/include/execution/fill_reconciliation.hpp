@@ -12,6 +12,7 @@
 
 #include "execution/models/order.hpp"
 #include "execution/models/execution_report.hpp"
+#include <core/market_types.hpp>
 #include <unordered_map>
 #include <vector>
 #include <memory>
@@ -29,7 +30,7 @@ class FillReconciliation;
  */
 struct FillDiscrepancy {
     std::string order_id;
-    std::string exchangeId;
+    core::ExchangeId exchangeId;
     std::string tradingPair;
     double expected_quantity;
     double actual_quantity;

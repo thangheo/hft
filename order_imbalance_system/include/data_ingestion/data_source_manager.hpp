@@ -29,6 +29,8 @@
 namespace trading {
 namespace data_ingestion {
 
+using ExchangeId = core::ExchangeId;
+using Symbol = core::Symbol;
 /**
  * Configuration for a data subscription
  */

@@ -30,7 +30,7 @@ using ExecutionReport = execution::models::ExecutionReport;
 //     std::string orderId;
 //     std::string clientOrderId;
 //     std::string exchangeOrderId;
-//     std::string exchangeId;
+//     ExchangeId exchangeId;
 //     std::string tradingPair;
 //     OrderSide side;
 //     std::string type;
@@ -94,7 +94,7 @@ public:
      * @param exchangeId Exchange ID
      * @return Number of orders cancelled
      */
-    virtual int cancelAllOrders(const std::string& exchangeId) = 0;
+    virtual int cancelAllOrders(const core::ExchangeId& exchangeId) = 0;
     
     /**
      * Cancel all orders for an exchange and trading pair
@@ -103,7 +103,7 @@ public:
      * @param tradingPair Trading pair
      * @return Number of orders cancelled
      */
-    virtual int cancelAllOrders(const std::string& exchangeId, const std::string& tradingPair) = 0;
+    virtual int cancelAllOrders(const core::ExchangeId& exchangeId, const std::string& tradingPair) = 0;
     
     /**
      * Get order status
@@ -134,7 +134,7 @@ public:
      * @param exchangeId Exchange ID
      * @return true if available, false otherwise
      */
-    virtual bool isExchangeAvailable(const std::string& exchangeId) = 0;
+    virtual bool isExchangeAvailable(const core::ExchangeId& exchangeId) = 0;
     
     /**
      * Get exchange status
@@ -142,7 +142,7 @@ public:
      * @param exchangeId Exchange ID
      * @return Exchange status as JSON string
      */
-    virtual std::string getExchangeStatus(const std::string& exchangeId) = 0;
+    virtual std::string getExchangeStatus(const core::ExchangeId& exchangeId) = 0;
 };
 
 /**

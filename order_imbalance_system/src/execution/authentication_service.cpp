@@ -106,31 +106,31 @@ AuthenticationService::~AuthenticationService() {
     EVP_cleanup();
 }
 
-std::optional<ExchangeCredentials> AuthenticationService::getCredentials(const std::string& exchangeId) const {
+std::optional<ExchangeCredentials> AuthenticationService::getCredentials(const core::ExchangeId& exchangeId) const {
     std::lock_guard<std::mutex> lock(mutex_);
-    auto it = credentials_.find(exchangeId);
+    auto it = credentials_.find(exchangeId.toString());
     if (it != credentials_.end()) {
         return decryptCredentials(it->second);
     }
     return std::nullopt;
 }
 
-void AuthenticationService::setCredentials(const std::string& exchangeId, const ExchangeCredentials& credentials) {
+void AuthenticationService::setCredentials(const core::ExchangeId& exchangeId, const ExchangeCredentials& credentials) {
     std::lock_guard<std::mutex> lock(mutex_);
-    credentials_[exchangeId] = encryptCredentials(credentials);
+    credentials_[exchangeId.toString()] = encryptCredentials(credentials);
 }
 
-void AuthenticationService::removeCredentials(const std::string& exchangeId) {
+void AuthenticationService::removeCredentials(const core::ExchangeId& exchangeId) {
     std::lock_guard<std::mutex> lock(mutex_);
-    credentials_.erase(exchangeId);
+    credentials_.erase(exchangeId.toString());
 }
 
-bool AuthenticationService::hasCredentials(const std::string& exchangeId) const {
+bool AuthenticationService::hasCredentials(const core::ExchangeId& exchangeId) const {
     std::lock_guard<std::mutex> lock(mutex_);
-    return credentials_.find(exchangeId) != credentials_.end();
+    return credentials_.find(exchangeId.toString()) != credentials_.end();
 }
 
-bool AuthenticationService::validateCredentials(const std::string& exchangeId, const ExchangeCredentials& credentials) {
+bool AuthenticationService::validateCredentials(const core::ExchangeId& exchangeId, const ExchangeCredentials& credentials) {
     // This would typically call the exchange API to validate credentials
     // For now, we'll just implement a basic placeholder
     try {
