@@ -26,7 +26,7 @@ public:
     // Constructor that matches DataSourceManager expectations
     BinanceWebSocketClient(const std::string& host,
                           const std::string& port,
-                          std::function<void(const std::string&, const std::string&, const std::vector<uint8_t>&)> callback = nullptr);
+                          std::function<void(const core::ExchangeId&, const std::string&, const std::vector<uint8_t>&)> callback = nullptr);
     
     ~BinanceWebSocketClient() override;
     
@@ -74,7 +74,7 @@ private:
     // Callbacks
     MessageCallback messageCallback_;
     ConnectionCallback connectionCallback_;
-    std::function<void(const std::string&, const std::string&, const std::vector<uint8_t>&)> dataCallback_;
+    std::function<void(const core::ExchangeId&, const std::string&, const std::vector<uint8_t>&)> dataCallback_;
     
     // Statistics
     std::atomic<int> messageCount_{0};

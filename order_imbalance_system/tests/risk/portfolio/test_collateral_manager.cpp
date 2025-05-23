@@ -106,7 +106,7 @@
              .WillByDefault(Return(positions));
      }
      
-     OrderRequest createOrderRequest(const std::string& exchangeId, 
+     OrderRequest createOrderRequest(const core::ExchangeId& exchangeId, 
                                     const std::string& tradingPair,
                                     const std::string& side,
                                     double quantity,

@@ -81,7 +81,7 @@ bool ExchangeManager::initialize() {
     }
 }
 
-void ExchangeManager::onWebSocketData(const core::ExchangeId& exchange, 
+void ExchangeManager::onWebSocketData(const core::ExchangeId& exchange,
                                     const std::string& symbol, 
                                     const std::vector<uint8_t>& data) {
     try {

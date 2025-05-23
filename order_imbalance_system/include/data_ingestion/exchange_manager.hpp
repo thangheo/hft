@@ -77,7 +77,7 @@ private:
     std::vector<SubscriptionRequest> activeSubscriptions_;
     
     // Private methods
-    void onWebSocketData(const core::ExchangeId& exchange, 
+    void onWebSocketData(const core::ExchangeId& exchange,
                         const std::string& symbol, 
                         const std::vector<uint8_t>& data);
     void monitorConnections();

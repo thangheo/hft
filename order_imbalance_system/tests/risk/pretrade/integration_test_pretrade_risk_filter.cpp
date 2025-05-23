@@ -62,7 +62,7 @@
          return 0.0;
      }
      
-     double getTotalPositionForExchange(const std::string& exchangeId) const override {
+     double getTotalPositionForExchange(const core::ExchangeId& exchangeId) const override {
          if (exchangeId == "exchange1") return 200000.0;  // In USD equivalent
          return 0.0;
      }
@@ -118,7 +118,7 @@
          return result;
      }
      
-     std::vector<Position> getPositionsForExchange(const std::string& exchangeId) const override {
+     std::vector<Position> getPositionsForExchange(const core::ExchangeId& exchangeId) const override {
          std::vector<Position> positions = getAllPositions();
          std::vector<Position> result;
          

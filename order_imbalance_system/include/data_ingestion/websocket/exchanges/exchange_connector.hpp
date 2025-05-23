@@ -69,7 +69,7 @@ public:
     virtual bool isConnected() const { return connected_; }
     
     // Get exchange identifier
-    std::string getExchangeId() const { return exchangeId_; }
+    core::ExchangeId getExchangeId() const { return exchangeId_; }
     
     // Get the last error
     std::string getLastError() const;
@@ -82,7 +82,7 @@ public:
     static std::string dataTypeToString(DataType type);
     
 protected:
-    std::string exchangeId_;
+    core::ExchangeId exchangeId_;
     MarketDataCallback data_callback_;
     bool connected_;
     

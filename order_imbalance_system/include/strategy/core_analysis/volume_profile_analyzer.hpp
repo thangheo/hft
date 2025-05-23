@@ -19,7 +19,7 @@
  #include <memory>
  #include "strategy/types.hpp"
  #include "data_ingestion/orderbook/order_book.hpp"
- 
+ #include "core/market_types.hpp"
  namespace trading {
  namespace strategy {
  
@@ -88,7 +88,7 @@
      
      // Default constructor
      VolumeProfile()
-         : exchangeId(""), tradingPair(""),
+         : exchangeId(), tradingPair(""),
            start_time(std::chrono::system_clock::now()),
            end_time(std::chrono::system_clock::now()) {}
      
@@ -196,7 +196,7 @@
       * Get the exchange ID
       * @return Exchange ID
       */
-     const std::string& getExchangeId() const { return exchangeId_; }
+     const core::ExchangeId& getExchangeId() const { return exchangeId_; }
      
      /**
       * Get the trading pair
@@ -276,7 +276,7 @@
      virtual std::vector<double> detectVolumeImbalanceZones(double threshold = 3.0) const;
      
      // Exchange and trading pair identification
-     std::string exchangeId_;
+     core::ExchangeId exchangeId_;
      std::string trading_pair_;
      
      // Configuration

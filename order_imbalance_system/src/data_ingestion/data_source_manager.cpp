@@ -417,7 +417,7 @@ std::unique_ptr<DataSourceManager> createDataSourceManager(
                 // Create Binance WebSocket client
                 auto wsClient = std::make_shared<BinanceWebSocketClient>(
                     "stream.binance.com", "9443",
-                    [](const std::string&, const std::string&, const std::vector<uint8_t>&) {
+                    [](const core::ExchangeId&, const std::string&, const std::vector<uint8_t>&) {
                         // This callback will be overridden by DataSourceManager
                     });
                 

@@ -180,7 +180,7 @@
       * Get the exchange ID
       * @return Exchange ID
       */
-     const std::string& getExchangeId() const { return exchangeId_; }
+     const core::ExchangeId& getExchangeId() const { return exchangeId_; }
      
      /**
       * Get the trading pair
@@ -282,7 +282,7 @@
      virtual double calculateTypicalOrderSize() const;
      
      // Exchange and trading pair identification
-     std::string exchangeId_;
+     core::ExchangeId exchangeId_;
      std::string trading_pair_;
      
      // Configuration

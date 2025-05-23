@@ -19,17 +19,17 @@ namespace trading {
 namespace risk {
 
 // Helper function to convert ExchangeId to string
-std::string exchangeIdToString(const ExchangeId& exchangeId) {
-    switch (exchangeId) {
-        case ExchangeId::BINANCE: return "BINANCE";
-        case ExchangeId::FTX: return "FTX";
-        case ExchangeId::COINBASE: return "COINBASE";
-        case ExchangeId::KRAKEN: return "KRAKEN";
-        case ExchangeId::BITFINEX: return "BITFINEX";
-        case ExchangeId::ALL: return "ALL";
-        default: return "UNKNOWN";
-    }
-}
+// std::string exchangeIdToString(const ExchangeId& exchangeId) {
+//     switch (exchangeId) {
+//         case ExchangeId::BINANCE: return "BINANCE";
+//         case ExchangeId::FTX: return "FTX";
+//         case ExchangeId::COINBASE: return "COINBASE";
+//         case ExchangeId::KRAKEN: return "KRAKEN";
+//         case ExchangeId::BITFINEX: return "BITFINEX";
+//         case ExchangeId::ALL: return "ALL";
+//         default: return "UNKNOWN";
+//     }
+// }
 
 PortfolioManager::PortfolioManager(const RiskConfig& config)
     : m_config(config)
@@ -70,7 +70,7 @@ bool PortfolioManager::initialize() {
             [this](const Position& position, const std::string& updateType) {
                 recalculatePortfolioMetrics();
                 notifyPortfolioEvent("position_update", 
-                                   "Position updated: " + exchangeIdToString(position.getExchangeId()) + ":" + 
+                                   "Position updated: " + position.getExchangeId().toString() + ":" +
                                    position.getTradingPair() + " (" + updateType + ")");
             }
         );

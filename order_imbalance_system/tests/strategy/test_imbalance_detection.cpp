@@ -50,7 +50,7 @@
      }
      
      // Helper method to create sample order book metrics
-     OrderBookMetrics createSampleMetrics(const std::string& exchangeId, const std::string& symbol) {
+     OrderBookMetrics createSampleMetrics(const core::ExchangeId& exchangeId, const std::string& symbol) {
          OrderBookMetrics metrics;
          metrics.exchangeId = exchangeId;
          metrics.symbol = symbol;
@@ -71,7 +71,7 @@
      }
      
      // Helper to create metrics with volume imbalance
-     OrderBookMetrics createVolumeImbalanceMetrics(const std::string& exchangeId, const std::string& symbol, double bidVol, double askVol) {
+     OrderBookMetrics createVolumeImbalanceMetrics(const core::ExchangeId& exchangeId, const std::string& symbol, double bidVol, double askVol) {
          OrderBookMetrics metrics = createSampleMetrics(exchangeId, symbol);
          metrics.metrics["bid_volume"] = bidVol;
          metrics.metrics["ask_volume"] = askVol;
@@ -79,7 +79,7 @@
      }
      
      // Helper to create metrics with price level imbalance
-     OrderBookMetrics createPriceLevelImbalanceMetrics(const std::string& exchangeId, const std::string& symbol, double bidLevels, double askLevels) {
+     OrderBookMetrics createPriceLevelImbalanceMetrics(const core::ExchangeId& exchangeId, const std::string& symbol, double bidLevels, double askLevels) {
          OrderBookMetrics metrics = createSampleMetrics(exchangeId, symbol);
          metrics.metrics["bid_level_count"] = bidLevels;
          metrics.metrics["ask_level_count"] = askLevels;
@@ -87,7 +87,7 @@
      }
      
      // Helper to create metrics with liquidity flow imbalance
-     OrderBookMetrics createLiquidityFlowImbalanceMetrics(const std::string& exchangeId, const std::string& symbol, double bidFlow, double askFlow) {
+     OrderBookMetrics createLiquidityFlowImbalanceMetrics(const core::ExchangeId& exchangeId, const std::string& symbol, double bidFlow, double askFlow) {
          OrderBookMetrics metrics = createSampleMetrics(exchangeId, symbol);
          metrics.metrics["bid_flow"] = bidFlow;
          metrics.metrics["ask_flow"] = askFlow;
@@ -95,7 +95,7 @@
      }
      
      // Helper to create metrics with spread anomaly
-     OrderBookMetrics createSpreadAnomalyMetrics(const std::string& exchangeId, const std::string& symbol, double spread, double avgSpread) {
+     OrderBookMetrics createSpreadAnomalyMetrics(const core::ExchangeId& exchangeId, const std::string& symbol, double spread, double avgSpread) {
          OrderBookMetrics metrics = createSampleMetrics(exchangeId, symbol);
          metrics.metrics["spread_percent"] = spread;
          metrics.metrics["average_spread_percent"] = avgSpread;

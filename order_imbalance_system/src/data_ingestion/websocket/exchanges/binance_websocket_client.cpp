@@ -12,7 +12,7 @@ namespace data_ingestion {
 
 BinanceWebSocketClient::BinanceWebSocketClient(const std::string& host,
                                              const std::string& port,
-                                             std::function<void(const std::string&, const std::string&, const std::vector<uint8_t>&)> callback)
+                                             std::function<void(const core::ExchangeId&, const std::string&, const std::vector<uint8_t>&)> callback)
     : host_(host)
     , port_(port)
     , endpoint_("wss://" + host + ":" + port + "/ws")
@@ -161,7 +161,7 @@ void BinanceWebSocketClient::setConnectionCallback(ConnectionCallback callback) 
 }
 
 core::ExchangeId BinanceWebSocketClient::getExchangeId() const {
-    return "binance";
+    return core::ExchangeId::binance();
 }
 
 std::string BinanceWebSocketClient::getExchangeName() const {
@@ -354,7 +354,7 @@ void BinanceWebSocketClient::processOrderBookData(const std::string& symbol,
         std::vector<uint8_t> dataBytes(json_str.begin(), json_str.end());
         
         // Call the callback with the expected signature
-        dataCallback_("binance", symbol, dataBytes);
+        dataCallback_(core::ExchangeId::binance(), symbol, dataBytes);
     }
     catch (const std::exception& e) {
         std::cerr << "Error processing Binance order book data: " << e.what() << std::endl;
@@ -372,7 +372,7 @@ void BinanceWebSocketClient::processTrade(const std::string& symbol, const json&
         std::vector<uint8_t> dataBytes(json_str.begin(), json_str.end());
         
         // Call the callback with the expected signature
-        dataCallback_("binance", symbol, dataBytes);
+        dataCallback_(core::ExchangeId::binance(), symbol, dataBytes);
     }
     catch (const std::exception& e) {
         std::cerr << "Error processing Binance trade data: " << e.what() << std::endl;
@@ -390,7 +390,7 @@ void BinanceWebSocketClient::processTicker(const std::string& symbol, const json
         std::vector<uint8_t> dataBytes(json_str.begin(), json_str.end());
         
         // Call the callback with the expected signature
-        dataCallback_("binance", symbol, dataBytes);
+        dataCallback_(core::ExchangeId::binance(), symbol, dataBytes);
     }
     catch (const std::exception& e) {
         std::cerr << "Error processing Binance ticker data: " << e.what() << std::endl;
@@ -408,7 +408,7 @@ void BinanceWebSocketClient::processBookTicker(const std::string& symbol, const 
         std::vector<uint8_t> dataBytes(json_str.begin(), json_str.end());
         
         // Call the callback with the expected signature
-        dataCallback_("binance", symbol, dataBytes);
+        dataCallback_(core::ExchangeId::binance(), symbol, dataBytes);
     }
     catch (const std::exception& e) {
         std::cerr << "Error processing Binance book ticker data: " << e.what() << std::endl;

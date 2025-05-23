@@ -54,7 +54,7 @@
          );
      }
      
-     ExecutionReport createExecutionReport(const std::string& exchangeId, 
+     ExecutionReport createExecutionReport(const core::ExchangeId& exchangeId, 
                                           const std::string& tradingPair,
                                           const std::string& side,
                                           double quantity,

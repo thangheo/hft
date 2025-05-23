@@ -15,19 +15,19 @@ ExchangeConnector::ExchangeConnector(const core::ExchangeId& exchangeId,
       current_reconnect_attempts_(0),
       reconnect_delay_ms_(1000) {
     
-    std::cout << "Initializing connector for exchange: " << exchangeId << std::endl;
+    std::cout << "Initializing connector for exchange: " << exchangeId.toString() << std::endl;
 }
 
 void ExchangeConnector::reportError(const std::string& error_msg, bool is_fatal) {
     std::lock_guard<std::mutex> lock(error_mutex_);
-    std::cerr << "[" << exchangeId_ << "] Error: " << error_msg << std::endl;
+    std::cerr << "[" << exchangeId_.toString() << "] Error: " << error_msg << std::endl;
     
     last_error_ = error_msg;
     last_error_time_ = std::chrono::system_clock::now();
     
     // If fatal, disconnect and possibly attempt reconnection
     if (is_fatal && connected_) {
-        std::cout << "[" << exchangeId_ << "] Fatal error, disconnecting..." << std::endl;
+        std::cout << "[" << exchangeId_.toString() << "] Fatal error, disconnecting..." << std::endl;
         disconnect();
         tryReconnect();
     }
@@ -45,12 +45,12 @@ void ExchangeConnector::setReconnectionParameters(int attempt_limit, int delay_m
 
 bool ExchangeConnector::tryReconnect() {
     if (current_reconnect_attempts_ >= reconnect_attempt_limit_) {
-        std::cerr << "[" << exchangeId_ << "] Exceeded reconnection attempt limit." << std::endl;
+        std::cerr << "[" << exchangeId_.toString() << "] Exceeded reconnection attempt limit." << std::endl;
         return false;
     }
     
     current_reconnect_attempts_++;
-    std::cout << "[" << exchangeId_ << "] Attempting reconnect (" 
+    std::cout << "[" << exchangeId_.toString() << "] Attempting reconnect (" 
               << current_reconnect_attempts_ << "/" 
               << reconnect_attempt_limit_ << ")..." << std::endl;
     
@@ -62,7 +62,7 @@ bool ExchangeConnector::tryReconnect() {
     bool success = connect();
     
     if (success) {
-        std::cout << "[" << exchangeId_ << "] Reconnected successfully." << std::endl;
+        std::cout << "[" << exchangeId_.toString() << "] Reconnected successfully." << std::endl;
         current_reconnect_attempts_ = 0;
         
         // Resubscribe to all previously subscribed data

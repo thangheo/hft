@@ -23,8 +23,8 @@ void signalHandler(int signal) {
 }
 
 // Market data callback function - Updated signature to match your BinanceWebSocketClient
-void onMarketData(const std::string& exchange, const std::string& symbol, const std::vector<uint8_t>& data) {
-    std::cout << "Received data from " << exchange << " for " << symbol << std::endl;
+void onMarketData(const ExchangeId& exchange, const std::string& symbol, const std::vector<uint8_t>& data) {
+    std::cout << "Received data from " << exchange.toString() << " for " << symbol << std::endl;
     
     // Print the first few bytes of the data for debugging
     size_t printSize = std::min(size_t(100), data.size());

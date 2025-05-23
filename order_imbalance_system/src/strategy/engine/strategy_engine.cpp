@@ -195,7 +195,7 @@
          auto symbol = orderBook.getSymbol();
          ExchangeId exchangeId = orderBook.getExchangeId();
         //  std::string pairId = symbol + ":" + std::to_string(static_cast<int>(exchangeId));
-        std::string pairId = orderBook.getExchangeId() + ":" + orderBook.getSymbol().toString();
+        std::string pairId = orderBook.getExchangeId().toString() + ":" + orderBook.getSymbol().toString();
          
          // Update the trading pair state
          auto it = tradingPairStates_.find(pairId);
@@ -521,7 +521,7 @@
      // Validate that the order book is for a trading pair we're interested in
      auto symbol = orderBook.getSymbol();
      ExchangeId exchangeId = orderBook.getExchangeId();
-     std::string pairId = orderBook.exchangeIdToString(exchangeId) + ":" + symbol.toString();
+     std::string pairId = exchangeId.toString() + ":" + symbol.toString();
      // Check if we're tracking this pair
      return tradingPairStates_.find(pairId) != tradingPairStates_.end();
  }
@@ -621,7 +621,7 @@
  }
  
 bool StrategyEngine::initializeTradingPair(const std::string& symbol, ExchangeId exchangeId) {
-    std::string pairId = exchangeId + ":" + symbol;    
+    std::string pairId = exchangeId.toString() + ":" + symbol;    
      
      // Check if already initialized
      if (tradingPairStates_.find(pairId) != tradingPairStates_.end()) {
