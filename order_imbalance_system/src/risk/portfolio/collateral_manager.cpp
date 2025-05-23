@@ -419,9 +419,8 @@ std::vector<FundingOperation> CollateralManager::getFundingHistory() const {
     std::lock_guard<std::mutex> lock(m_fundingMutex);
     return m_fundingHistory;
 }
-
-double CollateralManager::calculateMarginRequirement(const ExchangeId& exchangeId, 
-                                                   const TradingPair& tradingPair, 
+double CollateralManager::calculateMarginRequirement(const ExchangeId& exchangeId,
+                                                   const TradingPair& tradingPair,
                                                    double size) const {
     try {
         // Get current positions to calculate total exposure
@@ -431,7 +430,8 @@ double CollateralManager::calculateMarginRequirement(const ExchangeId& exchangeI
         double currentPrice = 0.0;
         if (m_dataInterface) {
             auto marketData = m_dataInterface->getMarketData(tradingPair.symbol);
-            if (marketData) {
+            // Check if the market data is valid by checking the price
+            if (marketData && marketData->price > 0) {
                 currentPrice = marketData->price;
             }
         }
@@ -441,7 +441,6 @@ double CollateralManager::calculateMarginRequirement(const ExchangeId& exchangeI
             if (currentPosition) {
                 currentPrice = currentPosition->getCurrentPrice();
             }
-            
             if (currentPrice <= 0) {
                 std::cerr << "Unable to determine price for " << tradingPair.symbol << std::endl;
                 return 0.0;
@@ -453,7 +452,6 @@ double CollateralManager::calculateMarginRequirement(const ExchangeId& exchangeI
         
         // Get exchange-specific margin requirements
         double marginRate = 1.0; // Default is 100% (no leverage)
-        
         auto it = m_collateralConfig.exchangeMarginRates.find(exchangeId);
         if (it != m_collateralConfig.exchangeMarginRates.end()) {
             auto pairIt = it->second.find(tradingPair.symbol);
@@ -470,12 +468,12 @@ double CollateralManager::calculateMarginRequirement(const ExchangeId& exchangeI
         
         // Calculate margin requirement
         return notionalValue * marginRate;
+        
     } catch (const std::exception& e) {
         std::cerr << "Error calculating margin requirement: " << e.what() << std::endl;
         return 0.0;
     }
 }
-
 bool CollateralManager::fetchExchangeBalances() {
     try {
         // Clear current balances
@@ -488,13 +486,13 @@ bool CollateralManager::fetchExchangeBalances() {
                 
                 if (!exchangeBalances.empty()) {
                     // Convert to our balance format
-                    for (const auto& externalBalance : exchangeBalances) {
+                    for (const auto& [asset, amount] : exchangeBalances) {
                         ExchangeBalance balance;
                         balance.exchangeId = exchangeId;
-                        balance.asset = externalBalance.asset;
-                        balance.total = externalBalance.total;
-                        balance.free = externalBalance.available;
-                        balance.locked = externalBalance.locked;
+                        balance.asset = asset;
+                        balance.total = amount;
+                        balance.free = amount;  // Assuming all is free for now
+                        balance.locked = 0.0;   // No locked amount info from simple API
                         balance.lastUpdated = std::chrono::system_clock::now();
                         
                         newBalances.push_back(balance);
@@ -510,6 +508,7 @@ bool CollateralManager::fetchExchangeBalances() {
         }
         
         return !newBalances.empty();
+        
     } catch (const std::exception& e) {
         std::cerr << "Error fetching exchange balances: " << e.what() << std::endl;
         return false;

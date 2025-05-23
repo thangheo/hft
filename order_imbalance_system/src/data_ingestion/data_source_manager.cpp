@@ -394,53 +394,6 @@ void DataSourceManager::updateStats(const ExchangeId& exchangeId, size_t bytesRe
     }
 }
 
-// // Factory function - Fixed version
-// std::unique_ptr<DataSourceManager> createDataSourceManager(
-//     const std::vector<ExchangeId>& exchanges,                    // ✅ Remove reference to reference
-//     const PublisherConfig& publisherConfig) {                    // ✅ Remove reference to reference
-    
-//     auto manager = std::make_unique<DataSourceManager>();
-    
-//     // Create and set publisher
-//     auto publisher = std::make_shared<MarketDataPublisher>(publisherConfig);
-//     manager->setPublisher(publisher);
-    
-//     // Register components for each exchange
-//     for (const auto& exchangeId : exchanges) {
-//         if (exchangeId == "binance") {
-//             // Create Binance WebSocket client
-//             auto wsClient = std::make_shared<BinanceWebSocketClient>(
-//                 "stream.binance.com", "9443",
-//                 [](const std::string&, const std::string&, const std::vector<uint8_t>&) {
-//                     // This callback will be overridden by DataSourceManager
-//                 });
-            
-//             // Create Binance protocol adapter - This is the problem line
-//             // Option 1: If BinanceAdapter has a default constructor, use it:
-//             // auto adapter = std::make_shared<BinanceAdapter>();
-            
-//             // Option 2: If BinanceAdapter needs parameters, check what it needs:
-//             // Looking at your adapter_interface.hpp, it seems like it should have a default constructor
-//             // Let's try to create it properly:
-            
-//             try {
-//                 auto adapter = std::make_shared<BinanceAdapter>();
-                
-//                 // Register with manager
-//                 manager->registerWebSocketClient(exchangeId, wsClient);
-//                 manager->registerProtocolAdapter(exchangeId, adapter);
-                
-//             } catch (const std::exception& e) {
-//                 LOG_ERROR("Failed to create BinanceAdapter: " + std::string(e.what()));
-//                 return nullptr;
-//             }
-//         }
-//         // Add other exchanges here...
-//     }
-    
-//     return manager;
-// }
-// In your data_source_manager.cpp, replace the factory function with this:
 
 std::unique_ptr<DataSourceManager> createDataSourceManager(
     const std::vector<ExchangeId>& exchanges,        // ✅ Fixed: removed & from reference

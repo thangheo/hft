@@ -196,69 +196,6 @@ void ExchangeManager::disconnect() {
     }
 }
 
-// bool ExchangeManager::subscribe(const std::vector<std::string>& trading_pairs,
-//                               const std::vector<DataType>& data_types,
-//                               int32_t depth) {
-//     std::lock_guard<std::mutex> lock(mutex_);
-    
-//     if (!connection_pool_ || !is_connected_) {
-//         std::cerr << "Not connected to Binance. Call connect() first." << std::endl;
-//         return false;
-//     }
-    
-//     try {
-//         // Create Binance-specific stream names
-//         std::vector<std::string> streams = createStreamNames(trading_pairs, data_types, depth);
-        
-//         if (streams.empty()) {
-//             std::cerr << "Failed to create stream names for subscription" << std::endl;
-//             return false;
-//         }
-        
-//         // Acquire a connection from the pool for subscription
-//         auto connection = connection_pool_->acquireConnection();
-        
-//         if (!connection) {
-//             std::cerr << "Failed to acquire connection for subscription" << std::endl;
-//             return false;
-//         }
-        
-//         // Cast to BinanceWebSocketClient and subscribe
-//         auto binance_client = std::dynamic_pointer_cast<BinanceWebSocketClient>(connection);
-//         if (!binance_client) {
-//             std::cerr << "Failed to cast connection to BinanceWebSocketClient" << std::endl;
-//             connection_pool_->releaseConnection(connection);
-//             return false;
-//         }
-        
-//         // bool success = binance_client->subscribe(streams);
-//         bool success = binance_client->subscribeToStreams(streams);
-        
-//         // Release the connection back to the pool
-//         connection_pool_->releaseConnection(connection);
-        
-//         if (success) {
-//             // Store the subscription request
-//             SubscriptionRequest request;
-//             request.exchangeId = "binance";
-//             request.trading_pairs = trading_pairs;
-//             request.data_types = data_types;
-//             request.depth = depth;
-            
-//             active_subscriptions_.push_back(request);
-            
-//             std::cout << "Subscribed to " << trading_pairs.size() << " trading pairs on Binance" << std::endl;
-//         } else {
-//             std::cerr << "Failed to subscribe on Binance" << std::endl;
-//         }
-        
-//         return success;
-//     }
-//     catch (const std::exception& e) {
-//         std::cerr << "Error subscribing on Binance: " << e.what() << std::endl;
-//         return false;
-//     }
-// }
 
 bool ExchangeManager::isConnected() const {
     std::lock_guard<std::mutex> lock(mutex_);

@@ -48,8 +48,10 @@ public:
      * @param exchangeId Optional exchange ID
      * @return MarketData structure
      */
-    virtual MarketData getMarketData(const std::string& tradingPair, const std::optional<std::string>& exchangeId = std::nullopt) = 0;
-    
+    // virtual MarketData getMarketData(const std::string& tradingPair, const std::optional<std::string>& exchangeId = std::nullopt) = 0;
+    // In data_interface.hpp
+    virtual std::optional<MarketData> getMarketData(const std::string& tradingPair,
+                                               const std::optional<std::string>& exchangeId = std::nullopt) = 0;
     /**
      * Get current price for a trading pair
      * 

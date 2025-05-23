@@ -104,52 +104,6 @@ void OrderBookNormalizer::processMarketData(const MarketDataUpdate& update) {
     }
 }
 
-// std::shared_ptr<OrderBook> OrderBookNormalizer::getOrCreateOrderBook(const std::string& exchangeId, 
-//     const std::string& tradingPair) {
-//     // Create a key for the map
-//     std::string key = createOrderBookKey(exchangeId, tradingPair);
-
-//     // Check if the order book exists
-//     auto it = order_books_.find(key);
-//     if (it != order_books_.end()) {
-//         return it->second;
-//     }
-
-//     // Create a new order book
-//     std::cout << "Creating new order book for " << exchangeId << ":" << tradingPair << std::endl;
-
-//     // Parse trading pair into base/quote (assuming format like "BTC/USDT")
-//     Symbol symbol;
-//     size_t slash_pos = tradingPair.find('/');
-//     if (slash_pos != std::string::npos) {
-//         symbol.base = tradingPair.substr(0, slash_pos);
-//         symbol.quote = tradingPair.substr(slash_pos + 1);
-//     } else {
-//         // Handle case where there's no slash
-//         symbol.base = tradingPair;
-//         symbol.quote = "";
-//     }
-
-//     // Convert exchangeId string to ExchangeId enum
-//     trading::core::Exchange exchange_enum = trading::core::Exchange::UNKNOWN;
-//     if (exchangeId == "binance") exchange_enum = trading::core::Exchange::BINANCE;
-//     else if (exchangeId == "ftx") exchange_enum = trading::core::Exchange::FTX;
-//     else if (exchangeId == "coinbase") exchange_enum = trading::core::Exchange::COINBASE;
-
-//     // Create OrderBook with proper callback that forwards updated order book data
-//     auto order_book = std::make_shared<OrderBook>(
-//         exchange_enum, 
-//         symbol,
-//         [this](const OrderBook& book) {
-//         // Get snapshot from the updated order book and forward to callback
-//         OrderBookUpdate update = book.getSnapshot();
-//         callback_(update);
-//         }
-//     );
-
-//     order_books_[key] = order_book;
-//     return order_book;
-// }
 // Modified version of getOrCreateOrderBook method
 std::shared_ptr<OrderBook> OrderBookNormalizer::getOrCreateOrderBook(
     const std::string& exchangeId, 
