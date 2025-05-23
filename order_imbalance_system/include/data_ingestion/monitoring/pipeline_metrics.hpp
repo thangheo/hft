@@ -17,7 +17,7 @@ public:
     PipelineMetrics() = default;
     
     // Count metrics
-    void increment_input_count(const std::string& exchange, const std::string& symbol) {
+    void increment_input_count(const core::ExchangeId& exchange, const std::string& symbol) {
         std::string key = exchange + ":" + symbol;
         
         std::lock_guard<std::mutex> lock(mutex_);
@@ -25,7 +25,7 @@ public:
         ++total_input_count_;
     }
     
-    void increment_output_count(const std::string& exchange, const std::string& symbol) {
+    void increment_output_count(const core::ExchangeId& exchange, const std::string& symbol) {
         std::string key = exchange + ":" + symbol;
         
         std::lock_guard<std::mutex> lock(mutex_);
@@ -77,7 +77,7 @@ public:
         return total_error_count_.load();
     }
     
-    size_t get_input_count(const std::string& exchange, const std::string& symbol) const {
+    size_t get_input_count(const core::ExchangeId& exchange, const std::string& symbol) const {
         std::string key = exchange + ":" + symbol;
         
         std::lock_guard<std::mutex> lock(mutex_);
@@ -85,7 +85,7 @@ public:
         return (it != input_counts_.end()) ? it->second : 0;
     }
     
-    size_t get_output_count(const std::string& exchange, const std::string& symbol) const {
+    size_t get_output_count(const core::ExchangeId& exchange, const std::string& symbol) const {
         std::string key = exchange + ":" + symbol;
         
         std::lock_guard<std::mutex> lock(mutex_);

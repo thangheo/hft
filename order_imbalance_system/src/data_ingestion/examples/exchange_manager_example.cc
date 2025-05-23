@@ -25,7 +25,7 @@ void signalHandler(int signal) {
 void onOrderBookUpdate(const OrderBookUpdate& update) {
     // Get current timestamp for latency calculation
     auto now = std::chrono::system_clock::now().time_since_epoch().count();
-    auto latency_ms = (now - update.received_timestamp) / 1000000.0;
+    auto latency_ms = (now - update.receivedTimestamp) / 1000000.0;
     
     // Print basic information about the update
     std::cout << "Normalized Order Book Update:" << std::endl;
@@ -82,11 +82,11 @@ int main() {
         manager.connectAll();
         
         // Define trading pairs and data types
-        std::vector<std::string> trading_pairs = {"BTC/USDT", "ETH/USDT", "SOL/USDT"};
+        std::vector<std::string> tradingPairs = {"BTC/USDT", "ETH/USDT", "SOL/USDT"};
         std::vector<DataType> data_types = {DataType::ORDER_BOOK, DataType::TRADES};
         
         // Subscribe to market data
-        manager.subscribeAll(trading_pairs, data_types, 20);
+        manager.subscribeAll(tradingPairs, data_types, 20);
         
         std::cout << "Subscribed to market data, press Ctrl+C to exit" << std::endl;
         

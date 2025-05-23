@@ -82,7 +82,7 @@
      double significance;          // Significance score (0.0-1.0)
      std::map<std::string, double> metrics;
      
-     LiquidityEvent(Type t, const std::string& exchange, const std::string& pair,
+     LiquidityEvent(Type t, const core::ExchangeId& exchange, const std::string& pair,
                    core::Timestamp ts, core::Direction dir, double price, double qty, double sig)
          : type(t), exchangeId(exchange), tradingPair(pair),
            timestamp(ts), direction(dir), price_level(price),

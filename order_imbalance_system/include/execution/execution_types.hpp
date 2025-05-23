@@ -2,7 +2,7 @@
 //execution_types.hpp
 #pragma once
 #include "execution/models/order.hpp"
-
+#include "execution/trading_signal.hpp"
 #include <string>
 #include <chrono>
 #include <map>
@@ -10,17 +10,17 @@ namespace trading {
 namespace execution {
  
  // Struct definitions for service interfaces
- struct TradingSignal {
-    std::string signal_id;
-    std::string tradingPair;
-    models::OrderSide direction;
-    double strength;
-    double target_size;
-    std::chrono::milliseconds signal_ttl;
-    std::string strategy_id;
-    std::string strategy_version;
-    std::map<std::string, double> signal_metrics;
-};
+//  struct TradingSignal {
+//     std::string signal_id;
+//     std::string tradingPair;
+//     models::OrderSide direction;
+//     double strength;
+//     double target_size;
+//     std::chrono::milliseconds signal_ttl;
+//     std::string strategy_id;
+//     std::string strategy_version;
+//     std::map<std::string, double> signal_metrics;
+// };
 // class ExecutionService;  // Still need this
  
 

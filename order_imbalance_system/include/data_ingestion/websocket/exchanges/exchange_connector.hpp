@@ -33,8 +33,8 @@ enum class DataType {
 
 struct SubscriptionRequest {
     ExchangeId exchangeId;
-    std::vector<std::string> trading_pairs;
-    std::vector<DataType> data_types;
+    std::vector<std::string> tradingPairs;
+    std::vector<DataType> dataTypes;
     int32_t depth;  // For order book subscriptions
 };
 
@@ -43,7 +43,7 @@ struct SubscriptionRequest {
 //     std::string tradingPair;
 //     std::string updateType;
 //     int64_t exchange_timestamp;
-//     int64_t received_timestamp;
+//     int64_t receivedTimestamp;
 //     std::vector<uint8_t> data;  // Exchange-specific data format
 // };
 

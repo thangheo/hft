@@ -67,8 +67,8 @@ using OrderBookDeltaCallback = std::function<void(const OrderBookDelta&)>;
 // Order book class
 class OrderBook {
 public:
-    OrderBook(ExchangeId& exchange, const Symbol& symbol, OrderBookCallback callback = nullptr);
     OrderBook(const ExchangeId& exchangeId, const std::string& tradingPair, OrderBookCallback callback = nullptr);
+    OrderBook(const ExchangeId& exchangeId, const Symbol& symbol, OrderBookCallback callback = nullptr);
     ~OrderBook() = default;
     
     // Update methods

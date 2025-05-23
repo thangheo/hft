@@ -1,21 +1,23 @@
-// execution_service_impl.hpp
 #pragma once
 
 #include "execution/execution_service.hpp"
-#include "execution/models/order.hpp"
+#include "execution/execution_types.hpp"
 #include "execution_service.grpc.pb.h"
+#include "common.pb.h"
 #include <memory>
+#include <string>
 #include <grpcpp/grpcpp.h>
+#include <google/protobuf/util/json_util.h>
 
 namespace trading {
 namespace execution {
 namespace grpc {
 
-// Implementation of the gRPC service
 class ExecutionServiceImpl final : public ::trading::execution::grpc::ExecutionService::Service {
-public: // Add the public specifier
+public:
     ExecutionServiceImpl(std::shared_ptr<trading::execution::ExecutionService> execution_service);
     
+    // gRPC interface methods
     ::grpc::Status ExecuteSignal(
         ::grpc::ServerContext* context, 
         const ::trading::execution::grpc::TradingSignalProto* request,
@@ -30,11 +32,6 @@ public: // Add the public specifier
         ::grpc::ServerContext* context, 
         const ::trading::execution::grpc::CancelOrderRequestProto* request,
         ::trading::execution::grpc::CancelResponseProto* response) override;
-    
-    ::grpc::Status CancelAllOrdersForSymbol(
-        ::grpc::ServerContext* context, 
-        const ::trading::execution::grpc::CancelAllOrdersRequestProto* request,
-        ::trading::execution::grpc::CancelAllOrdersResponseProto* response) override;
     
     ::grpc::Status GetOrderStatus(
         ::grpc::ServerContext* context, 
@@ -54,29 +51,18 @@ public: // Add the public specifier
 private:
     std::shared_ptr<trading::execution::ExecutionService> execution_service_;
     
-    // Helper conversion methods
-    trading::execution::TradingSignal convertTradingSignal(
-        const ::trading::execution::grpc::TradingSignalProto& proto);
+    // Simple proto ↔ JSON conversion (built-in protobuf utilities)
+    std::string protoToJson(const google::protobuf::Message& proto) const;
+    template<typename ProtoType>
+    ProtoType jsonToProto(const std::string& json) const;
     
-    trading::execution::models::Order convertOrderRequest(
-        const ::trading::execution::grpc::OrderProto& proto);
-    
-    ::trading::execution::grpc::OrderProto createProtoOrder(
-        const trading::execution::models::Order& order);
-    
-    ::trading::execution::grpc::ExecutionResponseProto createExecutionResponse(
-        const trading::execution::ExecutionResponse& response);
-    
-    ::trading::execution::grpc::CancelResponseProto createCancelResponse(
-        const trading::execution::CancelResponse& response);
-    
-    ::trading::execution::grpc::OrderStatusResponseProto createOrderStatusResponse(
-        const trading::execution::OrderStatusResponse& response);
+    // Error handling
+    ::grpc::Status handleException(const std::exception& e) const;
 };
 
 } // namespace grpc
 
-// Server class to run the gRPC service - This stays in the execution namespace
+// Server wrapper (unchanged)
 class ExecutionServiceServer {
 public:
     ExecutionServiceServer(

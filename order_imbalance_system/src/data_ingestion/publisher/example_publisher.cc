@@ -34,7 +34,7 @@ OrderBookUpdate generateRandomOrderBookUpdate(const core::ExchangeId& exchangeId
     update.tradingPair = tradingPair;
     update.exchange_timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(
         std::chrono::system_clock::now().time_since_epoch()).count();
-    update.received_timestamp = update.exchange_timestamp + 5000000;  // 5ms later
+    update.receivedTimestamp = update.exchange_timestamp + 5000000;  // 5ms later
     static int64_t seq_num = 1;
     update.sequence_number = seq_num++;
     update.is_snapshot = (seq_num % 100 == 1);  // Every 100th update is a snapshot

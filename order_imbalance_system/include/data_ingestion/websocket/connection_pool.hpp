@@ -30,7 +30,7 @@ public:
     ~ConnectionPool();
     
     // Pool lifecycle management
-    void initialize();
+    bool initialize();
     void shutdown();
     
     // Connect all connections in the pool

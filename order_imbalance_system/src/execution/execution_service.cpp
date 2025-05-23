@@ -553,7 +553,222 @@ OrderStatusResponse ExecutionService::getOrderStatus(const std::string& client_o
      
      return health.dump(2);
  }
- 
+ // Add this method to ExecutionService class
+std::string ExecutionService::executeSignalJson(const std::string& signal_json) {
+    try {
+        TradingSignal signal = parseTradingSignalFromJson(signal_json);
+        ExecutionResponse response = executeSignal(signal);
+        return executionResponseToJson(response);
+    } catch (const std::exception& e) {
+        ExecutionResponse error_response{
+            "", "", false, std::string("JSON parsing error: ") + e.what(), 
+            std::chrono::system_clock::now(), ""
+        };
+        return executionResponseToJson(error_response);
+    }
+}
+
+std::string ExecutionService::placeOrderJson(const std::string& order_json) {
+    try {
+        models::Order order = parseOrderFromJson(order_json);
+        ExecutionResponse response = placeOrder(order);
+        return executionResponseToJson(response);
+    } catch (const std::exception& e) {
+        ExecutionResponse error_response{
+            "", "", false, std::string("JSON parsing error: ") + e.what(), 
+            std::chrono::system_clock::now(), ""
+        };
+        return executionResponseToJson(error_response);
+    }
+}
+
+std::string ExecutionService::cancelOrderJson(const std::string& request_json) {
+    try {
+        nlohmann::json j = nlohmann::json::parse(request_json);
+        std::string client_order_id = j["client_order_id"];
+        CancelResponse response = cancelOrder(client_order_id);
+        return cancelResponseToJson(response);
+    } catch (const std::exception& e) {
+        CancelResponse error_response{
+            "", "", false, std::string("JSON parsing error: ") + e.what(), 
+            std::chrono::system_clock::now()
+        };
+        return cancelResponseToJson(error_response);
+    }
+}
+
+std::string ExecutionService::getOrderStatusJson(const std::string& request_json) {
+    try {
+        nlohmann::json j = nlohmann::json::parse(request_json);
+        std::string client_order_id = j["client_order_id"];
+        OrderStatusResponse response = getOrderStatus(client_order_id);
+        return orderStatusResponseToJson(response);
+    } catch (const std::exception& e) {
+        OrderStatusResponse error_response{
+            nullptr, false, std::string("JSON parsing error: ") + e.what()
+        };
+        return orderStatusResponseToJson(error_response);
+    }
+}
+
+std::string ExecutionService::getActiveOrdersJson(const std::string& request_json) {
+    try {
+        std::vector<models::Order> orders = getActiveOrders();
+        return activeOrdersToJson(orders);
+    } catch (const std::exception& e) {
+        nlohmann::json error_response;
+        error_response["orders"] = nlohmann::json::array();
+        error_response["error"] = std::string("Error: ") + e.what();
+        return error_response.dump();
+    }
+}
+
+// Helper methods for JSON conversion
+TradingSignal ExecutionService::parseTradingSignalFromJson(const std::string& json) {
+    nlohmann::json j = nlohmann::json::parse(json);
+    
+    TradingSignal signal;
+    signal.signal_id = j["signal_id"];
+    signal.tradingPair = j["symbol"]["base"].get<std::string>() + "/" + j["symbol"]["quote"].get<std::string>();
+    signal.strategy_id = j["strategy_id"];
+    signal.strategy_version = j.value("strategy_version", "");
+    signal.target_size = j["target_size"];
+    signal.strength = j["strength"];
+    signal.signal_ttl = std::chrono::milliseconds(j["signal_ttl_ms"]);
+    
+    // Convert direction
+    std::string direction_str = j["direction"];
+    if (direction_str == "BUY" || direction_str == "1") {
+        signal.direction = core::Direction::BUY;
+    } else if (direction_str == "SELL" || direction_str == "2") {
+        signal.direction = core::Direction::SELL;
+    } else {
+        signal.direction = core::Direction::NEUTRAL;
+    }
+    
+    // Convert signal metrics
+    if (j.contains("signal_metrics")) {
+        signal.signal_metrics = j["signal_metrics"];
+    }
+    
+    return signal;
+}
+
+models::Order ExecutionService::parseOrderFromJson(const std::string& json) {
+    nlohmann::json j = nlohmann::json::parse(json);
+    
+    models::Order order(j["client_order_id"]);
+    
+    // Set basic fields
+    if (j.contains("symbol")) {
+        std::string trading_pair = j["symbol"]["base"].get<std::string>() + "/" + j["symbol"]["quote"].get<std::string>();
+        order.setTradingPair(trading_pair);
+    }
+    
+    // Convert side
+    int side_int = j["side"];
+    order.setSide(side_int == 1 ? core::Direction::BUY : core::Direction::SELL);
+    
+    // Convert type
+    int type_int = j["type"];
+    switch (type_int) {
+        case 1: order.setType(models::OrderType::MARKET); break;
+        case 2: order.setType(models::OrderType::LIMIT); break;
+        case 3: order.setType(models::OrderType::STOP); break;
+        case 4: order.setType(models::OrderType::STOP_LIMIT); break;
+        case 5: order.setType(models::OrderType::ICEBERG); break;
+        default: order.setType(models::OrderType::MARKET); break;
+    }
+    
+    order.setQuantity(j["quantity"]);
+    if (j.contains("price")) {
+        order.setPrice(j["price"]);
+    }
+    if (j.contains("stop_price")) {
+        order.setStopPrice(j["stop_price"]);
+    }
+    
+    return order;
+}
+
+std::string ExecutionService::executionResponseToJson(const ExecutionResponse& response) {
+    nlohmann::json j;
+    j["client_order_id"] = response.client_order_id;
+    j["exchange_order_id"] = response.exchange_order_id;
+    j["success"] = response.success;
+    j["error_message"] = response.error_message;
+    j["order_status"] = response.order_status;
+    
+    // Convert timestamp
+    auto duration = response.timestamp.time_since_epoch();
+    auto seconds = std::chrono::duration_cast<std::chrono::seconds>(duration);
+    auto nanos = std::chrono::duration_cast<std::chrono::nanoseconds>(duration - seconds);
+    j["timestamp"]["seconds"] = seconds.count();
+    j["timestamp"]["nanos"] = nanos.count();
+    
+    return j.dump();
+}
+
+std::string ExecutionService::cancelResponseToJson(const CancelResponse& response) {
+    nlohmann::json j;
+    j["client_order_id"] = response.client_order_id;
+    j["exchange_order_id"] = response.exchange_order_id;
+    j["success"] = response.success;
+    j["error_message"] = response.error_message;
+    
+    // Convert timestamp
+    auto duration = response.timestamp.time_since_epoch();
+    auto seconds = std::chrono::duration_cast<std::chrono::seconds>(duration);
+    auto nanos = std::chrono::duration_cast<std::chrono::nanoseconds>(duration - seconds);
+    j["timestamp"]["seconds"] = seconds.count();
+    j["timestamp"]["nanos"] = nanos.count();
+    
+    return j.dump();
+}
+
+std::string ExecutionService::orderStatusResponseToJson(const OrderStatusResponse& response) {
+    nlohmann::json j;
+    j["found"] = response.found;
+    j["error_message"] = response.error_message;
+    
+    if (response.found && response.order) {
+        const auto& order = *response.order;
+        nlohmann::json order_json;
+        order_json["order_id"] = order.getOrderId();
+        order_json["client_order_id"] = order.getClientOrderId();
+        order_json["trading_pair"] = order.getTradingPair();
+        order_json["side"] = (order.getSide() == core::Direction::BUY) ? "BUY" : "SELL";
+        order_json["quantity"] = order.getQuantity();
+        order_json["price"] = order.getPrice();
+        order_json["filled_quantity"] = order.getFilledQuantity();
+        order_json["state"] = static_cast<int>(order.getState());
+        
+        j["order"] = order_json;
+    }
+    
+    return j.dump();
+}
+
+std::string ExecutionService::activeOrdersToJson(const std::vector<models::Order>& orders) {
+    nlohmann::json j;
+    j["orders"] = nlohmann::json::array();
+    
+    for (const auto& order : orders) {
+        nlohmann::json order_json;
+        order_json["order_id"] = order.getOrderId();
+        order_json["client_order_id"] = order.getClientOrderId();
+        order_json["trading_pair"] = order.getTradingPair();
+        order_json["side"] = (order.getSide() == core::Direction::BUY) ? "BUY" : "SELL";
+        order_json["quantity"] = order.getQuantity();
+        order_json["price"] = order.getPrice();
+        order_json["filled_quantity"] = order.getFilledQuantity();
+        order_json["state"] = static_cast<int>(order.getState());
+        
+        j["orders"].push_back(order_json);
+    }
+    
+    return j.dump();
+}
  // Private helper methods
  models::Order ExecutionService::createOrderFromSignal(const TradingSignal& signal) {
     // Use order generator to create an order based on the signal

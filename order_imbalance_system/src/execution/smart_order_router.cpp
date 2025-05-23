@@ -43,7 +43,7 @@ RoutingResult SmartOrderRouter::selectExchange(const models::OrderPtr& order) co
     // If no available exchanges, return empty result
     if (available_exchanges.empty()) {
         return RoutingResult{
-            "", 0.0, "No available exchanges for this trading pair and order type"
+            ExchangeId(),0.0, "No available exchanges for this trading pair and order type"
         };
     }
     
@@ -66,7 +66,7 @@ RoutingResult SmartOrderRouter::routeOrder(const models::OrderPtr& order) const 
     // If no available exchanges, return empty result
     if (available_exchanges.empty()) {
         return RoutingResult{
-            "", 0.0, "No available exchanges for this trading pair and order type"
+            ExchangeId(), 0.0, "No available exchanges for this trading pair and order type"
         };
     }
     
@@ -78,7 +78,7 @@ bool SmartOrderRouter::routeToExchange(models::OrderPtr& order, const core::Exch
     std::lock_guard<std::mutex> lock(mutex_);
     
     // Check if exchange exists and supports this trading pair and order type
-    auto it = exchanges_.find(exchangeId.toString());
+    auto it = exchanges_.find(exchangeId);
     if (it == exchanges_.end()) {
         return false;
     }
@@ -100,7 +100,7 @@ std::vector<std::string> SmartOrderRouter::getAvailableExchanges(const std::stri
     std::vector<std::string> available;
     for (const auto& [id, info] : exchanges_) {
         if (info.supports_trading_pair(tradingPair)) {
-            available.push_back(id);
+            available.push_back(id.toString());
         }
     }
     
@@ -131,7 +131,7 @@ RoutingResult SmartOrderRouter::defaultRoutingStrategy(
     std::vector<std::pair<std::string, double>> exchange_scores;
     for (const auto& exchange : exchanges) {
         double score = calculateExchangeScore(exchange, order);
-        exchange_scores.emplace_back(exchange.exchangeId, score);
+        exchange_scores.emplace_back(exchange.exchangeId.toString(), score);
     }
     
     // Find exchange with highest score
@@ -144,11 +144,11 @@ RoutingResult SmartOrderRouter::defaultRoutingStrategy(
     // Build routing result
     RoutingResult result;
     if (best_exchange != exchange_scores.end()) {
-        result.exchangeId = best_exchange->first;
+        result.exchangeId.fromString(best_exchange->first);
         result.score = best_exchange->second;
         result.reason = "Selected based on optimal routing score";
     } else {
-        result.exchangeId = "";
+        result.exchangeId = core::ExchangeId::unknown();
         result.score = 0.0;
         result.reason = "No suitable exchange found";
     }

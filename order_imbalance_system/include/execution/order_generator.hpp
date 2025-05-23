@@ -2,6 +2,7 @@
 
 #include "models/order.hpp"
 #include <core/market_types.hpp>
+#include "core/direction.hpp"
 #include <memory>
 #include <string>
 #include <functional>
@@ -15,7 +16,7 @@ using namespace core;
  */
 struct OrderGenerationParams {
     std::string tradingPair;
-    models::OrderSide side;
+    core::Direction side;
     models::OrderType type = models::OrderType::MARKET;
     double quantity = 0.0;
     double price = 0.0;

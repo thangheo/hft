@@ -399,7 +399,7 @@ std::vector<uint8_t> OrderBookPublisher::serializeOrderBookUpdate(const OrderBoo
     ss << "\"tradingPair\":\"" << update.tradingPair << "\",";
     ss << "\"sequence_number\":" << update.sequence_number << ",";
     ss << "\"exchange_timestamp\":" << update.exchange_timestamp << ",";
-    ss << "\"received_timestamp\":" << update.received_timestamp << ",";
+    ss << "\"receivedTimestamp\":" << update.receivedTimestamp << ",";
     ss << "\"is_snapshot\":" << (update.is_snapshot ? "true" : "false") << ",";
     
     // Add bids

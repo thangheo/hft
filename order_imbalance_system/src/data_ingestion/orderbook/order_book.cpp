@@ -52,15 +52,13 @@ double OrderBookDelta::getTotalRemovedAskVolume() const {
     return total;
 }
 
-// OrderBook constructors
-OrderBook::OrderBook(ExchangeId& exchange, const Symbol& symbol, OrderBookCallback callback)
-    : exchangeId_(exchange),
+OrderBook::OrderBook(const ExchangeId& exchangeId, const Symbol& symbol, OrderBookCallback callback)
+    : exchangeId_(exchangeId),  // Also fix the member initialization
       symbol_(symbol),
       callback_(std::move(callback)),
       sequence_number_(0),
       is_valid_(false) {
 }
-
 OrderBook::OrderBook(const ExchangeId& exchangeId, const std::string& tradingPair, OrderBookCallback callback)
     : exchangeId_(exchangeId),
       callback_(std::move(callback)),
@@ -377,7 +375,7 @@ OrderBookUpdate OrderBook::getSnapshot(int depth) const {
     update.exchangeId = exchangeId_;
     update.tradingPair = symbol_.toString();
     update.exchange_timestamp = timestamp_.time_since_epoch().count();
-    update.received_timestamp = last_update_time_.time_since_epoch().count();
+    update.receivedTimestamp = last_update_time_.time_since_epoch().count();
     update.sequence_number = sequence_number_;
     update.is_snapshot = true;
     

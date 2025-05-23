@@ -141,8 +141,8 @@ bool DataValidator::validateRequiredFields(const OrderBookUpdate& update, std::s
         valid = false;
     }
     
-    if (update.received_timestamp == 0) {
-        ss << "Missing received_timestamp; ";
+    if (update.receivedTimestamp == 0) {
+        ss << "Missing receivedTimestamp; ";
         valid = false;
     }
     

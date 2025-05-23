@@ -11,7 +11,11 @@ class ExchangeId {
 public:
     // Default constructor for container usage
     ExchangeId() : id_("UNKNOWN") {}
-    
+    //for unkown exchange
+    static const ExchangeId& unknown() { 
+        static const ExchangeId instance("UNKNOWN"); 
+        return instance; 
+    }
     // Static factory methods for known exchanges
     static const ExchangeId& binance() { 
         static const ExchangeId instance("BINANCE"); 

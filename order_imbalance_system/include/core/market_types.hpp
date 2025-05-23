@@ -38,7 +38,7 @@ struct MarketDataUpdate {
     std::string tradingPair;
     std::string updateType;  // "orderbook", "trade", "ticker"
     int64_t exchange_timestamp;
-    int64_t received_timestamp;
+    int64_t receivedTimestamp;
     std::vector<uint8_t> data;  // Raw data from exchange
     uint64_t sequenceNumber = 0;      // Optional sequence number
     std::chrono::system_clock::time_point timestamp;  // Update timestamp

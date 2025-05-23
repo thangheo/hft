@@ -189,7 +189,7 @@ std::string ExecutionReport::toString() const {
     oss << "ExecutionReport[orderId=" << orderId_ 
         << ", clientOrderId=" << clientOrderId_ 
         << ", exchangeOrderId=" << exchangeOrderId_
-        << ", exchange=" << exchangeId_
+        << ", exchange=" << exchangeId_.toString()
         << ", symbol=" << symbol_
         << ", side=" << (side_ == OrderSide::BUY ? "BUY" : "SELL")
         << ", type=";

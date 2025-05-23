@@ -63,7 +63,7 @@ struct OrderBookUpdate {
     ExchangeId exchangeId;  // Identifier for the exchange (e.g., "binance")
     std::string tradingPair;
     int64_t exchange_timestamp;
-    int64_t received_timestamp;
+    int64_t receivedTimestamp;
     int64_t sequence_number;
     bool is_snapshot;
     std::vector<PriceLevel> bids;
@@ -78,12 +78,12 @@ struct OrderBookUpdate {
     // Constructor
     OrderBookUpdate() = default;
     OrderBookUpdate(const ExchangeId& exchangeId, const std::string& tradingPair,
-                    int64_t exchange_timestamp, int64_t received_timestamp,
+                    int64_t exchange_timestamp, int64_t receivedTimestamp,
                     int64_t sequence_number, bool is_snapshot,
                     const std::vector<PriceLevel>& bids,
                     const std::vector<PriceLevel>& asks)
         : exchangeId(exchangeId), tradingPair(tradingPair),
-          exchange_timestamp(exchange_timestamp), received_timestamp(received_timestamp),
+          exchange_timestamp(exchange_timestamp), receivedTimestamp(receivedTimestamp),
           sequence_number(sequence_number), is_snapshot(is_snapshot),
           bids(bids), asks(asks) {}
     // Add other constructors or methods as needed

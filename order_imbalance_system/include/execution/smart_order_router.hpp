@@ -83,7 +83,7 @@ public:
     
 private:
     // Exchange information
-    std::unordered_map<std::string, ExchangeInfo> exchanges_;
+    std::unordered_map<core::ExchangeId, ExchangeInfo> exchanges_;
     
     // Routing configuration
     RoutingFactors routing_factors_;

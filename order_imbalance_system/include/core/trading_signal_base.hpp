@@ -31,7 +31,7 @@
      Timestamp generation_time;             // When the signal was generated
      uint64_t ttl_ms;                       // Time-to-live in milliseconds
      Symbol symbol;                         // Trading pair symbol
-     Exchange exchange;                     // Exchange to execute on
+     ExchangeId exchange;                     // Exchange to execute on
      std::map<std::string, double> metrics; // Common metrics
      
      /**
@@ -43,7 +43,7 @@
            strength(0.0),
            generation_time(now()),
            ttl_ms(5000), // Default 5 seconds
-           exchange(Exchange::UNKNOWN) {}
+           exchange(ExchangeId::UNKNOWN) {}
      
      /**
       * Constructor with required fields
@@ -59,7 +59,7 @@
            strength(str),
            generation_time(gt),
            ttl_ms(5000), // Default 5 seconds
-           exchange(Exchange::UNKNOWN) {}
+           exchange(ExchangeId::UNKNOWN) {}
      
      /**
       * Check if signal is still valid based on TTL

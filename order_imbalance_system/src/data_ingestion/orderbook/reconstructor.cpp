@@ -284,7 +284,7 @@ void OrderBookReconstructor::registerLiquidityFlowMonitor(
     // In a real implementation, this would send a request to the exchange API
     // For now, we'll just log the request
     std::cout << "Requesting snapshot for "
-              << exchange << ":" // Using string directly without casting
+              << exchange.toString() << ":" // Using string directly without casting
               << symbol.base << "/" << symbol.quote << std::endl;
     
     // Return true to indicate request was sent
@@ -298,10 +298,10 @@ void OrderBookReconstructor::publishOrderBook(const std::shared_ptr<OrderBook>& 
      
 
     OrderBookUpdate update = order_book->getSnapshot();
-    std::string payload = update.exchangeId + ":" + update.tradingPair + ":" +
+    std::string payload = update.exchangeId.toString() + ":" + update.tradingPair + ":" +
         std::to_string(update.sequence_number) + ":" +
         std::to_string(update.exchange_timestamp) + ":" +
-        std::to_string(update.received_timestamp);
+        std::to_string(update.receivedTimestamp);
     std::vector<unsigned char> binary_payload(payload.begin(), payload.end());
     // Serialize the order book data
     // This is a placeholder for actual serialization logic

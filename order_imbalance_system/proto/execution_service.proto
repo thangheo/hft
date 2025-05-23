@@ -9,9 +9,9 @@ message TradingSignalProto {
     string signal_id = 1;
     trading.common.proto.SymbolProto symbol = 2;               // Trading pair
     enum OrderSide {
-        UNKNOWN_SIDE = 0;
-        BUY = 1;
-        SELL = 2;
+        BUY = 0;
+        SELL = 1;
+        NEUTRAL = 2;
     }
     OrderSide direction = 3;
     double strength = 4;

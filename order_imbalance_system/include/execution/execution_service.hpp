@@ -171,7 +171,56 @@ public:
      * @return Health status as a JSON string
      */
     std::string getHealthStatus() const;
-    
+    //===========================================
+    // Add these to the public section of ExecutionService class
+    /**
+     * @brief Execute a trading signal from JSON
+     * 
+     * @param signal_json JSON string containing the trading signal
+     * @return JSON string containing the execution response
+     */
+    std::string executeSignalJson(const std::string& signal_json);
+
+    /**
+     * @brief Place an order from JSON
+     * 
+     * @param order_json JSON string containing the order
+     * @return JSON string containing the execution response
+     */
+    std::string placeOrderJson(const std::string& order_json);
+
+    /**
+     * @brief Cancel an order from JSON
+     * 
+     * @param request_json JSON string containing the cancel request
+     * @return JSON string containing the cancel response
+     */
+    std::string cancelOrderJson(const std::string& request_json);
+
+    /**
+     * @brief Get order status as JSON
+     * 
+     * @param request_json JSON string containing the status request
+     * @return JSON string containing the order status response
+     */
+    std::string getOrderStatusJson(const std::string& request_json);
+
+    /**
+     * @brief Get active orders as JSON
+     * 
+     * @param request_json JSON string containing any filters (optional)
+     * @return JSON string containing the active orders
+     */
+    std::string getActiveOrdersJson(const std::string& request_json = "{}");
+
+    private:
+    // Add these helper methods to private section
+    TradingSignal parseTradingSignalFromJson(const std::string& json);
+    models::Order parseOrderFromJson(const std::string& json);
+    std::string executionResponseToJson(const ExecutionResponse& response);
+    std::string cancelResponseToJson(const CancelResponse& response);
+    std::string orderStatusResponseToJson(const OrderStatusResponse& response);
+    std::string activeOrdersToJson(const std::vector<models::Order>& orders);
 private:
     // Component references
     std::shared_ptr<OrderGenerator> order_generator_;

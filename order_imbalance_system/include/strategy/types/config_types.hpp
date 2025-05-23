@@ -13,7 +13,7 @@
  #include "types.hpp"
 #include "core/types.hpp"
  #include <string>
- 
+ #include <core/market_types.hpp>
  namespace trading {
  namespace strategy {
  
@@ -93,7 +93,7 @@
  struct LiquidityFlowConfig {
      int historySize = 1000;                // Size of history to maintain
      double flowImbalanceThreshold = 0.6;   // Threshold for flow imbalance detection
-     ExchangeId exchangeId;             // Exchange ID
+     core::ExchangeId exchangeId;             // Exchange ID
     std::string tradingPair;             // Trading pair
         double largeOrderThreshold = 5.0;     // Threshold for large orders
         int historyWindowSeconds = 60;       // Window size for historical analysis
@@ -123,7 +123,7 @@
      int timeWindowMs = 60000;              // Time window for volume profile in milliseconds
      int priceLevels = 20;                  // Number of price levels to track
     //  exchangeId
-        ExchangeId exchangeId;               // Exchange ID
+        core::ExchangeId exchangeId;               // Exchange ID
         std::string tradingPair;               // Trading pair
         double range_size_percent = 0.01;        // Size of each price range as percentage of price
         // time_frame_minutes

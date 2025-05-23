@@ -14,7 +14,7 @@
  #include <vector>
  #include <map>
  #include "core/types.hpp"
- 
+ #include "core/market_types.hpp"
  namespace trading {
  namespace strategy {
  
@@ -33,7 +33,7 @@
      // Constructor
      ParameterSet() : 
          version("1.0.0"),
-         exchangeId(""),
+         exchangeId(),
          last_updated(std::chrono::system_clock::now()) {}
      // Get a double parameter with default value if not found
     double getDouble(const std::string& name, double default_value = 0.0) const {

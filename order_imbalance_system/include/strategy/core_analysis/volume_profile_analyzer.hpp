@@ -93,7 +93,7 @@
            end_time(std::chrono::system_clock::now()) {}
      
      // Constructor with exchange and pair
-     VolumeProfile(const std::string& exchange, const std::string& pair)
+     VolumeProfile(const core::ExchangeId& exchange, const std::string& pair)
          : exchangeId(exchange), tradingPair(pair),
            start_time(std::chrono::system_clock::now()),
            end_time(std::chrono::system_clock::now()) {}

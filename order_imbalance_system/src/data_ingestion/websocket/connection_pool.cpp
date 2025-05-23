@@ -151,33 +151,39 @@ ClientInterfacePtr ConnectionPool::createConnection() {
 ConnectionPool::~ConnectionPool() {
     shutdown();
 }
-
-void ConnectionPool::initialize() {
+bool ConnectionPool::initialize() {
     std::lock_guard<std::mutex> lock(mutex_);
-    
+
     if (running_) {
-        return;
+        return false;
     }
-    
+
     std::cout << "Initializing connection pool '" << poolId_ << "'..." << std::endl;
-    
+
     // Pre-create minimum number of connections
+    int created = 0;
     for (int i = 0; i < minConnections_; ++i) {
         auto conn = createConnection();
         if (conn) {
-            // ConnectionInfo info{conn, false, std::chrono::steady_clock::now(), 0};
             ConnectionInfo info(conn);
             connections_.push_back(std::move(info));
+            ++created;
         }
     }
-    
-    // Start the monitoring thread
-    running_ = true;
-    monitorThread_ = std::thread(&ConnectionPool::monitorConnections, this);
-    
-    std::cout << "Connection pool '" << poolId_ << "' initialized with "
-              << connections_.size() << " connections" << std::endl;
+
+    // Start the monitoring thread only if at least one connection was created
+    if (created > 0) {
+        running_ = true;
+        monitorThread_ = std::thread(&ConnectionPool::monitorConnections, this);
+        std::cout << "Connection pool '" << poolId_ << "' initialized with "
+                  << connections_.size() << " connections" << std::endl;
+        return true;
+    } else {
+        std::cerr << "Failed to initialize any connections for pool '" << poolId_ << "'" << std::endl;
+        return false;
+    }
 }
+
 
 bool ConnectionPool::connectAll() {
     std::lock_guard<std::mutex> lock(mutex_);

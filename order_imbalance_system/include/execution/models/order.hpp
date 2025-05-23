@@ -10,6 +10,7 @@
 #include <optional>
 #include <unordered_map>
 #include <core/market_types.hpp>
+#include <core/direction.hpp>
 
 namespace trading {
 namespace execution {
@@ -17,10 +18,11 @@ namespace models {
 /**
  * Represents the side of an order (buy or sell)
  */
-enum class OrderSide {
-    BUY,  // Buy order
-    SELL  // Sell order
-};
+// enum class OrderSide {
+//     BUY,  // Buy order
+//     SELL  // Sell order
+// };
+using OrderSide = core::Direction;
 
 /**
  * Represents different order types supported by exchanges

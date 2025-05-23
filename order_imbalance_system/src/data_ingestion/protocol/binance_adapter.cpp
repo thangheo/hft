@@ -63,10 +63,10 @@ OrderBookUpdate BinanceAdapter::convertToStandardFormat(const ExchangeData& data
     const auto& jsonData = json::parse(data.data);
     
     // Set basic fields
-    update.exchangeId = "binance";
+    update.exchangeId.fromString("binance");
     update.tradingPair = jsonData["s"];
     update.exchange_timestamp = jsonData["E"];
-    update.received_timestamp = data.receivedTime;
+    update.receivedTimestamp = data.receivedTime;
     update.sequence_number = jsonData["u"];
     update.is_snapshot = jsonData.contains("lastUpdateId");
     
@@ -139,7 +139,7 @@ OrderBookUpdate BinanceAdapter::convertToStandardFormat(const ExchangeData& data
 //     update.exchangeId = "binance";
 //     update.tradingPair = jsonData["s"];
 //     update.exchange_timestamp = jsonData["E"];
-//     update.received_timestamp = data.receivedTime;
+//     update.receivedTimestamp = data.receivedTime;
 //     update.sequence_number = jsonData["u"];
 //     update.is_snapshot = jsonData.contains("lastUpdateId");
     

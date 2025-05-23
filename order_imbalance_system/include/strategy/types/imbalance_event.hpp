@@ -71,18 +71,18 @@
      void setTradingPair(const std::string& tradingPair) {
          symbol = core::Symbol::fromString(tradingPair);
      }
-     core::Exchange getExchangeFromExchangeId(const std::string& exchange_id_str) const {
+     core::ExchangeId getExchangeFromExchangeId(const std::string& exchange_id_str) const {
             // Assuming exchange_id_str is a string representation of the exchange ID
             // Convert string to lowercase for comparison
             std::string lower = exchange_id_str;
             std::transform(lower.begin(), lower.end(), lower.begin(),
                 [](unsigned char c) { return std::tolower(c); });
-            if (lower == "binance") return core::Exchange::BINANCE;
-            if (lower == "coinbase") return core::Exchange::COINBASE;
-            if (lower == "ftx") return core::Exchange::FTX;
-            if (lower == "kraken") return core::Exchange::KRAKEN;
-            if (lower == "huobi") return core::Exchange::HUOBI;
-            return core::Exchange::UNKNOWN;           
+            if (lower == "binance") return core::ExchangeId::binance();
+            if (lower == "coinbase") return core::ExchangeId::coinbase();
+            if (lower == "ftx") return core::ExchangeId::ftx();
+            // if (lower == "kraken") return core::Exchange::KRAKEN
+            // if (lower == "huobi") return core::Exchange::HUOBI;
+            return core::ExchangeId::unknown(); // Return unknown if not found
      }
  };
  

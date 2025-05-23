@@ -16,6 +16,7 @@
  #include "core/market_types.hpp"
  #include "core/confidence.hpp"
  #include "strategy/types/imbalance_type.hpp"
+ #include <execution/trading_signal.hpp>
  #include <string>
  #include <vector>
  #include <map>
@@ -52,8 +53,7 @@
      ImbalanceType source_type;                        // Type of imbalance that generated this signal
      std::map<std::string, double> signal_metrics;     // Metrics associated with this signal
      core::Symbol symbol;                              // Trading pair symbol
-     core::Exchange exchange;                          // Exchange where signal was detected
-     ExchangeId exchangeId;                        // Exchange identifier (if needed)
+     core::ExchangeId exchangeId;                        // Exchange identifier (if needed)
     double decayRate;                            // Decay rate for the signal (if applicable)
     double expectedPriceImpact;                     // Expected price impact of the signal (if applicable)     
     // expirationTime
@@ -69,7 +69,7 @@
            generation_time(core::Timestamp()), 
            ttl(0), 
            source_type(ImbalanceType::VOLUME_IMBALANCE),
-           exchange(core::Exchange::UNKNOWN) {}
+           exchangeId(core::ExchangeId::unknown()) {}
      
      /**
       * Constructor with required fields
@@ -87,7 +87,7 @@
            generation_time(gt), 
            ttl(0), 
            source_type(ImbalanceType::VOLUME_IMBALANCE),
-           exchange(core::Exchange::UNKNOWN) {}
+           exchangeId(core::ExchangeId::unknown()) {}
      
      /**
       * Check if signal is still valid based on TTL

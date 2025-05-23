@@ -5,8 +5,7 @@
 #include <sstream>
 #include <nlohmann/json.hpp>
 #include <unordered_map>
-//mutex
-// #include <mutex>
+#include <mutex>
 namespace trading {
 namespace data_ingestion {
 
@@ -103,13 +102,15 @@ void OrderBookNormalizer::processMarketData(const MarketDataUpdate& update) {
     }
 }
 
-// Modified version of getOrCreateOrderBook method
 std::shared_ptr<OrderBook> OrderBookNormalizer::getOrCreateOrderBook(
     const ExchangeId& exchangeId, 
     const std::string& tradingPair) {
-    // Create a key for the map
+    
     std::string key = createOrderBookKey(exchangeId, tradingPair);
 
+    // Thread-safe access
+    std::lock_guard<std::mutex> lock(mutex_);
+    
     // Check if the order book exists
     auto it = order_books_.find(key);
     if (it != order_books_.end()) {
@@ -117,7 +118,8 @@ std::shared_ptr<OrderBook> OrderBookNormalizer::getOrCreateOrderBook(
     }
 
     // Create a new order book
-    std::cout << "Creating new order book for " << exchangeId.toString() << ":" << tradingPair << std::endl;
+    std::cout << "Creating new order book for " << exchangeId.toString() 
+              << ":" << tradingPair << std::endl;
 
     // Parse trading pair into base/quote (assuming format like "BTC/USDT")
     Symbol symbol;
@@ -131,10 +133,11 @@ std::shared_ptr<OrderBook> OrderBookNormalizer::getOrCreateOrderBook(
         symbol.quote = "";
     }
 
+    // FIX: Use the correct constructor signature
     // Create OrderBook with proper callback that forwards updated order book data
     auto order_book = std::make_shared<OrderBook>(
-        exchangeId,  // Now using the string exchangeId directly
-        symbol,
+        exchangeId,           // This should match the constructor parameter type
+        tradingPair,          // Use string directly instead of Symbol
         [this](const OrderBook& book) {
             // Get snapshot from the updated order book and forward to callback
             OrderBookUpdate update = book.getSnapshot();
@@ -145,6 +148,8 @@ std::shared_ptr<OrderBook> OrderBookNormalizer::getOrCreateOrderBook(
     order_books_[key] = order_book;
     return order_book;
 }
+
+
 
 std::string OrderBookNormalizer::createOrderBookKey(const ExchangeId& exchangeId, 
                                                    const std::string& tradingPair) const {
@@ -194,7 +199,7 @@ OrderBookUpdate BinanceAdapter::normalize(const MarketDataUpdate& update) const 
         result.exchangeId = update.exchangeId;
         result.tradingPair = update.tradingPair;
         result.exchange_timestamp = update.exchange_timestamp;
-        result.received_timestamp = update.received_timestamp;
+        result.receivedTimestamp = update.receivedTimestamp;
         
         // Determine if snapshot
         result.is_snapshot = data.contains("lastUpdateId");

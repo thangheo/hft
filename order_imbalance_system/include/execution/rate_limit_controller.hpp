@@ -8,7 +8,7 @@
 #include <condition_variable>
 #include <future>
 #include "exchange_api_client.hpp"
-
+#include "core/market_types.hpp"
 namespace trading {
 namespace execution {
 
@@ -96,7 +96,7 @@ public:
     }
 
 private:
-    std::string exchangeId_;
+    core::ExchangeId exchangeId_;
     std::unordered_map<ExchangeRequestType, RateLimitRule> rules_;
     std::unordered_map<ExchangeRequestType, RateLimitStatus> status_;
     

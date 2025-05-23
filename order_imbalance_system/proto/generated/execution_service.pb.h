@@ -131,15 +131,15 @@ namespace execution {
 namespace grpc {
 
 enum TradingSignalProto_OrderSide : int {
-  TradingSignalProto_OrderSide_UNKNOWN_SIDE = 0,
-  TradingSignalProto_OrderSide_BUY = 1,
-  TradingSignalProto_OrderSide_SELL = 2,
+  TradingSignalProto_OrderSide_BUY = 0,
+  TradingSignalProto_OrderSide_SELL = 1,
+  TradingSignalProto_OrderSide_NEUTRAL = 2,
   TradingSignalProto_OrderSide_TradingSignalProto_OrderSide_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   TradingSignalProto_OrderSide_TradingSignalProto_OrderSide_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
 bool TradingSignalProto_OrderSide_IsValid(int value);
-constexpr TradingSignalProto_OrderSide TradingSignalProto_OrderSide_OrderSide_MIN = TradingSignalProto_OrderSide_UNKNOWN_SIDE;
-constexpr TradingSignalProto_OrderSide TradingSignalProto_OrderSide_OrderSide_MAX = TradingSignalProto_OrderSide_SELL;
+constexpr TradingSignalProto_OrderSide TradingSignalProto_OrderSide_OrderSide_MIN = TradingSignalProto_OrderSide_BUY;
+constexpr TradingSignalProto_OrderSide TradingSignalProto_OrderSide_OrderSide_MAX = TradingSignalProto_OrderSide_NEUTRAL;
 constexpr int TradingSignalProto_OrderSide_OrderSide_ARRAYSIZE = TradingSignalProto_OrderSide_OrderSide_MAX + 1;
 
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* TradingSignalProto_OrderSide_descriptor();
@@ -426,12 +426,12 @@ class TradingSignalProto final :
 
 
   typedef TradingSignalProto_OrderSide OrderSide;
-  static constexpr OrderSide UNKNOWN_SIDE =
-    TradingSignalProto_OrderSide_UNKNOWN_SIDE;
   static constexpr OrderSide BUY =
     TradingSignalProto_OrderSide_BUY;
   static constexpr OrderSide SELL =
     TradingSignalProto_OrderSide_SELL;
+  static constexpr OrderSide NEUTRAL =
+    TradingSignalProto_OrderSide_NEUTRAL;
   static inline bool OrderSide_IsValid(int value) {
     return TradingSignalProto_OrderSide_IsValid(value);
   }

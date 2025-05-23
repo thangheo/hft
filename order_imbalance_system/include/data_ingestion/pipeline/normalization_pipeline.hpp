@@ -348,7 +348,7 @@ public:
             output.adjusted_timestamp = time_sync_->adjustTimestamp(
                 output.exchangeId, output.exchange_timestamp);
         } else {
-            output.adjusted_timestamp = output.received_timestamp;
+            output.adjusted_timestamp = output.receivedTimestamp;
         }
         
         return true;
