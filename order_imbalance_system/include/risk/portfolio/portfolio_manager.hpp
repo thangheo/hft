@@ -25,7 +25,7 @@ namespace trading {
 namespace risk {
 
 // Forward declarations for types that might not be fully defined yet
-struct MarketData;
+// struct MarketData;
 struct RebalancingResult;
 
 /**

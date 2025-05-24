@@ -41,6 +41,11 @@ public:
         static const ExchangeId instance("BITFINEX"); 
         return instance; 
     }
+    //all exchanges
+    static const ExchangeId& all() { 
+        static const ExchangeId instance("ALL"); 
+        return instance; 
+    }
     
     // Create from string (validates against known exchanges)
     static ExchangeId fromString(const std::string& exchangeStr);

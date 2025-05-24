@@ -200,8 +200,7 @@ private:
     
     // Market data cache - renamed from m_prices for clarity
     mutable std::mutex m_marketDataMutex;
-    std::unordered_map<std::string, double> m_priceCache;
-    
+    mutable std::unordered_map<std::string, double> m_priceCache;    
     // Callbacks
     mutable std::mutex m_callbackMutex;
     std::vector<PositionUpdateCallback> m_updateCallbacks;

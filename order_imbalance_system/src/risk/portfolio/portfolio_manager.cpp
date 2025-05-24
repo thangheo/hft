@@ -18,19 +18,6 @@
 namespace trading {
 namespace risk {
 
-    // Helper function to convert ExchangeId to string
-// std::string exchangeIdToString(const ExchangeId& exchangeId) {
-//     switch (exchangeId) {
-//         case ExchangeId::BINANCE: return "BINANCE";
-//         case ExchangeId::FTX: return "FTX";
-//         case ExchangeId::COINBASE: return "COINBASE";
-//         case ExchangeId::KRAKEN: return "KRAKEN";
-//         case ExchangeId::BITFINEX: return "BITFINEX";
-//         case ExchangeId::ALL: return "ALL";
-//         default: return "UNKNOWN";
-//     }
-// }
-
 PortfolioManager::PortfolioManager(const RiskConfig& config)
     : m_config(config)
     , m_portfolioValue(0.0) {
@@ -38,12 +25,28 @@ PortfolioManager::PortfolioManager(const RiskConfig& config)
 
 bool PortfolioManager::initialize() {
     try {
-        // Create shared interfaces for sub-components
-        auto dataInterface = std::make_shared<DataInterface>(m_config);
-        auto executionInterface = std::make_shared<ExecutionInterface>(m_config);
+        // Create shared interfaces for sub-components using factory function
+        auto dataInterface = createDataInterface();
+        if (!dataInterface->initialize()) {
+            std::cerr << "Failed to initialize DataInterface" << std::endl;
+            return false;
+        }
+        
+        // Convert unique_ptr to shared_ptr for sharing among components
+        std::shared_ptr<DataInterface> sharedDataInterface(dataInterface.release());
+        
+        // Create execution interface using factory function
+        auto executionInterface = createExecutionInterface();
+        if (!executionInterface->initialize()) {
+            std::cerr << "Failed to initialize ExecutionInterface" << std::endl;
+            return false;
+        }
+        
+        // Convert unique_ptr to shared_ptr for sharing among components
+        std::shared_ptr<ExecutionInterface> sharedExecutionInterface(executionInterface.release());
         
         // Initialize position tracker
-        m_positionTracker = std::make_shared<PositionTracker>(m_config, dataInterface);
+        m_positionTracker = std::make_shared<PositionTracker>(m_config, sharedDataInterface);
         if (!m_positionTracker->initialize()) {
             std::cerr << "Failed to initialize PositionTracker" << std::endl;
             return false;
@@ -51,7 +54,7 @@ bool PortfolioManager::initialize() {
         
         // Initialize collateral manager
         m_collateralManager = std::make_shared<CollateralManager>(
-            m_config, m_positionTracker, executionInterface, dataInterface);
+            m_config, m_positionTracker, sharedExecutionInterface, sharedDataInterface);
         if (!m_collateralManager->initialize()) {
             std::cerr << "Failed to initialize CollateralManager" << std::endl;
             return false;
@@ -59,7 +62,7 @@ bool PortfolioManager::initialize() {
         
         // Initialize rebalancing engine
         m_rebalancingEngine = std::make_shared<RebalancingEngine>(
-            m_config, m_positionTracker, executionInterface, dataInterface);
+            m_config, m_positionTracker, sharedExecutionInterface, sharedDataInterface);
         if (!m_rebalancingEngine->initialize()) {
             std::cerr << "Failed to initialize RebalancingEngine" << std::endl;
             return false;
@@ -193,20 +196,11 @@ std::optional<Position> PortfolioManager::getPosition(const TradingPair& trading
         }
         
         // Create a virtual position representing the aggregate
-        // Position(const ExchangeId& exchangeId, const TradingPair& tradingPair, 
-            // const StrategyId& strategyId, double quantity, double averageEntryPrice);
-        // Position aggregatedPosition(
-        //     ExchangeId::all(),
-        //     tradingPair, 
-        //     "AGGREGATED",
-        //     totalQuantity, 
-        //     weightedPrice
-        // );
-                // Correct usage:
+        // Need to properly construct StrategyId with both id and version
         Position aggregatedPosition(
-            ExchangeId::all(),      // Use .all() with parentheses
-            tradingPair,            // TradingPair object
-            StrategyId("AGGREGATED"), // Explicitly construct a StrategyId if needed
+            ExchangeId::all(),
+            tradingPair,
+            StrategyId{"AGGREGATED", "1.0"}, // Provide both id and version
             totalQuantity,
             weightedPrice
         );

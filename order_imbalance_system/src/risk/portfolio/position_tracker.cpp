@@ -223,8 +223,10 @@ void PositionTracker::processExecutionReport(const ExecutionReport& executionRep
             Position newPosition(exchangeId, tradingPair, strategyId, 
                                totalFillQuantity, weightedAvgPrice);
             updatePositionCurrentPrice(newPosition);
-            m_positions.emplace(positionKey, std::move(newPosition));
-            notifyPositionUpdate(m_positions[positionKey], "new");
+            // m_positions.emplace(positionKey, std::move(newPosition));
+            // notifyPositionUpdate(m_positions[positionKey], "new");
+            auto [it, inserted] = m_positions.emplace(positionKey, std::move(newPosition));
+            notifyPositionUpdate(it->second, "new");
         }
         
     } catch (const std::exception& e) {
@@ -350,8 +352,15 @@ bool PositionTracker::updatePosition(const ExchangeId& exchangeId, const Trading
             
             Position newPosition(exchangeId, tradingPair, reconciliationStrategy, quantity, currentPrice);
             updatePositionCurrentPrice(newPosition);
-            m_positions.emplace(key, std::move(newPosition));
-            notifyPositionUpdate(m_positions[key], "new_reconciliation");
+            // m_positions.emplace(key, std::move(newPosition));
+            // notifyPositionUpdate(m_positions[key], "new_reconciliation");
+            auto [it, inserted] = m_positions.emplace(key, std::move(newPosition));
+            if (inserted) {
+                notifyPositionUpdate(it->second, "new_reconciliation");
+            } else {
+                std::cerr << "Failed to insert new position during reconciliation" << std::endl;
+                return false;
+            }
         }
         
         return true;
