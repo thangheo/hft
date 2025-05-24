@@ -131,7 +131,7 @@
      std::lock_guard<std::mutex> lock(mutex_);
      
      // Check if we have exchange-specific thresholds
-     auto it = exchange_thresholds_.find(exchangeId.toString());
+     auto it = exchange_thresholds_.find(exchangeId);
      if (it != exchange_thresholds_.end()) {
          // Start with exchange-specific base thresholds
          ThresholdSet current = it->second;
@@ -243,7 +243,7 @@
          
          // Add exchange-specific thresholds
          for (const auto& [exchangeId, thresholds] : exchange_thresholds_) {
-             std::string exchange_name = exchangeId;
+             std::string exchange_name = exchangeId.toString();
              
              json_data["exchange_thresholds"][exchange_name]["global_sensitivity"] = thresholds.global_sensitivity;
              
@@ -361,7 +361,7 @@
          if (json_data.contains("exchange_thresholds")) {
              for (const auto& [exchange_name, exchange_json] : json_data["exchange_thresholds"].items()) {
                  // Convert string to ExchangeId
-                 core::ExchangeId exchangeId = exchange_name; //this ExchangeId is a string, quite buggy
+                 core::ExchangeId exchangeId = core::ExchangeId::fromString(exchange_name);
                  
                  ThresholdSet exchange_thresholds;
                  

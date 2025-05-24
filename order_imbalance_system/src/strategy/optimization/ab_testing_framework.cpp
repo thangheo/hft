@@ -5,27 +5,117 @@
 #include <chrono>
 #include <cmath>
 #include <iostream>
+#include <shared_mutex>
+#include <numeric>
 
 namespace trading {
 namespace strategy {
 
+// Thread-local RNG initialization
+thread_local std::mt19937 ABTestingFramework::tlsRng_(std::random_device{}());
+
+std::mt19937& ABTestingFramework::getTLSRng() {
+    return tlsRng_;
+}
+
+// Experiment Implementation
 Experiment::Experiment(const std::string& id, const std::string& name)
-    : id_(id), name_(name), active_(false) {
+    : id_(id), name_(name) {
+}
+
+// Copy constructor
+Experiment::Experiment(const Experiment& other) {
+    std::lock_guard<std::mutex> lock(other.mutex_);
+    id_ = other.id_;
+    name_ = other.name_;
+    active_ = other.active_.load();
+    startTime_ = other.startTime_;
+    endTime_ = other.endTime_;
+    variants_ = other.variants_;
+    trafficAllocations_ = other.trafficAllocations_;
+}
+
+// Copy assignment operator
+Experiment& Experiment::operator=(const Experiment& other) {
+    if (this != &other) {
+        // Lock both mutexes in consistent order to avoid deadlock
+        std::lock(mutex_, other.mutex_);
+        std::lock_guard<std::mutex> lock1(mutex_, std::adopt_lock);
+        std::lock_guard<std::mutex> lock2(other.mutex_, std::adopt_lock);
+        
+        id_ = other.id_;
+        name_ = other.name_;
+        active_ = other.active_.load();
+        startTime_ = other.startTime_;
+        endTime_ = other.endTime_;
+        variants_ = other.variants_;
+        trafficAllocations_ = other.trafficAllocations_;
+    }
+    return *this;
+}
+
+// Move constructor
+Experiment::Experiment(Experiment&& other) noexcept {
+    std::lock_guard<std::mutex> lock(other.mutex_);
+    id_ = std::move(other.id_);
+    name_ = std::move(other.name_);
+    active_ = other.active_.load();
+    startTime_ = other.startTime_;
+    endTime_ = other.endTime_;
+    variants_ = std::move(other.variants_);
+    trafficAllocations_ = std::move(other.trafficAllocations_);
+}
+
+// Move assignment operator
+Experiment& Experiment::operator=(Experiment&& other) noexcept {
+    if (this != &other) {
+        std::lock(mutex_, other.mutex_);
+        std::lock_guard<std::mutex> lock1(mutex_, std::adopt_lock);
+        std::lock_guard<std::mutex> lock2(other.mutex_, std::adopt_lock);
+        
+        id_ = std::move(other.id_);
+        name_ = std::move(other.name_);
+        active_ = other.active_.load();
+        startTime_ = other.startTime_;
+        endTime_ = other.endTime_;
+        variants_ = std::move(other.variants_);
+        trafficAllocations_ = std::move(other.trafficAllocations_);
+    }
+    return *this;
 }
 
 void Experiment::addVariant(const std::string& variantId, const StrategyVariant& variant, double trafficAllocation) {
+    std::lock_guard<std::mutex> lock(mutex_);
     variants_[variantId] = variant;
     trafficAllocations_[variantId] = trafficAllocation;
 }
 
 void Experiment::setTrafficAllocation(const std::string& variantId, double allocation) {
-    if (variants_.find(variantId) != variants_.end()) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (variants_.find(variantId) != variants_.end() && allocation >= 0.0 && allocation <= 1.0) {
         trafficAllocations_[variantId] = allocation;
     }
 }
 
+void Experiment::normalizeTrafficAllocations() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    
+    double total = 0.0;
+    for (const auto& allocation : trafficAllocations_) {
+        total += allocation.second;
+    }
+    
+    if (total > 0.0 && std::abs(total - 1.0) > 0.001) {
+        for (auto& allocation : trafficAllocations_) {
+            allocation.second /= total;
+        }
+    }
+}
+
 std::vector<std::string> Experiment::getVariantIds() const {
+    std::lock_guard<std::mutex> lock(mutex_);
     std::vector<std::string> ids;
+    ids.reserve(variants_.size());
     for (const auto& variant : variants_) {
         ids.push_back(variant.first);
     }
@@ -33,177 +123,252 @@ std::vector<std::string> Experiment::getVariantIds() const {
 }
 
 StrategyVariant Experiment::getVariant(const std::string& variantId) const {
+    std::lock_guard<std::mutex> lock(mutex_);
     auto it = variants_.find(variantId);
-    if (it != variants_.end()) {
-        return it->second;
-    }
-    // Return empty variant if not found
-    return StrategyVariant();
+    return (it != variants_.end()) ? it->second : StrategyVariant{};
 }
 
 double Experiment::getTrafficAllocation(const std::string& variantId) const {
-    auto it = trafficAllocations_.find(variantId);
-    if (it != trafficAllocations_.end()) {
-        return it->second;
-    }
-    return 0.0;
-}
-
-ABTestingFramework::ABTestingFramework() 
-    : rng_(std::random_device()()) {
-}
-
-void ABTestingFramework::defineExperiment(const Experiment& experiment) {
     std::lock_guard<std::mutex> lock(mutex_);
+    auto it = trafficAllocations_.find(variantId);
+    return (it != trafficAllocations_.end()) ? it->second : 0.0;
+}
+
+bool Experiment::isValid() const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    return !id_.empty() && !variants_.empty();
+}
+
+// ABTestingFramework Implementation
+ABTestingFramework::ABTestingFramework() {
+    updateLastActivity();
+}
+
+void ABTestingFramework::defineExperiment(const Experiment& experiment, const ExperimentConfig& config) {
+    std::unique_lock<std::shared_mutex> lock(mutex_);
     
+    if (!experiment.isValid()) {
+        throw std::invalid_argument("Invalid experiment configuration");
+    }
+    
+    // Make a copy of the experiment since we're storing by value
     experiments_[experiment.getId()] = experiment;
+    configs_[experiment.getId()] = config;
     
     // Initialize results
-    results_[experiment.getId()] = ExperimentResults();
-    results_[experiment.getId()].experimentId = experiment.getId();
-    results_[experiment.getId()].experimentName = experiment.getName();
+    results_[experiment.getId()] = ExperimentResults{};
+    auto& results = results_[experiment.getId()];
+    results.experimentId = experiment.getId();
+    results.experimentName = experiment.getName();
     
+    // Initialize variant results
     for (const auto& variantId : experiment.getVariantIds()) {
-        results_[experiment.getId()].variantResults[variantId] = VariantResult();
-        results_[experiment.getId()].variantResults[variantId].variantId = variantId;
+        results.variantResults[variantId] = VariantResult{};
+        results.variantResults[variantId].variantId = variantId;
     }
     
-    // Initialize settings
-    automaticOptimizationEnabled_[experiment.getId()] = false;
-    earlyStoppingEnabled_[experiment.getId()] = false;
-    earlyStoppingThresholds_[experiment.getId()] = 0.95;
+    updateLastActivity();
+}
+
+void ABTestingFramework::removeExperiment(const std::string& experimentId) {
+    std::unique_lock<std::shared_mutex> lock(mutex_);
+    
+    experiments_.erase(experimentId);
+    results_.erase(experimentId);
+    configs_.erase(experimentId);
+    
+    updateLastActivity();
 }
 
 Experiment ABTestingFramework::getExperiment(const std::string& experimentId) const {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::shared_lock<std::shared_mutex> lock(mutex_);
     
     auto it = experiments_.find(experimentId);
-    if (it != experiments_.end()) {
-        return it->second;
-    }
-    
-    // Return empty experiment if not found
-    return Experiment("", "");
+    return (it != experiments_.end()) ? it->second : Experiment{};
 }
 
-StrategyVariant ABTestingFramework::assignVariant(const std::string& experimentId, const data_ingestion::OrderBookUpdate& snapshot) {
-    std::lock_guard<std::mutex> lock(mutex_);
+std::vector<std::string> ABTestingFramework::getActiveExperimentIds() const {
+    std::shared_lock<std::shared_mutex> lock(mutex_);
+    
+    std::vector<std::string> activeIds;
+    for (const auto& exp : experiments_) {
+        if (exp.second.isActive()) {
+            activeIds.push_back(exp.first);
+        }
+    }
+    return activeIds;
+}
+
+StrategyVariant ABTestingFramework::assignVariant(const std::string& experimentId, 
+                                                const data_ingestion::OrderBookUpdate& snapshot) {
+    std::shared_lock<std::shared_mutex> lock(mutex_);
     
     auto expIt = experiments_.find(experimentId);
-    if (expIt == experiments_.end() || !expIt->second.isActive()) {
-        // Return empty variant if experiment not found or not active
-        return StrategyVariant();
+    auto configIt = configs_.find(experimentId);
+    
+    if (expIt == experiments_.end() || !expIt->second.isActive() || configIt == configs_.end()) {
+        return StrategyVariant{};
     }
     
-    Experiment& experiment = expIt->second;
+    const auto& experiment = expIt->second;
+    const auto& config = configIt->second;
     
-    // Get variant IDs
-    std::vector<std::string> variantIds = experiment.getVariantIds();
-    if (variantIds.empty()) {
-        return StrategyVariant();
-    }
+    std::string selectedVariantId;
     
-    // Decide which method to use for assignment
-    bool useConsistentAssignment = true;  // Use consistent assignment for order book
-    
-    if (useConsistentAssignment) {
-        // Use consistent hash for deterministic assignment
-        uint64_t hash = consistentHash(snapshot);
-        
-        // Collect variants with their traffic allocations
-        std::vector<std::pair<std::string, double>> variantsWithAllocation;
-        double totalAllocation = 0.0;
-        
-        for (const auto& variantId : variantIds) {
-            double allocation = experiment.getTrafficAllocation(variantId);
-            variantsWithAllocation.push_back(std::make_pair(variantId, allocation));
-            totalAllocation += allocation;
-        }
-        
-        // Normalize allocations if they don't sum to 1.0
-        if (totalAllocation > 0.0 && std::abs(totalAllocation - 1.0) > 0.001) {
-            for (auto& variant : variantsWithAllocation) {
-                variant.second /= totalAllocation;
-            }
-        }
-        
-        // Deterministically select variant based on hash
-        double hashNormalized = (hash % 1000) / 1000.0;
-        double cumulativeProbability = 0.0;
-        
-        for (const auto& variant : variantsWithAllocation) {
-            cumulativeProbability += variant.second;
-            if (hashNormalized < cumulativeProbability || 
-                variant == variantsWithAllocation.back()) {
-                // Record assignment in results
-                auto& results = results_[experimentId];
-                results.variantResults[variant.first].impressions++;
-                
-                // Return the selected variant
-                return experiment.getVariant(variant.first);
-            }
-        }
+    if (config.useConsistentHashing) {
+        selectedVariantId = selectVariantConsistent(experiment, snapshot, config);
     } else {
-        // Probabilistic assignment using random number generator
-        std::uniform_real_distribution<> dist(0.0, 1.0);
-        double random = dist(rng_);
-        
-        double cumulativeProbability = 0.0;
-        for (const auto& variantId : variantIds) {
-            cumulativeProbability += experiment.getTrafficAllocation(variantId);
-            if (random < cumulativeProbability || 
-                variantId == variantIds.back()) {
-                // Record assignment in results
-                auto& results = results_[experimentId];
-                results.variantResults[variantId].impressions++;
-                
-                // Return the selected variant
-                return experiment.getVariant(variantId);
-            }
-        }
+        selectedVariantId = selectVariantRandom(experiment);
     }
     
-    // Fallback: return first variant
-    return experiment.getVariant(variantIds[0]);
+    if (!selectedVariantId.empty()) {
+        // Record assignment (need to upgrade to unique lock)
+        lock.unlock();
+        std::unique_lock<std::shared_mutex> uniqueLock(mutex_);
+        
+        auto& results = results_[experimentId];
+        results.variantResults[selectedVariantId].impressions++;
+        totalAssignments_++;
+        updateLastActivity();
+        
+        return experiment.getVariant(selectedVariantId);
+    }
+    
+    return StrategyVariant{};
 }
 
-void ABTestingFramework::recordOutcome(const std::string& experimentId, const std::string& variantId, const PerformanceMetrics& metrics) {
-    std::lock_guard<std::mutex> lock(mutex_);
+std::string ABTestingFramework::selectVariantConsistent(const Experiment& experiment,
+                                                       const data_ingestion::OrderBookUpdate& snapshot,
+                                                       const ExperimentConfig& config) const {
+    uint64_t hash = computeConsistentHash(snapshot, config.hashFields);
     
-    // Check if experiment exists
+    // Get sorted variants with allocations for deterministic selection
+    std::vector<std::pair<std::string, double>> variantsWithAllocation;
+    double totalAllocation = 0.0;
+    
+    for (const auto& variantId : experiment.getVariantIds()) {
+        double allocation = experiment.getTrafficAllocation(variantId);
+        variantsWithAllocation.emplace_back(variantId, allocation);
+        totalAllocation += allocation;
+    }
+    
+    // Normalize if needed
+    if (totalAllocation > 0.0 && std::abs(totalAllocation - 1.0) > 0.001) {
+        for (auto& variant : variantsWithAllocation) {
+            variant.second /= totalAllocation;
+        }
+    }
+    
+    // Deterministic selection based on hash
+    double hashNormalized = static_cast<double>(hash % 10000) / 10000.0;
+    double cumulativeProbability = 0.0;
+    
+    for (const auto& variant : variantsWithAllocation) {
+        cumulativeProbability += variant.second;
+        if (hashNormalized < cumulativeProbability) {
+            return variant.first;
+        }
+    }
+    
+    // Fallback to last variant
+    return variantsWithAllocation.empty() ? "" : variantsWithAllocation.back().first;
+}
+
+std::string ABTestingFramework::selectVariantRandom(const Experiment& experiment) const {
+    auto& rng = getTLSRng();
+    std::uniform_real_distribution<double> dist(0.0, 1.0);
+    double random = dist(rng);
+    
+    std::vector<std::string> variantIds = experiment.getVariantIds();
+    double cumulativeProbability = 0.0;
+    
+    for (const auto& variantId : variantIds) {
+        cumulativeProbability += experiment.getTrafficAllocation(variantId);
+        if (random < cumulativeProbability) {
+            return variantId;
+        }
+    }
+    
+    return variantIds.empty() ? "" : variantIds.back();
+}
+
+uint64_t ABTestingFramework::computeConsistentHash(const data_ingestion::OrderBookUpdate& snapshot,
+                                                  const std::vector<std::string>& hashFields) const {
+    uint64_t hash = 14695981039346656037ULL; // FNV offset basis
+    
+    for (const auto& field : hashFields) {
+        if (field == "exchange") {
+            hash = combineHashes(hash, hashString(snapshot.exchangeId.toString()));
+        } else if (field == "symbol") {
+            hash = combineHashes(hash, hashString(snapshot.symbol.toString()));
+        } else if (field == "timeWindow") {
+            // Use daily time buckets for consistency
+            uint64_t timeBucket = snapshot.exchange_timestamp / (24 * 60 * 60 * 1000);
+            hash = combineHashes(hash, timeBucket);
+        } else if (field == "price" && !snapshot.bids.empty() && !snapshot.asks.empty()) {
+            double midPrice = (snapshot.bids[0].getPrice() + snapshot.asks[0].getPrice()) / 2.0;
+            hash = combineHashes(hash, hashDouble(midPrice));
+        }
+    }
+    
+    return hash;
+}
+
+uint64_t ABTestingFramework::hashString(const std::string& str) const {
+    // FNV-1a hash
+    uint64_t hash = 14695981039346656037ULL;
+    for (char c : str) {
+        hash ^= static_cast<uint64_t>(c);
+        hash *= 1099511628211ULL;
+    }
+    return hash;
+}
+
+uint64_t ABTestingFramework::hashDouble(double value, int precision) const {
+    // Convert to fixed-point representation for stable hashing
+    int64_t fixedPoint = static_cast<int64_t>(value * std::pow(10, precision));
+    return static_cast<uint64_t>(fixedPoint);
+}
+
+uint64_t ABTestingFramework::combineHashes(uint64_t hash1, uint64_t hash2) const {
+    // Better hash combination than XOR
+    return hash1 * 31 + hash2;
+}
+
+void ABTestingFramework::recordOutcome(const std::string& experimentId,
+                                     const std::string& variantId,
+                                     const PerformanceMetrics& metrics) {
+    std::unique_lock<std::shared_mutex> lock(mutex_);
+    
     auto expIt = results_.find(experimentId);
     if (expIt == results_.end()) {
         return;
     }
     
-    // Check if variant exists
     auto varIt = expIt->second.variantResults.find(variantId);
     if (varIt == expIt->second.variantResults.end()) {
         return;
     }
     
-    // Record metrics
     VariantResult& result = varIt->second;
     result.conversions++;
-    
-    // Update performance metrics
     result.metrics.push_back(metrics);
     
-    // Calculate aggregate metrics
-    result.aggregateMetrics.sharpeRatio = 0.0;
-    result.aggregateMetrics.totalReturn = 0.0;
-    result.aggregateMetrics.maxDrawdown = 0.0;
-    result.aggregateMetrics.winRate = 0.0;
+    // Clean up old metrics to prevent memory bloat
+    cleanupOldMetrics(result);
     
-    for (const auto& m : result.metrics) {
-        result.aggregateMetrics.sharpeRatio += m.sharpeRatio;
-        result.aggregateMetrics.totalReturn += m.totalReturn;
-        result.aggregateMetrics.maxDrawdown = std::max(result.aggregateMetrics.maxDrawdown, m.maxDrawdown);
-        result.aggregateMetrics.winRate += m.winRate;
-    }
-    
+    // Recalculate aggregate metrics
     if (!result.metrics.empty()) {
         size_t count = result.metrics.size();
+        result.aggregateMetrics = PerformanceMetrics{};
+        
+        for (const auto& m : result.metrics) {
+            result.aggregateMetrics.sharpeRatio += m.sharpeRatio;
+            result.aggregateMetrics.totalReturn += m.totalReturn;
+            result.aggregateMetrics.maxDrawdown = std::max(result.aggregateMetrics.maxDrawdown, m.maxDrawdown);
+            result.aggregateMetrics.winRate += m.winRate;
+        }
+        
         result.aggregateMetrics.sharpeRatio /= count;
         result.aggregateMetrics.totalReturn /= count;
         result.aggregateMetrics.winRate /= count;
@@ -214,261 +379,128 @@ void ABTestingFramework::recordOutcome(const std::string& experimentId, const st
         result.conversionRate = static_cast<double>(result.conversions) / result.impressions;
     }
     
-    // Update experiment results with latest timestamp
     expIt->second.lastUpdateTime = std::chrono::system_clock::now();
+    totalOutcomes_++;
+    updateLastActivity();
     
-    // If automatic optimization is enabled, update traffic allocations
-    if (automaticOptimizationEnabled_[experimentId]) {
-        updateTrafficAllocation(experimentId);
-    }
-    
-    // Check for early stopping if enabled
-    if (earlyStoppingEnabled_[experimentId] && 
-        isStatisticallySignificant(expIt->second, earlyStoppingThresholds_[experimentId])) {
-        // Find best variant
-        std::string bestVariantId = expIt->second.variantResults.begin()->first;
-        double bestSharpe = expIt->second.variantResults.begin()->second.aggregateMetrics.sharpeRatio;
+    // Check for automatic optimization and early stopping
+    auto configIt = configs_.find(experimentId);
+    if (configIt != configs_.end()) {
+        const auto& config = configIt->second;
         
-        for (const auto& variant : expIt->second.variantResults) {
-            if (variant.second.aggregateMetrics.sharpeRatio > bestSharpe) {
-                bestVariantId = variant.first;
-                bestSharpe = variant.second.aggregateMetrics.sharpeRatio;
-            }
+        if (config.automaticOptimizationEnabled) {
+            updateTrafficAllocation(experimentId);
         }
         
-        // Update experiment to use only the best variant
-        auto expObjIt = experiments_.find(experimentId);
-        if (expObjIt != experiments_.end()) {
-            for (const auto& variantId : expObjIt->second.getVariantIds()) {
-                if (variantId == bestVariantId) {
-                    expObjIt->second.setTrafficAllocation(variantId, 1.0);
-                } else {
-                    expObjIt->second.setTrafficAllocation(variantId, 0.0);
-                }
-            }
+        if (config.earlyStoppingEnabled && 
+            isStatisticallySignificant(expIt->second, config.confidenceThreshold, config.minSampleSize)) {
+            // Implement early stopping logic here
+            // For now, just log it
+            std::cout << "Early stopping triggered for experiment: " << experimentId << std::endl;
         }
     }
 }
 
-ExperimentResults ABTestingFramework::getResults(const std::string& experimentId) const {
-    std::lock_guard<std::mutex> lock(mutex_);
-    
-    auto it = results_.find(experimentId);
-    if (it != results_.end()) {
-        return it->second;
-    }
-    
-    // Return empty results if not found
-    ExperimentResults emptyResults;
-    emptyResults.experimentId = experimentId;
-    return emptyResults;
-}
-
-void ABTestingFramework::startExperiment(const std::string& experimentId) {
-    std::lock_guard<std::mutex> lock(mutex_);
-    
-    auto it = experiments_.find(experimentId);
-    if (it != experiments_.end()) {
-        it->second.setActive(true);
-        it->second.setStartTime(std::chrono::system_clock::now());
-    }
-}
-
-void ABTestingFramework::stopExperiment(const std::string& experimentId) {
-    std::lock_guard<std::mutex> lock(mutex_);
-    
-    auto it = experiments_.find(experimentId);
-    if (it != experiments_.end()) {
-        it->second.setActive(false);
-        it->second.setEndTime(std::chrono::system_clock::now());
-    }
-}
-
-void ABTestingFramework::enableAutomaticOptimization(const std::string& experimentId, bool enable) {
-    std::lock_guard<std::mutex> lock(mutex_);
-    
-    automaticOptimizationEnabled_[experimentId] = enable;
-    
-    // If enabling, initialize with equal traffic allocation
-    if (enable) {
-        auto it = experiments_.find(experimentId);
-        if (it != experiments_.end()) {
-            std::vector<std::string> variantIds = it->second.getVariantIds();
-            double equalAllocation = 1.0 / variantIds.size();
-            
-            for (const auto& variantId : variantIds) {
-                it->second.setTrafficAllocation(variantId, equalAllocation);
-            }
-        }
-    }
-}
-
-void ABTestingFramework::enableEarlyStopping(const std::string& experimentId, bool enable, double confidenceThreshold) {
-    std::lock_guard<std::mutex> lock(mutex_);
-    
-    earlyStoppingEnabled_[experimentId] = enable;
-    earlyStoppingThresholds_[experimentId] = confidenceThreshold;
-}
-
-
-
-
-uint64_t ABTestingFramework::consistentHash(const data_ingestion::OrderBookUpdate& snapshot) {
-    // Simple hash function for consistent assignment based on order book characteristics
-    uint64_t hash = 0;
-    
-    // Hash based on exchange ID and symbol
-    // Convert exchange ID to string if it's not already a string
-    std::string exchangeIdStr;
-    if constexpr (std::is_same_v<decltype(snapshot.exchangeId), std::string>) {
-        exchangeIdStr = snapshot.exchangeId;
-    } else {
-        // Convert enum to integer and then to string
-        exchangeIdStr = snapshot.exchangeId;
-    }
-    hash ^= std::hash<std::string>()(exchangeIdStr) + 0x9e3779b9;
-    
-    // Symbol should already be a string
-    hash ^= std::hash<std::string>()(snapshot.symbol.toString()) + 0x9e3779b9;
-    
-    // Hash based on some order book metrics
-    if (!snapshot.bids.empty() && !snapshot.asks.empty()) {
-        // Use best bid and ask prices
-        hash ^= std::hash<double>()(snapshot.bids[0].getPrice()) + 0x9e3779b9;
-        hash ^= std::hash<double>()(snapshot.asks[0].getPrice()) + 0x9e3779b9;
-        
-        // Incorporate volumes at best levels
-        hash ^= std::hash<double>()(snapshot.bids[0].getQuantity()) + 0x9e3779b9;
-        hash ^= std::hash<double>()(snapshot.asks[0].getQuantity()) + 0x9e3779b9;
-    }
-    
-    // Calculate mid price if possible
-    if (!snapshot.bids.empty() && !snapshot.asks.empty()) {
-        double midPrice = (snapshot.bids[0].getPrice() + snapshot.asks[0].getPrice()) / 2.0;
-        hash ^= std::hash<double>()(midPrice) + 0x9e3779b9;
-    }
-    
-    // Incorporate timestamp for time variability while maintaining consistency
-    // Assuming snapshot.timestamp is already in milliseconds
-    uint64_t timeBucket = snapshot.exchange_timestamp / (24 * 60 * 60 * 1000); // Daily buckets
-    hash ^= std::hash<uint64_t>()(timeBucket) + 0x9e3779b9;
-    
-    // Also incorporate sequence number for extra uniqueness
-    hash ^= std::hash<uint64_t>()(snapshot.sequence_number) + 0x9e3779b9;
-    
-    return hash;
-}
-
-bool ABTestingFramework::isStatisticallySignificant(const ExperimentResults& results, double confidenceLevel) const {
-    // Check if we have at least two variants with enough data
+bool ABTestingFramework::isStatisticallySignificant(const ExperimentResults& results,
+                                                   double confidenceLevel,
+                                                   size_t minSampleSize) const {
     if (results.variantResults.size() < 2) {
         return false;
     }
     
-    // Find the variant with the highest Sharpe ratio
+    // Find best performing variant
     std::string bestVariantId;
     double bestSharpe = -std::numeric_limits<double>::infinity();
     
     for (const auto& variant : results.variantResults) {
-        if (variant.second.aggregateMetrics.sharpeRatio > bestSharpe) {
+        if (hasMinimumData(variant.second, minSampleSize) &&
+            variant.second.aggregateMetrics.sharpeRatio > bestSharpe) {
             bestVariantId = variant.first;
             bestSharpe = variant.second.aggregateMetrics.sharpeRatio;
         }
     }
     
-    // Check if the best variant has enough data
-    const auto& bestVariant = results.variantResults.at(bestVariantId);
-    if (bestVariant.metrics.size() < 30) {  // Require at least 30 data points
+    if (bestVariantId.empty()) {
         return false;
     }
     
-    // Calculate standard deviation of Sharpe ratio for best variant
-    double sumSq = 0.0;
-    for (const auto& metric : bestVariant.metrics) {
-        double diff = metric.sharpeRatio - bestSharpe;
-        sumSq += diff * diff;
-    }
-    double stdDevBest = std::sqrt(sumSq / bestVariant.metrics.size());
+    const auto& bestVariant = results.variantResults.at(bestVariantId);
     
-    // Check significance against each other variant
+    // Check significance against all other variants
     for (const auto& variant : results.variantResults) {
-        if (variant.first == bestVariantId) {
-            continue;  // Skip comparing against itself
+        if (variant.first == bestVariantId || !hasMinimumData(variant.second, minSampleSize)) {
+            continue;
         }
         
-        // Check if this variant has enough data
-        if (variant.second.metrics.size() < 30) {
-            return false;  // Not enough data
-        }
-        
-        double otherSharpe = variant.second.aggregateMetrics.sharpeRatio;
-        
-        // Calculate standard deviation for this variant
-        double otherSumSq = 0.0;
-        for (const auto& metric : variant.second.metrics) {
-            double diff = metric.sharpeRatio - otherSharpe;
-            otherSumSq += diff * diff;
-        }
-        double stdDevOther = std::sqrt(otherSumSq / variant.second.metrics.size());
-        
-        // Calculate pooled standard error
-        double stdError = std::sqrt(
-            (stdDevBest * stdDevBest / bestVariant.metrics.size()) +
-            (stdDevOther * stdDevOther / variant.second.metrics.size())
-        );
-        
-        // Calculate z-score
-        double zScore = (bestSharpe - otherSharpe) / stdError;
-        
-        // Check if significant at given confidence level
-        // For 95% confidence, z > 1.96
-        double zThreshold;
-        if (confidenceLevel >= 0.99) {
-            zThreshold = 2.576;
-        } else if (confidenceLevel >= 0.95) {
-            zThreshold = 1.96;
-        } else if (confidenceLevel >= 0.90) {
-            zThreshold = 1.645;
-        } else {
-            zThreshold = 1.28;  // 80% confidence
-        }
+        double zScore = calculateZScore(bestVariant, variant.second);
+        double zThreshold = (confidenceLevel >= 0.99) ? 2.576 :
+                           (confidenceLevel >= 0.95) ? 1.96 :
+                           (confidenceLevel >= 0.90) ? 1.645 : 1.28;
         
         if (zScore < zThreshold) {
-            return false;  // Not significant against this variant
+            return false;
         }
     }
     
-    // Significant against all other variants
     return true;
 }
 
-void ABTestingFramework::updateTrafficAllocation(const std::string& experimentId) {
-    // Multi-armed bandit implementation using Thompson sampling
+double ABTestingFramework::calculateZScore(const VariantResult& variant1, const VariantResult& variant2) const {
+    if (variant1.metrics.empty() || variant2.metrics.empty()) {
+        return 0.0;
+    }
     
+    double mean1 = variant1.aggregateMetrics.sharpeRatio;
+    double mean2 = variant2.aggregateMetrics.sharpeRatio;
+    
+    // Calculate standard deviations
+    auto calcStdDev = [](const std::vector<PerformanceMetrics>& metrics, double mean) {
+        double sumSq = 0.0;
+        for (const auto& m : metrics) {
+            double diff = m.sharpeRatio - mean;
+            sumSq += diff * diff;
+        }
+        return std::sqrt(sumSq / metrics.size());
+    };
+    
+    double stdDev1 = calcStdDev(variant1.metrics, mean1);
+    double stdDev2 = calcStdDev(variant2.metrics, mean2);
+    
+    // Calculate pooled standard error
+    double stdError = std::sqrt(
+        (stdDev1 * stdDev1 / variant1.metrics.size()) +
+        (stdDev2 * stdDev2 / variant2.metrics.size())
+    );
+    
+    return (stdError > 0.0) ? (mean1 - mean2) / stdError : 0.0;
+}
+
+void ABTestingFramework::updateTrafficAllocation(const std::string& experimentId) {
     auto resultsIt = results_.find(experimentId);
     auto experimentIt = experiments_.find(experimentId);
+    auto configIt = configs_.find(experimentId);
     
-    if (resultsIt == results_.end() || experimentIt == experiments_.end()) {
+    if (resultsIt == results_.end() || experimentIt == experiments_.end() || configIt == configs_.end()) {
         return;
     }
     
-    ExperimentResults& results = resultsIt->second;
-    Experiment& experiment = experimentIt->second;
+    const auto& config = configIt->second;
+    auto& experiment = experimentIt->second;
+    const auto& results = resultsIt->second;
     
-    // Get variant IDs
     std::vector<std::string> variantIds = experiment.getVariantIds();
     
-    // Check if we have enough data
-    bool enoughData = true;
+    // Check if we have sufficient data
+    std::vector<VariantResult> validVariants;
     for (const auto& variantId : variantIds) {
-        auto variantIt = results.variantResults.find(variantId);
-        if (variantIt == results.variantResults.end() || variantIt->second.metrics.size() < 5) {
-            enoughData = false;
-            break;
+        auto varIt = results.variantResults.find(variantId);
+        if (varIt != results.variantResults.end() && 
+            hasMinimumData(varIt->second, config.minSampleSize)) {
+            validVariants.push_back(varIt->second);
         }
     }
     
-    if (!enoughData) {
+    if (validVariants.size() < 2) {
         // Not enough data, use equal allocation
         double equalAllocation = 1.0 / variantIds.size();
         for (const auto& variantId : variantIds) {
@@ -477,123 +509,115 @@ void ABTestingFramework::updateTrafficAllocation(const std::string& experimentId
         return;
     }
     
-    // Thompson sampling
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    // Thompson sampling for multi-armed bandit
+    std::vector<double> samples = thompsonSampling(validVariants);
     
+    // Find best performing variant
+    size_t bestIdx = std::max_element(samples.begin(), samples.end()) - samples.begin();
+    
+    // Allocate traffic: more to best, but keep exploration
+    for (size_t i = 0; i < variantIds.size(); ++i) {
+        if (i < validVariants.size()) {
+            if (i == bestIdx) {
+                experiment.setTrafficAllocation(variantIds[i], 1.0 - config.explorationRate);
+            } else {
+                double remaining = config.explorationRate / (validVariants.size() - 1);
+                experiment.setTrafficAllocation(variantIds[i], remaining);
+            }
+        } else {
+            experiment.setTrafficAllocation(variantIds[i], 0.0);
+        }
+    }
+}
+
+std::vector<double> ABTestingFramework::thompsonSampling(const std::vector<VariantResult>& variants) const {
+    auto& rng = getTLSRng();
     std::vector<double> samples;
-    for (const auto& variantId : variantIds) {
-        const auto& variant = results.variantResults.at(variantId);
-        
-        // Calculate mean and standard deviation of Sharpe ratio
+    samples.reserve(variants.size());
+    
+    for (const auto& variant : variants) {
         double mean = variant.aggregateMetrics.sharpeRatio;
         
+        // Calculate standard deviation
         double sumSq = 0.0;
         for (const auto& metric : variant.metrics) {
             double diff = metric.sharpeRatio - mean;
             sumSq += diff * diff;
         }
-        double stdDev = std::sqrt(sumSq / variant.metrics.size());
+        double stdDev = std::sqrt(sumSq / variant.metrics.size()) + 0.001; // Add small epsilon
         
-        // Sample from normal distribution
-        std::normal_distribution<> dist(mean, stdDev + 0.0001);  // Add small constant to avoid division by zero
-        samples.push_back(dist(gen));
+        std::normal_distribution<double> dist(mean, stdDev);
+        samples.push_back(dist(rng));
     }
     
-    // Find best sample
-    size_t bestIdx = 0;
-    for (size_t i = 1; i < samples.size(); ++i) {
-        if (samples[i] > samples[bestIdx]) {
-            bestIdx = i;
-        }
-    }
-    
-    // Allocate more traffic to the best variant, but keep some exploration
-    for (size_t i = 0; i < variantIds.size(); ++i) {
-        if (i == bestIdx) {
-            experiment.setTrafficAllocation(variantIds[i], 0.8);  // 80% to best
-        } else {
-            // Distribute remaining 20% equally among others
-            experiment.setTrafficAllocation(variantIds[i], 0.2 / (variantIds.size() - 1));
-        }
+    return samples;
+}
+
+// Utility functions
+void ABTestingFramework::updateLastActivity() const {
+    lastActivity_ = std::chrono::system_clock::now();
+}
+
+bool ABTestingFramework::hasMinimumData(const VariantResult& variant, size_t minSampleSize) const {
+    return variant.metrics.size() >= minSampleSize;
+}
+
+void ABTestingFramework::cleanupOldMetrics(VariantResult& variant, size_t maxMetrics) const {
+    if (variant.metrics.size() > maxMetrics) {
+        // Keep only the most recent metrics
+        variant.metrics.erase(
+            variant.metrics.begin(),
+            variant.metrics.begin() + (variant.metrics.size() - maxMetrics)
+        );
     }
 }
-// void ABTestingFramework::updateTrafficAllocation(const std::string& experimentId) {
-//     // Multi-armed bandit implementation using Thompson sampling
+
+ExperimentResults ABTestingFramework::getResults(const std::string& experimentId) const {
+    std::shared_lock<std::shared_mutex> lock(mutex_);
     
-//     auto resultsIt = results_.find(experimentId);
-//     auto experimentIt = experiments_.find(experimentId);
+    auto it = results_.find(experimentId);
+    if (it != results_.end()) {
+        return it->second;
+    }
     
-//     if (resultsIt == results_.end() || experimentIt == experiments_.end()) {
-//         return;
-//     }
+    ExperimentResults emptyResults;
+    emptyResults.experimentId = experimentId;
+    return emptyResults;
+}
+
+void ABTestingFramework::startExperiment(const std::string& experimentId) {
+    std::unique_lock<std::shared_mutex> lock(mutex_);
     
-//     ExperimentResults& results = resultsIt->second;
-//     Experiment& experiment = experimentIt->second;
+    auto it = experiments_.find(experimentId);
+    if (it != experiments_.end()) {
+        it->second.setActive(true);
+        it->second.setStartTime(std::chrono::system_clock::now());
+        updateLastActivity();
+    }
+}
+
+void ABTestingFramework::stopExperiment(const std::string& experimentId) {
+    std::unique_lock<std::shared_mutex> lock(mutex_);
     
-//     // Get variant IDs
-//     std::vector<std::string> variantIds = experiment.getVariantIds();
+    auto it = experiments_.find(experimentId);
+    if (it != experiments_.end()) {
+        it->second.setActive(false);
+        it->second.setEndTime(std::chrono::system_clock::now());
+        updateLastActivity();
+    }
+}
+
+ABTestingFramework::FrameworkStats ABTestingFramework::getStats() const {
+    std::shared_lock<std::shared_mutex> lock(mutex_);
     
-//     // Check if we have enough data
-//     bool enoughData = true;
-//     for (const auto& variantId : variantIds) {
-//         auto variantIt = results.variantResults.find(variantId);
-//         if (variantIt == results.variantResults.end() || variantIt->second.metrics.size() < 5) {
-//             enoughData = false;
-//             break;
-//         }
-//     }
+    FrameworkStats stats;
+    stats.activeExperiments = getActiveExperimentIds().size();
+    stats.totalAssignments = totalAssignments_.load();
+    stats.totalOutcomes = totalOutcomes_.load();
+    stats.lastActivity = lastActivity_;
     
-//     if (!enoughData) {
-//         // Not enough data, use equal allocation
-//         double equalAllocation = 1.0 / variantIds.size();
-//         for (const auto& variantId : variantIds) {
-//             experiment.setTrafficAllocation(variantId, equalAllocation);
-//         }
-//         return;
-//     }
-    
-//     // Thompson sampling
-//     std::random_device rd;
-//     std::mt19937 gen(rd());
-    
-//     std::vector<double> samples;
-//     for (const auto& variantId : variantIds) {
-//         const auto& variant = results.variantResults.at(variantId);
-        
-//         // Calculate mean and standard deviation of Sharpe ratio
-//         double mean = variant.aggregateMetrics.sharpeRatio;
-        
-//         double sumSq = 0.0;
-//         for (const auto& metric : variant.metrics) {
-//             double diff = metric.sharpeRatio - mean;
-//             sumSq += diff * diff;
-//         }
-//         double stdDev = std::sqrt(sumSq / variant.metrics.size());
-        
-//         // Sample from normal distribution
-//         std::normal_distribution<> dist(mean, stdDev + 0.0001);  // Add small constant to avoid division by zero
-//         samples.push_back(dist(gen));
-//     }
-    
-//     // Find best sample
-//     int bestIdx = 0;
-//     for (size_t i = 1; i < samples.size(); ++i) {
-//         if (samples[i] > samples[bestIdx]) {
-//             bestIdx = i;
-//         }
-//     }
-    
-//     // Allocate more traffic to the best variant, but keep some exploration
-//     for (size_t i = 0; i < variantIds.size(); ++i) {
-//         if (i == bestIdx) {
-//             experiment.setTrafficAllocation(variantIds[i], 0.8);  // 80% to best
-//         } else {
-//             // Distribute remaining 20% equally among others
-//             experiment.setTrafficAllocation(variantIds[i], 0.2 / (variantIds.size() - 1));
-//         }
-//     }
-// }
+    return stats;
+}
 
 } // namespace strategy
 } // namespace trading

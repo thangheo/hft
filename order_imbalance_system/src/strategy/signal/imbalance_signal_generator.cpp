@@ -156,7 +156,7 @@
      signal.ttl = std::chrono::milliseconds(config_.signalTtlMs);
      signal.source_type = imbalance.type;
      signal.symbol = imbalance.symbol;
-     signal.exchange = imbalance.getExchangeFromExchangeId(imbalance.exchangeId);
+     signal.exchangeId = imbalance.exchangeId;
      
      // Generate price targets
      signal.targets = generatePriceTargets(imbalance);

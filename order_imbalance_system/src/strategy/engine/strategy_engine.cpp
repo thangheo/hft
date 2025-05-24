@@ -80,7 +80,7 @@
         for (const auto& pair : config_.tradingPairs) {
             if (!initializeTradingPair(pair.first, pair.second)) {
                 LOG_WARN("Failed to initialize trading pair: {} on exchange: {}", 
-                         pair.first, pair.second);
+                         pair.first, pair.second.toString());
                 continue;
             }
         }
@@ -641,7 +641,7 @@ bool StrategyEngine::initializeTradingPair(const std::string& symbol, ExchangeId
      tradingPairStates_[pairId] = state;
      
      LOG_INFO("Initialized trading pair: {} on exchange: {}", 
-                    symbol, exchangeId);
+                    symbol, exchangeId.toString());
      return true;
  }
  

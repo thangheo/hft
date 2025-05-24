@@ -153,7 +153,7 @@ bool ExchangeCalibration::saveCalibration(const std::string& filename) const {
         // Save base parameters
         j["baseParameters"] = nlohmann::json::object();
         j["baseParameters"]["version"] = baseParameters_.version;
-        j["baseParameters"]["exchangeId"] = baseParameters_.exchangeId;
+        j["baseParameters"]["exchangeId"] = baseParameters_.exchangeId.toString();
         
         // Save numeric parameters
         j["baseParameters"]["numeric_params"] = nlohmann::json::object();
@@ -182,12 +182,12 @@ bool ExchangeCalibration::saveCalibration(const std::string& filename) const {
         // Save exchange parameters
         j["exchangeParameters"] = nlohmann::json::object();
         for (const auto& exchange : exchangeParameters_) {
-            std::string exchangeStr = exchange.first;
+            std::string exchangeStr = exchange.first.toString();
             j["exchangeParameters"][exchangeStr] = nlohmann::json::object();
             
             const auto& params = exchange.second;
             j["exchangeParameters"][exchangeStr]["version"] = params.version;
-            j["exchangeParameters"][exchangeStr]["exchangeId"] = params.exchangeId;
+            j["exchangeParameters"][exchangeStr]["exchangeId"] = params.exchangeId.toString();
             
             // Save numeric parameters
             j["exchangeParameters"][exchangeStr]["numeric_params"] = nlohmann::json::object();
@@ -217,7 +217,7 @@ bool ExchangeCalibration::saveCalibration(const std::string& filename) const {
         // Save calibration times
         j["calibrationTimes"] = nlohmann::json::object();
         for (const auto& time : calibrationTimes_) {
-            std::string exchangeStr = time.first;
+            std::string exchangeStr = time.first.toString();
             // Convert time_point to time_t
             auto time_t_val = std::chrono::system_clock::to_time_t(time.second);
             j["calibrationTimes"][exchangeStr] = time_t_val;
@@ -253,7 +253,8 @@ bool ExchangeCalibration::loadCalibration(const std::string& filename) {
         // Load base parameters
         if (j.contains("baseParameters") && j["baseParameters"].is_object()) {
             baseParameters_.version = j["baseParameters"].value("version", "1.0.0");
-            baseParameters_.exchangeId = j["baseParameters"].value("exchangeId", "");
+            baseParameters_.exchangeId = ExchangeId::fromString(j["baseParameters"].value("exchangeId", ""));
+            baseParameters_.last_updated = std::chrono::system_clock::now();
             
             // Load numeric parameters
             if (j["baseParameters"].contains("numeric_params") && j["baseParameters"]["numeric_params"].is_object()) {
@@ -292,12 +293,13 @@ bool ExchangeCalibration::loadCalibration(const std::string& filename) {
         exchangeParameters_.clear();
         if (j.contains("exchangeParameters") && j["exchangeParameters"].is_object()) {
             for (auto exchangeIt = j["exchangeParameters"].begin(); exchangeIt != j["exchangeParameters"].end(); ++exchangeIt) {
-                ExchangeId exchangeId = exchangeIt.key();
+                ExchangeId exchangeId = ExchangeId::fromString(exchangeIt.key());
                 
                 if (exchangeIt.value().is_object()) {
                     ParameterSet params;
                     params.version = exchangeIt.value().value("version", "1.0.0");
-                    params.exchangeId = exchangeIt.value().value("exchangeId", "");
+                    params.exchangeId = exchangeId;
+                    params.last_updated = std::chrono::system_clock::now();
                     
                     // Load numeric parameters
                     if (exchangeIt.value().contains("numeric_params") && exchangeIt.value()["numeric_params"].is_object()) {
@@ -336,7 +338,7 @@ bool ExchangeCalibration::loadCalibration(const std::string& filename) {
         calibrationTimes_.clear();
         if (j.contains("calibrationTimes") && j["calibrationTimes"].is_object()) {
             for (auto timeIt = j["calibrationTimes"].begin(); timeIt != j["calibrationTimes"].end(); ++timeIt) {
-                ExchangeId exchangeId = timeIt.key();
+                ExchangeId exchangeId = ExchangeId::fromString(timeIt.key());
                 std::time_t time_t_val = timeIt.value().get<std::time_t>();
                 calibrationTimes_[exchangeId] = std::chrono::system_clock::from_time_t(time_t_val);
             }

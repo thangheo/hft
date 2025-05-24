@@ -81,7 +81,15 @@ StrategyConfig loadStrategyConfigFromFile(const std::string& filePath) {
         if (configJson.contains("tradingPairs") && configJson["tradingPairs"].is_array()) {
             for (const auto& pair : configJson["tradingPairs"]) {
                 std::string symbol = pair["symbol"];
-                ExchangeId exchangeId = std::to_string(pair["exchangeId"].get<int>());
+                ExchangeId exchangeId = ExchangeId::fromString(pair["exchange"]);
+                if (!exchangeId.isValid()) {
+                    LOG_ERROR("Invalid exchange ID in trading pair: {}", pair.dump());
+                    throw std::runtime_error("Invalid exchange ID in trading pair: " + pair.dump());
+                }
+                if (symbol.empty()) {
+                    LOG_ERROR("Empty symbol in trading pair: {}", pair.dump());
+                    throw std::runtime_error("Empty symbol in trading pair: " + pair.dump());
+                }
                 config.tradingPairs[symbol] = exchangeId;
             }
         }
@@ -291,7 +299,7 @@ LiquidityFlowConfig parseLiquidityFlowConfig(const json& componentJson) {
         // Parse specific fields
         if (params.contains("historySize")) config.historySize = params["historySize"].get<int>();
         if (params.contains("flowImbalanceThreshold")) config.flowImbalanceThreshold = params["flowImbalanceThreshold"].get<double>();
-        if (params.contains("exchangeId")) config.exchangeId = params["exchangeId"].get<std::string>();
+        if (params.contains("exchangeId")) config.exchangeId = ExchangeId::fromString(params["exchangeId"].get<std::string>());
         if (params.contains("tradingPair")) config.tradingPair = params["tradingPair"].get<std::string>();
         if (params.contains("largeOrderThreshold")) config.largeOrderThreshold = params["largeOrderThreshold"].get<double>();
         if (params.contains("historyWindowSeconds")) config.historyWindowSeconds = params["historyWindowSeconds"].get<int>();
@@ -358,7 +366,7 @@ VolumeProfileConfig parseVolumeProfileConfig(const json& componentJson) {
         // Parse specific fields
         if (params.contains("timeWindowMs")) config.timeWindowMs = params["timeWindowMs"].get<int>();
         if (params.contains("priceLevels")) config.priceLevels = params["priceLevels"].get<int>();
-        if (params.contains("exchangeId")) config.exchangeId = params["exchangeId"].get<std::string>();
+        if (params.contains("exchangeId")) config.exchangeId = ExchangeId::fromString(params["exchangeId"].get<std::string>());
         if (params.contains("tradingPair")) config.tradingPair = params["tradingPair"].get<std::string>();
         if (params.contains("range_size_percent")) config.range_size_percent = params["range_size_percent"].get<double>();
         if (params.contains("time_frame_minutes")) config.time_frame_minutes = params["time_frame_minutes"].get<int>();
@@ -555,7 +563,7 @@ ExchangeCalibrationConfig parseExchangeCalibrationConfig(const json& componentJs
         // Parse exchanges
         if (params.contains("exchanges") && params["exchanges"].is_array()) {
             for (const auto& exchange : params["exchanges"]) {
-                config.exchanges.push_back(exchange.get<std::string>());
+                config.exchanges.push_back(ExchangeId::fromString(exchange.get<std::string>()));
             }
         }
     }
@@ -606,7 +614,7 @@ bool saveStrategyConfigToFile(const StrategyConfig& config, const std::string& f
         for (const auto& [symbol, exchangeId] : config.tradingPairs) {
             json pairJson;
             pairJson["symbol"] = symbol;
-            pairJson["exchangeId"] = exchangeId;
+            pairJson["exchange"] = exchangeId.toString();
             pairsJson.push_back(pairJson);
         }
         configJson["tradingPairs"] = pairsJson;
@@ -776,7 +784,7 @@ json liquidityFlowConfigToJson(const LiquidityFlowConfig& config) {
     json params;
     params["historySize"] = config.historySize;
     params["flowImbalanceThreshold"] = config.flowImbalanceThreshold;
-    params["exchangeId"] = config.exchangeId;
+    params["exchangeId"] = config.exchangeId.toString();
     params["tradingPair"] = config.tradingPair;
     params["largeOrderThreshold"] = config.largeOrderThreshold;
     params["historyWindowSeconds"] = config.historyWindowSeconds;
@@ -837,7 +845,7 @@ json volumeProfileConfigToJson(const VolumeProfileConfig& config) {
     json params;
     params["timeWindowMs"] = config.timeWindowMs;
     params["priceLevels"] = config.priceLevels;
-    params["exchangeId"] = config.exchangeId;
+    params["exchangeId"] = config.exchangeId.toString();
     params["tradingPair"] = config.tradingPair;
     params["range_size_percent"] = config.range_size_percent;
     params["time_frame_minutes"] = config.time_frame_minutes;
@@ -1016,7 +1024,7 @@ json exchangeCalibrationConfigToJson(const ExchangeCalibrationConfig& config) {
     // Add exchanges
     json exchangesJson = json::array();
     for (const auto& exchange : config.exchanges) {
-        exchangesJson.push_back(exchange);
+        exchangesJson.push_back(exchange.toString());
     }
     params["exchanges"] = exchangesJson;
     
@@ -1075,7 +1083,7 @@ std::map<ExchangeId, ParameterSet> loadExchangeSpecificParameters(const std::str
         // Iterate through exchanges
         for (auto it = paramsJson.begin(); it != paramsJson.end(); ++it) {
             // Parse exchange ID
-            ExchangeId exchangeId = it.key();  // if ExchangeId is std::string
+            ExchangeId exchangeId = ExchangeId::fromString(it.key());
             
             // Parse parameter set
             ParameterSet params;
