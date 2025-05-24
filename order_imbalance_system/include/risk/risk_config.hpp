@@ -93,7 +93,7 @@ struct FatFingerConfig {
 struct OrderValidationConfig {
     bool validateMinOrderSize;
     bool validatePriceRange;
-    std::map<ExchangeId, std::map<TradingPair, double>> minOrderSizes;
+    std::map<core::ExchangeId, std::map<TradingPair, double>> minOrderSizes;
     double maxPriceDeviationPercent;
     bool enforceSymbolWhitelist;
     std::vector<std::string> symbolWhitelist;
@@ -148,7 +148,7 @@ struct CollateralConfig {
     bool autoInitiateEmergencyFunding = false;
 
     // List of exchanges managed by the collateral manager
-    std::vector<ExchangeId> managedExchanges;
+    std::vector<core::ExchangeId> managedExchanges;
 
     // Minimum balances required for each asset (asset symbol -> minimum amount)
     std::map<std::string, double> minimumBalances;
@@ -160,7 +160,7 @@ struct CollateralConfig {
     std::string emergencyFundingSource;
 
     // Margin rates per exchange and symbol (ExchangeId -> (symbol -> margin rate))
-    std::map<ExchangeId, std::map<std::string, double>> exchangeMarginRates;
+    std::map<core::ExchangeId, std::map<std::string, double>> exchangeMarginRates;
 
     // Base currency for collateral calculations (e.g., "USD")
     std::string baseCurrency = "USD";

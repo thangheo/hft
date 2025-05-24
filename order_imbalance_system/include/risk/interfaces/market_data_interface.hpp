@@ -4,6 +4,7 @@
 #include "common/zeromq_client.hpp"
 #include "data_ingestion/orderbook/order_book.hpp"
 #include "data_ingestion/normalization/order_book_normalizer.hpp"
+#include <core/market_types.hpp>
 #include <memory>
 #include <unordered_map>
 #include <shared_mutex>
@@ -171,7 +172,7 @@ private:
     // Default exchange if not specified
     static constexpr const char* DEFAULT_EXCHANGE = "binance";
     mutable std::shared_mutex balanceMutex_;
-    std::unordered_map<std::string, std::map<std::string, double>> exchangeBalances_;
+    std::unordered_map<core::ExchangeId, std::map<std::string, double>> exchangeBalances_;
         std::thread reconnectionThread_;
     std::atomic<bool> needsReconnection_{false};
     std::chrono::steady_clock::time_point lastConnectionCheck_;

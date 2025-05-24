@@ -9,6 +9,7 @@
 
 #include "risk_types.hpp"
 #include "execution/models/execution_report.hpp"
+#include <risk/risk_types.hpp>
 #include <string>
 #include <vector>
 #include <memory>
@@ -58,7 +59,7 @@ public:
      * Constructor
      */
     ExecutionInterface();
-    virtual std::map<std::string, double> getAccountBalances(const ExchangeId& exchangeId) = 0;
+    virtual std::map<std::string, double> getAccountBalances(const core::ExchangeId& exchangeId) = 0;
     // virtual std::future<std::map<std::string, double>> getAccountBalancesAsync(const ExchangeId& exchangeId) = 0;
     /**
      * Virtual destructor

@@ -1,4 +1,4 @@
-#include "market_data_interface.hpp"
+#include <risk/interfaces/market_data_interface.hpp>
 #include "common/logger.hpp"
 #include <sstream>
 #include <cmath>
@@ -29,18 +29,18 @@ std::vector<std::pair<Timestamp, double>> PriceHistory::getRecentPrices(int coun
  
 
 // MarketDataInterface implementation
-MarketDataInterface::MarketDataInterface() : DataInterface() {
-    LOG_INFO("MarketDataInterface constructor");
-}
+// MarketDataInterface::MarketDataInterface() : DataInterface() {
+//     LOG_INFO("MarketDataInterface constructor");
+// }
 
-MarketDataInterface::~MarketDataInterface() {
-    if (running_) {
-        running_ = false;
-        if (zmqClient_) {
-            zmqClient_->stop();
-        }
-    }
-}
+// MarketDataInterface::~MarketDataInterface() {
+//     if (running_) {
+//         running_ = false;
+//         if (zmqClient_) {
+//             zmqClient_->stop();
+//         }
+//     }
+// }
 
 bool MarketDataInterface::initialize() {
     if (initialized_.load()) {
@@ -95,7 +95,7 @@ std::optional<MarketData> MarketDataInterface::getMarketData(
    const std::string& tradingPair,
    const std::optional<std::string>& exchangeId) {
    
-   std::string exchange = exchangeId.value_or(DEFAULT_EXCHANGE);
+   core::ExchangeId exchange = core::ExchangeId::fromString(exchangeId.value_or(DEFAULT_EXCHANGE));
    std::string cacheKey = createCacheKey(exchange, tradingPair);
    
    // Check cache
@@ -171,7 +171,7 @@ std::vector<std::pair<Timestamp, double>> MarketDataInterface::getHistoricalPric
     int count,
     const std::optional<std::string>& exchangeId) {
     
-    std::string exchange = exchangeId.value_or(DEFAULT_EXCHANGE);
+    core::ExchangeId exchange = core::ExchangeId::fromString(exchangeId.value_or(DEFAULT_EXCHANGE));
     std::string cacheKey = createCacheKey(exchange, tradingPair);
     
     std::shared_lock<std::shared_mutex> lock(historyMutex_);
@@ -272,7 +272,7 @@ double MarketDataInterface::getVolatility(
     const std::string& timeframe, 
     const std::optional<std::string>& exchangeId) {
     
-    std::string exchange = exchangeId.value_or(DEFAULT_EXCHANGE);
+    core::ExchangeId exchange = core::ExchangeId::fromString(exchangeId.value_or(DEFAULT_EXCHANGE));
     std::string cacheKey = createCacheKey(exchange, tradingPair);
     
     std::shared_lock<std::shared_mutex> lock(historyMutex_);
@@ -316,14 +316,6 @@ std::vector<OrderRequest> MarketDataInterface::getOrderHistory(
     return {};
 }
 
-std::map<std::string, double> MarketDataInterface::getExchangeBalances(
-    const core::ExchangeId& exchangeId) {
-    
-    // This would typically query the exchange API or execution engine
-    // For now, return empty map
-    // In production, this would integrate with the execution engine's balance tracking
-    return {};
-}
 
 void MarketDataInterface::registerMarketDataCallback(
     const std::function<void(const MarketData&)>& callback) {
@@ -341,20 +333,20 @@ bool MarketDataInterface::subscribeMarketData(
         return false;
     }
     
-    std::string exchange = exchangeId.value_or(DEFAULT_EXCHANGE);
+    core::ExchangeId exchange = core::ExchangeId::fromString(exchangeId.value_or(DEFAULT_EXCHANGE));
     
     // Subscribe to orderbook and trade topics for this pair
-    std::string orderBookTopic = "market.orderbook." + exchange + "." + tradingPair;
-    std::string tradeTopic = "market.trade." + exchange + "." + tradingPair;
+    std::string orderBookTopic = "market.orderbook." + exchange.toString() + "." + tradingPair;
+    std::string tradeTopic = "market.trade." + exchange.toString() + "." + tradingPair;
     
     bool success = true;
     success &= zmqClient_->subscribe(orderBookTopic);
     success &= zmqClient_->subscribe(tradeTopic);
     
     if (success) {
-        LOG_INFO("Subscribed to market data for " + exchange + ":" + tradingPair);
+        LOG_INFO("Subscribed to market data for " + exchange.toString() + ":" + tradingPair);
     } else {
-        LOG_ERROR("Failed to subscribe to market data for " + exchange + ":" + tradingPair);
+        LOG_ERROR("Failed to subscribe to market data for " + exchange.toString() + ":" + tradingPair);
     }
     
     return success;
@@ -368,11 +360,11 @@ bool MarketDataInterface::unsubscribeMarketData(
         return false;
     }
     
-    std::string exchange = exchangeId.value_or(DEFAULT_EXCHANGE);
+    core::ExchangeId exchange = core::ExchangeId::fromString(exchangeId.value_or(DEFAULT_EXCHANGE));
     
     // Unsubscribe from topics
-    std::string orderBookTopic = "market.orderbook." + exchange + "." + tradingPair;
-    std::string tradeTopic = "market.trade." + exchange + "." + tradingPair;
+    std::string orderBookTopic = "market.orderbook." + exchange.toString() + "." + tradingPair;
+    std::string tradeTopic = "market.trade." + exchange.toString() + "." + tradingPair;
     
     bool success = true;
     success &= zmqClient_->unsubscribe(orderBookTopic);
@@ -389,7 +381,7 @@ std::map<std::string, double> MarketDataInterface::getTradingFees(
     // In production, this would be fetched from exchange API or configuration
     std::map<std::string, double> fees;
     
-    if (exchangeId == "binance") {
+    if (exchangeId == core::ExchangeId::binance()) {
         fees["maker"] = 0.001;  // 0.1%
         fees["taker"] = 0.001;  // 0.1%
     } else {
@@ -405,7 +397,7 @@ std::string MarketDataInterface::createCacheKey(
     const core::ExchangeId& exchangeId, 
     const std::string& tradingPair) const {
     
-    return exchangeId + ":" + tradingPair;
+    return exchangeId.toString() + ":" + tradingPair;
 }
 
 void MarketDataInterface::processOrderBookUpdate(
@@ -424,7 +416,7 @@ void MarketDataInterface::processOrderBookUpdate(
         }
         
         if (parts.size() >= 4) {
-            std::string exchange = parts[2];
+            core::ExchangeId exchange = core::ExchangeId::fromString(parts[2]);
             std::string tradingPair = parts[3];
             
             // Create MarketDataUpdate from the message
@@ -553,7 +545,7 @@ double MarketDataInterface::getBalance(const core::ExchangeId& exchangeId,
                                       const std::string& asset) const {
     std::shared_lock<std::shared_mutex> lock(balanceMutex_);
     
-    auto exchangeIt = exchangeBalances_.find(exchangeId.toString());
+    auto exchangeIt = exchangeBalances_.find(exchangeId);
     if (exchangeIt != exchangeBalances_.end()) {
         auto assetIt = exchangeIt->second.find(asset);
         if (assetIt != exchangeIt->second.end()) {
@@ -569,7 +561,7 @@ std::map<std::string, double> MarketDataInterface::getExchangeBalances(
     
     std::shared_lock<std::shared_mutex> lock(balanceMutex_);
     
-    auto it = exchangeBalances_.find(exchangeId.toString());
+    auto it = exchangeBalances_.find(exchangeId);
     if (it != exchangeBalances_.end()) {
         return it->second;
     }
@@ -671,16 +663,16 @@ void MarketDataInterface::handleDisconnection() {
 }
 
 // Update initialize() to start monitoring thread
-bool MarketDataInterface::initialize() {
-    // ... existing code ...
+// bool MarketDataInterface::initialize() {
+//     // ... existing code ...
     
-    if (initialized_) {
-        // Start connection monitoring thread
-        reconnectionThread_ = std::thread(&MarketDataInterface::connectionMonitorLoop, this);
-    }
+//     if (initialized_) {
+//         // Start connection monitoring thread
+//         reconnectionThread_ = std::thread(&MarketDataInterface::connectionMonitorLoop, this);
+//     }
     
-    return initialized_;
-}
+//     return initialized_;
+// }
 
 // Update destructor
 MarketDataInterface::~MarketDataInterface() {

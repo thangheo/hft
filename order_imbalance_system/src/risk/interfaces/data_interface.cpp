@@ -157,7 +157,7 @@ public:
             
             // If no history available, log a warning
             if (history.empty()) {
-                LOG_WARN("No order history available for " + exchangeId + ":" + tradingPair);
+                LOG_WARN("No order history available for " + exchangeId.toString() + ":" + tradingPair);
             }
             
             return history;
@@ -268,7 +268,7 @@ public:
         if (initialized_ && marketDataInterface_) {
             try {
                 marketDataInterface_->updateBalance(exchangeId, asset, balance);
-                LOG_DEBUG("Updated balance for " + exchangeId + ":" + asset + " = " + std::to_string(balance));
+                LOG_DEBUG("Updated balance for " + exchangeId.toString() + ":" + asset + " = " + std::to_string(balance));
             } catch (const std::exception& e) {
                 LOG_ERROR("Failed to update balance: " + std::string(e.what()));
             }

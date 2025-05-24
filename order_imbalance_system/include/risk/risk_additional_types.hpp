@@ -111,7 +111,7 @@ struct RebalancingResult {
  */
 struct Balance {
     std::string asset;
-    ExchangeId exchangeId;
+    core::ExchangeId exchangeId;
     double available = 0.0;
     double locked = 0.0;
     double total = 0.0;

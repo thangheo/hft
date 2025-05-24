@@ -8,6 +8,7 @@
 #pragma once
 
 #include "core/market_types.hpp"
+#include "core/direction.hpp"
 #include <string>
 #include <vector>
 #include <map>
@@ -33,17 +34,18 @@ class PerformanceMetrics;
 /**
  * Type for timestamp representation
  */
-using Timestamp = std::chrono::time_point<std::chrono::system_clock>;
+using Timestamp = core::Timestamp;
 using MarketDataUpdate = core::MarketDataUpdate;    
 using MarketData = core::MarketData;
+using OrderSide = core::Direction;
 
 /**
  * Enum for order side
  */
-enum class OrderSide {
-    BUY,
-    SELL
-};
+// enum class OrderSide {
+//     BUY,
+//     SELL
+// };
 
 /**
  * Order request structure
@@ -51,7 +53,7 @@ enum class OrderSide {
 struct OrderRequest {
     std::string orderId;
     std::string clientOrderId;
-    ExchangeId exchangeId;
+    core::ExchangeId exchangeId;
     std::string tradingPair;
     OrderSide side;
     std::string type;
@@ -102,10 +104,10 @@ enum class CircuitBreakerState {
 /**
  * Enum for trading direction
  */
-enum class Direction {
-    BUY,
-    SELL
-};
+// enum class Direction {
+//     BUY,
+//     SELL
+// };
 
 /**
  * Enum for order type

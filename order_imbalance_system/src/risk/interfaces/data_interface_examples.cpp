@@ -18,7 +18,7 @@ int main() {
     // Register callback for market data updates
     dataInterface->registerMarketDataCallback([](const MarketData& marketData) {
         std::cout << "Received market data for " << marketData.tradingPair
-                  << " from " << marketData.exchangeId << std::endl;
+                  << " from " << marketData.exchangeId.toString() << std::endl;
         std::cout << "  Price: " << marketData.price << std::endl;
         std::cout << "  Bid: " << marketData.bid << std::endl;
         std::cout << "  Ask: " << marketData.ask << std::endl;

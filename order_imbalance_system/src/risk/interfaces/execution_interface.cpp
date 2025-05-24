@@ -57,7 +57,7 @@ private:
         nlohmann::json json;
         json["order_id"] = request.orderId;
         json["client_order_id"] = request.clientOrderId;
-        json["exchangeId"] = request.exchangeId;
+        json["exchangeId"] = request.exchangeId.toString();
         json["tradingPair"] = request.tradingPair;
         json["side"] = request.side == OrderSide::BUY ? "buy" : "sell";
         json["type"] = request.type;
@@ -85,7 +85,7 @@ private:
         OrderRequest request;
         request.orderId = json["order_id"];
         request.clientOrderId = json["client_order_id"];
-        request.exchangeId = json["exchangeId"];
+        request.exchangeId =  core::ExchangeId::fromString(json["exchangeId"]);
         request.tradingPair = json["tradingPair"];
         request.side = json["side"] == "buy" ? OrderSide::BUY : OrderSide::SELL;
         request.type = json["type"];
@@ -113,28 +113,40 @@ private:
     // Parse ExecutionReport from JSON
     ExecutionReport jsonToExecutionReport(const nlohmann::json& json) {
         ExecutionReport report;
-        report.orderId = json["order_id"];
-        report.clientOrderId = json["client_order_id"];
-        report.exchangeOrderId = json["exchange_order_id"];
-        report.exchangeId = json["exchangeId"];
-        report.tradingPair = json["tradingPair"];
-        report.side = json["side"] == "buy" ? OrderSide::BUY : OrderSide::SELL;
-        report.type = json["type"];
-        report.status = json["status"];
-        report.quantity = json["quantity"];
-        report.filledQuantity = json["filled_quantity"];
-        report.price = json["price"];
-        report.averageFillPrice = json["average_fill_price"];
+        report.setOrderId(json["order_id"]);
+        report.setClientOrderId(json["client_order_id"]);
+        report.setExchangeOrderId(json["exchange_order_id"]);
+        report.setExchangeId(core::ExchangeId::fromString(json["exchangeId"]));
+        report.setSymbol(json["tradingPair"]);
+        
+        report.setSide(json["side"] == "buy" ? OrderSide::BUY : OrderSide::SELL);
+        report.setType(json["type"]);
+        report.setStatus(json["status"]);
+        report.setQuantity(json["quantity"]);
+        report.setFilledQuantity(json["filled_quantity"]);
+        report.setPrice(json["price"]);
+        report.setAverageFillPrice(json["average_fill_price"]);
         
         // Parse timestamp
         int64_t timestampMs = json["timestamp"];
-        report.timestamp = std::chrono::system_clock::time_point(
-            std::chrono::milliseconds(timestampMs));
+        report.setCreatedAt(std::chrono::system_clock::time_point(
+            std::chrono::milliseconds(timestampMs)));
+        
         
         // Parse optional fields
-        if (json.contains("fee")) report.fee = json["fee"];
-        if (json.contains("fee_currency")) report.feeCurrency = json["fee_currency"];
-        if (json.contains("reject_reason")) report.rejectReason = json["reject_reason"];
+        // if (json.contains("fee")) report.fee = json["fee"];
+        // if (json.contains("fee_currency")) report.feeCurrency = json["fee_currency"];
+        if (json.contains("reject_reason")) report.setRejectReason(json["reject_reason"]);
+        // if (json.contains("fills") && json["fills"].is_array()) {
+        //     for (const auto& fillJson : json["fills"]) {
+        //         Fill fill;
+        //         fill.price = fillJson["price"];
+        //         fill.quantity = fillJson["quantity"];
+        //         fill.timestamp = std::chrono::system_clock::time_point(
+        //             std::chrono::milliseconds(fillJson["timestamp"]));
+        //         report.addFill(fill);
+        //     }
+        // }
         
         return report;
     }
@@ -179,7 +191,7 @@ public:
             requestClient_->stop();
         }
     }
-    std::map<std::string, double> getAccountBalances(const ExchangeId& exchangeId) override {
+    std::map<std::string, double> getAccountBalances(const core::ExchangeId& exchangeId) override {
         if (!initialized_) {
             logWithTimestamp("ERROR", "Execution interface not initialized");
             return {};
@@ -190,7 +202,7 @@ public:
             // Create message - use exchangeId.id to get the string
             nlohmann::json request = {
                 {"action", "get_account_balances"},
-                {"exchangeId", exchangeId.id}  // Access the .id member
+                {"exchangeId", exchangeId.toString()}
             };
             
             // Send request
@@ -335,7 +347,7 @@ public:
             // Create message
             nlohmann::json request = {
                 {"action", "cancel_all_orders"},
-                {"exchangeId", exchangeId}
+                {"exchangeId", exchangeId.toString()}
             };
             
             // Send request
@@ -363,7 +375,7 @@ public:
             // Create message
             nlohmann::json request = {
                 {"action", "cancel_all_orders"},
-                {"exchangeId", exchangeId},
+                {"exchangeId", exchangeId.toString()},
                 {"tradingPair", tradingPair}
             };
             
@@ -457,7 +469,7 @@ public:
             // Create message
             nlohmann::json request = {
                 {"action", "is_exchange_available"},
-                {"exchangeId", exchangeId}
+                {"exchangeId", exchangeId.toString()}
             };
             
             // Send request
@@ -485,7 +497,7 @@ public:
             // Create message
             nlohmann::json request = {
                 {"action", "get_exchange_status"},
-                {"exchangeId", exchangeId}
+                {"exchangeId", exchangeId.toString()}
             };
             
             // Send request

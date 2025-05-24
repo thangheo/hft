@@ -107,7 +107,7 @@ bool CollateralManager::checkCollateralRequirements(const OrderRequest& orderReq
                 // Get actual balance
                 double availableBalance = 0.0;
                 auto balance = getExchangeBalance(exchangeId, collateralAsset);
-                if (balance.exchangeId.id == exchangeId.id) {
+                if (balance.exchangeId.toString() == exchangeId.toString()) {
                     availableBalance = balance.free;
                 }
                 
@@ -126,7 +126,7 @@ bool CollateralManager::checkCollateralRequirements(const OrderRequest& orderReq
                 if (!hasSufficientCollateral(exchangeId, collateralAsset, marginRequired)) {
                     double availableBalance = 0.0;
                     auto balance = getExchangeBalance(exchangeId, collateralAsset);
-                    if (balance.exchangeId.id == exchangeId.id) {
+                    if (balance.exchangeId.toString() == exchangeId.toString()) {
                         availableBalance = balance.free;
                     }
                     
@@ -147,7 +147,7 @@ bool CollateralManager::checkCollateralRequirements(const OrderRequest& orderReq
             if (!hasSufficientCollateral(exchangeId, collateralAsset, requiredAmount)) {
                 double availableBalance = 0.0;
                 auto balance = getExchangeBalance(exchangeId, collateralAsset);
-                if (balance.exchangeId.id == exchangeId.id) {
+                if (balance.exchangeId.toString() == exchangeId.toString()) {
                     availableBalance = balance.free;
                 }
                 
@@ -331,7 +331,7 @@ bool CollateralManager::initiateEmergencyFunding() {
                 }
                 
                 notifyCollateralEvent("low_collateral", 
-                                    "Exchange " + exchangeId.id + " has low collateral for: " + assetsStr);
+                                    "Exchange " + exchangeId.toString() + " has low collateral for: " + assetsStr);
             }
         }
         
@@ -381,7 +381,7 @@ bool CollateralManager::hasSufficientCollateral(const ExchangeId& exchangeId,
     auto balance = getExchangeBalance(exchangeId, asset);
     
     // Check if balance record was found
-    if (balance.exchangeId.id != exchangeId.id) {
+    if (balance.exchangeId.toString() != exchangeId.toString()) {
         // Balance not found
         return false;
     }
@@ -452,7 +452,7 @@ double CollateralManager::calculateMarginRequirement(const ExchangeId& exchangeI
         
         // Get exchange-specific margin requirements
         double marginRate = 1.0; // Default is 100% (no leverage)
-        auto it = m_collateralConfig.exchangeMarginRates.find(exchangeId.toString());
+        auto it = m_collateralConfig.exchangeMarginRates.find(exchangeId);
         if (it != m_collateralConfig.exchangeMarginRates.end()) {
             auto pairIt = it->second.find(tradingPair.symbol);
             if (pairIt != it->second.end()) {
@@ -655,7 +655,7 @@ bool CollateralManager::isEmergencyFundingNeeded() const {
         
         for (const auto& exchangeId : m_collateralConfig.managedExchanges) {
             auto balance = getExchangeBalance(exchangeId, asset);
-            if (balance.exchangeId.id == exchangeId.id && balance.free >= minimumBalance) {
+            if (balance.exchangeId.toString() == exchangeId.toString() && balance.free >= minimumBalance) {
                 // At least one exchange has sufficient balance
                 assetBelowMinimum = false;
                 break;
@@ -697,7 +697,7 @@ bool CollateralManager::executeFundingOperation(const std::string& source, const
         
         notifyCollateralEvent("funding_initiated", 
                             "Funding operation initiated: " + std::to_string(amount) + " " + 
-                            asset + " from " + source + " to " + targetExchangeId.id);
+                            asset + " from " + source + " to " + targetExchangeId.toString());
         
         // Execute the funding operation
         // In a real system, this would integrate with the funding source APIs
@@ -729,7 +729,7 @@ bool CollateralManager::executeFundingOperation(const std::string& source, const
         if (success) {
             notifyCollateralEvent("funding_completed", 
                                 "Funding operation completed: " + std::to_string(amount) + 
-                                " " + asset + " to " + targetExchangeId.id + 
+                                " " + asset + " to " + targetExchangeId.toString() + 
                                 " (Transaction ID: " + transactionId + ")");
             
             // Update balances
@@ -737,7 +737,7 @@ bool CollateralManager::executeFundingOperation(const std::string& source, const
         } else {
             notifyCollateralEvent("funding_failed", 
                                 "Funding operation failed for " + std::to_string(amount) + 
-                                " " + asset + " to " + targetExchangeId.id);
+                                " " + asset + " to " + targetExchangeId.toString());
         }
         
         return success;
@@ -776,7 +776,7 @@ ExchangeBalance CollateralManager::getExchangeBalance(const ExchangeId& exchange
     
     // Return empty balance if not found
     ExchangeBalance emptyBalance;
-    emptyBalance.exchangeId = ExchangeId{""};
+    emptyBalance.exchangeId = ExchangeId::unknown();
     emptyBalance.asset = asset;
     emptyBalance.total = 0.0;
     emptyBalance.free = 0.0;

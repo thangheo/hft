@@ -3,6 +3,7 @@
  *
  * File: position_tracker.hpp
  * Created: 2025-04-29
+ * Updated: 2025-05-24
  */
 #pragma once
 
@@ -10,6 +11,8 @@
 #include "../risk_config.hpp"
 #include "../interfaces/data_interface.hpp"
 #include "execution/models/execution_report.hpp"
+#include "core/market_types.hpp"
+#include "core/direction.hpp"
 #include <map>
 #include <unordered_map>
 #include <string>
@@ -21,7 +24,23 @@
 namespace trading {
 namespace risk {
 
-using namespace trading::execution::models;
+// Type aliases for clarity
+using ExchangeId = core::ExchangeId;
+using Direction = core::Direction;
+using MarketData = core::MarketData;
+using ExecutionReport = trading::execution::models::ExecutionReport;
+
+// Forward declaration for Fill struct from ExecutionReport
+struct Fill {
+    std::string fillId;
+    std::string orderId;
+    double quantity;
+    double price;
+    double fee;
+    std::string feeCurrency;
+    std::chrono::system_clock::time_point timestamp;
+};
+
 /**
  * Position class representing a trading position
  */
@@ -61,6 +80,9 @@ private:
     double m_unrealizedPnl;
     double m_realizedPnl;
     Timestamp m_lastUpdated;
+    
+    // Helper method
+    void updateUnrealizedPnl();
 };
 
 /**
@@ -174,11 +196,11 @@ private:
     
     // Position storage - key: <exchangeId, tradingPair>
     mutable std::mutex m_positionsMutex;
-    std::map<std::pair<std::string, std::string>, Position> m_positions;
+    std::map<std::string, Position> m_positions;
     
-    // Market data cache
+    // Market data cache - renamed from m_prices for clarity
     mutable std::mutex m_marketDataMutex;
-    std::unordered_map<std::string, double> m_prices;
+    std::unordered_map<std::string, double> m_priceCache;
     
     // Callbacks
     mutable std::mutex m_callbackMutex;
@@ -187,8 +209,8 @@ private:
     // Helper methods
     void notifyPositionUpdate(const Position& position, const std::string& updateType);
     bool shouldCreateNewPosition(const ExchangeId& exchangeId, const TradingPair& tradingPair, Direction direction);
-    void updatePositionValue(Position& position);
-    std::string getPositionKey(const ExchangeId& exchangeId, const TradingPair& tradingPair) const;
+    void updatePositionCurrentPrice(Position& position);
+    std::string createPositionKey(const ExchangeId& exchangeId, const TradingPair& tradingPair) const;
     double getCurrentPrice(const TradingPair& tradingPair) const;
 };
 

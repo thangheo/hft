@@ -18,7 +18,7 @@
 namespace trading {
 namespace risk {
 
-// Helper function to convert ExchangeId to string
+    // Helper function to convert ExchangeId to string
 // std::string exchangeIdToString(const ExchangeId& exchangeId) {
 //     switch (exchangeId) {
 //         case ExchangeId::BINANCE: return "BINANCE";
@@ -70,8 +70,8 @@ bool PortfolioManager::initialize() {
             [this](const Position& position, const std::string& updateType) {
                 recalculatePortfolioMetrics();
                 notifyPortfolioEvent("position_update", 
-                                   "Position updated: " + position.getExchangeId().toString() + ":" +
-                                   position.getTradingPair() + " (" + updateType + ")");
+                                   "Position updated: " + position.getTradingPair().symbol +
+                                   " (" + updateType + ")");
             }
         );
         
@@ -193,14 +193,23 @@ std::optional<Position> PortfolioManager::getPosition(const TradingPair& trading
         }
         
         // Create a virtual position representing the aggregate
+        // Position(const ExchangeId& exchangeId, const TradingPair& tradingPair, 
+            // const StrategyId& strategyId, double quantity, double averageEntryPrice);
+        // Position aggregatedPosition(
+        //     ExchangeId::all(),
+        //     tradingPair, 
+        //     "AGGREGATED",
+        //     totalQuantity, 
+        //     weightedPrice
+        // );
+                // Correct usage:
         Position aggregatedPosition(
-            ExchangeId::ALL,
-            tradingPair, 
-            "AGGREGATED",
-            totalQuantity, 
+            ExchangeId::all(),      // Use .all() with parentheses
+            tradingPair,            // TradingPair object
+            StrategyId("AGGREGATED"), // Explicitly construct a StrategyId if needed
+            totalQuantity,
             weightedPrice
         );
-        
         return aggregatedPosition;
     }
 }
@@ -248,7 +257,10 @@ void PortfolioManager::recalculatePortfolioMetrics() {
         
         for (const auto& position : positions) {
             // Extract the base asset from the trading pair (e.g., "BTC" from "BTC/USD")
-            std::string asset = position.getTradingPair().substr(0, position.getTradingPair().find('/'));
+            std::string asset = position.getTradingPair().base;
+            if (assetValues.find(asset) == assetValues.end()) {
+                assetValues[asset] = 0.0;
+            }
             
             double positionValue = position.getNotionalValue();
             assetValues[asset] += positionValue;
