@@ -84,33 +84,69 @@ struct LimitBreachEvent : public RiskEvent {
         actualValue(actual) {}
 };
 
-/**
- * Event for when a circuit breaker is triggered
- */
-struct CircuitBreakerEvent : public RiskEvent {
-    CircuitBreakerState oldState;
-    CircuitBreakerState newState;
-    std::string metricName;
-    double thresholdValue;
-    double actualValue;
-    std::optional<Timestamp> resumeTime;
+// /**
+//  * Event for when a circuit breaker is triggered
+//  */
+// struct CircuitBreakerEvent : public RiskEvent {
+//     CircuitBreakerState oldState;
+//     CircuitBreakerState newState;
+//     std::string metricName;
+//     double thresholdValue;
+//     double actualValue;
+//     std::optional<Timestamp> resumeTime;
     
-    CircuitBreakerEvent(
-        Timestamp eventTime,
-        CircuitBreakerState oldSt,
-        CircuitBreakerState newSt,
-        std::string metric,
-        double threshold,
-        double actual,
-        std::optional<Timestamp> resume,
-        std::string desc
-    ) : RiskEvent(RiskEventType::CIRCUIT_BREAKER_TRIGGERED, eventTime, std::move(desc), "critical"),
-        oldState(oldSt),
-        newState(newSt),
-        metricName(std::move(metric)),
-        thresholdValue(threshold),
-        actualValue(actual),
-        resumeTime(resume) {}
+//     CircuitBreakerEvent(
+//         Timestamp eventTime,
+//         CircuitBreakerState oldSt,
+//         CircuitBreakerState newSt,
+//         std::string metric,
+//         double threshold,
+//         double actual,
+//         std::optional<Timestamp> resume,
+//         std::string desc
+//     ) : RiskEvent(RiskEventType::CIRCUIT_BREAKER_TRIGGERED, eventTime, std::move(desc), "critical"),
+//         oldState(oldSt),
+//         newState(newSt),
+//         metricName(std::move(metric)),
+//         thresholdValue(threshold),
+//         actualValue(actual),
+//         resumeTime(resume) {}
+// };
+
+/**
+ * Enhanced CircuitBreakerEvent structure
+ * Add this to your risk_events.hpp file or create a separate header
+ */
+
+struct CircuitBreakerEvent : public RiskEvent {
+    CircuitBreakerState oldState = CircuitBreakerState::OFF;
+    CircuitBreakerState newState = CircuitBreakerState::OFF;
+    std::chrono::system_clock::time_point triggerTime;
+    std::optional<std::chrono::system_clock::time_point> resumeTime;
+    std::string reason;
+    std::string triggerMetric;
+    double metricValue = 0.0;
+    double metricThreshold = 0.0;
+    int triggerCount = 0;
+    
+    CircuitBreakerEvent() : RiskEvent(RiskEventType::CIRCUIT_BREAKER_TRIGGERED, 
+                                     std::chrono::system_clock::now(), 
+                                     "Circuit breaker state change", 
+                                     "info") {
+        triggerTime = std::chrono::system_clock::now();
+    }
+    
+    CircuitBreakerEvent(CircuitBreakerState oldSt, CircuitBreakerState newSt, 
+                       const std::string& reasonStr, const std::string& metric = "",
+                       double value = 0.0, double threshold = 0.0)
+        : RiskEvent(RiskEventType::CIRCUIT_BREAKER_TRIGGERED,
+                   std::chrono::system_clock::now(),
+                   "Circuit breaker: " + reasonStr,
+                   (newSt == CircuitBreakerState::TRIGGERED) ? "critical" : "warning"),
+          oldState(oldSt), newState(newSt), reason(reasonStr),
+          triggerMetric(metric), metricValue(value), metricThreshold(threshold) {
+        triggerTime = std::chrono::system_clock::now();
+    }
 };
 
 /**
@@ -346,6 +382,7 @@ inline std::string riskEventTypeToString(RiskEventType type) {
 inline std::string getSeverityString(const RiskEvent& event) {
     return event.severity;
 }
+
 
 } // namespace risk
 } // namespace trading

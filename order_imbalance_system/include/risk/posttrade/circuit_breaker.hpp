@@ -1,14 +1,20 @@
 /**
- * Interface for trading halt mechanism during extreme market conditions
- *
- * File: circuit_breaker.hpp
- * Created: 2025-04-29
+ * @file circuit_breaker.hpp
+ * @brief Modern C++20 Circuit Breaker for Trading Risk Management
+ * 
+ * Implements the Circuit Breaker pattern to halt trading during extreme market conditions.
+ * Uses modern C++20 features for optimal performance and maintainability.
+ * 
+ * @author Trading System Team
+ * @date May 25, 2025
  */
+
 #pragma once
 
 #include "../risk_types.hpp"
 #include "../risk_events.hpp"
 #include "../risk_config.hpp"
+#include "core/time.hpp"
 
 #include <string>
 #include <unordered_map>
@@ -16,135 +22,204 @@
 #include <vector>
 #include <functional>
 #include <mutex>
-#include <chrono>
 #include <atomic>
+#include <memory>
+#include <optional>
+#include <concepts>
+#include <ranges>
+#include <algorithm>
+#include <shared_mutex>
 
-namespace trading {
-namespace risk {
+namespace trading::risk {
 
 /**
- * CircuitBreaker halts trading during extreme market conditions.
- * It monitors trading performance metrics and can automatically stop trading when thresholds are breached.
+ * @concept MetricProvider
+ * @brief Concept for objects that can provide metric values
+ */
+template<typename T>
+concept MetricProvider = requires(T t, const std::string& name) {
+    { t.getMetric(name) } -> std::convertible_to<double>;
+};
+
+/**
+ * @class CircuitBreaker
+ * @brief High-performance circuit breaker for trading systems
+ * 
+ * Implements the Circuit Breaker pattern with C++20 features for optimal performance.
+ * Monitors trading metrics and automatically halts trading when thresholds are breached.
  */
 class CircuitBreaker {
 public:
+    using StateChangeCallback = std::function<void(CircuitBreakerState, CircuitBreakerState, std::string_view)>;
+    using MetricMap = std::unordered_map<std::string, double>;
+    
     /**
-     * Constructor
+     * @brief Constructor with configuration
      * @param config Risk configuration containing circuit breaker settings
      */
     explicit CircuitBreaker(const RiskConfig& config);
     
     /**
-     * Initialize the circuit breaker
-     * @return true if initialization was successful, false otherwise
+     * @brief Initialize the circuit breaker
+     * @return true if initialization successful
      */
-    bool initialize();
+    [[nodiscard]] bool initialize() noexcept;
     
     /**
-     * Evaluate metrics to determine if the circuit breaker should trigger
-     * @param metrics The metrics to evaluate
-     * @return The new circuit breaker state
+     * @brief Evaluate metrics and determine circuit breaker state
+     * @param metrics Map of metric names to values
+     * @return New circuit breaker state
      */
-    CircuitBreakerState evaluateMetrics(const std::map<std::string, double>& metrics);
+    [[nodiscard]] CircuitBreakerState evaluateMetrics(const MetricMap& metrics) noexcept;
     
     /**
-     * Update a specific metric value
-     * @param metricName The name of the metric
-     * @param value The new value of the metric
-     * @return The new circuit breaker state
+     * @brief Update a specific metric value
+     * @param metricName Name of the metric
+     * @param value New metric value
+     * @return New circuit breaker state
      */
-    CircuitBreakerState updateMetric(const std::string& metricName, double value);
+    [[nodiscard]] CircuitBreakerState updateMetric(std::string_view metricName, double value) noexcept;
     
     /**
-     * Get the current circuit breaker state
-     * @return The current state
+     * @brief Get current circuit breaker state (thread-safe)
+     * @return Current state
      */
-    CircuitBreakerState getState() const;
+    [[nodiscard]] CircuitBreakerState getState() const noexcept {
+        return state_.load(std::memory_order_acquire);
+    }
     
     /**
-     * Manually trigger the circuit breaker
-     * @param reason The reason for manual triggering
-     * @return true if successful, false otherwise
+     * @brief Manually trigger the circuit breaker
+     * @param reason Reason for manual triggering
+     * @return true if successful
      */
-    bool manualTrigger(const std::string& reason);
+    [[nodiscard]] bool manualTrigger(std::string_view reason) noexcept;
     
     /**
-     * Reset the circuit breaker to normal state
-     * @return true if successful, false otherwise
+     * @brief Reset circuit breaker to normal state
+     * @return true if successful
      */
-    bool reset();
+    [[nodiscard]] bool reset() noexcept;
     
     /**
-     * Check if trading is allowed
-     * @return true if trading is allowed, false otherwise
+     * @brief Check if trading is currently allowed
+     * @return true if trading allowed
      */
-    bool isTradingAllowed() const;
+    [[nodiscard]] bool isTradingAllowed() const noexcept;
     
     /**
-     * Register a callback for circuit breaker state changes
-     * @param callback The function to call when state changes
+     * @brief Register callback for state changes
+     * @param callback Function to call on state changes
      */
-    void registerStateChangeCallback(const std::function<void(CircuitBreakerState, CircuitBreakerState, const std::string&)>& callback);
+    void registerStateChangeCallback(StateChangeCallback callback);
     
     /**
-     * Update circuit breaker configuration
-     * @param circuitBreakerConfig New circuit breaker configuration
-     * @return true if update was successful, false otherwise
+     * @brief Update circuit breaker configuration
+     * @param newConfig New configuration
+     * @return true if update successful
      */
-    bool updateConfiguration(const CircuitBreakerConfig& circuitBreakerConfig);
+    [[nodiscard]] bool updateConfiguration(const CircuitBreakerConfig& newConfig) noexcept;
     
     /**
-     * Get the current circuit breaker configuration
-     * @return The current configuration
+     * @brief Get current configuration (thread-safe copy)
+     * @return Current configuration
      */
-    CircuitBreakerConfig getConfiguration() const;
+    [[nodiscard]] CircuitBreakerConfig getConfiguration() const;
     
     /**
-     * Get estimated time until automatic reset
-     * @return The estimated time in seconds, or 0 if not in cooling state
+     * @brief Get seconds until automatic reset
+     * @return Seconds until reset, or 0 if not applicable
      */
-    int getSecondsUntilReset() const;
+    [[nodiscard]] std::chrono::seconds getTimeUntilReset() const noexcept;
     
     /**
-     * Get the trigger history
-     * @return Vector of trigger events
+     * @brief Get trigger history (thread-safe copy)
+     * @return Vector of historical trigger events
      */
-    std::vector<CircuitBreakerEvent> getTriggerHistory() const;
+    [[nodiscard]] std::vector<CircuitBreakerEvent> getTriggerHistory() const;
+    
+    /**
+     * @brief Get current metric values (thread-safe copy)
+     * @return Map of current metrics
+     */
+    [[nodiscard]] MetricMap getCurrentMetrics() const;
+    
+    /**
+     * @brief Check if a specific metric is in warning state
+     * @param metricName Name of the metric to check
+     * @return true if metric is in warning state
+     */
+    [[nodiscard]] bool isMetricInWarning(std::string_view metricName) const noexcept;
+    
+    /**
+     * @brief Get detailed status information
+     * @return Detailed status as string
+     */
+    [[nodiscard]] std::string getDetailedStatus() const;
 
 private:
-    // Configuration
-    RiskConfig m_config;
-    CircuitBreakerConfig m_circuitBreakerConfig;
+    // Configuration and state
+    mutable std::shared_mutex configMutex_;
+    CircuitBreakerConfig config_;
     
-    // State
-    std::atomic<CircuitBreakerState> m_state;
-    std::chrono::system_clock::time_point m_triggerTime;
-    std::chrono::system_clock::time_point m_coolingStartTime;
-    std::string m_lastTriggerReason;
-    int m_triggerCount;
-    std::chrono::system_clock::time_point m_triggerCountResetTime;
+    // Atomic state for lockless reads
+    std::atomic<CircuitBreakerState> state_{CircuitBreakerState::OFF};
+    std::atomic<std::chrono::system_clock::time_point> triggerTime_;
+    std::atomic<std::chrono::system_clock::time_point> coolingStartTime_;
+    std::atomic<int> triggerCount_{0};
+    std::atomic<std::chrono::system_clock::time_point> triggerCountResetTime_;
     
-    // Metrics
-    mutable std::mutex m_metricsMutex;
-    std::unordered_map<std::string, double> m_currentMetrics;
+    // Protected data with fine-grained locking
+    mutable std::shared_mutex metricsMutex_;
+    MetricMap currentMetrics_;
     
-    // History
-    mutable std::mutex m_historyMutex;
-    std::vector<CircuitBreakerEvent> m_triggerHistory;
+    mutable std::shared_mutex historyMutex_;
+    std::vector<CircuitBreakerEvent> triggerHistory_;
     
-    // Callbacks
-    mutable std::mutex m_callbackMutex;
-    std::vector<std::function<void(CircuitBreakerState, CircuitBreakerState, const std::string&)>> m_stateChangeCallbacks;
+    mutable std::shared_mutex callbackMutex_;
+    std::vector<StateChangeCallback> stateChangeCallbacks_;
     
-    // Helper methods
-    bool isMetricCritical(const std::string& metricName, double value, double& threshold);
-    bool isMetricWarning(const std::string& metricName, double value, double& threshold);
-    void setState(CircuitBreakerState newState, const std::string& reason);
-    bool shouldAutoReset() const;
-    void checkTriggerCount();
-    CircuitBreakerEvent createCircuitBreakerEvent(CircuitBreakerState oldState, CircuitBreakerState newState, 
-                                                const std::string& metricName, double threshold, double value);
+    std::string lastTriggerReason_;
+    
+    // Private helper methods
+    [[nodiscard]] bool isMetricCritical(std::string_view metricName, double value, double& threshold) const noexcept;
+    [[nodiscard]] bool isMetricWarning(std::string_view metricName, double value, double& threshold) const noexcept;
+    
+    void setState(CircuitBreakerState newState, std::string_view reason) noexcept;
+    [[nodiscard]] bool shouldAutoReset() const noexcept;
+    void checkTriggerCount() noexcept;
+    
+    [[nodiscard]] CircuitBreakerEvent createEvent(CircuitBreakerState oldState, 
+                                                 CircuitBreakerState newState,
+                                                 std::string_view metricName = "",
+                                                 double threshold = 0.0, 
+                                                 double value = 0.0) const;
+    
+    void addToHistory(CircuitBreakerEvent event);
+    void notifyCallbacks(CircuitBreakerState oldState, CircuitBreakerState newState, std::string_view reason);
+    
+    // Template helper for metric evaluation
+    template<typename Predicate>
+    [[nodiscard]] std::optional<std::pair<std::string, double>> 
+    findMetricViolation(const MetricMap& metrics, Predicate pred) const;
 };
 
-} // namespace risk
+// Template implementation
+template<typename Predicate>
+std::optional<std::pair<std::string, double>> 
+CircuitBreaker::findMetricViolation(const MetricMap& metrics, Predicate pred) const {
+    std::shared_lock lock(configMutex_);
+    
+    for (const auto& [metricName, value] : metrics) {
+        if (auto it = config_.metricThresholds.find(metricName); 
+            it != config_.metricThresholds.end()) {
+            double threshold = 0.0;
+            if (pred(metricName, value, threshold)) {
+                return std::make_pair(metricName, threshold);
+            }
+        }
+    }
+    return std::nullopt;
 }
+
+} // namespace trading::risk

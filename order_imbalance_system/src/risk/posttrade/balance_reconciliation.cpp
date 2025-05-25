@@ -1,39 +1,73 @@
+/**
+ * @file balance_reconciliation.cpp
+ * @brief Implementation of balance reconciliation functionality
+ * 
+ * @author Trading System Team
+ * @date May 12, 2025
+ */
+
 #include "risk/posttrade/balance_reconciliation.hpp"
 #include <algorithm>
 #include <cmath>
+#include <set>
 #include <sstream>
 #include <thread>
+#include <chrono>
+#include <stdexcept>
 
 namespace trading {
 namespace risk {
 
-BalanceReconciliation::BalanceReconciliation(const RiskConfig& config, 
-                                           std::shared_ptr<PositionTracker> positionTracker,
-                                           std::shared_ptr<DataInterface> dataInterface,
-                                           std::shared_ptr<ExecutionInterface> executionInterface)
-    : m_positionTracker(positionTracker),
-      m_dataInterface(dataInterface),
-      m_executionInterface(executionInterface),
-      m_config(config),
-      m_reconciliationConfig(config.balanceReconciliationConfig),
-      m_consecutiveFailures(0),
-      m_reconciliationScheduled(false) {
+BalanceReconciliation::BalanceReconciliation(
+    const RiskConfig& config,
+    std::shared_ptr<PositionTracker> positionTracker,
+    std::shared_ptr<DataInterface> dataInterface,
+    std::shared_ptr<ExecutionInterface> executionInterface)
+    : m_positionTracker(std::move(positionTracker)),
+      m_dataInterface(std::move(dataInterface)),
+      m_executionInterface(std::move(executionInterface)),
+      m_config(config.getBalanceReconciliationConfig()) {
+    
+    if (!m_positionTracker) {
+        throw std::invalid_argument("PositionTracker cannot be null");
+    }
+    if (!m_dataInterface) {
+        throw std::invalid_argument("DataInterface cannot be null");
+    }
+    if (!m_executionInterface) {
+        throw std::invalid_argument("ExecutionInterface cannot be null");
+    }
+}
+
+BalanceReconciliation::~BalanceReconciliation() {
+    shutdown();
 }
 
 bool BalanceReconciliation::initialize() {
+    std::lock_guard<std::mutex> lock(m_stateMutex);
+    
+    // Initialize statistics
+    m_statistics = ReconciliationStatistics{};
+    
     // Initialize last reconciliation result
-    {
-        std::lock_guard<std::mutex> lock(m_stateMutex);
-        m_lastReconciliation.success = true;
-        m_lastReconciliation.matchedPositions = 0;
-        m_lastReconciliation.mismatchedPositions = 0;
-        m_lastReconciliation.discrepancies.clear();
-        m_lastReconciliation.timestamp = std::chrono::system_clock::now();
+    m_lastReconciliation = ReconciliationResult{};
+    m_lastReconciliation.success = true;
+    
+    // Start scheduled reconciliation if enabled
+    if (m_config.reconciliationFrequency.count() > 0) {
+        return startScheduledReconciliation();
     }
     
-    // Schedule regular reconciliations if enabled
-    if (m_reconciliationConfig.enableScheduledReconciliation) {
-        return scheduleReconciliations();
+    return true;
+}
+
+bool BalanceReconciliation::shutdown() {
+    // Stop scheduled reconciliation
+    stopScheduledReconciliation();
+    
+    // Wait for background thread to finish
+    if (m_scheduledThread && m_scheduledThread->joinable()) {
+        m_scheduledThread->join();
     }
     
     return true;
@@ -41,220 +75,256 @@ bool BalanceReconciliation::initialize() {
 
 ReconciliationResult BalanceReconciliation::reconcileAllPositions() {
     ReconciliationResult result;
-    result.matchedPositions = 0;
-    result.mismatchedPositions = 0;
-    result.discrepancies.clear();
-    result.timestamp = std::chrono::system_clock::now();
     
-    // Get all exchanges
-    auto exchanges = m_positionTracker->getTrackingExchanges();
-    
-    // Reconcile positions for each exchange
-    for (const auto& exchangeId : exchanges) {
-        auto exchangeResult = reconcileExchangePositions(exchangeId);
+    try {
+        // Get all positions from position tracker to determine which exchanges to check
+        auto allPositions = m_positionTracker->getAllPositions();
+        std::set<core::ExchangeId> exchanges;
         
-        // Aggregate results
-        result.matchedPositions += exchangeResult.matchedPositions;
-        result.mismatchedPositions += exchangeResult.mismatchedPositions;
-        result.discrepancies.insert(result.discrepancies.end(), 
-                                  exchangeResult.discrepancies.begin(), 
-                                  exchangeResult.discrepancies.end());
-    }
-    
-    // Set success flag
-    result.success = (result.mismatchedPositions == 0);
-    
-    // Update consecutive failures count
-    {
-        std::lock_guard<std::mutex> lock(m_stateMutex);
-        if (!result.success) {
-            m_consecutiveFailures++;
-        } else {
-            m_consecutiveFailures = 0;
+        // Extract unique exchanges from positions
+        for (const auto& position : allPositions) {
+            exchanges.insert(position.getExchangeId());
         }
         
+        for (const auto& exchangeId : exchanges) {
+            auto exchangeResult = reconcileExchangePositions(exchangeId);
+            
+            // Aggregate results
+            result.matchedPositions += exchangeResult.matchedPositions;
+            result.mismatchedPositions += exchangeResult.mismatchedPositions;
+            
+            // Merge discrepancies
+            result.discrepancies.insert(
+                result.discrepancies.end(),
+                exchangeResult.discrepancies.begin(),
+                exchangeResult.discrepancies.end()
+            );
+        }
+        
+        result.success = (result.mismatchedPositions == 0);
+    }
+    catch (const std::exception& e) {
+        result.success = false;
+        // TODO: Log error appropriately
+    }
+    
+    // Update state and statistics
+    {
+        std::lock_guard<std::mutex> lock(m_stateMutex);
         m_lastReconciliation = result;
+        updateStatistics(result);
     }
     
     return result;
 }
 
-ReconciliationResult BalanceReconciliation::reconcileExchangePositions(const ExchangeId& exchangeId) {
+ReconciliationResult BalanceReconciliation::reconcileExchangePositions(
+    const core::ExchangeId& exchangeId) {
+    
     ReconciliationResult result;
-    result.matchedPositions = 0;
-    result.mismatchedPositions = 0;
-    result.discrepancies.clear();
-    result.timestamp = std::chrono::system_clock::now();
     
-    // Get expected positions from position tracker
-    std::vector<Position> expectedPositions = m_positionTracker->getExchangePositions(exchangeId);
-    
-    // Get actual positions from exchange
-    std::map<std::string, double> actualPositions;
-    bool fetchSuccess = fetchActualPositions(exchangeId, actualPositions);
-    
-    if (!fetchSuccess) {
-        // Failed to fetch actual positions
-        result.success = false;
-        return result;
-    }
-    
-    // Compare expected vs actual positions
-    for (const auto& position : expectedPositions) {
-        const std::string& tradingPair = position.tradingPair;
+    try {
+        // Get expected positions from our tracker
+        auto expectedPositions = m_positionTracker->getExchangePositions(exchangeId);
         
-        // Skip zero positions
-        if (std::abs(position.quantity) < 1e-8) {
-            continue;
+        // Get actual positions from exchange
+        std::map<std::string, double> actualPositions;
+        if (!fetchActualPositions(exchangeId, actualPositions)) {
+            result.success = false;
+            return result;
         }
         
-        // Find actual position
-        auto it = actualPositions.find(tradingPair);
-        if (it == actualPositions.end()) {
-            // Trading pair not found in actual positions
-            double actualQuantity = 0.0;
-            double discrepancy = position.quantity - actualQuantity;
+        // Compare each expected position
+        for (const auto& position : expectedPositions) {
+            TradingPair tradingPair = position.getTradingPair();
+            double expectedQuantity = position.getQuantity();
             
-            // Create reconciliation event
-            auto event = createReconciliationEvent(exchangeId, tradingPair,
-                                                position.quantity, actualQuantity, discrepancy,
-                                                shouldAutoCorrect(std::abs(discrepancy / position.quantity)));
-            
-            // Apply auto-correction if configured
-            if (event.autoCorrect) {
-                applyCorrection(exchangeId, tradingPair, actualQuantity);
+            // Skip positions that are effectively zero
+            if (std::abs(expectedQuantity) < 1e-8) {
+                continue;
             }
             
-            // Add to discrepancies
-            result.discrepancies.push_back(event);
-            result.mismatchedPositions++;
+            // Find corresponding actual position
+            auto actualIt = actualPositions.find(tradingPair.symbol);
+            double actualQuantity = (actualIt != actualPositions.end()) ? actualIt->second : 0.0;
             
-            // Notify callbacks
-            notifyReconciliationEvent(event);
-        } else {
-            double actualQuantity = it->second;
-            double discrepancy = position.quantity - actualQuantity;
+            double discrepancy = expectedQuantity - actualQuantity;
             
-            // Check if discrepancy exceeds tolerance
-            if (std::abs(discrepancy) > m_reconciliationConfig.positionDiscrepancyTolerance) {
-                // Create reconciliation event
-                auto event = createReconciliationEvent(exchangeId, tradingPair,
-                                                    position.quantity, actualQuantity, discrepancy,
-                                                    shouldAutoCorrect(std::abs(discrepancy / position.quantity)));
+            if (exceedsTolerance(discrepancy, expectedQuantity)) {
+                // Create reconciliation event for this discrepancy
+                auto event = createReconciliationEvent(
+                    exchangeId, tradingPair.symbol, expectedQuantity, actualQuantity, discrepancy,
+                    shouldAutoCorrect(calculateDiscrepancyPercent(expectedQuantity, actualQuantity))
+                );
                 
-                // Apply auto-correction if configured
+                // Apply auto-correction if enabled
                 if (event.autoCorrect) {
-                    applyCorrection(exchangeId, tradingPair, actualQuantity);
+                    applyCorrection(exchangeId, TradingPair{tradingPair}, actualQuantity);
                 }
                 
-                // Add to discrepancies
                 result.discrepancies.push_back(event);
                 result.mismatchedPositions++;
                 
                 // Notify callbacks
-                notifyReconciliationEvent(event);
+                notifyCallbacks(event);
             } else {
-                // Position matches within tolerance
                 result.matchedPositions++;
             }
             
             // Remove from actual positions map to track unaccounted positions
-            actualPositions.erase(it);
+            if (actualIt != actualPositions.end()) {
+                actualPositions.erase(actualIt);
+            }
         }
+        
+        // Check for positions that exist in exchange but not in our tracker
+        for (const auto& [tradingPair, actualQuantity] : actualPositions) {
+            if (std::abs(actualQuantity) < 1e-8) {
+                continue; // Skip zero positions
+            }
+            
+            double expectedQuantity = 0.0;
+            double discrepancy = expectedQuantity - actualQuantity;
+            
+            auto event = createReconciliationEvent(
+                exchangeId, tradingPair, expectedQuantity, actualQuantity, discrepancy,
+                shouldAutoCorrect(100.0) // 100% discrepancy for untracked positions
+            );
+            
+            if (event.autoCorrect) {
+                applyCorrection(exchangeId, TradingPair{tradingPair}, actualQuantity);
+            }
+            
+            result.discrepancies.push_back(event);
+            result.mismatchedPositions++;
+            
+            notifyCallbacks(event);
+        }
+        
+        result.success = (result.mismatchedPositions == 0);
     }
-    
-    // Check for positions in actual but not in expected
-    for (const auto& [tradingPair, actualQuantity] : actualPositions) {
-        // Skip zero positions
-        if (std::abs(actualQuantity) < 1e-8) {
-            continue;
-        }
-        
-        // This position exists in exchange but not in our tracker
-        double expectedQuantity = 0.0;
-        double discrepancy = expectedQuantity - actualQuantity;
-        
-        // Create reconciliation event
-        auto event = createReconciliationEvent(exchangeId, tradingPair,
-                                           expectedQuantity, actualQuantity, discrepancy,
-                                           shouldAutoCorrect(1.0)); // 100% discrepancy
-        
-        // Apply auto-correction if configured
-        if (event.autoCorrect) {
-            applyCorrection(exchangeId, tradingPair, actualQuantity);
-        }
-        
-        // Add to discrepancies
-        result.discrepancies.push_back(event);
-        result.mismatchedPositions++;
-        
-        // Notify callbacks
-        notifyReconciliationEvent(event);
+    catch (const std::exception& e) {
+        result.success = false;
+        // TODO: Log error appropriately
     }
-    
-    // Set success flag
-    result.success = (result.mismatchedPositions == 0);
     
     return result;
 }
 
-bool BalanceReconciliation::scheduleReconciliations() {
-    if (!m_reconciliationConfig.enableScheduledReconciliation) {
-        return false;
-    }
+ReconciliationResult BalanceReconciliation::reconcileTradingPair(
+    const core::ExchangeId& exchangeId,
+    const std::string& tradingPair) {
     
-    // Mark as scheduled
-    m_reconciliationScheduled = true;
+    ReconciliationResult result;
     
-    // Schedule the first reconciliation
-    m_nextScheduledReconciliation = std::chrono::system_clock::now() + 
-                                  std::chrono::minutes(m_reconciliationConfig.reconciliationIntervalMinutes);
-    
-    // Start a thread for periodic reconciliation
-    std::thread([this]() {
-        while (m_reconciliationScheduled) {
-            // Sleep until next scheduled reconciliation
-            auto now = std::chrono::system_clock::now();
-            if (now < m_nextScheduledReconciliation) {
-                std::this_thread::sleep_for(std::chrono::seconds(10));
-                continue;
+    try {
+        // Create TradingPair from string
+        TradingPair tp;
+        tp.symbol = tradingPair;
+        
+        // Get expected position for this specific trading pair
+        auto expectedPosition = m_positionTracker->getPosition(exchangeId, tp);
+        double expectedQuantity = expectedPosition ? expectedPosition->getQuantity() : 0.0;
+        
+        // Get actual position from exchange
+        std::map<std::string, double> actualPositions;
+        if (!fetchActualPositions(exchangeId, actualPositions)) {
+            result.success = false;
+            return result;
+        }
+        
+        auto actualIt = actualPositions.find(tradingPair);
+        double actualQuantity = (actualIt != actualPositions.end()) ? actualIt->second : 0.0;
+        
+        double discrepancy = expectedQuantity - actualQuantity;
+        
+        if (exceedsTolerance(discrepancy, expectedQuantity)) {
+            auto event = createReconciliationEvent(
+                exchangeId, tradingPair, expectedQuantity, actualQuantity, discrepancy,
+                shouldAutoCorrect(calculateDiscrepancyPercent(expectedQuantity, actualQuantity))
+            );
+            
+            if (event.autoCorrect) {
+                applyCorrection(exchangeId, tp, actualQuantity);
             }
             
-            // Perform reconciliation
-            reconcileAllPositions();
+            result.discrepancies.push_back(event);
+            result.mismatchedPositions = 1;
+            result.matchedPositions = 0;
             
-            // Schedule next reconciliation
-            m_nextScheduledReconciliation = std::chrono::system_clock::now() + 
-                                          std::chrono::minutes(m_reconciliationConfig.reconciliationIntervalMinutes);
+            notifyCallbacks(event);
+        } else {
+            result.matchedPositions = 1;
+            result.mismatchedPositions = 0;
         }
-    }).detach();
+        
+        result.success = (result.mismatchedPositions == 0);
+    }
+    catch (const std::exception& e) {
+        result.success = false;
+    }
+    
+    return result;
+}
+
+bool BalanceReconciliation::startScheduledReconciliation() {
+    if (m_isScheduledActive.load()) {
+        return false; // Already active
+    }
+    
+    if (m_config.reconciliationFrequency.count() <= 0) {
+        return false; // Invalid frequency
+    }
+    
+    m_shouldStop.store(false);
+    m_isScheduledActive.store(true);
+    
+    // Calculate first reconciliation time
+    m_nextScheduledTime = calculateNextReconciliationTime();
+    
+    // Start background thread
+    m_scheduledThread = std::make_unique<std::thread>(
+        &BalanceReconciliation::scheduledReconciliationLoop, this
+    );
     
     return true;
 }
 
-bool BalanceReconciliation::cancelScheduledReconciliations() {
-    m_reconciliationScheduled = false;
+bool BalanceReconciliation::stopScheduledReconciliation() {
+    if (!m_isScheduledActive.load()) {
+        return false; // Not active
+    }
+    
+    m_shouldStop.store(true);
+    m_isScheduledActive.store(false);
+    
     return true;
 }
 
-bool BalanceReconciliation::updateConfiguration(const BalanceReconciliationConfig& reconciliationConfig) {
-    // Validate configuration
-    if (reconciliationConfig.reconciliationIntervalMinutes <= 0 ||
-        reconciliationConfig.positionDiscrepancyTolerance < 0 ||
-        reconciliationConfig.autoCorrectThresholdPercent < 0 ||
-        reconciliationConfig.autoCorrectThresholdPercent > 100) {
+bool BalanceReconciliation::isScheduledReconciliationActive() const {
+    return m_isScheduledActive.load();
+}
+
+bool BalanceReconciliation::updateConfiguration(const BalanceReconciliationConfig& newConfig) {
+    // Validate new configuration
+    if (newConfig.reconciliationFrequency.count() < 0) {
         return false;
     }
     
-    bool wasScheduled = m_reconciliationConfig.enableScheduledReconciliation;
-    m_reconciliationConfig = reconciliationConfig;
+    if (newConfig.maxDiscrepancyPercent < 0.0 || newConfig.maxDiscrepancyPercent > 100.0) {
+        return false;
+    }
     
-    // Update reconciliation schedule if needed
-    if (wasScheduled != reconciliationConfig.enableScheduledReconciliation) {
-        if (reconciliationConfig.enableScheduledReconciliation) {
-            scheduleReconciliations();
-        } else {
-            cancelScheduledReconciliations();
+    bool wasScheduledActive = m_isScheduledActive.load();
+    
+    // Update configuration
+    m_config = newConfig;
+    
+    // Restart scheduled reconciliation if it was active and frequency changed
+    if (wasScheduledActive) {
+        stopScheduledReconciliation();
+        if (newConfig.reconciliationFrequency.count() > 0) {
+            startScheduledReconciliation();
         }
     }
     
@@ -262,13 +332,14 @@ bool BalanceReconciliation::updateConfiguration(const BalanceReconciliationConfi
 }
 
 BalanceReconciliationConfig BalanceReconciliation::getConfiguration() const {
-    return m_reconciliationConfig;
+    return m_config;
 }
 
 void BalanceReconciliation::registerReconciliationCallback(
     const std::function<void(const PositionReconciliationEvent&)>& callback) {
+    
     std::lock_guard<std::mutex> lock(m_callbackMutex);
-    m_reconciliationCallbacks.push_back(callback);
+    m_callbacks.push_back(callback);
 }
 
 ReconciliationResult BalanceReconciliation::getLastReconciliationResult() const {
@@ -276,67 +347,197 @@ ReconciliationResult BalanceReconciliation::getLastReconciliationResult() const 
     return m_lastReconciliation;
 }
 
-bool BalanceReconciliation::correctDiscrepancy(const ExchangeId& exchangeId, const TradingPair& tradingPair, double correctQuantity) {
+ReconciliationStatistics BalanceReconciliation::getStatistics() const {
+    std::lock_guard<std::mutex> lock(m_stateMutex);
+    return m_statistics;
+}
+
+bool BalanceReconciliation::correctDiscrepancy(
+    const core::ExchangeId& exchangeId,
+    const TradingPair& tradingPair,
+    double correctQuantity) {
+    
     return applyCorrection(exchangeId, tradingPair, correctQuantity);
 }
 
-PositionReconciliationEvent BalanceReconciliation::createReconciliationEvent(const ExchangeId& exchangeId, 
-                                                                         const TradingPair& tradingPair,
-                                                                         double expected, double actual, double discrepancy,
-                                                                         bool autoCorrect) {
-    PositionReconciliationEvent event;
-    event.exchangeId = exchangeId;
-    event.tradingPair = tradingPair;
-    event.expectedQuantity = expected;
-    event.actualQuantity = actual;
-    event.discrepancy = discrepancy;
-    event.discrepancyPercent = expected != 0 ? std::abs(discrepancy / expected) * 100.0 : 100.0;
-    event.autoCorrect = autoCorrect;
-    event.timestamp = std::chrono::system_clock::now();
+ReconciliationResult BalanceReconciliation::forceFullReconciliation() {
+    return reconcileAllPositions();
+}
+
+// Private helper methods
+
+PositionReconciliationEvent BalanceReconciliation::createReconciliationEvent(
+    const core::ExchangeId& exchangeId,
+    const std::string& tradingPair,
+    double expectedQuantity,
+    double actualQuantity,
+    double discrepancy,
+    bool autoCorrect) {
+    
+    // Create TradingPair structure
+    TradingPair tp;
+    tp.symbol = tradingPair;
+    tp.base = "";  // Could be parsed from symbol if needed
+    tp.quote = ""; // Could be parsed from symbol if needed
+    
+    PositionReconciliationEvent event(
+        std::chrono::system_clock::now(),
+        exchangeId,
+        tp,
+        expectedQuantity,
+        actualQuantity,
+        calculateDiscrepancyPercent(expectedQuantity, actualQuantity),
+        autoCorrect,
+        "Position reconciliation discrepancy detected for " + tradingPair
+    );
+    
     return event;
 }
 
-bool BalanceReconciliation::fetchActualPositions(const ExchangeId& exchangeId, std::map<std::string, double>& actualPositions) {
-    try {
-        // Get positions from data interface
-        auto positions = m_dataInterface->getExchangePositions(exchangeId);
-        
-        // Convert to map for easier lookup
-        for (const auto& position : positions) {
-            actualPositions[position.first] = position.second;
+bool BalanceReconciliation::fetchActualPositions(
+    const core::ExchangeId& exchangeId,
+    std::map<std::string, double>& actualPositions) {
+    
+    int attempts = 0;
+    std::exception lastException;
+    
+    while (attempts < m_config.maxRetryAttempts) {
+        try {
+            // Try to get account balances from execution interface first
+            // (as it's more likely to have real position data)
+            if (m_executionInterface) {
+                auto balances = m_executionInterface->getAccountBalances(exchangeId);
+                for (const auto& [asset, balance] : balances) {
+                    if (std::abs(balance) > m_config.minimumPositionSize) {
+                        actualPositions[asset] = balance;
+                    }
+                }
+                return true;
+            }
+            
+            // Fallback to data interface
+            if (m_dataInterface) {
+                auto balances = m_dataInterface->getExchangeBalances(exchangeId);
+                for (const auto& [asset, balance] : balances) {
+                    if (std::abs(balance) > m_config.minimumPositionSize) {
+                        actualPositions[asset] = balance;
+                    }
+                }
+                return true;
+            }
+            
+            return false;
         }
-        
-        return true;
-    } catch (const std::exception& e) {
-        // Log error
-        // TODO: Add proper logging
-        
-        return false;
+        catch (const std::exception& e) {
+            lastException = e;
+            attempts++;
+            
+            if (attempts < m_config.maxRetryAttempts) {
+                // Wait before retrying with exponential backoff
+                auto delay = m_config.getRetryDelay(attempts);
+                std::this_thread::sleep_for(delay);
+            }
+        }
     }
-}
-
-void BalanceReconciliation::notifyReconciliationEvent(const PositionReconciliationEvent& event) {
-    std::lock_guard<std::mutex> lock(m_callbackMutex);
-    for (const auto& callback : m_reconciliationCallbacks) {
-        callback(event);
-    }
+    
+    // All attempts failed
+    // TODO: Log the final error appropriately
+    return false;
 }
 
 bool BalanceReconciliation::shouldAutoCorrect(double discrepancyPercent) const {
-    return m_reconciliationConfig.enableAutoCorrection && 
-           discrepancyPercent * 100.0 <= m_reconciliationConfig.autoCorrectThresholdPercent;
+    return m_config.autoCorrectDiscrepancies && 
+           discrepancyPercent <= m_config.maxDiscrepancyPercent;
 }
 
-bool BalanceReconciliation::applyCorrection(const ExchangeId& exchangeId, const TradingPair& tradingPair, double actualQuantity) {
+bool BalanceReconciliation::applyCorrection(
+    const core::ExchangeId& exchangeId,
+    const TradingPair& tradingPair,
+    double actualQuantity) {
+    
     try {
-        // Update position in tracker
-        m_positionTracker->overridePosition(exchangeId, tradingPair, actualQuantity);
-        return true;
-    } catch (const std::exception& e) {
-        // Log error
-        // TODO: Add proper logging
+        // Update position in tracker to match actual quantity
+        return m_positionTracker->updatePosition(exchangeId, tradingPair, actualQuantity);
+    }
+    catch (const std::exception& e) {
+        // TODO: Log error appropriately
         return false;
     }
+}
+
+void BalanceReconciliation::notifyCallbacks(const PositionReconciliationEvent& event) {
+    std::lock_guard<std::mutex> lock(m_callbackMutex);
+    
+    for (const auto& callback : m_callbacks) {
+        try {
+            callback(event);
+        }
+        catch (const std::exception& e) {
+            // TODO: Log callback error
+        }
+    }
+}
+
+double BalanceReconciliation::calculateDiscrepancyPercent(double expected, double actual) const {
+    if (std::abs(expected) < 1e-8) {
+        return std::abs(actual) > 1e-8 ? 100.0 : 0.0;
+    }
+    
+    return std::abs((expected - actual) / expected) * 100.0;
+}
+
+bool BalanceReconciliation::exceedsTolerance(double discrepancy, double expected) const {
+    double discrepancyPercent = calculateDiscrepancyPercent(expected, expected - discrepancy);
+    return discrepancyPercent > m_config.maxDiscrepancyPercent;
+}
+
+void BalanceReconciliation::updateStatistics(const ReconciliationResult& result) {
+    m_statistics.totalReconciliations++;
+    m_statistics.lastReconciliationTime = result.timestamp;
+    
+    if (result.success) {
+        m_statistics.successfulReconciliations++;
+        m_statistics.consecutiveFailures = 0;
+    } else {
+        m_statistics.failedReconciliations++;
+        m_statistics.consecutiveFailures++;
+    }
+    
+    // Update discrepancy statistics
+    m_statistics.totalDiscrepanciesFound += static_cast<int>(result.discrepancies.size());
+    
+    if (!result.discrepancies.empty()) {
+        double totalDiscrepancy = 0.0;
+        for (const auto& discrepancy : result.discrepancies) {
+            totalDiscrepancy += std::abs(discrepancy.discrepancyPercentage);
+        }
+        
+        // Update running average
+        m_statistics.averageDiscrepancyValue = 
+            (m_statistics.averageDiscrepancyValue * (m_statistics.totalReconciliations - 1) + 
+             totalDiscrepancy / result.discrepancies.size()) / m_statistics.totalReconciliations;
+    }
+}
+
+void BalanceReconciliation::scheduledReconciliationLoop() {
+    while (!m_shouldStop.load()) {
+        auto now = std::chrono::system_clock::now();
+        
+        if (now >= m_nextScheduledTime) {
+            // Perform reconciliation
+            reconcileAllPositions();
+            
+            // Calculate next reconciliation time
+            m_nextScheduledTime = calculateNextReconciliationTime();
+        }
+        
+        // Sleep for a short interval to avoid busy waiting
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+}
+
+std::chrono::system_clock::time_point BalanceReconciliation::calculateNextReconciliationTime() const {
+    return std::chrono::system_clock::now() + m_config.reconciliationFrequency;
 }
 
 } // namespace risk

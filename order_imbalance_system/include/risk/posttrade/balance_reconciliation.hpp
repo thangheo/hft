@@ -1,9 +1,14 @@
 /**
- * Interface for verifying expected vs. actual balances
- *
- * File: balance_reconciliation.hpp
- * Created: 2025-04-29
+ * @file balance_reconciliation.hpp
+ * @brief Interface for verifying expected vs. actual balances
+ * 
+ * This component handles the reconciliation of positions between our internal
+ * tracking system and the actual positions reported by exchanges.
+ * 
+ * @author Trading System Team
+ * @date May 12, 2025
  */
+
 #pragma once
 
 #include "../risk_types.hpp"
@@ -13,139 +18,285 @@
 #include "../interfaces/data_interface.hpp"
 #include "../interfaces/execution_interface.hpp"
 
+#include <memory>
+#include <vector>
 #include <map>
 #include <unordered_map>
-#include <string>
 #include <mutex>
-#include <vector>
-#include <memory>
+#include <atomic>
 #include <functional>
 #include <chrono>
+#include <thread>
+#include <string>
 
-namespace trading{
+namespace trading {
 namespace risk {
 
 /**
- * Structure to hold reconciliation result information
+ * @struct ReconciliationResult
+ * @brief Contains the results of a reconciliation operation
  */
 struct ReconciliationResult {
-    bool success;
-    int matchedPositions;
-    int mismatchedPositions;
-    std::vector<PositionReconciliationEvent> discrepancies;
-    Timestamp timestamp;
+    bool success{false};                                    // Overall success status
+    int matchedPositions{0};                               // Number of positions that matched
+    int mismatchedPositions{0};                           // Number of mismatched positions
+    std::vector<PositionReconciliationEvent> discrepancies; // List of discrepancies found
+    Timestamp timestamp;                                   // When reconciliation was performed
+    
+    ReconciliationResult() : timestamp(std::chrono::system_clock::now()) {}
 };
 
 /**
- * BalanceReconciliation verifies expected vs. actual balances.
- * It detects discrepancies in position tracking and triggers reconciliation processes.
+ * @struct ReconciliationStatistics
+ * @brief Provides statistics about reconciliation operations
+ */
+struct ReconciliationStatistics {
+    int totalReconciliations{0};
+    int successfulReconciliations{0};
+    int failedReconciliations{0};
+    int consecutiveFailures{0};
+    Timestamp lastReconciliationTime;
+    double averageDiscrepancyValue{0.0};
+    int totalDiscrepanciesFound{0};
+    
+    double getSuccessRate() const {
+        return totalReconciliations > 0 ? 
+               static_cast<double>(successfulReconciliations) / totalReconciliations : 0.0;
+    }
+};
+
+/**
+ * @class BalanceReconciliation
+ * @brief Manages the reconciliation of positions between internal tracking and exchanges
+ * 
+ * This class provides functionality to:
+ * - Compare expected positions with actual exchange positions
+ * - Detect and report discrepancies
+ * - Automatically correct minor discrepancies when configured
+ * - Schedule periodic reconciliations
+ * - Generate reconciliation events and statistics
  */
 class BalanceReconciliation {
 public:
     /**
-     * Constructor
+     * @brief Constructor
      * @param config Risk configuration containing reconciliation settings
-     * @param positionTracker Reference to position tracker
+     * @param positionTracker Shared pointer to position tracker
      * @param dataInterface Interface to access exchange data
      * @param executionInterface Interface to execution system
      */
-    BalanceReconciliation(const RiskConfig& config, 
-                         std::shared_ptr<PositionTracker> positionTracker,
-                         std::shared_ptr<DataInterface> dataInterface,
-                         std::shared_ptr<ExecutionInterface> executionInterface);
+    BalanceReconciliation(
+        const RiskConfig& config,
+        std::shared_ptr<PositionTracker> positionTracker,
+        std::shared_ptr<DataInterface> dataInterface,
+        std::shared_ptr<ExecutionInterface> executionInterface
+    );
     
     /**
-     * Initialize the reconciliation manager
-     * @return true if initialization was successful, false otherwise
+     * @brief Destructor - ensures cleanup of background threads
+     */
+    ~BalanceReconciliation();
+    
+    // Disable copy constructor and assignment operator
+    BalanceReconciliation(const BalanceReconciliation&) = delete;
+    BalanceReconciliation& operator=(const BalanceReconciliation&) = delete;
+    
+    /**
+     * @brief Initialize the reconciliation system
+     * @return true if initialization successful, false otherwise
      */
     bool initialize();
     
     /**
-     * Perform a reconciliation for all exchanges
-     * @return The reconciliation result
+     * @brief Shutdown the reconciliation system
+     * @return true if shutdown successful, false otherwise
+     */
+    bool shutdown();
+    
+    /**
+     * @brief Perform reconciliation for all exchanges and positions
+     * @return Complete reconciliation result
      */
     ReconciliationResult reconcileAllPositions();
     
     /**
-     * Perform a reconciliation for a specific exchange
-     * @param exchangeId The exchange identifier
-     * @return The reconciliation result
+     * @brief Perform reconciliation for a specific exchange
+     * @param exchangeId The exchange to reconcile
+     * @return Reconciliation result for the exchange
      */
-    ReconciliationResult reconcileExchangePositions(const ExchangeId& exchangeId);
+    ReconciliationResult reconcileExchangePositions(const core::ExchangeId& exchangeId);
     
     /**
-     * Schedule regular reconciliations based on configuration
-     * @return true if scheduling was successful, false otherwise
+     * @brief Perform reconciliation for a specific trading pair on an exchange
+     * @param exchangeId The exchange
+     * @param tradingPair The trading pair
+     * @return Reconciliation result for the specific pair
      */
-    bool scheduleReconciliations();
+    ReconciliationResult reconcileTradingPair(
+        const core::ExchangeId& exchangeId,
+        const std::string& tradingPair
+    );
     
     /**
-     * Cancel scheduled reconciliations
-     * @return true if cancellation was successful, false otherwise
+     * @brief Start scheduled reconciliations
+     * @return true if scheduling started successfully
      */
-    bool cancelScheduledReconciliations();
+    bool startScheduledReconciliation();
     
     /**
-     * Update reconciliation configuration
-     * @param reconciliationConfig New reconciliation configuration
-     * @return true if update was successful, false otherwise
+     * @brief Stop scheduled reconciliations
+     * @return true if scheduling stopped successfully
      */
-    bool updateConfiguration(const BalanceReconciliationConfig& reconciliationConfig);
+    bool stopScheduledReconciliation();
     
     /**
-     * Get the current reconciliation configuration
-     * @return The current configuration
+     * @brief Check if scheduled reconciliation is active
+     * @return true if scheduled reconciliation is running
+     */
+    bool isScheduledReconciliationActive() const;
+    
+    /**
+     * @brief Update reconciliation configuration
+     * @param newConfig New reconciliation configuration
+     * @return true if update successful
+     */
+    bool updateConfiguration(const BalanceReconciliationConfig& newConfig);
+    
+    /**
+     * @brief Get current reconciliation configuration
+     * @return Current configuration
      */
     BalanceReconciliationConfig getConfiguration() const;
     
     /**
-     * Register a callback for reconciliation events
-     * @param callback The function to call when reconciliation events occur
+     * @brief Register callback for reconciliation events
+     * @param callback Function to call when reconciliation events occur
      */
-    void registerReconciliationCallback(const std::function<void(const PositionReconciliationEvent&)>& callback);
+    void registerReconciliationCallback(
+        const std::function<void(const PositionReconciliationEvent&)>& callback
+    );
     
     /**
-     * Get the most recent reconciliation result
-     * @return The most recent reconciliation result
+     * @brief Get the most recent reconciliation result
+     * @return Last reconciliation result
      */
     ReconciliationResult getLastReconciliationResult() const;
     
     /**
-     * Manually correct a discrepancy
-     * @param exchangeId The exchange identifier
-     * @param tradingPair The trading pair
-     * @param correctQuantity The quantity to set
-     * @return true if correction was successful, false otherwise
+     * @brief Get reconciliation statistics
+     * @return Current reconciliation statistics
      */
-    bool correctDiscrepancy(const ExchangeId& exchangeId, const TradingPair& tradingPair, double correctQuantity);
+    ReconciliationStatistics getStatistics() const;
+    
+    /**
+     * @brief Manually correct a position discrepancy
+     * @param exchangeId The exchange
+     * @param tradingPair The trading pair
+     * @param correctQuantity The correct quantity to set
+     * @return true if correction applied successfully
+     */
+    bool correctDiscrepancy(
+        const core::ExchangeId& exchangeId,
+        const TradingPair& tradingPair,
+        double correctQuantity
+    );
+    
+    /**
+     * @brief Force reconciliation of all positions (ignores scheduling)
+     * @return Reconciliation result
+     */
+    ReconciliationResult forceFullReconciliation();
 
 private:
+    // Dependencies
     std::shared_ptr<PositionTracker> m_positionTracker;
     std::shared_ptr<DataInterface> m_dataInterface;
     std::shared_ptr<ExecutionInterface> m_executionInterface;
-    RiskConfig m_config;
-    BalanceReconciliationConfig m_reconciliationConfig;
     
-    // Reconciliation state
+    // Configuration
+    BalanceReconciliationConfig m_config;
+    
+    // State management
     mutable std::mutex m_stateMutex;
     ReconciliationResult m_lastReconciliation;
-    int m_consecutiveFailures;
-    std::chrono::system_clock::time_point m_nextScheduledReconciliation;
-    bool m_reconciliationScheduled;
+    ReconciliationStatistics m_statistics;
+    
+    // Scheduling
+    std::atomic<bool> m_isScheduledActive{false};
+    std::atomic<bool> m_shouldStop{false};
+    std::unique_ptr<std::thread> m_scheduledThread;
+    std::chrono::system_clock::time_point m_nextScheduledTime;
     
     // Callbacks
     mutable std::mutex m_callbackMutex;
-    std::vector<std::function<void(const PositionReconciliationEvent&)>> m_reconciliationCallbacks;
+    std::vector<std::function<void(const PositionReconciliationEvent&)>> m_callbacks;
     
     // Helper methods
-    PositionReconciliationEvent createReconciliationEvent(const ExchangeId& exchangeId, const TradingPair& tradingPair,
-                                                        double expected, double actual, double discrepancy,
-                                                        bool autoCorrect);
-    bool fetchActualPositions(const ExchangeId& exchangeId, std::map<std::string, double>& actualPositions);
-    void notifyReconciliationEvent(const PositionReconciliationEvent& event);
+    
+    /**
+     * @brief Create a reconciliation event from discrepancy data
+     */
+    PositionReconciliationEvent createReconciliationEvent(
+        const core::ExchangeId& exchangeId,
+        const std::string& tradingPair,
+        double expectedQuantity,
+        double actualQuantity,
+        double discrepancy,
+        bool autoCorrect
+    );
+    
+    /**
+     * @brief Fetch actual positions from exchange
+     */
+    bool fetchActualPositions(
+        const core::ExchangeId& exchangeId,
+        std::map<std::string, double>& actualPositions
+    );
+    
+    /**
+     * @brief Check if discrepancy should be auto-corrected
+     */
     bool shouldAutoCorrect(double discrepancyPercent) const;
-    bool applyCorrection(const ExchangeId& exchangeId, const TradingPair& tradingPair, double actualQuantity);
+    
+    /**
+     * @brief Apply position correction
+     */
+    bool applyCorrection(
+        const core::ExchangeId& exchangeId,
+        const TradingPair& tradingPair,
+        double actualQuantity
+    );
+    
+    /**
+     * @brief Notify all registered callbacks of reconciliation event
+     */
+    void notifyCallbacks(const PositionReconciliationEvent& event);
+    
+    /**
+     * @brief Calculate discrepancy percentage
+     */
+    double calculateDiscrepancyPercent(double expected, double actual) const;
+    
+    /**
+     * @brief Check if discrepancy exceeds tolerance
+     */
+    bool exceedsTolerance(double discrepancy, double expected) const;
+    
+    /**
+     * @brief Update reconciliation statistics
+     */
+    void updateStatistics(const ReconciliationResult& result);
+    
+    /**
+     * @brief Background thread function for scheduled reconciliation
+     */
+    void scheduledReconciliationLoop();
+    
+    /**
+     * @brief Calculate next scheduled reconciliation time
+     */
+    std::chrono::system_clock::time_point calculateNextReconciliationTime() const;
 };
 
 } // namespace risk
-}
+} // namespace trading

@@ -1,13 +1,17 @@
 /**
- * Risk configuration structures and parameter definitions
- *
- * File: risk_config.hpp
- * Created: 2025-04-29
+ * @file risk_config.hpp (Fixed version)
+ * @brief Risk configuration structures and parameter definitions
+ * 
+ * Fix for duplicate getCircuitBreakerConfig() method and missing declarations
+ * 
+ * @author Trading System Team
+ * @date May 25, 2025
  */
 
 #pragma once
 
 #include "risk_types.hpp"
+#include "risk_events.hpp"
 #include <string>
 #include <vector>
 #include <map>
@@ -16,8 +20,15 @@
 #include <chrono>
 #include <optional>
 
-namespace trading {
-namespace risk {
+// Forward declare json for nlohmann/json.hpp
+namespace nlohmann {
+    class json;
+}
+
+namespace trading::risk {
+
+// Forward declarations for helper methods
+using json = nlohmann::json;
 
 /**
  * Configuration structure for position limits
@@ -26,76 +37,127 @@ struct PositionLimitConfig {
     std::map<std::string, double> assetLimits;
     std::map<std::string, double> strategyLimits;
     std::map<std::string, double> exchangeLimits;
-    double defaultLimit;
-    bool enforceStrictly;
+    double defaultLimit = 1000.0;
+    bool enforceStrictly = true;
 };
 
 /**
  * Configuration structure for exposure limits
  */
 struct ExposureLimitConfig {
-    double maxTotalExposure;
-    double maxAssetExposure;
-    double maxStrategyExposure;
-    double maxExchangeExposure;
-    double volatilityMultiplier;
-    bool includeUnrealizedPnl;
+    double maxTotalExposure = 10000.0;
+    double maxAssetExposure = 2000.0;
+    double maxStrategyExposure = 5000.0;
+    double maxExchangeExposure = 8000.0;
+    double volatilityMultiplier = 1.5;
+    bool includeUnrealizedPnl = true;
 };
 
 /**
- * Configuration structure for circuit breakers
+ * Metric threshold structure for circuit breaker
+ */
+struct MetricThreshold {
+    double warningThreshold = 0.0;
+    double criticalThreshold = 0.0;
+    bool isHigherBetter = false;  // true if higher values are better (e.g., success rate)
+    
+    MetricThreshold() = default;
+    MetricThreshold(double warning, double critical, bool higherBetter = false)
+        : warningThreshold(warning), criticalThreshold(critical), isHigherBetter(higherBetter) {}
+};
+
+/**
+ * Enhanced Configuration structure for circuit breakers
  */
 struct CircuitBreakerConfig {
-    std::map<std::string, double> warningThresholds;
-    std::map<std::string, double> criticalThresholds;
-    std::chrono::seconds coolingPeriod;
-    std::chrono::seconds warmupPeriod;
-    bool autoResume;
-    int maxTriggersPerDay;
+    // Threshold definitions for different metrics
+    std::unordered_map<std::string, MetricThreshold> metricThresholds;
+    
+    // Timing configuration
+    std::chrono::seconds coolingPeriod{300};              // 5 minutes default
+    std::chrono::seconds warmupPeriod{60};                // 1 minute default
+    int mandatoryHaltPeriodSeconds = 60;                  // Minimum halt time in seconds
+    int coolingPeriodSeconds = 300;                       // Cooling period in seconds
+    
+    // Trigger and reset behavior
+    bool autoResume = true;
+    int maxTriggersPerDay = 10;
+    int maxTriggersBeforeExtendedHalt = 3;
+    int extendedHaltMultiplier = 2;                       // Multiply halt period by this factor
+    int triggerCountResetMinutes = 60;                    // Reset trigger count after this period
+    
+    // History and monitoring
+    size_t maxHistorySize = 1000;                         // Maximum number of events to keep
+    
+    // Gradual recovery
+    bool gradualTradingResumption = true;                 // Allow gradual recovery vs binary
+    
+    // Default constructor with reasonable defaults
+    CircuitBreakerConfig() {
+        // Set up default metric thresholds
+        metricThresholds["error_rate"] = MetricThreshold(0.05, 0.10, false);        // 5% warning, 10% critical
+        metricThresholds["latency_ms"] = MetricThreshold(100.0, 500.0, false);      // 100ms warning, 500ms critical
+        metricThresholds["success_rate"] = MetricThreshold(0.95, 0.90, true);       // 95% warning, 90% critical
+        metricThresholds["throughput"] = MetricThreshold(100.0, 50.0, true);        // Throughput drops
+        metricThresholds["drawdown_percent"] = MetricThreshold(5.0, 10.0, false);   // 5% warning, 10% critical
+    }
+    
+    // Validation method
+    bool isValid() const {
+        return coolingPeriod.count() > 0 &&
+               warmupPeriod.count() > 0 &&
+               mandatoryHaltPeriodSeconds > 0 &&
+               coolingPeriodSeconds > 0 &&
+               maxTriggersPerDay > 0 &&
+               maxTriggersBeforeExtendedHalt > 0 &&
+               extendedHaltMultiplier > 0 &&
+               triggerCountResetMinutes > 0 &&
+               maxHistorySize > 0;
+    }
 };
 
 /**
  * Configuration structure for stop loss
  */
 struct StopLossConfig {
-    double maxLossPercentage;
-    double trailingStopDistance;
-    bool enableTrailingStop;
-    bool forceLiquidation;
-    std::chrono::seconds liquidationDelay;
+    double maxLossPercentage = 0.05;
+    double trailingStopDistance = 0.02;
+    bool enableTrailingStop = true;
+    bool forceLiquidation = true;
+    std::chrono::seconds liquidationDelay{5};
 };
 
 /**
  * Configuration structure for drawdown monitoring
  */
 struct DrawdownConfig {
-    double warningThreshold;
-    double criticalThreshold;
-    std::chrono::hours lookbackPeriod;
-    bool enableAutoRiskReduction;
-    double riskReductionFactor;
+    double warningThreshold = 0.10;
+    double criticalThreshold = 0.20;
+    std::chrono::hours lookbackPeriod{24};
+    bool enableAutoRiskReduction = true;
+    double riskReductionFactor = 0.5;
 };
 
 /**
  * Configuration structure for fat finger protection
  */
 struct FatFingerConfig {
-    double maxPriceDeviation;
-    double maxOrderSize;
-    double typicalOrderSize;
-    double notionalValueLimit;
-    bool enforceAdditionalVerification;
+    double maxPriceDeviation = 0.05;
+    double maxOrderSize = 10.0;
+    double typicalOrderSize = 1.0;
+    double notionalValueLimit = 10000.0;
+    bool enforceAdditionalVerification = true;
 };
 
 /**
  * Configuration structure for order validation
  */
 struct OrderValidationConfig {
-    bool validateMinOrderSize;
-    bool validatePriceRange;
+    bool validateMinOrderSize = true;
+    bool validatePriceRange = true;
     std::map<core::ExchangeId, std::map<TradingPair, double>> minOrderSizes;
-    double maxPriceDeviationPercent;
-    bool enforceSymbolWhitelist;
+    double maxPriceDeviationPercent = 0.1;
+    bool enforceSymbolWhitelist = false;
     std::vector<std::string> symbolWhitelist;
 };
 
@@ -103,11 +165,78 @@ struct OrderValidationConfig {
  * Configuration structure for balance reconciliation
  */
 struct BalanceReconciliationConfig {
-    std::chrono::minutes reconciliationFrequency;
-    double maxDiscrepancyPercent;
-    bool autoCorrectDiscrepancies;
-    bool alertOnDiscrepancy;
-    int maxConsecutiveFailures;
+    // Core reconciliation settings
+    std::chrono::minutes reconciliationFrequency{30};
+    double maxDiscrepancyPercent{1.0}; // 1% default tolerance
+    bool autoCorrectDiscrepancies{false};
+    bool alertOnDiscrepancy{true};
+    int maxConsecutiveFailures{3};
+    
+    // Extended reconciliation settings
+    double minimumPositionSize{0.001};           // Minimum position size to reconcile
+    std::chrono::seconds exchangeTimeoutSeconds{30}; // Exchange query timeout
+    bool enableDetailedLogging{true};            // Detailed logging of operations
+    bool reconcileOnStartup{true};               // Perform reconciliation on startup
+    int maxDiscrepanciesPerRun{100};             // Max discrepancies to report per run
+    
+    // Retry and resilience settings  
+    int maxRetryAttempts{3};                     // Max retries for failed exchange queries
+    std::chrono::seconds retryDelaySeconds{5}; // Delay between retries
+    bool enableProgressiveBackoff{true};        // Use exponential backoff for retries
+    
+    // Position tolerance settings
+    double absoluteToleranceThreshold{0.0001};   // Absolute tolerance for very small positions
+    bool ignoreZeroPositions{true};              // Skip positions with zero quantity
+    bool validateCrossExchange{true};            // Validate positions across exchanges
+    
+    // Reconciliation scheduling
+    bool enableScheduledReconciliation{true};    // Enable automatic scheduled reconciliation
+    std::chrono::minutes maxReconciliationDuration{10}; // Max time per reconciliation
+    bool pauseDuringMarketHours{false};         // Pause reconciliation during active trading
+    
+    // Notification and alerting
+    bool enableSlackNotifications{false};       // Send Slack notifications for discrepancies
+    bool enableEmailAlerts{true};               // Send email alerts for major discrepancies
+    double criticalDiscrepancyThreshold{5.0};   // Threshold for critical alerts (%)
+    
+    // Performance and optimization
+    bool enableBatchProcessing{true};           // Process multiple exchanges in batches
+    int maxConcurrentExchangeQueries{5};       // Max concurrent exchange API calls
+    bool enablePositionCaching{true};          // Cache positions for performance
+    std::chrono::minutes cacheValidityPeriod{5}; // Cache validity period
+    
+    // Data integrity and validation
+    bool validateTimestamps{true};              // Validate position timestamps
+    std::chrono::minutes maxPositionAge{60}; // Max acceptable position age
+    bool enableDataQualityChecks{true};        // Perform data quality validation
+    bool requireConfirmationForCorrections{false}; // Require manual confirmation for auto-corrections
+    
+    // Configuration validation
+    bool isValid() const {
+        return reconciliationFrequency.count() > 0 &&
+               maxDiscrepancyPercent >= 0.0 &&
+               maxDiscrepancyPercent <= 100.0 &&
+               maxConsecutiveFailures > 0 &&
+               minimumPositionSize >= 0.0 &&
+               exchangeTimeoutSeconds.count() > 0 &&
+               maxDiscrepanciesPerRun > 0 &&
+               maxRetryAttempts >= 0 &&
+               criticalDiscrepancyThreshold >= maxDiscrepancyPercent &&
+               maxConcurrentExchangeQueries > 0 &&
+               cacheValidityPeriod.count() > 0 &&
+               maxPositionAge.count() > 0;
+    }
+    
+    // Helper method to get retry delay with exponential backoff
+    std::chrono::seconds getRetryDelay(int attemptNumber) const {
+        if (!enableProgressiveBackoff || attemptNumber <= 1) {
+            return retryDelaySeconds;
+        }
+        
+        // Exponential backoff: delay * (2^(attempt-1))
+        int multiplier = 1 << (attemptNumber - 1); // 2^(attempt-1)
+        return retryDelaySeconds * std::min(multiplier, 8); // Cap at 8x original delay
+    }
 };
 
 /**
@@ -133,10 +262,10 @@ struct RebalancingConfig {
  * Configuration structure for collateral management
  */
 struct CollateralConfig {
-    double targetFreeCollateralRatio;
-    bool enableEmergencyFunding;
-    std::vector<std::string> fundingSources;
-    double maxFundingAmount;
+    double targetFreeCollateralRatio = 0.2;
+    bool enableEmergencyFunding = false;
+    std::vector<std::string> fundingSources = {"main_wallet", "backup_wallet"};
+    double maxFundingAmount = 10000.0;
 
     // Minimum ratio of free collateral to total collateral (e.g., 0.2 for 20%)
     double minimumFreeCollateralRatio = 0.2;
@@ -157,7 +286,7 @@ struct CollateralConfig {
     double emergencyFundingBuffer = 0.1;
 
     // Source to use for emergency funding (e.g., "main_wallet")
-    std::string emergencyFundingSource;
+    std::string emergencyFundingSource = "main_wallet";
 
     // Margin rates per exchange and symbol (ExchangeId -> (symbol -> margin rate))
     std::map<core::ExchangeId, std::map<std::string, double>> exchangeMarginRates;
@@ -180,7 +309,7 @@ struct PortfolioConfig {
     bool autoExecuteRebalancing = false;
     bool enableRealTimeMetrics = true;
     bool enableAllocationTracking = true;
-    std::chrono::minutes metricsUpdateInterval = std::chrono::minutes(5);
+    std::chrono::minutes metricsUpdateInterval{5};
     double minimumPortfolioValue = 1000.0;
     std::string baseCurrency = "USD";
     std::vector<std::string> supportedAssets;
@@ -193,12 +322,12 @@ struct PortfolioConfig {
  * Configuration structure for risk logging
  */
 struct RiskLoggingConfig {
-    std::string logLevel;
-    std::string logDirectory;
-    bool enableDetailedLogs;
-    bool logToConsole;
-    bool logToFile;
-    std::chrono::days logRetentionPeriod;
+    std::string logLevel = "INFO";
+    std::string logDirectory = "/var/log/riskmanagement";
+    bool enableDetailedLogs = true;
+    bool logToConsole = true;
+    bool logToFile = true;
+    std::chrono::days logRetentionPeriod{30};
 };
 
 /**
@@ -240,7 +369,7 @@ public:
     // Getters
     const PositionLimitConfig& getPositionLimitConfig() const;
     const ExposureLimitConfig& getExposureLimitConfig() const;
-    const CircuitBreakerConfig& getCircuitBreakerConfig() const;
+    const CircuitBreakerConfig& getCircuitBreakerConfig() const;  // ONLY ONE - FIXED!
     const StopLossConfig& getStopLossConfig() const;
     const DrawdownConfig& getDrawdownConfig() const;
     const FatFingerConfig& getFatFingerConfig() const;
@@ -283,8 +412,23 @@ private:
     PortfolioConfig m_portfolioConfig;
     RiskLoggingConfig m_loggingConfig;
     
+    // Private helper methods for JSON loading
     bool loadJsonConfiguration(const std::string& jsonStr);
+    void loadPositionLimitConfig(const json& pl);
+    void loadExposureLimitConfig(const json& el);
+    void loadCircuitBreakerConfig(const json& cb);
+    void loadStopLossConfig(const json& sl);
+    void loadDrawdownConfig(const json& dd);
+    void loadFatFingerConfig(const json& ff);
+    void loadOrderValidationConfig(const json& ov);
+    void loadBalanceReconciliationConfig(const json& br);
+    void loadRebalancingConfig(const json& rb);
+    void loadCollateralConfig(const json& co);
+    void loadPortfolioConfig(const json& po);
+    void loadLoggingConfig(const json& lg);
+    
+    // Helper method for saving other configs
+    void saveOtherConfigs(json& j) const;
 };
 
-} // namespace risk
-} // namespace trading
+} // namespace trading::risk
