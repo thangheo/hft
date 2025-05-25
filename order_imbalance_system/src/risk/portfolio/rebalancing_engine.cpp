@@ -15,28 +15,28 @@
  
  namespace trading {
  namespace risk {
- 
+
  RebalancingEngine::RebalancingEngine(const RiskConfig& config, 
-                                    std::shared_ptr<PositionTracker> positionTracker,
-                                    std::shared_ptr<ExecutionInterface> executionInterface,
-                                    std::shared_ptr<DataInterface> dataInterface)
-     : m_positionTracker(positionTracker)
-     , m_executionInterface(executionInterface)
-     , m_dataInterface(dataInterface)
-     , m_config(config)
-     , m_rebalancingConfig(config.rebalancingConfig)
-     , m_rebalancingScheduled(false)
-     , m_autoRebalancingEnabled(config.rebalancingConfig.autoRebalancingEnabled) {
-     
-     // Initialize last rebalancing result
-     m_lastRebalancing.success = false;
-     m_lastRebalancing.timestamp = std::chrono::system_clock::now().time_since_epoch().count();
-     
-     // Initialize next scheduled rebalancing
-     m_nextScheduledRebalancing = std::chrono::system_clock::now() + 
-                                 std::chrono::minutes(m_rebalancingConfig.rebalancingIntervalMinutes);
- }
- 
+                                   std::shared_ptr<PositionTracker> positionTracker,
+                                   std::shared_ptr<ExecutionInterface> executionInterface,
+                                   std::shared_ptr<DataInterface> dataInterface)
+    : m_positionTracker(positionTracker)
+    , m_executionInterface(executionInterface)
+    , m_dataInterface(dataInterface)
+    , m_config(config)
+    , m_rebalancingConfig(config.getRebalancingConfig())
+    , m_rebalancingScheduled(false)
+    , m_autoRebalancingEnabled(config.getRebalancingConfig().autoRebalancingEnabled)
+{
+    // Initialize last rebalancing result
+    m_lastRebalancing.success = false;
+    m_lastRebalancing.timestamp = std::chrono::system_clock::now();
+    
+    // Initialize next scheduled rebalancing
+    m_nextScheduledRebalancing = std::chrono::system_clock::now() + 
+                                std::chrono::minutes(m_rebalancingConfig.rebalancingIntervalMinutes);
+}
+
  bool RebalancingEngine::initialize() {
      try {
          // Load target allocations from config
@@ -55,7 +55,7 @@
                              true,
                              {},
                              {"Rebalancing needed due to position change"},
-                             std::chrono::system_clock::now().time_since_epoch().count()
+                             std::chrono::system_clock::now() 
                          });
                      }
                  }
@@ -103,10 +103,10 @@
              double allocationPct = position.getNotionalValue() / totalPortfolioValue;
              
              // Store allocation
-             currentAllocations[exchangeId][tradingPair] = allocationPct;
+             currentAllocations[exchangeId.toString()][tradingPair.symbol] = allocationPct;
              
              // Check allocation against target
-             std::string allocationKey = exchangeId + ":" + tradingPair;
+             std::string allocationKey = exchangeId.toString() + ":" + tradingPair.symbol;
              auto targetIt = m_targetAllocations.find(allocationKey);
              
              if (targetIt != m_targetAllocations.end()) {
@@ -125,11 +125,13 @@
              size_t colonPos = key.find(':');
              if (colonPos == std::string::npos) continue;
              
-             ExchangeId exchangeId; = key.substr(0, colonPos);
+            // std::string exchangeIdStr = key.substr(0, colonPos);
+            std::string exchangeIdStr = key.substr(0, colonPos);
+            core::ExchangeId exchangeId = core::ExchangeId::fromString(exchangeIdStr);
              std::string tradingPair = key.substr(colonPos + 1);
              
              // Check if this allocation exists in current allocations
-            auto exchangeIt = currentAllocations.find(exchangeId.toString());
+            auto exchangeIt = currentAllocations.find(exchangeIdStr);
             if (exchangeIt == currentAllocations.end() || 
                 exchangeIt->second.find(tradingPair) == exchangeIt->second.end()) {
                 
@@ -178,17 +180,17 @@ std::vector<RebalancingOrder> RebalancingEngine::calculateRebalancingNeeds() con
             const auto& tradingPair = position.getTradingPair();
             
             // Extract base asset from trading pair (e.g., "BTC" from "BTC/USD")
-            std::string baseAsset = tradingPair.substr(0, tradingPair.find('/'));
+            std::string baseAsset = tradingPair.base;
             
             // Calculate notional value
             double notionalValue = position.getNotionalValue();
             
             // Store notional value and allocation
-            notionalValues[exchangeId][tradingPair] = notionalValue;
-            currentAllocations[exchangeId][tradingPair] = notionalValue / totalPortfolioValue;
+            notionalValues[exchangeId.toString()][tradingPair.symbol] = notionalValue;
+            currentAllocations[exchangeId.toString()][tradingPair.symbol] = notionalValue / totalPortfolioValue;
             
             // Track asset positions by exchange
-            exchangeAssetPositions[exchangeId][baseAsset] = position.getQuantity();
+            exchangeAssetPositions[exchangeId.toString()][baseAsset] = position.getQuantity();
         }
         
         // Calculate target notional values based on target allocations
@@ -200,23 +202,24 @@ std::vector<RebalancingOrder> RebalancingEngine::calculateRebalancingNeeds() con
             size_t colonPos = key.find(':');
             if (colonPos == std::string::npos) continue;
             
-            ExchangeId exchangeId; = key.substr(0, colonPos);
+            std::string exchangeIdStr = key.substr(0, colonPos);
+            core::ExchangeId exchangeId = core::ExchangeId::fromString(exchangeIdStr);
             std::string tradingPair = key.substr(colonPos + 1);
             
             // Calculate target notional value
             double targetNotionalValue = totalPortfolioValue * targetAlloc;
-            targetNotional[exchangeId][tradingPair] = targetNotionalValue;
+            targetNotional[exchangeId.toString()][tradingPair] = targetNotionalValue;
             
             // Get current notional value (or 0 if not present)
             double currentNotional = 0.0;
             if (notionalValues.find(exchangeId.toString()) != notionalValues.end() && 
-                notionalValues[exchangeId].find(tradingPair) != notionalValues[exchangeId].end()) {
-                currentNotional = notionalValues[exchangeId][tradingPair];
+                notionalValues[exchangeId.toString()].find(tradingPair) != notionalValues[exchangeId.toString()].end()) {
+                currentNotional = notionalValues[exchangeId.toString()][tradingPair];
             }
             
             // Calculate delta
             double delta = targetNotionalValue - currentNotional;
-            allocationDelta[exchangeId][tradingPair] = delta;
+            allocationDelta[exchangeId.toString()][tradingPair] = delta;
         }
         
         // Generate rebalancing orders
@@ -245,7 +248,7 @@ std::vector<RebalancingOrder> RebalancingEngine::calculateRebalancingNeeds() con
             }
             
             // Get market price
-            double price = getAssetPrice(tradingPair);
+            double price = getAssetPrice(TradingPair{tradingPair});
             if (price <= 0) {
                 continue; // Skip if price is not available
             }
@@ -257,32 +260,32 @@ std::vector<RebalancingOrder> RebalancingEngine::calculateRebalancingNeeds() con
             std::string baseAsset = tradingPair.substr(0, tradingPair.find('/'));
             
             // Determine direction
-            Direction direction = (delta > 0) ? Direction::Buy : Direction::Sell;
+            Direction direction = (delta > 0) ? Direction::BUY : Direction::SELL;
             
-            if (direction == Direction::Buy) {
+            if (direction == Direction::BUY) {
                 // We need to buy on this exchange
                 // Find another exchange where we can sell the same asset
                 std::vector<ExchangeId> otherExchanges = getPreferredExchanges();
                 
                 // Remove current exchange from list
                 otherExchanges.erase(
-                    std::remove(otherExchanges.begin(), otherExchanges.end(), exchangeId),
+                    std::remove(otherExchanges.begin(), otherExchanges.end(), core::ExchangeId::fromString(exchangeId)),
                     otherExchanges.end()
                 );
                 
                 // Find exchange with sufficient balance of this asset
                 for (const auto& sourceExchangeId : otherExchanges) {
-                    if (exchangeAssetPositions.find(sourceExchangeId) != exchangeAssetPositions.end() && 
-                        exchangeAssetPositions[sourceExchangeId].find(baseAsset) != exchangeAssetPositions[sourceExchangeId].end()) {
+                    if (exchangeAssetPositions.find(sourceExchangeId.toString()) != exchangeAssetPositions.end() && 
+                        exchangeAssetPositions[sourceExchangeId.toString()].find(baseAsset) != exchangeAssetPositions[sourceExchangeId.toString()].end()) {
                         
-                        double availableQuantity = exchangeAssetPositions[sourceExchangeId][baseAsset];
+                        double availableQuantity = exchangeAssetPositions[sourceExchangeId.toString()][baseAsset];
                         
                         if (availableQuantity >= quantity) {
                             // Create a rebalancing order to move from source to target
                             RebalancingOrder order;
                             order.sourceExchangeId = sourceExchangeId;
-                            order.targetExchangeId = exchangeId;
-                            order.tradingPair = tradingPair;
+                            order.targetExchangeId = core::ExchangeId::fromString(exchangeId);
+                            order.tradingPair = TradingPair{tradingPair};
                             order.quantity = quantity;
                             order.direction = direction;
                             order.estimatedPrice = price;
@@ -291,7 +294,7 @@ std::vector<RebalancingOrder> RebalancingEngine::calculateRebalancingNeeds() con
                             rebalancingOrders.push_back(order);
                             
                             // Update tracking of available quantity
-                            exchangeAssetPositions[sourceExchangeId][baseAsset] -= quantity;
+                            exchangeAssetPositions[sourceExchangeId.toString()][baseAsset] -= quantity;
                             
                             // Move to next delta
                             break;
@@ -308,9 +311,9 @@ std::vector<RebalancingOrder> RebalancingEngine::calculateRebalancingNeeds() con
                             if (otherTradingPair == tradingPair && otherDelta > 0) {
                                 // Create a rebalancing order
                                 RebalancingOrder order;
-                                order.sourceExchangeId = exchangeId;
-                                order.targetExchangeId = otherExchangeId;
-                                order.tradingPair = tradingPair;
+                                order.sourceExchangeId = core::ExchangeId::fromString(exchangeId);
+                                order.targetExchangeId = core::ExchangeId::fromString(otherExchangeId);
+                                order.tradingPair = TradingPair{tradingPair};
                                 order.quantity = quantity;
                                 order.direction = direction;
                                 order.estimatedPrice = price;
@@ -342,7 +345,7 @@ RebalancingResult RebalancingEngine::executeRebalancing(
     
     RebalancingResult result;
     result.success = true;
-    result.timestamp = std::chrono::system_clock::now().time_since_epoch().count();
+    result.timestamp = std::chrono::system_clock::now();
     
     try {
         // Get rebalancing orders if not provided
@@ -380,9 +383,9 @@ RebalancingResult RebalancingEngine::executeRebalancing(
                 } else {
                     result.success = false;
                     result.errors.push_back("Failed to execute order for " + 
-                                          order.tradingPair + " from " + 
-                                          order.sourceExchangeId + " to " + 
-                                          order.targetExchangeId);
+                                          order.tradingPair.symbol + " from " + 
+                                          order.sourceExchangeId.toString() + " to " + 
+                                          order.targetExchangeId.toString());
                 }
             }
         }
@@ -396,9 +399,9 @@ RebalancingResult RebalancingEngine::executeRebalancing(
                 } else {
                     result.success = false;
                     result.errors.push_back("Failed to execute order for " + 
-                                          rebalancingOrders[i].tradingPair + " from " + 
-                                          rebalancingOrders[i].sourceExchangeId + " to " + 
-                                          rebalancingOrders[i].targetExchangeId);
+                                          rebalancingOrders[i].tradingPair.symbol + " from " + 
+                                          rebalancingOrders[i].sourceExchangeId.toString() + " to " + 
+                                          rebalancingOrders[i].targetExchangeId.toString());
                 }
             }
         }
@@ -482,7 +485,7 @@ bool RebalancingEngine::scheduleRebalancingChecks() {
                         RebalancingResult notification;
                         notification.success = true;
                         notification.errors.push_back("Rebalancing needed but not auto-executed");
-                        notification.timestamp = std::chrono::system_clock::now().time_since_epoch().count();
+                        notification.timestamp = std::chrono::system_clock::now();
                         notifyRebalancingEvent(notification);
                     }
                 }
@@ -630,7 +633,11 @@ double RebalancingEngine::calculateExchangeAllocation(const ExchangeId& exchange
 std::vector<ExchangeId> RebalancingEngine::getPreferredExchanges() const {
     // Use configured preferred exchanges if available
     if (!m_rebalancingConfig.preferredExchanges.empty()) {
-        return m_rebalancingConfig.preferredExchanges;
+        std::vector<ExchangeId> convertedExchanges;
+        for (const auto& exchangeStr : m_rebalancingConfig.preferredExchanges) {
+            convertedExchanges.push_back(core::ExchangeId::fromString(exchangeStr));
+        }
+        return convertedExchanges;
     }
     
     // Otherwise, get all exchanges with positions
@@ -653,8 +660,9 @@ bool RebalancingEngine::executeRebalancingOrder(const RebalancingOrder& order) {
     try {
         // Log the rebalancing operation
         std::cout << "Executing rebalancing order: " << order.quantity << " " 
-                 << order.tradingPair << " from " << order.sourceExchangeId 
-                 << " to " << order.targetExchangeId << std::endl;
+                  << order.tradingPair.symbol << " from " 
+                  << order.sourceExchangeId.toString() << " to " 
+                  << order.targetExchangeId.toString() << std::endl;
         
         // In a real implementation, this would execute actual exchange transfers
         // and trades. For this implementation, we'll simulate success.
@@ -670,36 +678,38 @@ bool RebalancingEngine::executeRebalancingOrder(const RebalancingOrder& order) {
             // 1. Sell/withdraw on source exchange
             OrderRequest sourceOrder;
             sourceOrder.exchangeId = order.sourceExchangeId;
-            sourceOrder.tradingPair = order.tradingPair;
+            sourceOrder.tradingPair = order.tradingPair.symbol; // Use symbol for trading pair
             sourceOrder.quantity = order.quantity;
             sourceOrder.price = order.estimatedPrice;
-            sourceOrder.side = (order.direction == Direction::Buy) ? "sell" : "buy";
+            sourceOrder.side = (order.direction == Direction::BUY) ? Direction::SELL : Direction::BUY;
             sourceOrder.strategyId = "rebalancing";
             
             // 2. Buy/deposit on target exchange
             OrderRequest targetOrder;
             targetOrder.exchangeId = order.targetExchangeId;
-            targetOrder.tradingPair = order.tradingPair;
+            targetOrder.tradingPair = order.tradingPair.symbol; // Use symbol for trading pair
             targetOrder.quantity = order.quantity - transferFee; // Adjust for transfer fees
             targetOrder.price = order.estimatedPrice;
-            targetOrder.side = (order.direction == Direction::Buy) ? "buy" : "sell";
+            targetOrder.side = (order.direction == Direction::BUY) ? Direction::BUY : Direction::SELL;
             targetOrder.strategyId = "rebalancing";
             
             // Submit orders
-            bool sourceSuccess = m_executionInterface->submitOrder(sourceOrder).success;
+            auto sourceResponse = m_executionInterface->submitOrder(sourceOrder);
+            bool sourceSuccess = (sourceResponse == "success" || sourceResponse == "SUCCESS");
             
             if (!sourceSuccess) {
-                std::cerr << "Failed to execute source exchange order" << std::endl;
+                std::cerr << "Failed to execute source exchange order: " << sourceResponse << std::endl;
                 return false;
             }
             
             // Short delay to ensure sequencing
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
             
-            bool targetSuccess = m_executionInterface->submitOrder(targetOrder).success;
+            auto targetResponse = m_executionInterface->submitOrder(targetOrder);
+            bool targetSuccess = (targetResponse == "success" || targetResponse == "SUCCESS");
             
             if (!targetSuccess) {
-                std::cerr << "Failed to execute target exchange order" << std::endl;
+                std::cerr << "Failed to execute target exchange order: " << targetResponse << std::endl;
                 return false;
             }
             
@@ -725,7 +735,7 @@ double RebalancingEngine::getAssetPrice(const TradingPair& tradingPair) const {
     try {
         // Try to get from data interface first
         if (m_dataInterface) {
-            auto marketData = m_dataInterface->getMarketData(tradingPair);
+            auto marketData = m_dataInterface->getMarketData(tradingPair.symbol);
             if (marketData) {
                 return marketData->price;
             }
@@ -738,7 +748,7 @@ double RebalancingEngine::getAssetPrice(const TradingPair& tradingPair) const {
         }
         
         // If still not available, check for configured fixed prices
-        auto it = m_rebalancingConfig.fixedPrices.find(tradingPair);
+        auto it = m_rebalancingConfig.fixedPrices.find(tradingPair.symbol);
         if (it != m_rebalancingConfig.fixedPrices.end()) {
             return it->second;
         }
@@ -756,7 +766,7 @@ double RebalancingEngine::calculateTransferFees(const ExchangeId& sourceExchange
                                               double quantity) const {
     try {
         // Extract the base asset from the trading pair
-        std::string baseAsset = tradingPair.substr(0, tradingPair.find('/'));
+        std::string baseAsset = tradingPair.base;
         
         // Check for configured transfer fees
         double feeRate = m_rebalancingConfig.defaultTransferFeeRate;
@@ -768,7 +778,7 @@ double RebalancingEngine::calculateTransferFees(const ExchangeId& sourceExchange
         }
         
         // Check for exchange-specific fee
-        std::string exchangePair = sourceExchangeId + ":" + targetExchangeId;
+        std::string exchangePair = sourceExchangeId.toString() + ":" + targetExchangeId.toString();
         auto exchangeIt = m_rebalancingConfig.exchangeTransferFees.find(exchangePair);
         if (exchangeIt != m_rebalancingConfig.exchangeTransferFees.end()) {
             feeRate = exchangeIt->second;

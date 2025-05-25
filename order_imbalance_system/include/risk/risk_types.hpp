@@ -9,6 +9,7 @@
 
 #include "core/market_types.hpp"
 #include "core/direction.hpp"
+
 #include <string>
 #include <vector>
 #include <map>
@@ -46,6 +47,23 @@ using OrderSide = core::Direction;
 //     BUY,
 //     SELL
 // };
+
+/**
+ * Struct for trading pair (symbol)
+ */
+struct TradingPair {
+    std::string base;
+    std::string quote;
+    std::string symbol;
+    
+    bool operator==(const TradingPair& other) const {
+        return symbol == other.symbol;
+    }
+    
+    bool operator<(const TradingPair& other) const {
+        return symbol < other.symbol;
+    }
+};
 
 /**
  * Order request structure
@@ -146,23 +164,6 @@ struct RiskViolation {
 //         return id < other.id;
 //     }
 // };
-/**
- * Struct for trading pair (symbol)
- */
-struct TradingPair {
-    std::string base;
-    std::string quote;
-    std::string symbol;
-    
-    bool operator==(const TradingPair& other) const {
-        return symbol == other.symbol;
-    }
-    
-    bool operator<(const TradingPair& other) const {
-        return symbol < other.symbol;
-    }
-};
-
 /**
  * Struct for strategy identification
  */
