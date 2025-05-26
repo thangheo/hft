@@ -1,162 +1,396 @@
 /**
- * Interface for tracking performance against risk thresholds
- *
- * File: drawdown_monitor.hpp
- * Created: 2025-04-29
+ * @file risk/posttrade/drawdown_monitor.hpp
+ * @brief Enhanced drawdown monitoring with modern C++20 features
+ * 
+ * Tracks performance against risk thresholds at multiple levels with
+ * comprehensive monitoring, event handling, and thread-safe operations.
+ * 
+ * @author Trading System Team
+ * @date May 26, 2025
  */
+
 #pragma once
 
 #include "../risk_types.hpp"
-#include "../risk_events.hpp"
+#include "../risk_events.hpp" 
 #include "../risk_config.hpp"
+#include "strategy/types/performance_metrics.hpp"
+#include "core/time.hpp"
 
-#include <map>
-#include <unordered_map>
-#include <string>
-#include <mutex>
-#include <vector>
+#include <atomic>
+#include <chrono>
+#include <concepts>
 #include <deque>
-#include <memory>
 #include <functional>
+#include <map>
+#include <memory>
+#include <mutex>
+#include <optional>
+#include <ranges>
+#include <shared_mutex>
+#include <string>
+#include <thread>
+#include <unordered_map>
+#include <vector>
 
-namespace trading {
-namespace risk {
+namespace trading::risk {
 
 /**
- * Structure to hold high water mark information
+ * High water mark information with thread-safe access
  */
 struct HighWaterMark {
-    double value;
-    Timestamp timestamp;
+    std::atomic<double> value{0.0};
+    std::atomic<uint64_t> timestampNanos{0};
+    
+    // Convenience methods for timestamp handling
+    void setTimestamp(const core::Timestamp& timestamp) {
+        timestampNanos.store(timestamp.time_since_epoch().count());
+    }
+    
+    core::Timestamp getTimestamp() const {
+        return core::Timestamp(std::chrono::nanoseconds(timestampNanos.load()));
+    }
+    
+    // Atomic update both value and timestamp
+    void update(double newValue, const core::Timestamp& timestamp) {
+        value.store(newValue);
+        setTimestamp(timestamp);
+    }
 };
 
 /**
- * Structure to hold drawdown information
+ * Comprehensive drawdown information with performance metrics
  */
 struct DrawdownInfo {
-    double currentValue;
+    std::atomic<double> currentValue{0.0};
     HighWaterMark highWaterMark;
-    double drawdownPercent;
-    bool warningThresholdBreached;
-    bool criticalThresholdBreached;
-    Timestamp lastUpdated;
+    std::atomic<double> drawdownPercent{0.0};
+    std::atomic<double> maxDrawdownPercent{0.0};
+    std::atomic<bool> warningThresholdBreached{false};
+    std::atomic<bool> criticalThresholdBreached{false};
+    std::atomic<uint64_t> lastUpdatedNanos{0};
+    std::atomic<uint32_t> breachCount{0};
+    
+    // Performance tracking
+    std::atomic<double> averageDrawdown{0.0};
+    std::atomic<uint32_t> updateCount{0};
+    
+    // Convenience methods
+    void setLastUpdated(const core::Timestamp& timestamp) {
+        lastUpdatedNanos.store(timestamp.time_since_epoch().count());
+    }
+    
+    core::Timestamp getLastUpdated() const {
+        return core::Timestamp(std::chrono::nanoseconds(lastUpdatedNanos.load()));
+    }
+    
+    // Calculate running average of drawdowns
+    void updateAverageDrawdown(double newDrawdown) {
+        uint32_t count = updateCount.fetch_add(1) + 1;
+        double currentAvg = averageDrawdown.load();
+        averageDrawdown.store(currentAvg + (newDrawdown - currentAvg) / count);
+    }
 };
 
 /**
- * DrawdownMonitor tracks performance against risk thresholds.
- * It monitors drawdown at multiple levels and triggers risk responses when thresholds are breached.
+ * Enhanced drawdown configuration with additional monitoring parameters
+ */
+struct EnhancedDrawdownConfig {
+    // Threshold configurations
+    double portfolioWarningThreshold{0.05};     // 5% portfolio warning
+    double portfolioCriticalThreshold{0.10};    // 10% portfolio critical
+    double strategyWarningThreshold{0.08};      // 8% strategy warning
+    double strategyCriticalThreshold{0.15};     // 15% strategy critical
+    
+    // Time-based configurations
+    std::chrono::minutes lookbackPeriodMinutes{1440}; // 24 hours default
+    std::chrono::minutes historyRetentionMinutes{10080}; // 7 days
+    std::chrono::seconds updateIntervalSeconds{5};     // Update frequency
+    
+    // Risk management behaviors
+    bool enableAutoRiskReduction{true};
+    double riskReductionFactor{0.5};
+    bool enableEmergencyStop{true};
+    double emergencyStopThreshold{0.25};     // 25% emergency stop
+    
+    // Performance and monitoring
+    bool enableDetailedMetrics{true};
+    bool enableHistoricalTracking{true};
+    size_t maxHistorySize{10000};
+    bool enablePerformanceLogging{true};
+    
+    // Notification settings
+    bool enableRealTimeAlerts{true};
+    std::chrono::seconds alertCooldownSeconds{300}; // 5 minutes between alerts
+    
+    // Validation
+    [[nodiscard]] bool isValid() const noexcept {
+        return portfolioWarningThreshold > 0.0 &&
+               portfolioCriticalThreshold > portfolioWarningThreshold &&
+               strategyWarningThreshold > 0.0 &&
+               strategyCriticalThreshold > strategyWarningThreshold &&
+               lookbackPeriodMinutes.count() > 0 &&
+               updateIntervalSeconds.count() > 0 &&
+               riskReductionFactor > 0.0 && riskReductionFactor <= 1.0 &&
+               maxHistorySize > 0;
+    }
+};
+
+/**
+ * Historical value entry with metadata
+ */
+struct HistoricalValue {
+    core::Timestamp timestamp;
+    double value;
+    double drawdownAtTime;
+    std::string metadata;
+    
+    HistoricalValue(const core::Timestamp& ts, double val, double dd = 0.0, std::string meta = "")
+        : timestamp(ts), value(val), drawdownAtTime(dd), metadata(std::move(meta)) {}
+};
+
+/**
+ * Strategy performance tracker with comprehensive metrics
+ */
+struct StrategyPerformanceTracker {
+    std::string strategyId;
+    DrawdownInfo drawdownInfo;
+    std::deque<HistoricalValue> valueHistory;
+    strategy::PerformanceMetrics latestMetrics;
+    std::atomic<bool> isActive{true};
+    std::atomic<uint64_t> lastActivityNanos{0};
+    
+    explicit StrategyPerformanceTracker(std::string id) 
+        : strategyId(std::move(id)) {
+        setLastActivity(core::now());
+    }
+    
+    void setLastActivity(const core::Timestamp& timestamp) {
+        lastActivityNanos.store(timestamp.time_since_epoch().count());
+    }
+    
+    core::Timestamp getLastActivity() const {
+        return core::Timestamp(std::chrono::nanoseconds(lastActivityNanos.load()));
+    }
+};
+
+/**
+ * Event callback types for different scenarios
+ */
+using DrawdownEventCallback = std::function<void(const DrawdownEvent&)>;
+using EmergencyCallback = std::function<void(const std::string& strategyId, double drawdown)>;
+using MetricsUpdateCallback = std::function<void(const std::string& strategyId, const DrawdownInfo&)>;
+
+/**
+ * Modern C++20 drawdown monitor with enhanced features
  */
 class DrawdownMonitor {
 public:
     /**
-     * Constructor
-     * @param config Risk configuration containing drawdown monitoring settings
+     * Constructor with enhanced configuration
      */
     explicit DrawdownMonitor(const RiskConfig& config);
     
     /**
-     * Initialize the drawdown monitor
-     * @return true if initialization was successful, false otherwise
+     * Destructor ensures proper cleanup
      */
-    bool initialize();
+    ~DrawdownMonitor();
+    
+    // Disable copy operations, enable move
+    DrawdownMonitor(const DrawdownMonitor&) = delete;
+    DrawdownMonitor& operator=(const DrawdownMonitor&) = delete;
+    DrawdownMonitor(DrawdownMonitor&&) = default;
+    DrawdownMonitor& operator=(DrawdownMonitor&&) = default;
     
     /**
-     * Update performance metrics
-     * @param metrics New performance metrics
-     * @return Vector of drawdown events if thresholds are breached
+     * Initialize the monitor with validation
      */
-    std::vector<DrawdownEvent> updatePerformanceMetrics(const PerformanceMetrics& metrics);
+    [[nodiscard]] bool initialize();
     
     /**
-     * Update a specific strategy's performance value
-     * @param strategyId The strategy identifier
-     * @param value The current performance value
-     * @return Optional drawdown event if threshold is breached
+     * Shutdown the monitor gracefully
      */
-    std::optional<DrawdownEvent> updateStrategyValue(const StrategyId& strategyId, double value);
+    void shutdown();
     
     /**
-     * Update the overall portfolio value
-     * @param value The current portfolio value
-     * @return Optional drawdown event if threshold is breached
+     * Update performance metrics with comprehensive validation
      */
-    std::optional<DrawdownEvent> updatePortfolioValue(double value);
+    [[nodiscard]] std::vector<DrawdownEvent> updatePerformanceMetrics(
+        const strategy::PerformanceMetrics& portfolioMetrics,
+        const std::map<std::string, strategy::PerformanceMetrics>& strategyMetrics);
     
     /**
-     * Get the current drawdown information for a strategy
-     * @param strategyId The strategy identifier
-     * @return The drawdown information
+     * Update individual strategy value with validation
      */
-    DrawdownInfo getStrategyDrawdown(const StrategyId& strategyId) const;
+    [[nodiscard]] std::optional<DrawdownEvent> updateStrategyValue(
+        const std::string& strategyId, 
+        double value,
+        const std::optional<strategy::PerformanceMetrics>& metrics = std::nullopt);
     
     /**
-     * Get the current portfolio drawdown information
-     * @return The drawdown information
+     * Update portfolio value with comprehensive tracking
      */
-    DrawdownInfo getPortfolioDrawdown() const;
+    [[nodiscard]] std::optional<DrawdownEvent> updatePortfolioValue(
+        double value,
+        const std::optional<strategy::PerformanceMetrics>& metrics = std::nullopt);
     
     /**
-     * Update drawdown configuration
-     * @param drawdownConfig New drawdown configuration
-     * @return true if update was successful, false otherwise
+     * Get current drawdown information for strategy
      */
-    bool updateConfiguration(const DrawdownConfig& drawdownConfig);
+    // [[nodiscard]] std::optional<DrawdownInfo> getStrategyDrawdown(const std::string& strategyId) const;
+    [[nodiscard]] const DrawdownInfo* getStrategyDrawdown(const std::string& strategyId) const;
     
     /**
-     * Get the current drawdown configuration
-     * @return The current configuration
+     * Get portfolio drawdown information
      */
-    DrawdownConfig getConfiguration() const;
+    // [[nodiscard]] DrawdownInfo getPortfolioDrawdown() const;
+    [[nodiscard]] const DrawdownInfo& getPortfolioDrawdown() const;
     
     /**
-     * Register a callback for drawdown events
-     * @param callback The function to call when drawdown events occur
+     * Get comprehensive strategy performance data
      */
-    void registerDrawdownCallback(const std::function<void(const DrawdownEvent&)>& callback);
+    [[nodiscard]] std::optional<StrategyPerformanceTracker> getStrategyPerformance(
+        const std::string& strategyId) const;
     
     /**
-     * Reset high water mark for a strategy
-     * @param strategyId The strategy identifier
-     * @param value Optional new high water mark value (uses current value if not provided)
-     * @return true if reset was successful, false otherwise
+     * Update configuration with validation
      */
-    bool resetHighWaterMark(const StrategyId& strategyId, std::optional<double> value = std::nullopt);
+    [[nodiscard]] bool updateConfiguration(const EnhancedDrawdownConfig& config);
     
     /**
-     * Reset portfolio high water mark
-     * @param value Optional new high water mark value (uses current value if not provided)
-     * @return true if reset was successful, false otherwise
+     * Get current configuration
      */
-    bool resetPortfolioHighWaterMark(std::optional<double> value = std::nullopt);
-
+    [[nodiscard]] EnhancedDrawdownConfig getConfiguration() const;
+    
+    /**
+     * Register event callbacks with type safety
+     */
+    void registerDrawdownCallback(const DrawdownEventCallback& callback);
+    void registerEmergencyCallback(const EmergencyCallback& callback);
+    void registerMetricsCallback(const MetricsUpdateCallback& callback);
+    
+    /**
+     * Reset high water marks with validation
+     */
+    [[nodiscard]] bool resetStrategyHighWaterMark(const std::string& strategyId, 
+                                                  std::optional<double> value = std::nullopt);
+    [[nodiscard]] bool resetPortfolioHighWaterMark(std::optional<double> value = std::nullopt);
+    
+    /**
+     * Get comprehensive statistics
+     */
+    [[nodiscard]] std::map<std::string, double> getPerformanceStatistics() const;
+    
+    /**
+     * Get historical data for analysis
+     */
+    [[nodiscard]] std::vector<HistoricalValue> getStrategyHistory(
+        const std::string& strategyId,
+        const core::Timestamp& startTime = {},
+        const core::Timestamp& endTime = {}) const;
+    
+    [[nodiscard]] std::vector<HistoricalValue> getPortfolioHistory(
+        const core::Timestamp& startTime = {},
+        const core::Timestamp& endTime = {}) const;
+    
+    /**
+     * Health check and diagnostics
+     */
+    [[nodiscard]] bool isHealthy() const noexcept;
+    [[nodiscard]] std::map<std::string, std::string> getDiagnostics() const;
+    
+    /**
+     * Active strategy management
+     */
+    void activateStrategy(const std::string& strategyId);
+    void deactivateStrategy(const std::string& strategyId);
+    [[nodiscard]] std::vector<std::string> getActiveStrategies() const;
+    
 private:
-    RiskConfig m_config;
-    DrawdownConfig m_drawdownConfig;
+    // Configuration and state
+    mutable std::shared_mutex configMutex_;
+    EnhancedDrawdownConfig config_;
+    std::atomic<bool> isInitialized_{false};
+    std::atomic<bool> isShuttingDown_{false};
     
-    // Drawdown tracking
-    mutable std::mutex m_strategyDrawdownMutex;
-    std::unordered_map<std::string, DrawdownInfo> m_strategyDrawdowns;
+    // Portfolio tracking
+    mutable std::shared_mutex portfolioMutex_;
+    DrawdownInfo portfolioDrawdown_;
+    std::deque<HistoricalValue> portfolioHistory_;
     
-    mutable std::mutex m_portfolioDrawdownMutex;
-    DrawdownInfo m_portfolioDrawdown;
+    // Strategy tracking with efficient access
+    mutable std::shared_mutex strategyMutex_;
+    std::unordered_map<std::string, std::unique_ptr<StrategyPerformanceTracker>> strategyTrackers_;
     
-    // Historical values for lookback period
-    mutable std::mutex m_historyMutex;
-    std::unordered_map<std::string, std::deque<std::pair<Timestamp, double>>> m_strategyValueHistory;
-    std::deque<std::pair<Timestamp, double>> m_portfolioValueHistory;
+    // Event callbacks with thread safety
+    mutable std::mutex callbackMutex_;
+    std::vector<DrawdownEventCallback> drawdownCallbacks_;
+    std::vector<EmergencyCallback> emergencyCallbacks_;
+    std::vector<MetricsUpdateCallback> metricsCallbacks_;
     
-    // Callbacks
-    mutable std::mutex m_callbackMutex;
-    std::vector<std::function<void(const DrawdownEvent&)>> m_drawdownCallbacks;
+    // Background processing
+    std::unique_ptr<std::jthread> maintenanceThread_;
+    std::atomic<bool> maintenanceActive_{false};
     
-    // Helper methods
-    double calculateDrawdownPercent(double currentValue, double highWaterMark) const;
-    DrawdownEvent createDrawdownEvent(const StrategyId& strategyId, double drawdownPercent, 
-                                    double highWaterMark, double currentValue, Timestamp hwmTime, 
-                                    bool thresholdBreached);
-    void updateHighWaterMark(DrawdownInfo& drawdownInfo, double currentValue);
+    // Performance tracking
+    mutable std::atomic<uint64_t> totalUpdates_{0};
+    mutable std::atomic<uint64_t> totalEvents_{0};
+    std::atomic<uint64_t> lastMaintenanceNanos_{0};
+    
+    // Alert rate limiting
+    mutable std::mutex alertMutex_;
+    std::unordered_map<std::string, core::Timestamp> lastAlertTimes_;
+    
+    // Private methods
+    [[nodiscard]] double calculateDrawdownPercent(double currentValue, double highWaterMark) const noexcept;
+    
+    [[nodiscard]] DrawdownEvent createDrawdownEvent(
+        const std::string& strategyId,
+        double drawdownPercent,
+        double highWaterMark,
+        double currentValue,
+        const core::Timestamp& hwmTime,
+        bool isCritical) const;
+    
+    void updateHighWaterMark(DrawdownInfo& drawdownInfo, double currentValue, 
+                           const core::Timestamp& timestamp);
+    
+    void notifyCallbacks(const DrawdownEvent& event);
+    void notifyEmergencyCallbacks(const std::string& strategyId, double drawdown);
+    void notifyMetricsCallbacks(const std::string& strategyId, const DrawdownInfo& info);
+    
+    void performMaintenance();
     void pruneHistory();
+    void validateStrategies();
+    void updatePerformanceMetrics();
+    
+    [[nodiscard]] bool canSendAlert(const std::string& strategyId) const;
+    void recordAlert(const std::string& strategyId);
+    
+    [[nodiscard]] bool validateStrategyId(const std::string& strategyId) const noexcept;
+    [[nodiscard]] bool validateValue(double value) const noexcept;
+    
+    // Template for thread-safe operations
+    template<typename Func>
+    requires std::invocable<Func>
+    auto safeExecute(Func&& func) const noexcept -> decltype(func()) {
+        try {
+            return std::forward<Func>(func)();
+        } catch (...) {
+            // Log error in production
+            return {};
+        }
+    }
+    
+    // Range-based filtering for history
+    template<typename Container>
+    [[nodiscard]] auto filterByTimeRange(const Container& container,
+                                        const core::Timestamp& startTime,
+                                        const core::Timestamp& endTime) const {
+        return container | std::views::filter([startTime, endTime](const auto& item) {
+            return item.timestamp >= startTime && item.timestamp <= endTime;
+        });
+    }
 };
 
-} // namespace risk
-}
+} // namespace trading::risk

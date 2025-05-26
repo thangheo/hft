@@ -9,7 +9,9 @@
  */
 
  #pragma once
-
+#include <string>
+#include <vector>
+#include <core/market_types.hpp>
  namespace trading {
  namespace strategy {
  
@@ -36,7 +38,7 @@
       double beta;          // Beta (sensitivity to benchmark)
       double information_ratio; // Information ratio (excess return / tracking error)
      //timestamp
-     std::chrono::system_clock::time_point timestamp; // Timestamp of the metrics
+     core::Timestamp timestamp; // Timestamp of the metrics
      // Default constructor with zeroed metrics
      PerformanceMetrics()
          : pnl(0.0), sharpeRatio(0.0), maxDrawdown(0.0),
