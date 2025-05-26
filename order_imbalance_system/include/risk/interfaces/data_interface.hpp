@@ -33,7 +33,7 @@ public:
      * Virtual destructor
      */
     virtual ~DataInterface() = default;
-    
+
     /**
      * Initialize the data interface
      * 

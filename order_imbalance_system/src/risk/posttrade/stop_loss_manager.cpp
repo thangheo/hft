@@ -1,278 +1,335 @@
+/**
+ * @file stop_loss_manager.cpp
+ * @brief Implementation of modern C++20 Stop Loss Manager
+ * 
+ * @author Trading System Team
+ * @date May 26, 2025
+ */
+
 #include "risk/posttrade/stop_loss_manager.hpp"
 #include <algorithm>
-#include <cmath>
-#include <sstream>
+#include <format>
+#include <ranges>
+#include <optional>
+namespace trading::risk {
 
-namespace trading {
-namespace risk {
-
-StopLossManager::StopLossManager(const RiskConfig& config, 
-                                std::shared_ptr<PositionTracker> positionTracker,
-                                std::shared_ptr<DataInterface> dataInterface,
-                                std::shared_ptr<ExecutionInterface> executionInterface)
-    : m_positionTracker(positionTracker),
-      m_dataInterface(dataInterface),
-      m_executionInterface(executionInterface),
-      m_config(config),
-      m_stopLossConfig(config.stopLossConfig) {
+StopLossManager::StopLossManager(
+    const RiskConfig& config,
+    std::shared_ptr<PositionTracker> positionTracker,
+    std::shared_ptr<DataInterface> dataInterface,
+    std::shared_ptr<ExecutionInterface> executionInterface
+) : positionTracker_(std::move(positionTracker)),
+    dataInterface_(std::move(dataInterface)),
+    executionInterface_(std::move(executionInterface)) {
+    
+    // Extract enhanced config from main config
+    config_.enableDefaultStopLoss = config.getStopLossConfig().enableDefaultStopLoss;
+    config_.defaultStopLossPercent = config.getStopLossConfig().maxLossPercentage;
+    config_.useTrailingStopByDefault = config.getStopLossConfig().enableTrailingStop;
+    config_.defaultTrailingDistance = config.getStopLossConfig().trailingStopDistance;
+    config_.autoLiquidateOnTrigger = config.getStopLossConfig().forceLiquidation;
+    config_.liquidationTimeoutSeconds = config.getStopLossConfig().liquidationDelay;
 }
 
 bool StopLossManager::initialize() {
-    // Load initial positions
-    auto positions = m_positionTracker->getAllPositions();
-    
-    // Initialize stop losses based on default configuration
-    for (const auto& position : positions) {
-        const core::ExchangeId& exchangeId = position.exchangeId;
-        const std::string& tradingPair = position.tradingPair;
-        
-        // Skip zero positions
-        if (std::abs(position.quantity) < 1e-8) {
-            continue;
-        }
-        
-        // Check if we should auto-create stop losses based on configuration
-        if (m_stopLossConfig.enableDefaultStopLoss) {
-            double stopPrice = 0.0;
-            
-            // Calculate stop price based on position direction
-            if (position.quantity > 0) { // Long position
-                stopPrice = position.averageEntryPrice * (1.0 - m_stopLossConfig.defaultStopLossPercent);
-            } else { // Short position
-                stopPrice = position.averageEntryPrice * (1.0 + m_stopLossConfig.defaultStopLossPercent);
-            }
-            
-            // Set the stop loss
-            setStopLoss(exchangeId, tradingPair, stopPrice, 
-                      m_stopLossConfig.useTrailingStopByDefault,
-                      m_stopLossConfig.defaultTrailingDistance);
-        }
+    if (!positionTracker_ || !dataInterface_ || !executionInterface_) {
+        return false;
     }
     
-    return true;
+    if (!config_.isValid()) {
+        return false;
+    }
+    
+    // Initialize stop losses for existing positions
+    try {
+        auto positions = positionTracker_->getAllPositions();
+        
+        for (const auto& position : positions) {
+            if (std::abs(position.getQuantity()) < 1e-8) {
+                continue; // Skip zero positions
+            }
+            
+            if (config_.enableDefaultStopLoss && shouldCreateDefaultStopLoss(
+                position.getExchangeId(), 
+                position.getTradingPair().symbol,
+                position.getQuantity())) {
+                
+                auto stopPrice = calculateDefaultStopPrice(
+                    position.getAverageEntryPrice(),
+                    position.getQuantity()
+                );
+                
+                setStopLoss(
+                    position.getExchangeId(),
+                    position.getTradingPair().symbol,
+                    StopPrice(stopPrice),
+                    config_.useTrailingStopByDefault,
+                    config_.useTrailingStopByDefault ? 
+                        std::optional(TrailingDistance(config_.defaultTrailingDistance)) : 
+                        std::nullopt
+                );
+            }
+        }
+        
+        return true;
+    } catch (...) {
+        return false;
+    }
 }
 
-void StopLossManager::processExecutionReport(const ExecutionReport& executionReport) {
-    // When new trades occur, we may need to set or adjust stop losses
-    const core::ExchangeId& exchangeId = executionReport.exchangeId;
-    const std::string& tradingPair = executionReport.tradingPair;
+void StopLossManager::processExecutionReport(const execution::models::ExecutionReport& executionReport) {
+    const auto& exchangeId = executionReport.exchangeId();
+    const auto& tradingPair = executionReport.symbol();
     
-    // Check if position has been closed
-    if (std::abs(executionReport.remainingQuantity) < 1e-8) {
-        // Position closed, remove any stop loss
+    // Check if position was closed
+    if (std::abs(executionReport.remainingQuantity()) < 1e-8) {
         removeStopLoss(exchangeId, tradingPair);
         return;
     }
     
-    // Fetch the current position after this execution
-    auto position = m_positionTracker->getPosition(exchangeId, tradingPair);
+    // Get current position
+    auto position = positionTracker_->getPosition(exchangeId, TradingPair(tradingPair));
     if (!position) {
-        // No position found, nothing to do
         return;
     }
     
-    // Get current stop loss if it exists
-    auto stopLossOpt = getStopLoss(exchangeId, tradingPair);
+    const std::string positionKey = createPositionKey(exchangeId, tradingPair);
     
-    // If no stop loss exists and auto-create is enabled, create one
-    if (!stopLossOpt && m_stopLossConfig.enableDefaultStopLoss) {
-        double stopPrice = 0.0;
+    std::unique_lock lock(stopLossMutex_);
+    auto it = stopLosses_.find(positionKey);
+    
+    if (it == stopLosses_.end() && config_.enableDefaultStopLoss) {
+        // Create new stop loss
+        lock.unlock();
         
-        // Calculate stop price based on position direction
-        if (position->quantity > 0) { // Long position
-            stopPrice = position->averageEntryPrice * (1.0 - m_stopLossConfig.defaultStopLossPercent);
-        } else { // Short position
-            stopPrice = position->averageEntryPrice * (1.0 + m_stopLossConfig.defaultStopLossPercent);
+        auto stopPrice = calculateDefaultStopPrice(
+            position->getAverageEntryPrice(),
+            position->getQuantity()
+        );
+        
+        setStopLoss(
+            exchangeId,
+            tradingPair,
+            StopPrice(stopPrice),
+            config_.useTrailingStopByDefault,
+            config_.useTrailingStopByDefault ? 
+                std::optional(TrailingDistance(config_.defaultTrailingDistance)) : 
+                std::nullopt
+        );
+    } else if (it != stopLosses_.end()) {
+        // Update existing stop loss if position direction changed
+        auto& stopLoss = *it->second;
+        double currentPrice = position->getCurrentPrice();
+        
+        if (currentPrice > 0.0) {
+            stopLoss.updateTrailingStop(currentPrice, position->getQuantity() > 0);
         }
-        
-        // Set the stop loss
-        setStopLoss(exchangeId, tradingPair, stopPrice, 
-                  m_stopLossConfig.useTrailingStopByDefault,
-                  m_stopLossConfig.defaultTrailingDistance);
-    }
-    // If stop loss exists and position direction changed, adjust stop loss
-    else if (stopLossOpt && 
-            ((position->quantity > 0 && stopLossOpt->stopPrice > position->averageEntryPrice) ||
-             (position->quantity < 0 && stopLossOpt->stopPrice < position->averageEntryPrice))) {
-        
-        double stopPrice = 0.0;
-        
-        // Calculate stop price based on position direction
-        if (position->quantity > 0) { // Long position
-            stopPrice = position->averageEntryPrice * (1.0 - m_stopLossConfig.defaultStopLossPercent);
-        } else { // Short position
-            stopPrice = position->averageEntryPrice * (1.0 + m_stopLossConfig.defaultStopLossPercent);
-        }
-        
-        // Update the stop loss
-        setStopLoss(exchangeId, tradingPair, stopPrice, 
-                  stopLossOpt->isTrailing,
-                  stopLossOpt->trailingDistance);
     }
 }
 
-void StopLossManager::updateMarketData(const MarketData& marketData) {
-    // Update our last price cache
+void StopLossManager::updateMarketData(const core::MarketData& marketData) {
+    // Update price cache
     {
-        std::lock_guard<std::mutex> lock(m_marketDataMutex);
-        m_lastPrices[marketData.symbol] = marketData.lastPrice;
+        std::unique_lock lock(marketDataMutex_);
+        priceCache_[marketData.tradingPair] = marketData.lastTradePrice;
     }
     
-    // Update trailing stops based on new prices
-    updateTrailingStops(marketData.symbol, marketData.lastPrice);
+    // Update trailing stops
+    updateTrailingStops(marketData.tradingPair, marketData.lastTradePrice);
 }
 
-bool StopLossManager::setStopLoss(const ExchangeId& exchangeId, 
-                                const TradingPair& tradingPair, 
-                                double stopPrice, 
-                                bool isTrailing,
-                                double trailingDistance) {
-    // Validate inputs
-    if (stopPrice <= 0 || (isTrailing && trailingDistance <= 0)) {
+bool StopLossManager::setStopLoss(
+    const core::ExchangeId& exchangeId,
+    const std::string& tradingPair,
+    StopPrice stopPrice,
+    bool isTrailing,
+    std::optional<TrailingDistance> trailingDistance) {
+    
+    if (!validateStopLossParameters(stopPrice, isTrailing, trailingDistance)) {
         return false;
     }
     
-    // Get current position
-    auto position = m_positionTracker->getPosition(exchangeId, tradingPair);
-    if (!position || std::abs(position->quantity) < 1e-8) {
-        // Cannot set stop loss for non-existent or zero position
+    // Get current position to validate
+    auto position = positionTracker_->getPosition(exchangeId, TradingPair(tradingPair));
+    if (!position || std::abs(position->getQuantity()) < 1e-8) {
         return false;
     }
     
     // Get current price
-    double currentPrice = 0.0;
-    {
-        std::lock_guard<std::mutex> lock(m_marketDataMutex);
-        auto it = m_lastPrices.find(tradingPair);
-        if (it != m_lastPrices.end()) {
-            currentPrice = it->second;
-        } else {
-            // Try to fetch current price from data interface
-            auto priceOpt = m_dataInterface->getLastPrice(exchangeId, tradingPair);
-            if (priceOpt) {
-                currentPrice = *priceOpt;
-                m_lastPrices[tradingPair] = currentPrice;
-            } else {
-                // Cannot proceed without price information
-                return false;
-            }
+    auto currentPriceOpt = getCurrentPrice(tradingPair);
+    if (!currentPriceOpt) {
+        auto marketData = dataInterface_->getMarketData(tradingPair, exchangeId.toString());
+        if (marketData) {
+            currentPriceOpt = marketData->lastTradePrice;
+        } 
+        if (!currentPriceOpt) {
+            return false;
         }
     }
     
-    // Create stop loss info
-    StopLossInfo stopLossInfo;
-    stopLossInfo.stopPrice = stopPrice;
-    stopLossInfo.isTrailing = isTrailing;
-    stopLossInfo.trailingDistance = trailingDistance;
-    stopLossInfo.active = true;
-    stopLossInfo.lastUpdated = std::chrono::system_clock::now();
+    double currentPrice = *currentPriceOpt;
+    const std::string positionKey = createPositionKey(exchangeId, tradingPair);
     
-    // For trailing stops, set highest/lowest price
+    // Create stop loss info
+    auto stopLossInfo = std::make_unique<StopLossInfo>();
+    stopLossInfo->stopPrice.store(stopPrice.value);
+    stopLossInfo->isTrailing.store(isTrailing);
+    stopLossInfo->trailingDistance.store(trailingDistance ? trailingDistance->percentage : 0.0);
+    stopLossInfo->active.store(true);
+    stopLossInfo->setLastUpdated(core::now());
+    
     if (isTrailing) {
-        if (position->quantity > 0) { // Long position
-            stopLossInfo.highestPrice = currentPrice;
-            stopLossInfo.lowestPrice = 0;
-        } else { // Short position
-            stopLossInfo.lowestPrice = currentPrice;
-            stopLossInfo.highestPrice = 0;
+        if (position->getQuantity() > 0) {
+            stopLossInfo->highestPrice.store(currentPrice);
+            stopLossInfo->lowestPrice.store(0.0);
+        } else {
+            stopLossInfo->lowestPrice.store(currentPrice);
+            stopLossInfo->highestPrice.store(0.0);
         }
     }
     
     // Store the stop loss
     {
-        std::lock_guard<std::mutex> lock(m_stopLossMutex);
-        m_stopLosses[{exchangeId, tradingPair}] = stopLossInfo;
+        std::unique_lock lock(stopLossMutex_);
+        stopLosses_[positionKey] = std::move(stopLossInfo);
     }
     
     return true;
 }
 
-bool StopLossManager::removeStopLoss(const ExchangeId& exchangeId, const TradingPair& tradingPair) {
-    std::lock_guard<std::mutex> lock(m_stopLossMutex);
-    return m_stopLosses.erase({exchangeId, tradingPair}) > 0;
-}
-
-std::optional<StopLossInfo> StopLossManager::getStopLoss(const ExchangeId& exchangeId, const TradingPair& tradingPair) const {
-    std::lock_guard<std::mutex> lock(m_stopLossMutex);
-    auto it = m_stopLosses.find({exchangeId, tradingPair});
-    if (it != m_stopLosses.end()) {
-        return it->second;
+bool StopLossManager::removeStopLoss(
+    const core::ExchangeId& exchangeId, 
+    const std::string& tradingPair) {
+    
+    const std::string positionKey = createPositionKey(exchangeId, tradingPair);
+    
+    std::unique_lock lock(stopLossMutex_);
+    return stopLosses_.erase(positionKey) > 0;
+} 
+// Update your method signature and implementation
+std::optional<StopLossData> StopLossManager::getStopLoss(
+    const core::ExchangeId& exchangeId, 
+    const std::string& tradingPair) const {
+    
+    const std::string positionKey = createPositionKey(exchangeId, tradingPair);
+    
+    std::shared_lock lock(stopLossMutex_);
+    auto it = stopLosses_.find(positionKey);
+    
+    if (it != stopLosses_.end() && it->second) {
+        // Create a non-atomic copy
+        StopLossData data;
+        data.stopPrice = it->second->stopPrice.load();
+        data.isTrailing = it->second->isTrailing.load();
+        data.trailingDistance = it->second->trailingDistance.load();
+        data.active = it->second->active.load();
+        data.highestPrice = it->second->highestPrice.load();
+        data.lowestPrice = it->second->lowestPrice.load();
+        data.adjustmentCount = it->second->adjustmentCount.load();
+        data.lastUpdated = it->second->getLastUpdated();
+        
+        return data;  // Automatic conversion to std::optional
     }
+    
     return std::nullopt;
 }
-
-std::vector<StopLossEvent> StopLossManager::checkStopLosses() {
-    std::vector<StopLossEvent> triggeredEvents;
+std::vector<EnhancedStopLossEvent> StopLossManager::checkStopLosses() {
+    totalChecks_.fetch_add(1);
     
-    // Make a copy of stop losses to avoid holding lock during processing
-    std::map<std::pair<std::string, std::string>, StopLossInfo> stopLossesCopy;
+    std::vector<EnhancedStopLossEvent> triggeredEvents;
+    
+    // Get all active stop losses
+    std::map<std::string, std::unique_ptr<StopLossInfo>> activeStopLosses;
     {
-        std::lock_guard<std::mutex> lock(m_stopLossMutex);
-        stopLossesCopy = m_stopLosses;
+        std::shared_lock lock(stopLossMutex_);
+        for (const auto& [key, stopLoss] : stopLosses_) {
+            if (stopLoss && stopLoss->active.load()) {
+                // Create a deep copy for processing
+                auto copy = std::make_unique<StopLossInfo>();
+                copy->stopPrice.store(stopLoss->stopPrice.load());
+                copy->isTrailing.store(stopLoss->isTrailing.load());
+                copy->trailingDistance.store(stopLoss->trailingDistance.load());
+                copy->active.store(stopLoss->active.load());
+                copy->highestPrice.store(stopLoss->highestPrice.load());
+                copy->lowestPrice.store(stopLoss->lowestPrice.load());
+                copy->adjustmentCount.store(stopLoss->adjustmentCount.load());
+                copy->setLastUpdated(stopLoss->getLastUpdated());
+                
+                activeStopLosses[key] = std::move(copy);
+            }
+        }
     }
     
-    // Check each stop loss against current prices
-    for (const auto& [key, stopLoss] : stopLossesCopy) {
-        const auto& [exchangeId, tradingPair] = key;
+    // Process each stop loss
+    for (const auto& [positionKey, stopLoss] : activeStopLosses) {
+        // Parse position key to extract exchange and trading pair
+        auto delimiterPos = positionKey.find(':');
+        if (delimiterPos == std::string::npos) continue;
         
-        // Skip inactive stop losses
-        if (!stopLoss.active) {
-            continue;
-        }
+        core::ExchangeId exchangeId = core::ExchangeId::fromString(positionKey.substr(0, delimiterPos));
+        std::string tradingPair = positionKey.substr(delimiterPos + 1);
         
         // Get current price
-        double currentPrice = 0.0;
-        {
-            std::lock_guard<std::mutex> lock(m_marketDataMutex);
-            auto it = m_lastPrices.find(tradingPair);
-            if (it != m_lastPrices.end()) {
-                currentPrice = it->second;
-            } else {
-                // Try to fetch current price from data interface
-                auto priceOpt = m_dataInterface->getLastPrice(exchangeId, tradingPair);
-                if (priceOpt) {
-                    currentPrice = *priceOpt;
-                    m_lastPrices[tradingPair] = currentPrice;
-                } else {
-                    // Skip if no price information
-                    continue;
-                }
+        auto currentPriceOpt = getCurrentPrice(tradingPair);
+        if (!currentPriceOpt) {
+            auto marketData = dataInterface_->getMarketData(tradingPair, exchangeId.toString());
+            if (marketData) {
+                currentPriceOpt = marketData->lastTradePrice;
+            } 
+            if (!currentPriceOpt) {
+                continue; // Skip if no price available
             }
         }
         
+        if (!currentPriceOpt) {
+            continue; // Skip if no price available
+        }
+        
+        double currentPrice = *currentPriceOpt;
+        
         // Get current position
-        auto position = m_positionTracker->getPosition(exchangeId, tradingPair);
-        if (!position || std::abs(position->quantity) < 1e-8) {
-            // Position doesn't exist or is zero, remove stop loss
+        auto position = positionTracker_->getPosition(exchangeId, TradingPair(tradingPair));
+        if (!position || std::abs(position->getQuantity()) < 1e-8) {
+            // Position doesn't exist, remove stop loss
             removeStopLoss(exchangeId, tradingPair);
             continue;
         }
         
         // Check if stop loss is triggered
-        if (isStopLossTriggered(stopLoss, currentPrice, position->quantity)) {
-            // Create stop loss event
-            double lossPercentage = std::abs((currentPrice - position->averageEntryPrice) / position->averageEntryPrice);
-            auto event = createStopLossEvent(exchangeId, tradingPair, position->quantity, 
-                                           position->averageEntryPrice, currentPrice, lossPercentage);
+        if (isStopLossTriggered(*stopLoss, currentPrice, position->getQuantity())) {
+            totalTriggers_.fetch_add(1);
             
-            // Add to triggered events
+            // Create stop loss event
+            auto event = createStopLossEvent(
+                exchangeId, tradingPair, *stopLoss,
+                position->getQuantity(), position->getAverageEntryPrice(), currentPrice
+            );
+            
+            // Execute liquidation if enabled
+            if (config_.autoLiquidateOnTrigger) {
+                auto liquidationOrderId = liquidatePosition(exchangeId, tradingPair);
+                if (liquidationOrderId) {
+                    event.liquidationInitiated = true;
+                    event.liquidationOrderId = *liquidationOrderId;
+                    successfulLiquidations_.fetch_add(1);
+                } else {
+                    event.liquidationInitiated = false;
+                }
+                totalLiquidations_.fetch_add(1);
+            }
+            
             triggeredEvents.push_back(event);
             
-            // Execute liquidation if auto-liquidation is enabled
-            if (m_stopLossConfig.autoLiquidateOnTrigger) {
-                liquidatePosition(exchangeId, tradingPair);
-            }
-            
             // Notify callbacks
-            for (const auto& callback : m_stopLossCallbacks) {
-                callback(event);
-            }
+            notifyCallbacks(event);
             
-            // Deactivate the stop loss
-            std::lock_guard<std::mutex> lock(m_stopLossMutex);
-            auto it = m_stopLosses.find({exchangeId, tradingPair});
-            if (it != m_stopLosses.end()) {
-                it->second.active = false;
+            // Deactivate stop loss
+            {
+                std::unique_lock lock(stopLossMutex_);
+                auto it = stopLosses_.find(positionKey);
+                if (it != stopLosses_.end() && it->second) {
+                    it->second->active.store(false);
+                }
             }
         }
     }
@@ -280,103 +337,301 @@ std::vector<StopLossEvent> StopLossManager::checkStopLosses() {
     return triggeredEvents;
 }
 
-bool StopLossManager::liquidatePosition(const ExchangeId& exchangeId, const TradingPair& tradingPair) {
-    // Get current position
-    auto position = m_positionTracker->getPosition(exchangeId, tradingPair);
-    if (!position || std::abs(position->quantity) < 1e-8) {
+std::optional<std::string> StopLossManager::liquidatePosition(
+    const core::ExchangeId& exchangeId, 
+    const std::string& tradingPair) {
+    
+    auto position = positionTracker_->getPosition(exchangeId, TradingPair(tradingPair));
+    if (!position || std::abs(position->getQuantity()) < 1e-8) {
+        return std::nullopt;
+    }
+    
+    // Create liquidation order
+    OrderRequest liquidationOrder;
+    liquidationOrder.exchangeId = exchangeId;
+    liquidationOrder.tradingPair = tradingPair;
+    liquidationOrder.type = "MARKET";
+    liquidationOrder.side = position->getQuantity() > 0 ? core::Direction::SELL : core::Direction::BUY;
+    liquidationOrder.quantity = std::abs(position->getQuantity());
+    liquidationOrder.timeInForce = "IOC";
+    liquidationOrder.timestamp = core::now();
+    
+    // Generate unique client order ID
+    liquidationOrder.clientOrderId = std::format("STOPLOSS_{}_{}_{}",
+        exchangeId.toString(),
+        tradingPair,
+        std::chrono::duration_cast<std::chrono::nanoseconds>(
+            core::now().time_since_epoch()).count()
+    );
+    
+    // Submit order
+    try {
+        std::string orderId = executionInterface_->submitOrder(liquidationOrder);
+        return orderId.empty() ? std::nullopt : std::optional(orderId);
+    } catch (...) {
+        return std::nullopt;
+    }
+}
+
+bool StopLossManager::updateConfiguration(const EnhancedStopLossConfig& config) {
+    if (!config.isValid()) {
         return false;
     }
     
-    // Create a market order to liquidate the position
-    Order liquidationOrder;
-    liquidationOrder.exchangeId = exchangeId;
-    liquidationOrder.tradingPair = tradingPair;
-    liquidationOrder.orderType = "MARKET";
-    liquidationOrder.side = position->quantity > 0 ? "SELL" : "BUY";
-    liquidationOrder.quantity = std::abs(position->quantity);
-    liquidationOrder.timeInForce = "IOC";
-    liquidationOrder.clientOrderId = "STOPLOSS_" + exchangeId + "_" + tradingPair + "_" + 
-                                   std::to_string(std::chrono::system_clock::now().time_since_epoch().count());
-    
-    // Submit the order via execution interface
-    return m_executionInterface->submitOrder(liquidationOrder);
-}
-
-bool StopLossManager::updateConfiguration(const StopLossConfig& stopLossConfig) {
-    m_stopLossConfig = stopLossConfig;
+    std::unique_lock lock(configMutex_);
+    config_ = config;
     return true;
 }
 
-StopLossConfig StopLossManager::getConfiguration() const {
-    return m_stopLossConfig;
+EnhancedStopLossConfig StopLossManager::getConfiguration() const {
+    std::shared_lock lock(configMutex_);
+    return config_;
 }
 
-void StopLossManager::registerStopLossCallback(const std::function<void(const StopLossEvent&)>& callback) {
-    std::lock_guard<std::mutex> lock(m_callbackMutex);
-    m_stopLossCallbacks.push_back(callback);
+void StopLossManager::registerStopLossCallback(const StopLossEventCallback& callback) {
+    std::unique_lock lock(callbackMutex_);
+    callbacks_.push_back(callback);
 }
 
-void StopLossManager::updateTrailingStops(const std::string& symbol, double price) {
-    std::lock_guard<std::mutex> lock(m_stopLossMutex);
+std::map<std::string, double> StopLossManager::getStatistics() const {
+    return {
+        {"total_checks", static_cast<double>(totalChecks_.load())},
+        {"total_triggers", static_cast<double>(totalTriggers_.load())},
+        {"total_liquidations", static_cast<double>(totalLiquidations_.load())},
+        {"successful_liquidations", static_cast<double>(successfulLiquidations_.load())},
+        {"success_rate", totalLiquidations_.load() > 0 ? 
+            static_cast<double>(successfulLiquidations_.load()) / totalLiquidations_.load() : 0.0},
+        {"active_stop_losses", static_cast<double>(stopLosses_.size())}
+    };
+}
+std::map<StopLossManager::PositionKey, StopLossData> StopLossManager::getAllStopLosses() const {
+    std::map<PositionKey, StopLossData> result;
     
-    // Update all trailing stops for this symbol
-    for (auto& [key, stopLoss] : m_stopLosses) {
-        const auto& [exchangeId, tradingPair] = key;
+    std::shared_lock lock(stopLossMutex_);
+    for (const auto& [positionKey, stopLoss] : stopLosses_) {
+        if (!stopLoss) continue;
         
-        // Skip if not for this symbol or not a trailing stop
-        if (tradingPair != symbol || !stopLoss.isTrailing || !stopLoss.active) {
-            continue;
-        }
+        // Parse position key
+        auto delimiterPos = positionKey.find(':');
+        if (delimiterPos == std::string::npos) continue;
         
-        // Get position direction
-        auto position = m_positionTracker->getPosition(exchangeId, tradingPair);
-        if (!position || std::abs(position->quantity) < 1e-8) {
-            continue;
-        }
+        core::ExchangeId exchangeId = core::ExchangeId::fromString(positionKey.substr(0, delimiterPos));
+        std::string tradingPair = positionKey.substr(delimiterPos + 1);
         
-        if (position->quantity > 0) { // Long position
-            // Update highest price if new price is higher
-            if (price > stopLoss.highestPrice) {
-                stopLoss.highestPrice = price;
-                // Adjust stop loss price
-                stopLoss.stopPrice = price * (1.0 - stopLoss.trailingDistance);
-                stopLoss.lastUpdated = std::chrono::system_clock::now();
-            }
-        } else { // Short position
-            // Update lowest price if new price is lower
-            if (price < stopLoss.lowestPrice || stopLoss.lowestPrice == 0) {
-                stopLoss.lowestPrice = price;
-                // Adjust stop loss price
-                stopLoss.stopPrice = price * (1.0 + stopLoss.trailingDistance);
-                stopLoss.lastUpdated = std::chrono::system_clock::now();
-            }
-        }
+        // Create non-atomic copy of stop loss data
+        StopLossData data;
+        data.stopPrice = stopLoss->stopPrice.load();
+        data.isTrailing = stopLoss->isTrailing.load();
+        data.trailingDistance = stopLoss->trailingDistance.load();
+        data.active = stopLoss->active.load();
+        data.highestPrice = stopLoss->highestPrice.load();
+        data.lowestPrice = stopLoss->lowestPrice.load();
+        data.adjustmentCount = stopLoss->adjustmentCount.load();
+        data.lastUpdated = stopLoss->getLastUpdated();
+        
+        result[{exchangeId, tradingPair}] = data;
+    }
+    
+    return result;
+}
+// std::map<StopLossManager::PositionKey, StopLossInfo> StopLossManager::getAllStopLosses() const {
+//     std::map<PositionKey, StopLossInfo> result;
+    
+//     std::shared_lock lock(stopLossMutex_);
+//     for (const auto& [positionKey, stopLoss] : stopLosses_) {
+//         if (!stopLoss) continue;
+        
+//         // Parse position key
+//         auto delimiterPos = positionKey.find(':');
+//         if (delimiterPos == std::string::npos) continue;
+        
+//         core::ExchangeId exchangeId = core::ExchangeId::fromString(positionKey.substr(0, delimiterPos));
+//         std::string tradingPair = positionKey.substr(delimiterPos + 1);
+        
+//         // Create copy of stop loss info
+//         StopLossInfo copy;
+//         copy.stopPrice.store(stopLoss->stopPrice.load());
+//         copy.isTrailing.store(stopLoss->isTrailing.load());
+//         copy.trailingDistance.store(stopLoss->trailingDistance.load());
+//         copy.active.store(stopLoss->active.load());
+//         copy.highestPrice.store(stopLoss->highestPrice.load());
+//         copy.lowestPrice.store(stopLoss->lowestPrice.load());
+//         copy.adjustmentCount.store(stopLoss->adjustmentCount.load());
+//         copy.setLastUpdated(stopLoss->getLastUpdated());
+        
+//         result[{exchangeId, tradingPair}] = std::move(copy);
+//     }
+    
+//     return result;
+// }
+
+void StopLossManager::recalculateTrailingStops() {
+    std::shared_lock priceLock(marketDataMutex_);
+    auto pricesCopy = priceCache_;
+    priceLock.unlock();
+    
+    for (const auto& [symbol, price] : pricesCopy) {
+        updateTrailingStops(symbol, price);
     }
 }
 
-bool StopLossManager::isStopLossTriggered(const StopLossInfo& stopLoss, double currentPrice, double positionSize) {
-    if (positionSize > 0) { // Long position
-        // Stop loss triggered when price falls below stop price
-        return currentPrice <= stopLoss.stopPrice;
-    } else { // Short position
-        // Stop loss triggered when price rises above stop price
-        return currentPrice >= stopLoss.stopPrice;
+bool StopLossManager::isHealthy() const noexcept {
+    return positionTracker_ && dataInterface_ && executionInterface_ && config_.isValid();
+}
+
+std::map<std::string, std::string> StopLossManager::getDiagnostics() const {
+    std::map<std::string, std::string> diagnostics;
+    
+    diagnostics["component_name"] = "StopLossManager";
+    diagnostics["is_healthy"] = isHealthy() ? "true" : "false";
+    diagnostics["total_stop_losses"] = std::to_string(stopLosses_.size());
+    diagnostics["total_checks"] = std::to_string(totalChecks_.load());
+    diagnostics["total_triggers"] = std::to_string(totalTriggers_.load());
+    diagnostics["config_valid"] = config_.isValid() ? "true" : "false";
+    
+    // Component availability
+    diagnostics["position_tracker_available"] = positionTracker_ ? "true" : "false";
+    diagnostics["data_interface_available"] = dataInterface_ ? "true" : "false";
+    diagnostics["execution_interface_available"] = executionInterface_ ? "true" : "false";
+    
+    return diagnostics;
+}
+
+// Private helper methods implementation
+
+std::string StopLossManager::createPositionKey(
+    const core::ExchangeId& exchangeId, 
+    const std::string& tradingPair) const {
+    return std::format("{}:{}", exchangeId.toString(), tradingPair);
+}
+
+std::optional<double> StopLossManager::getCurrentPrice(const std::string& tradingPair) const {
+    std::shared_lock lock(marketDataMutex_);
+    auto it = priceCache_.find(tradingPair);
+    return it != priceCache_.end() ? std::optional(it->second) : std::nullopt;
+}
+
+bool StopLossManager::isStopLossTriggered(
+    const StopLossInfo& stopLoss, 
+    double currentPrice, 
+    double positionSize) const noexcept {
+    
+    double stopPrice = stopLoss.stopPrice.load();
+    
+    if (positionSize > 0) {
+        // Long position: triggered when price falls below stop
+        return currentPrice <= stopPrice;
+    } else {
+        // Short position: triggered when price rises above stop
+        return currentPrice >= stopPrice;
     }
 }
 
-StopLossEvent StopLossManager::createStopLossEvent(const ExchangeId& exchangeId, const TradingPair& tradingPair,
-                                                  double positionSize, double entryPrice, double currentPrice, 
-                                                  double lossPercentage) {
-    StopLossEvent event;
+EnhancedStopLossEvent StopLossManager::createStopLossEvent(
+    const core::ExchangeId& exchangeId,
+    const std::string& tradingPair,
+    const StopLossInfo& stopLoss,
+    double positionSize,
+    double entryPrice,
+    double currentPrice) const {
+    
+    EnhancedStopLossEvent event;
     event.exchangeId = exchangeId;
     event.tradingPair = tradingPair;
     event.positionSize = positionSize;
     event.entryPrice = entryPrice;
     event.triggerPrice = currentPrice;
-    event.lossPercentage = lossPercentage;
-    event.timestamp = std::chrono::system_clock::now();
+    event.stopPrice = stopLoss.stopPrice.load();
+    event.lossPercentage = std::abs((currentPrice - entryPrice) / entryPrice);
+    event.wasTrailing = stopLoss.isTrailing.load();
+    event.adjustmentCount = stopLoss.adjustmentCount.load();
+    event.timestamp = core::now();
+    
     return event;
 }
 
-} // namespace risk
+void StopLossManager::updateTrailingStops(const std::string& symbol, double price) {
+    std::shared_lock lock(stopLossMutex_);
+    
+    for (const auto& [positionKey, stopLoss] : stopLosses_) {
+        if (!stopLoss || !stopLoss->active.load() || !stopLoss->isTrailing.load()) {
+            continue;
+        }
+        
+        // Extract trading pair from position key
+        auto delimiterPos = positionKey.find(':');
+        if (delimiterPos == std::string::npos) continue;
+        
+        std::string tradingPair = positionKey.substr(delimiterPos + 1);
+        if (tradingPair != symbol) continue;
+        
+        // Get position to determine direction
+        core::ExchangeId exchangeId = core::ExchangeId::fromString(positionKey.substr(0, delimiterPos));
+        auto position = positionTracker_->getPosition(exchangeId, TradingPair(tradingPair));
+        if (!position) continue;
+        
+        // Update trailing stop
+        stopLoss->updateTrailingStop(price, position->getQuantity() > 0);
+    }
 }
+
+void StopLossManager::notifyCallbacks(const EnhancedStopLossEvent& event) {
+    std::shared_lock lock(callbackMutex_);
+    
+    for (const auto& callback : callbacks_) {
+        try {
+            callback(event);
+        } catch (...) {
+            // Log error but continue with other callbacks
+        }
+    }
+}
+
+bool StopLossManager::shouldCreateDefaultStopLoss(
+    const core::ExchangeId& exchangeId,
+    const std::string& tradingPair,
+    double positionSize) const {
+    
+    // Don't create for zero positions
+    if (std::abs(positionSize) < 1e-8) {
+        return false;
+    }
+    
+    // Check if stop loss already exists
+    const std::string positionKey = createPositionKey(exchangeId, tradingPair);
+    std::shared_lock lock(stopLossMutex_);
+    return stopLosses_.find(positionKey) == stopLosses_.end();
+}
+
+double StopLossManager::calculateDefaultStopPrice(double entryPrice, double positionSize) const noexcept {
+    if (positionSize > 0) {
+        // Long position: stop below entry
+        return entryPrice * (1.0 - config_.defaultStopLossPercent);
+    } else {
+        // Short position: stop above entry
+        return entryPrice * (1.0 + config_.defaultStopLossPercent);
+    }
+}
+
+bool StopLossManager::validateStopLossParameters(
+    StopPrice stopPrice,
+    bool isTrailing,
+    std::optional<TrailingDistance> trailingDistance) const noexcept {
+    
+    if (stopPrice.value <= 0.0) {
+        return false;
+    }
+    
+    if (isTrailing) {
+        if (!trailingDistance || trailingDistance->percentage <= 0.0) {
+            return false;
+        }
+        if (trailingDistance->percentage < config_.minTrailingDistance) {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+} // namespace trading::risk

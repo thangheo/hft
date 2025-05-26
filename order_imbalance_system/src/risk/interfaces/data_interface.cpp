@@ -77,7 +77,7 @@ public:
             return false;
         }
     }
-    
+   
     std::optional<MarketData> getMarketData(const std::string& tradingPair, 
                             const std::optional<std::string>& exchangeId) override {
         if (!initialized_) {
@@ -293,6 +293,7 @@ DataInterface::DataInterface() {
     // Base constructor
 }
 
+ 
 // Factory function to create DataInterface
 std::unique_ptr<DataInterface> createDataInterface() {
     try {

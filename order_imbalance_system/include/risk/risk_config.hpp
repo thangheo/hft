@@ -123,6 +123,8 @@ struct StopLossConfig {
     double maxLossPercentage = 0.05;
     double trailingStopDistance = 0.02;
     bool enableTrailingStop = true;
+    // enableDefaultStopLoss
+    bool enableDefaultStopLoss = true;
     bool forceLiquidation = true;
     std::chrono::seconds liquidationDelay{5};
 };
