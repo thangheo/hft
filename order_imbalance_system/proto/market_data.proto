@@ -35,9 +35,9 @@ message OrderBookUpdate {
 message TradingSignal {
     trading.common.proto.SymbolProto symbol = 1;               // Trading pair
     enum Side {
-        UNKNOWN_SIDE = 0;
-        BUY = 1;
-        SELL = 2;
+        BUY = 0;
+        SELL = 1;
+        NEUTRAL = 2;
     }
     Side side = 2;
     double confidence = 3;

@@ -24,7 +24,7 @@ namespace risk {
 
 // Forward declarations
 class Position;
-class TradingSignal;
+// class TradingSignal;
 class OrderRequest;
 class ValidationResult;
 class ThresholdSet;

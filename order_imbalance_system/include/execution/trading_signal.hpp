@@ -20,7 +20,8 @@
  
  namespace trading {
  namespace execution {
- 
+//  struct TradingSignal;
+
  /**
   * Represents a trading signal for the execution engine
   */

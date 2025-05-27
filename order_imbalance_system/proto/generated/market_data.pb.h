@@ -75,15 +75,15 @@ namespace market_data {
 namespace proto {
 
 enum TradingSignal_Side : int {
-  TradingSignal_Side_UNKNOWN_SIDE = 0,
-  TradingSignal_Side_BUY = 1,
-  TradingSignal_Side_SELL = 2,
+  TradingSignal_Side_BUY = 0,
+  TradingSignal_Side_SELL = 1,
+  TradingSignal_Side_NEUTRAL = 2,
   TradingSignal_Side_TradingSignal_Side_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
   TradingSignal_Side_TradingSignal_Side_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
 bool TradingSignal_Side_IsValid(int value);
-constexpr TradingSignal_Side TradingSignal_Side_Side_MIN = TradingSignal_Side_UNKNOWN_SIDE;
-constexpr TradingSignal_Side TradingSignal_Side_Side_MAX = TradingSignal_Side_SELL;
+constexpr TradingSignal_Side TradingSignal_Side_Side_MIN = TradingSignal_Side_BUY;
+constexpr TradingSignal_Side TradingSignal_Side_Side_MAX = TradingSignal_Side_NEUTRAL;
 constexpr int TradingSignal_Side_Side_ARRAYSIZE = TradingSignal_Side_Side_MAX + 1;
 
 const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* TradingSignal_Side_descriptor();
@@ -887,12 +887,12 @@ class TradingSignal final :
   // nested types ----------------------------------------------------
 
   typedef TradingSignal_Side Side;
-  static constexpr Side UNKNOWN_SIDE =
-    TradingSignal_Side_UNKNOWN_SIDE;
   static constexpr Side BUY =
     TradingSignal_Side_BUY;
   static constexpr Side SELL =
     TradingSignal_Side_SELL;
+  static constexpr Side NEUTRAL =
+    TradingSignal_Side_NEUTRAL;
   static inline bool Side_IsValid(int value) {
     return TradingSignal_Side_IsValid(value);
   }

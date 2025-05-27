@@ -186,7 +186,7 @@ const char descriptor_table_protodef_market_5fdata_2eproto[] PROTOBUF_SECTION_VA
   "evel\0229\n\nasks_added\030\006 \003(\0132%.trading.marke"
   "t_data.proto.PriceLevel\022;\n\014asks_removed\030"
   "\007 \003(\0132%.trading.market_data.proto.PriceL"
-  "evel\"\356\002\n\rTradingSignal\0221\n\006symbol\030\001 \001(\0132!"
+  "evel\"\351\002\n\rTradingSignal\0221\n\006symbol\030\001 \001(\0132!"
   ".trading.common.proto.SymbolProto\022;\n\004sid"
   "e\030\002 \001(\0162-.trading.market_data.proto.Trad"
   "ingSignal.Side\022\022\n\nconfidence\030\003 \001(\001\022\024\n\014ta"
@@ -194,15 +194,15 @@ const char descriptor_table_protodef_market_5fdata_2eproto[] PROTOBUF_SECTION_VA
   "expiry\030\006 \001(\0132$.trading.common.proto.Time"
   "stampProto\0227\n\ttimestamp\030\007 \001(\0132$.trading."
   "common.proto.TimestampProto\022\023\n\013strategy_"
-  "id\030\010 \001(\t\"+\n\004Side\022\020\n\014UNKNOWN_SIDE\020\000\022\007\n\003BU"
-  "Y\020\001\022\010\n\004SELL\020\002b\006proto3"
+  "id\030\010 \001(\t\"&\n\004Side\022\007\n\003BUY\020\000\022\010\n\004SELL\020\001\022\013\n\007N"
+  "EUTRAL\020\002b\006proto3"
   ;
 static const ::_pbi::DescriptorTable* const descriptor_table_market_5fdata_2eproto_deps[1] = {
   &::descriptor_table_common_2eproto,
 };
 static ::_pbi::once_flag descriptor_table_market_5fdata_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_market_5fdata_2eproto = {
-    false, false, 1221, descriptor_table_protodef_market_5fdata_2eproto,
+    false, false, 1216, descriptor_table_protodef_market_5fdata_2eproto,
     "market_data.proto",
     &descriptor_table_market_5fdata_2eproto_once, descriptor_table_market_5fdata_2eproto_deps, 1, 4,
     schemas, file_default_instances, TableStruct_market_5fdata_2eproto::offsets,
@@ -234,9 +234,9 @@ bool TradingSignal_Side_IsValid(int value) {
 }
 
 #if (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
-constexpr TradingSignal_Side TradingSignal::UNKNOWN_SIDE;
 constexpr TradingSignal_Side TradingSignal::BUY;
 constexpr TradingSignal_Side TradingSignal::SELL;
+constexpr TradingSignal_Side TradingSignal::NEUTRAL;
 constexpr TradingSignal_Side TradingSignal::Side_MIN;
 constexpr TradingSignal_Side TradingSignal::Side_MAX;
 constexpr int TradingSignal::Side_ARRAYSIZE;
