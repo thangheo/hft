@@ -161,7 +161,7 @@ bool FatFingerProtection::checkFatFinger(const OrderRequest& orderRequest,
     bool notionalOk = true;
     
     // For limit orders, check price deviation
-    if (orderRequest.type != "MARKET") {
+    if (orderRequest.type != OrderType::MARKET) {
         priceOk = checkPriceDeviation(orderRequest.tradingPair, orderRequest.price, violations);
     }
     
@@ -169,7 +169,7 @@ bool FatFingerProtection::checkFatFinger(const OrderRequest& orderRequest,
     sizeOk = checkSizeAnomaly(orderRequest.tradingPair, orderRequest.quantity, violations);
     
     // Check notional value
-    double price = (orderRequest.type != "MARKET") ? 
+    double price = (orderRequest.type != OrderType::MARKET) ?
                   orderRequest.price : getCurrentMarketPrice(orderRequest.tradingPair);
     notionalOk = checkNotionalValue(orderRequest.tradingPair, price, orderRequest.quantity, violations);
     

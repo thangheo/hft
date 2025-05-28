@@ -150,19 +150,7 @@ struct FatFingerConfig {
     double notionalValueLimit = 10000.0;
     bool enforceAdditionalVerification = true;
 };
-
-/**
- * Configuration structure for order validation
- */
-struct OrderValidationConfig {
-    bool validateMinOrderSize = true;
-    bool validatePriceRange = true;
-    std::map<core::ExchangeId, std::map<TradingPair, double>> minOrderSizes;
-    double maxPriceDeviationPercent = 0.1;
-    bool enforceSymbolWhitelist = false;
-    std::vector<std::string> symbolWhitelist;
-};
-
+ 
 /**
  * Configuration structure for balance reconciliation
  */
@@ -333,6 +321,107 @@ struct RiskLoggingConfig {
 };
 
 /**
+ * ENHANCED Configuration structure for order validation
+ */
+
+struct OrderValidationConfig {
+    bool validateMinOrderSize = true;
+    bool validatePriceRange = true;
+    bool enforceSymbolWhitelist = false;
+    
+    // Core validation settings
+    std::vector<std::string> symbolWhitelist;
+    double maxPriceDeviationPercent = 10.0;    // 10% default max deviation
+    double defaultMinOrderSize = 0.001;        // Default minimum order size
+    double maxOrderSize = 1000000.0;           // Default maximum order size
+    
+    // Allowed order types and time in force values
+    std::vector<OrderType> allowedOrderTypes = {
+        OrderType::MARKET, 
+        OrderType::LIMIT, 
+        OrderType::STOP, 
+        OrderType::STOP_LIMIT
+    };
+    
+    std::vector<std::string> allowedTimeInForce = {
+        "GTC",  // Good Till Canceled
+        "IOC",  // Immediate Or Cancel
+        "FOK"   // Fill Or Kill
+    };
+    
+    // Exchange-specific minimum order sizes
+    // ExchangeId -> (TradingPair -> minimum size)
+    std::map<core::ExchangeId, std::map<TradingPair, double>> minOrderSizes;
+    
+    // Price validation settings
+    bool enablePriceValidation = true;
+    bool requireMarketDataForPriceValidation = true;
+    
+    // Order size validation settings
+    bool enableOrderSizeValidation = true;
+    bool enableExchangeSpecificMinSizes = true;
+    
+    // Symbol whitelist settings
+    bool enableSymbolWhitelistValidation = false;
+    bool strictWhitelistEnforcement = false;
+    
+    // Additional validation features
+    bool validateAgainstMarketHours = false;
+    bool enableOrderRateLimit = false;
+    int maxOrdersPerSecond = 10;
+    int maxOrdersPerMinute = 300;
+    
+    // Error handling
+    bool failOnFirstViolation = false;
+    bool logAllViolations = true;
+    bool enableDetailedErrorReporting = true;
+    
+    // Default constructor with reasonable defaults
+    OrderValidationConfig() = default;
+    
+    // Validation method
+    bool isValid() const {
+        return maxPriceDeviationPercent > 0.0 &&
+               maxPriceDeviationPercent <= 100.0 &&
+               defaultMinOrderSize >= 0.0 &&
+               maxOrderSize > defaultMinOrderSize &&
+               maxOrdersPerSecond > 0 &&
+               maxOrdersPerMinute > 0 &&
+               !allowedOrderTypes.empty() &&
+               !allowedTimeInForce.empty();
+    }
+    
+    // Helper method to add exchange-specific min order size
+    void setMinOrderSize(const core::ExchangeId& exchange, const std::string& symbol, double minSize) {
+        TradingPair pair(symbol);
+        minOrderSizes[exchange][pair] = minSize;
+    }
+    
+    // Helper method to get min order size for a specific exchange and symbol
+    double getMinOrderSize(const core::ExchangeId& exchange, const std::string& symbol) const {
+        TradingPair pair(symbol);
+        auto exchangeIt = minOrderSizes.find(exchange);
+        if (exchangeIt != minOrderSizes.end()) {
+            auto symbolIt = exchangeIt->second.find(pair);
+            if (symbolIt != exchangeIt->second.end()) {
+                return symbolIt->second;
+            }
+        }
+        return defaultMinOrderSize;
+    }
+    
+    // Helper method to check if order type is allowed
+    bool isOrderTypeAllowed(OrderType type) const {
+        return std::find(allowedOrderTypes.begin(), allowedOrderTypes.end(), type) != allowedOrderTypes.end();
+    }
+    
+    // Helper method to check if time in force is allowed
+    bool isTimeInForceAllowed(const std::string& tif) const {
+        return std::find(allowedTimeInForce.begin(), allowedTimeInForce.end(), tif) != allowedTimeInForce.end();
+    }
+};
+
+/**
  * Main risk configuration container
  */
 class RiskConfig {
@@ -432,5 +521,6 @@ private:
     // Helper method for saving other configs
     void saveOtherConfigs(json& j) const;
 };
+
 
 } // namespace trading::risk

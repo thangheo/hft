@@ -1,7 +1,7 @@
 /**
  * Validates incoming orders against configuration limits
  *
- * File: order_validator.hpp
+ * File: order_validator.hpp (Fixed version)
  * Created: 2025-04-29
  */
 #pragma once
@@ -9,6 +9,8 @@
 #include "../risk_types.hpp"
 #include "../risk_config.hpp"
 #include "../interfaces/data_interface.hpp"
+#include <execution/trading_signal.hpp>  // Use existing execution trading signal
+#include "risk/pretrade/trading_signal_extensions.hpp"  // Use the extensions
 
 #include <unordered_map>
 #include <unordered_set>
@@ -44,7 +46,7 @@ public:
      * @param violations Vector to fill with any violations
      * @return true if valid, false otherwise
      */
-    bool validateOrder(const TradingSignal& signal, std::vector<RiskViolation>& violations);
+    bool validateOrder(const execution::TradingSignal& signal, std::vector<RiskViolation>& violations);
     
     /**
      * Validate order parameters
@@ -56,7 +58,14 @@ public:
     
     /**
      * Check if the given trading pair is on the symbol whitelist
-     * @param tradingPair The trading pair to check
+     * @param tradingPair The trading pair to check (as string)
+     * @return true if on whitelist or whitelist is disabled, false otherwise
+     */
+    bool isOnSymbolWhitelist(const std::string& tradingPair) const;
+    
+    /**
+     * Check if the given trading pair is on the symbol whitelist
+     * @param tradingPair The trading pair to check (as TradingPair object)
      * @return true if on whitelist or whitelist is disabled, false otherwise
      */
     bool isOnSymbolWhitelist(const TradingPair& tradingPair) const;
@@ -68,17 +77,17 @@ public:
      * @param violations Vector to fill with any violations
      * @return true if within range, false otherwise
      */
-    bool isPriceWithinRange(const TradingPair& tradingPair, double price, std::vector<RiskViolation>& violations);
+    bool isPriceWithinRange(const std::string& tradingPair, double price, std::vector<RiskViolation>& violations);
     
     /**
      * Check if an order size meets minimum requirements for the exchange
      * @param exchangeId The exchange identifier
-     * @param tradingPair The trading pair for the order
+     * @param tradingPair The trading pair for the order (as string)
      * @param quantity The order quantity to check
      * @param violations Vector to fill with any violations
      * @return true if size is valid, false otherwise
      */
-    bool isOrderSizeValid(const ExchangeId& exchangeId, const TradingPair& tradingPair, double quantity, std::vector<RiskViolation>& violations);
+    bool isOrderSizeValid(const core::ExchangeId& exchangeId, const std::string& tradingPair, double quantity, std::vector<RiskViolation>& violations);
     
     /**
      * Update the symbol whitelist
@@ -95,7 +104,7 @@ public:
      * @param minSize The minimum order size
      * @return true if update was successful, false otherwise
      */
-    bool updateMinOrderSize(const ExchangeId& exchangeId, const TradingPair& tradingPair, double minSize);
+    bool updateMinOrderSize(const core::ExchangeId& exchangeId, const std::string& tradingPair, double minSize);
     
     /**
      * Update price validation settings
@@ -124,7 +133,7 @@ private:
     // Helper methods
     bool validateOrderType(OrderType orderType, std::vector<RiskViolation>& violations);
     bool validateTimeInForce(const std::string& timeInForce, std::vector<RiskViolation>& violations);
-    double getCurrentMarketPrice(const TradingPair& tradingPair) const;
+    double getCurrentMarketPrice(const std::string& tradingPair) const;
 };
 
 } // namespace risk

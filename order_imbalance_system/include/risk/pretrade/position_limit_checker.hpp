@@ -3,12 +3,14 @@
  *
  * File: position_limit_checker.hpp
  * Created: 2025-04-29
+ * Updated: 2025-05-28
  */
 #pragma once
 
 #include "../risk_types.hpp"
 #include "../risk_config.hpp"
 #include "../portfolio/position_tracker.hpp"
+#include "execution/trading_signal.hpp"
 
 #include <map>
 #include <string>
@@ -17,6 +19,9 @@
 
 namespace trading {
 namespace risk {
+
+// Use the execution TradingSignal as the primary type
+using TradingSignal = execution::TradingSignal;
 
 /**
  * PositionLimitChecker enforces maximum position sizes per asset, strategy, and exchange.
@@ -77,7 +82,7 @@ public:
      * @param quantity The order quantity
      * @return The new theoretical position size
      */
-    double calculateNewPosition(const TradingPair& tradingPair, Direction direction, double quantity) const;
+    double calculateNewPosition(const TradingPair& tradingPair, core::Direction direction, double quantity) const;
 
 private:
     std::shared_ptr<PositionTracker> m_positionTracker;
@@ -92,7 +97,11 @@ private:
     double m_defaultLimit;
     
     void loadLimitsFromConfig();
+    
+    // Helper methods
+    std::string getBaseAsset(const std::string& tradingPair) const;
+    std::string getQuoteAsset(const std::string& tradingPair) const;
 };
 
 } // namespace risk
-}
+} // namespace trading

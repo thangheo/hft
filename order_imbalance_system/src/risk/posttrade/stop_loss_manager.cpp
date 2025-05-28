@@ -350,7 +350,7 @@ std::optional<std::string> StopLossManager::liquidatePosition(
     OrderRequest liquidationOrder;
     liquidationOrder.exchangeId = exchangeId;
     liquidationOrder.tradingPair = tradingPair;
-    liquidationOrder.type = "MARKET";
+    liquidationOrder.type = OrderType::MARKET;
     liquidationOrder.side = position->getQuantity() > 0 ? core::Direction::SELL : core::Direction::BUY;
     liquidationOrder.quantity = std::abs(position->getQuantity());
     liquidationOrder.timeInForce = "IOC";

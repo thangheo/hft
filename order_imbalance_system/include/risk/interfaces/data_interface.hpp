@@ -1,5 +1,5 @@
 /**
- * Interface for accessing market data
+ * Interface for accessing market data (Fixed version)
  *
  * File: data_interface.hpp
  * Created: 2025-04-29
@@ -8,7 +8,6 @@
 #pragma once
 
 #include "risk_types.hpp"
-// #include "core/market_data.hpp"
 #include <string>
 #include <vector>
 #include <map>
@@ -46,12 +45,11 @@ public:
      * 
      * @param tradingPair The trading pair
      * @param exchangeId Optional exchange ID
-     * @return MarketData structure
+     * @return MarketData structure wrapped in optional
      */
-    // virtual MarketData getMarketData(const std::string& tradingPair, const std::optional<std::string>& exchangeId = std::nullopt) = 0;
-    // In data_interface.hpp
     virtual std::optional<MarketData> getMarketData(const std::string& tradingPair,
                                                const std::optional<std::string>& exchangeId = std::nullopt) = 0;
+    
     /**
      * Get current price for a trading pair
      * 
@@ -60,6 +58,16 @@ public:
      * @return Current price
      */
     virtual double getCurrentPrice(const std::string& tradingPair, const std::optional<std::string>& exchangeId = std::nullopt) = 0;
+    
+    /**
+     * Get price for a trading pair (alias for getCurrentPrice for compatibility)
+     * 
+     * @param tradingPair The trading pair
+     * @return Current price
+     */
+    virtual double getPrice(const std::string& tradingPair) {
+        return getCurrentPrice(tradingPair);
+    }
     
     /**
      * Get historical prices for a trading pair
@@ -145,6 +153,80 @@ public:
  * @return Unique pointer to DataInterface implementation
  */
 std::unique_ptr<DataInterface> createDataInterface();
+
+/**
+ * Mock implementation of DataInterface for testing
+ */
+class MockDataInterface : public DataInterface {
+public:
+    MockDataInterface() = default;
+    
+    bool initialize() override {
+        return true;
+    }
+    
+    std::optional<MarketData> getMarketData(const std::string& tradingPair,
+                                      const std::optional<std::string>& exchangeId = std::nullopt) override {
+        MarketData data;
+        data.tradingPair = tradingPair;
+        data.price = 50000.0; // Mock price
+        data.bid = 49990.0;
+        data.ask = 50010.0;
+        return data;
+    }
+    
+    double getCurrentPrice(const std::string& tradingPair, const std::optional<std::string>& exchangeId = std::nullopt) override {
+        // Mock price data
+        if (tradingPair.find("BTC") != std::string::npos) return 50000.0;
+        if (tradingPair.find("ETH") != std::string::npos) return 3000.0;
+        return 100.0; // Default mock price
+    }
+    
+    std::vector<std::pair<Timestamp, double>> getHistoricalPrices(
+        const std::string& tradingPair,
+        const std::string& interval,
+        int count,
+        const std::optional<std::string>& exchangeId = std::nullopt) override {
+        std::vector<std::pair<Timestamp, double>> prices;
+        double basePrice = getCurrentPrice(tradingPair);
+        auto now = std::chrono::system_clock::now();
+        
+        for (int i = 0; i < count; ++i) {
+            auto timestamp = now - std::chrono::minutes(i);
+            double price = basePrice * (1.0 + (i % 10 - 5) * 0.001); // Small variations
+            prices.emplace_back(timestamp, price);
+        }
+        return prices;
+    }
+    
+    double getVolatility(const std::string& tradingPair, const std::string& timeframe, const std::optional<std::string>& exchangeId = std::nullopt) override {
+        return 0.02; // 2% mock volatility
+    }
+    
+    std::vector<OrderRequest> getOrderHistory(const core::ExchangeId& exchangeId, const std::string& tradingPair, int limit) override {
+        return {}; // Empty for mock
+    }
+    
+    std::map<std::string, double> getExchangeBalances(const core::ExchangeId& exchangeId) override {
+        return {{"BTC", 1.0}, {"ETH", 10.0}, {"USDT", 50000.0}};
+    }
+    
+    void registerMarketDataCallback(const std::function<void(const MarketData&)>& callback) override {
+        // Mock implementation - store callback if needed
+    }
+    
+    bool subscribeMarketData(const std::string& tradingPair, const std::optional<std::string>& exchangeId = std::nullopt) override {
+        return true;
+    }
+    
+    bool unsubscribeMarketData(const std::string& tradingPair, const std::optional<std::string>& exchangeId = std::nullopt) override {
+        return true;
+    }
+    
+    std::map<std::string, double> getTradingFees(const core::ExchangeId& exchangeId, const std::optional<std::string>& tradingPair = std::nullopt) override {
+        return {{"maker", 0.001}, {"taker", 0.001}};
+    }
+};
 
 } // namespace risk
 } // namespace trading
