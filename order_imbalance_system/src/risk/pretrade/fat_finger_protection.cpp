@@ -1,9 +1,8 @@
 /**
  * @file fat_finger_protection.cpp
- * @brief Modern C++20 implementation of fat finger protection
+ * @brief Fat finger protection implementation
  * 
- * High-performance implementation using modern C++ features, advanced
- * statistical analysis, and optimal concurrency patterns.
+ * Simple, reliable implementation using standard C++17 features.
  * 
  * @author Trading System Team  
  * @date May 28, 2025
@@ -11,19 +10,23 @@
 
 #include "risk/pretrade/fat_finger_protection.hpp"
 #include <algorithm>
-#include <execution>
-#include <format>
+#include <numeric>
+#include <cmath>
 
 namespace trading::risk {
 
 // OrderPatternAnalyzer Implementation
 
-void OrderPatternAnalyzer::addSample(double value) noexcept {
+OrderPatternAnalyzer::OrderPatternAnalyzer(size_t maxHistorySize) 
+    : maxHistorySize_(maxHistorySize), statsDirty_(true) {
+}
+
+void OrderPatternAnalyzer::addSample(double value) {
     if (!std::isfinite(value) || value <= 0.0) {
-        return; // Skip invalid values
+        return;
     }
 
-    std::unique_lock lock{mutex_};
+    std::lock_guard<std::mutex> lock(mutex_);
     
     samples_.push_back(value);
     if (samples_.size() > maxHistorySize_) {
@@ -34,18 +37,9 @@ void OrderPatternAnalyzer::addSample(double value) noexcept {
     cachedStats_.reset();
 }
 
-OrderPatternAnalyzer::Statistics OrderPatternAnalyzer::getStatistics() const noexcept {
-    std::shared_lock lock{mutex_};
+OrderPatternAnalyzer::Statistics OrderPatternAnalyzer::getStatistics() const {
+    std::lock_guard<std::mutex> lock(mutex_);
     
-    if (!statsDirty_ && cachedStats_) {
-        return *cachedStats_;
-    }
-    
-    // Upgrade to unique lock for cache update
-    lock.unlock();
-    std::unique_lock uniqueLock{mutex_};
-    
-    // Double-check pattern
     if (!statsDirty_ && cachedStats_) {
         return *cachedStats_;
     }
@@ -56,30 +50,23 @@ OrderPatternAnalyzer::Statistics OrderPatternAnalyzer::getStatistics() const noe
     return *cachedStats_;
 }
 
-double OrderPatternAnalyzer::getAnomalyScore(double value) const noexcept {
+double OrderPatternAnalyzer::getAnomalyScore(double value) const {
     const auto stats = getStatistics();
     
     if (!stats.isValid() || stats.stdDev == 0.0) {
-        return 0.0; // Cannot determine anomaly without valid statistics
+        return 0.0;
     }
     
-    // Z-score based anomaly detection
-    const double zScore = std::abs((value - stats.mean) / stats.stdDev);
-    
-    // Modified z-score using median for robustness
-    const double modifiedZScore = 0.6745 * std::abs((value - stats.median) / stats.stdDev);
-    
-    // Return the more conservative (higher) score
-    return std::max(zScore, modifiedZScore);
+    return std::abs((value - stats.mean) / stats.stdDev);
 }
 
-bool OrderPatternAnalyzer::isOutlier(double value, double thresholdSigmas) const noexcept {
+bool OrderPatternAnalyzer::isOutlier(double value, double thresholdSigmas) const {
     return getAnomalyScore(value) > thresholdSigmas;
 }
 
-OrderPatternAnalyzer::Statistics OrderPatternAnalyzer::calculateStatistics() const noexcept {
+OrderPatternAnalyzer::Statistics OrderPatternAnalyzer::calculateStatistics() const {
     if (samples_.empty()) {
-        return {};
+        return Statistics{};
     }
     
     Statistics stats;
@@ -87,11 +74,10 @@ OrderPatternAnalyzer::Statistics OrderPatternAnalyzer::calculateStatistics() con
     
     // Convert to vector for algorithms
     std::vector<double> sortedSamples(samples_.begin(), samples_.end());
-    std::ranges::sort(sortedSamples);
+    std::sort(sortedSamples.begin(), sortedSamples.end());
     
     // Calculate mean
-    stats.mean = std::reduce(std::execution::unseq, 
-                           sortedSamples.begin(), sortedSamples.end()) / sortedSamples.size();
+    stats.mean = std::accumulate(sortedSamples.begin(), sortedSamples.end(), 0.0) / sortedSamples.size();
     
     // Calculate median
     const size_t n = sortedSamples.size();
@@ -101,22 +87,13 @@ OrderPatternAnalyzer::Statistics OrderPatternAnalyzer::calculateStatistics() con
         stats.median = sortedSamples[n/2];
     }
     
-    // Calculate quartiles
-    stats.q25 = sortedSamples[n/4];
-    stats.q75 = sortedSamples[3*n/4];
-    
     // Calculate standard deviation
-    const double variance = std::transform_reduce(
-        std::execution::unseq,
-        sortedSamples.begin(), sortedSamples.end(),
-        0.0,
-        std::plus<>(),
-        [mean = stats.mean](double x) {
-            const double diff = x - mean;
-            return diff * diff;
-        }
-    ) / (sortedSamples.size() - 1);
-    
+    double variance = 0.0;
+    for (double sample : sortedSamples) {
+        double diff = sample - stats.mean;
+        variance += diff * diff;
+    }
+    variance /= (sortedSamples.size() - 1);
     stats.stdDev = std::sqrt(variance);
     
     return stats;
@@ -124,146 +101,195 @@ OrderPatternAnalyzer::Statistics OrderPatternAnalyzer::calculateStatistics() con
 
 // FatFingerProtection Implementation
 
+FatFingerProtection::FatFingerProtection(std::shared_ptr<DataInterface> dataInterface)
+    : dataInterface_(std::move(dataInterface))
+    , config_(Config())
+    , totalValidations_(0)
+    , rejectedOrders_(0)
+{
+}
+
 FatFingerProtection::FatFingerProtection(
     std::shared_ptr<DataInterface> dataInterface,
-    Config config
-) noexcept 
+    const Config& config
+) 
     : dataInterface_(std::move(dataInterface))
-    , config_(std::move(config)) 
+    , config_(config)
+    , totalValidations_(0)
+    , rejectedOrders_(0)
 {
     if (!config_.isValid()) {
         LOG_WARN("Invalid fat finger protection config provided, using defaults");
-        config_ = Config{};
+        config_ = Config();
     }
 }
 
-std::expected<void, std::string> FatFingerProtection::initialize() noexcept {
+bool FatFingerProtection::initialize() {
     if (!dataInterface_) {
-        return std::unexpected("DataInterface is null");
+        LOG_ERROR("DataInterface is null");
+        return false;
     }
     
     try {
         if (!dataInterface_->initialize()) {
-            return std::unexpected("Failed to initialize DataInterface");
+            LOG_ERROR("Failed to initialize DataInterface");
+            return false;
         }
         
-        LOG_INFO("Fat finger protection initialized successfully with config: "
-                "priceDeviation={:.2f}%, sizeThreshold={:.1f}σ, notionalLimit=${:.0f}",
-                config_.priceDeviationThreshold * 100,
-                config_.sizeAnomalyThreshold,
-                config_.notionalValueThreshold);
-        
-        return {};
+        LOG_INFO("Fat finger protection initialized successfully");
+        return true;
     } catch (const std::exception& e) {
-        return std::unexpected(std::format("Initialization failed: {}", e.what()));
+        LOG_ERROR("Initialization failed: {}", e.what());
+        return false;
     }
 }
 
-bool FatFingerProtection::updateConfig(const Config& newConfig) noexcept {
+bool FatFingerProtection::checkFatFinger(const execution::TradingSignal& signal,
+                                        std::vector<RiskViolation>& violations) {
+    ++totalValidations_;
+    
+    // For signals, we only check size (no price available yet)
+    return checkSizeAnomaly(signal.getTradingPair(), signal.getTargetSize(), violations);
+}
+
+bool FatFingerProtection::checkFatFinger(const OrderRequest& orderRequest,
+                                        std::vector<RiskViolation>& violations) {
+    ++totalValidations_;
+    
+    bool priceOk = true;
+    bool sizeOk = true;
+    bool notionalOk = true;
+    
+    // For limit orders, check price deviation
+    if (orderRequest.type != "MARKET") {
+        priceOk = checkPriceDeviation(orderRequest.tradingPair, orderRequest.price, violations);
+    }
+    
+    // Check size anomaly
+    sizeOk = checkSizeAnomaly(orderRequest.tradingPair, orderRequest.quantity, violations);
+    
+    // Check notional value
+    double price = (orderRequest.type != "MARKET") ? 
+                  orderRequest.price : getCurrentMarketPrice(orderRequest.tradingPair);
+    notionalOk = checkNotionalValue(orderRequest.tradingPair, price, orderRequest.quantity, violations);
+    
+    return priceOk && sizeOk && notionalOk;
+}
+
+void FatFingerProtection::recordOrder(const OrderRequest& order) {
+    try {
+        auto& analyzer = getOrCreateAnalyzer(order.tradingPair);
+        analyzer.addSample(order.quantity);
+        
+        LOG_DEBUG("Recorded order for {}: size={}", order.tradingPair, order.quantity);
+    } catch (const std::exception& e) {
+        LOG_ERROR("Failed to record order for {}: {}", order.tradingPair, e.what());
+    }
+}
+
+bool FatFingerProtection::updateConfig(const Config& newConfig) {
     if (!newConfig.isValid()) {
         LOG_ERROR("Attempted to set invalid fat finger protection config");
         return false;
     }
     
     config_ = newConfig;
-    
-    LOG_INFO("Updated fat finger protection config: "
-            "priceDeviation={:.2f}%, sizeThreshold={:.1f}σ, notionalLimit=${:.0f}",
-            config_.priceDeviationThreshold * 100,
-            config_.sizeAnomalyThreshold,
-            config_.notionalValueThreshold);
-    
+    LOG_INFO("Updated fat finger protection config");
     return true;
 }
 
+bool FatFingerProtection::requiresAdditionalVerification(const std::string& symbol,
+                                                       double price,
+                                                       double quantity) const {
+    const double notionalValue = price * std::abs(quantity);
+    return notionalValue > config_.notionalValueThreshold;
+}
+
+double FatFingerProtection::getTypicalOrderSize(const std::string& symbol) const {
+    std::lock_guard<std::mutex> lock(historyMutex_);
+    
+    auto it = orderAnalyzers_.find(normalizeSymbol(symbol));
+    if (it != orderAnalyzers_.end()) {
+        auto stats = it->second->getStatistics();
+        if (stats.isValid()) {
+            return stats.median;
+        }
+    }
+    
+    return 1.0; // Default value if no history
+}
+
 std::optional<OrderPatternAnalyzer::Statistics> 
-FatFingerProtection::getOrderStatistics(std::string_view symbol) const noexcept {
-    const std::string normalizedSymbol = normalizeSymbol(symbol);
+FatFingerProtection::getOrderStatistics(const std::string& symbol) const {
+    std::lock_guard<std::mutex> lock(historyMutex_);
     
-    std::shared_lock lock{historyMutex_};
-    
-    if (auto it = orderAnalyzers_.find(normalizedSymbol); it != orderAnalyzers_.end()) {
+    auto it = orderAnalyzers_.find(normalizeSymbol(symbol));
+    if (it != orderAnalyzers_.end()) {
         return it->second->getStatistics();
     }
     
     return std::nullopt;
 }
 
-bool FatFingerProtection::requiresAdditionalVerification(
-    std::string_view symbol,
-    double price,
-    double quantity
-) const noexcept {
-    const double notionalValue = price * std::abs(quantity);
-    return notionalValue > config_.notionalValueThreshold;
-}
-
-std::string FatFingerProtection::normalizeSymbol(std::string_view symbol) const noexcept {
-    std::string result{symbol};
-    std::ranges::transform(result, result.begin(), ::toupper);
+std::string FatFingerProtection::normalizeSymbol(const std::string& symbol) const {
+    std::string result = symbol;
+    std::transform(result.begin(), result.end(), result.begin(), ::toupper);
     return result;
 }
 
-ValidationResult FatFingerProtection::validatePriceDeviation(
-    std::string_view symbol,
-    double orderPrice
-) noexcept {
-    auto marketPriceResult = getCurrentMarketPrice(symbol);
-    
-    if (!marketPriceResult) {
-        ++rejectedOrders_;
-        return std::unexpected(ViolationDetails{
-            .code = ViolationCode::MARKET_DATA_UNAVAILABLE,
-            .message = std::format("Cannot verify price for {}: {}", 
-                                 symbol, marketPriceResult.error()),
-            .actualValue = orderPrice,
-            .severity = 0.8
-        });
+bool FatFingerProtection::checkPriceDeviation(const std::string& symbol,
+                                             double price,
+                                             std::vector<RiskViolation>& violations) {
+    try {
+        double marketPrice = getCurrentMarketPrice(symbol);
+        double deviation = std::abs((price - marketPrice) / marketPrice);
+        
+        if (deviation > config_.priceDeviationThreshold) {
+            ++rejectedOrders_;
+            RiskViolation violation;
+            violation.type = ViolationType::PRICE_DEVIATION;
+            violation.description = "Price deviates significantly from market price";
+            violation.limitValue = config_.priceDeviationThreshold * 100;
+            violation.actualValue = deviation * 100;
+            violations.push_back(violation);
+            return false;
+        }
+        
+        return true;
+    } catch (const std::exception& e) {
+        LOG_ERROR("Failed to get market price for {}: {}", symbol, e.what());
+        
+        RiskViolation violation;
+        violation.type = ViolationType::OTHER;
+        violation.description = "Could not verify price due to market data unavailability";
+        violation.limitValue = 0;
+        violation.actualValue = 0;
+        violations.push_back(violation);
+        return false;
     }
-    
-    const double marketPrice = *marketPriceResult;
-    const double deviation = std::abs((orderPrice - marketPrice) / marketPrice);
-    
-    if (deviation > config_.priceDeviationThreshold) {
-        ++rejectedOrders_;
-        return std::unexpected(ViolationDetails{
-            .code = ViolationCode::PRICE_DEVIATION_EXCESSIVE,
-            .message = std::format("Price deviation {:.2f}% exceeds threshold {:.2f}% for {}",
-                                 deviation * 100, 
-                                 config_.priceDeviationThreshold * 100,
-                                 symbol),
-            .expectedValue = config_.priceDeviationThreshold * 100,
-            .actualValue = deviation * 100,
-            .severity = std::min(1.0, deviation / config_.priceDeviationThreshold)
-        });
-    }
-    
-    return {};
 }
 
-ValidationResult FatFingerProtection::validateSizeAnomaly(
-    std::string_view symbol,
-    double orderSize
-) noexcept {
-    if (orderSize <= 0.0) {
+bool FatFingerProtection::checkSizeAnomaly(const std::string& symbol,
+                                          double quantity,
+                                          std::vector<RiskViolation>& violations) {
+    if (quantity <= 0.0) {
         ++rejectedOrders_;
-        return std::unexpected(ViolationDetails{
-            .code = ViolationCode::SIZE_ANOMALY_DETECTED,
-            .message = std::format("Invalid order size {:.6f} for {}", orderSize, symbol),
-            .actualValue = orderSize,
-            .severity = 1.0
-        });
+        RiskViolation violation;
+        violation.type = ViolationType::ORDER_SIZE_LIMIT;
+        violation.description = "Invalid order size";
+        violation.actualValue = quantity;
+        violations.push_back(violation);
+        return false;
     }
     
     const std::string normalizedSymbol = normalizeSymbol(symbol);
     
-    std::shared_lock lock{historyMutex_};
+    std::lock_guard<std::mutex> lock(historyMutex_);
     
     auto it = orderAnalyzers_.find(normalizedSymbol);
     if (it == orderAnalyzers_.end()) {
-        // No history available - allow but log
         LOG_DEBUG("No order history for {} - allowing order", symbol);
-        return {};
+        return true;
     }
     
     const auto& analyzer = *it->second;
@@ -272,86 +298,65 @@ ValidationResult FatFingerProtection::validateSizeAnomaly(
     if (!stats.isValid() || stats.sampleSize < config_.minimumHistorySize) {
         LOG_DEBUG("Insufficient history for {} (samples: {}) - allowing order", 
                  symbol, stats.sampleSize);
-        return {};
+        return true;
     }
     
-    const double anomalyScore = analyzer.getAnomalyScore(orderSize);
+    const double anomalyScore = analyzer.getAnomalyScore(quantity);
     
     if (anomalyScore > config_.sizeAnomalyThreshold) {
         ++rejectedOrders_;
-        return std::unexpected(ViolationDetails{
-            .code = ViolationCode::SIZE_ANOMALY_DETECTED,
-            .message = std::format("Order size {:.6f} is {:.1f}σ from typical size for {} "
-                                 "(mean: {:.6f}, median: {:.6f})",
-                                 orderSize, anomalyScore, symbol,
-                                 stats.mean, stats.median),
-            .expectedValue = config_.sizeAnomalyThreshold,
-            .actualValue = anomalyScore,
-            .severity = std::min(1.0, anomalyScore / config_.sizeAnomalyThreshold)
-        });
+        RiskViolation violation;
+        violation.type = ViolationType::ORDER_SIZE_LIMIT;
+        violation.description = "Order size significantly larger than typical";
+        violation.limitValue = config_.sizeAnomalyThreshold;
+        violation.actualValue = anomalyScore;
+        violations.push_back(violation);
+        return false;
     }
     
-    return {};
+    return true;
 }
 
-ValidationResult FatFingerProtection::validateNotionalValue(
-    std::string_view symbol,
-    double price,
-    double quantity
-) noexcept {
+bool FatFingerProtection::checkNotionalValue(const std::string& symbol,
+                                            double price,
+                                            double quantity,
+                                            std::vector<RiskViolation>& violations) {
     const double notionalValue = price * std::abs(quantity);
     
     if (notionalValue > config_.notionalValueThreshold) {
         if (config_.rejectHighNotionalOrders) {
             ++rejectedOrders_;
-            return std::unexpected(ViolationDetails{
-                .code = ViolationCode::NOTIONAL_VALUE_TOO_HIGH,
-                .message = std::format("Notional value ${:.2f} exceeds limit ${:.2f} for {}",
-                                     notionalValue, config_.notionalValueThreshold, symbol),
-                .expectedValue = config_.notionalValueThreshold,
-                .actualValue = notionalValue,
-                .severity = std::min(1.0, notionalValue / config_.notionalValueThreshold)
-            });
+            RiskViolation violation;
+            violation.type = ViolationType::OTHER;
+            violation.description = "Order notional value exceeds maximum allowed";
+            violation.limitValue = config_.notionalValueThreshold;
+            violation.actualValue = notionalValue;
+            violations.push_back(violation);
+            return false;
         } else {
-            // Log but allow - requires additional verification
             LOG_WARN("High notional value order for {}: ${:.2f} (limit: ${:.2f}) - "
                     "requires additional verification",
                     symbol, notionalValue, config_.notionalValueThreshold);
         }
     }
     
-    return {};
+    return true;
 }
 
-std::expected<double, std::string> FatFingerProtection::getCurrentMarketPrice(
-    std::string_view symbol
-) noexcept {
-    try {
-        const std::string symbolStr{symbol};
-        const double price = dataInterface_->getCurrentPrice(symbolStr);
-        
-        if (!std::isfinite(price) || price <= 0.0) {
-            return std::unexpected(std::format("Invalid market price: {}", price));
-        }
-        
-        ++cacheHits_;
-        return price;
-    } catch (const std::exception& e) {
-        return std::unexpected(std::format("Market data error: {}", e.what()));
-    }
+double FatFingerProtection::getCurrentMarketPrice(const std::string& symbol) const {
+    return dataInterface_->getCurrentPrice(symbol);
 }
 
-OrderPatternAnalyzer& FatFingerProtection::getOrCreateAnalyzer(
-    std::string_view symbol
-) noexcept {
+OrderPatternAnalyzer& FatFingerProtection::getOrCreateAnalyzer(const std::string& symbol) {
     const std::string normalizedSymbol = normalizeSymbol(symbol);
     
-    std::unique_lock lock{historyMutex_};
+    std::lock_guard<std::mutex> lock(historyMutex_);
     
-    auto [it, inserted] = orderAnalyzers_.try_emplace(
-        normalizedSymbol,
-        std::make_unique<OrderPatternAnalyzer>()
-    );
+    auto it = orderAnalyzers_.find(normalizedSymbol);
+    if (it == orderAnalyzers_.end()) {
+        auto analyzer = std::make_unique<OrderPatternAnalyzer>();
+        it = orderAnalyzers_.emplace(normalizedSymbol, std::move(analyzer)).first;
+    }
     
     return *it->second;
 }

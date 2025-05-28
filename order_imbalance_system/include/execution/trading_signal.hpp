@@ -128,11 +128,23 @@
      /**
       * Check if the signal is still valid based on its TTL and a reference time
       */
-     bool isValid(const core::Timestamp& current_time) const {
-         // Implementation would need the signal's generation time, which
-         // is not currently included in this structure. Consider adding it.
-         return true; // Placeholder
-     }
+    //  bool isValid(const core::Timestamp& current_time) const {
+    //      // Implementation would need the signal's generation time, which
+    //      // is not currently included in this structure. Consider adding it.
+    //      return true; // Placeholder
+    //  }
+
+    /**
+     * Check if the signal is still valid based on its TTL and a reference time
+     */
+    bool isValid(const core::Timestamp& current_time) const {
+        // Suppress unused parameter warning
+        (void)current_time;
+        
+        // TODO: Implement proper TTL validation when generation time is added
+        // For now, assume all signals are valid
+        return true;
+    }
  };
  
  } // namespace execution
