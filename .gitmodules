@@ -1,39 +1,39 @@
-[submodule "hft_trading_system/third_party/googletest"]
-	path = hft_trading_system/third_party/googletest
+[submodule "order_imbalance_system/third_party/googletest"]
+	path = order_imbalance_system/third_party/googletest
 	url = https://github.com/google/googletest.git
-[submodule "hft_trading_system/third_party/nlohmann_json"]
-	path = hft_trading_system/third_party/nlohmann_json
+[submodule "order_imbalance_system/third_party/nlohmann_json"]
+	path = order_imbalance_system/third_party/nlohmann_json
 	url = https://github.com/nlohmann/json.git
-[submodule "hft_trading_system/third_party/boost"]
-	path = hft_trading_system/third_party/boost
+[submodule "order_imbalance_system/third_party/boost"]
+	path = order_imbalance_system/third_party/boost
 	url = https://github.com/boostorg/boost.git
-[submodule "hft_trading_system/third_party/prometheus-cpp"]
-	path = hft_trading_system/third_party/prometheus-cpp
+[submodule "order_imbalance_system/third_party/prometheus-cpp"]
+	path = order_imbalance_system/third_party/prometheus-cpp
 	url = https://github.com/jupp0r/prometheus-cpp.git
-[submodule "hft_trading_system/third_party/protobuf"]
-	path = hft_trading_system/third_party/protobuf
+[submodule "order_imbalance_system/third_party/protobuf"]
+	path = order_imbalance_system/third_party/protobuf
 	url = https://github.com/protocolbuffers/protobuf.git
-[submodule "hft_trading_system/third_party/hiredis"]
-	path = hft_trading_system/third_party/hiredis
+[submodule "order_imbalance_system/third_party/hiredis"]
+	path = order_imbalance_system/third_party/hiredis
 	url = https://github.com/redis/hiredis.git
-[submodule "hft_trading_system/third_party/cpp-httplib"]
-	path = hft_trading_system/third_party/cpp-httplib
+[submodule "order_imbalance_system/third_party/cpp-httplib"]
+	path = order_imbalance_system/third_party/cpp-httplib
 	url = https://github.com/yhirose/cpp-httplib.git
-[submodule "hft_trading_system/third_party/timescaledb"]
-	path = hft_trading_system/third_party/timescaledb
+[submodule "order_imbalance_system/third_party/timescaledb"]
+	path = order_imbalance_system/third_party/timescaledb
 	url = https://github.com/timescale/timescaledb.git
-[submodule "hft_trading_system/third_party/redis-plus-plus"]
-	path = hft_trading_system/third_party/redis-plus-plus
+[submodule "order_imbalance_system/third_party/redis-plus-plus"]
+	path = order_imbalance_system/third_party/redis-plus-plus
 	url = https://github.com/sewenew/redis-plus-plus.git
-[submodule "hft_trading_system/third_party/spdlog"]
-	path = hft_trading_system/third_party/spdlog
+[submodule "order_imbalance_system/third_party/spdlog"]
+	path = order_imbalance_system/third_party/spdlog
 	url = https://github.com/gabime/spdlog.git
-[submodule "hft_trading_system/third_party/pqxx"]
-	path = hft_trading_system/third_party/pqxx
+[submodule "order_imbalance_system/third_party/pqxx"]
+	path = order_imbalance_system/third_party/pqxx
 	url = https://github.com/jtv/libpqxx.git
-[submodule "hft_trading_system/third_party/openssl"]
-	path = hft_trading_system/third_party/openssl
+[submodule "order_imbalance_system/third_party/openssl"]
+	path = order_imbalance_system/third_party/openssl
 	url = https://github.com/openssl/openssl.git
-[submodule "hft_trading_system/third_party/abseil-cpp"]
-	path = hft_trading_system/third_party/abseil-cpp
+[submodule "order_imbalance_system/third_party/abseil-cpp"]
+	path = order_imbalance_system/third_party/abseil-cpp
 	url = https://github.com/abseil/abseil-cpp.git
