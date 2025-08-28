@@ -14,7 +14,8 @@ sudo apt-get install -y build-essential cmake libzmq3-dev libboost-all-dev \
     libgrpc++-dev libgrpc-dev protobuf-compiler-grpc libpq-dev libgtest-dev libgmock-dev libwebsocketpp-dev \
     uuid-dev libcurl4-openssl-dev  libjsoncpp-dev
 
-
+sudo apt-get install -y nlohmann-json3-dev
+sudo apt-get install -y build-essential cmake libzmq3-dev libboost-all-dev nlohmann-json3-dev
 
 # Build Google Test
 cd /usr/src/gtest
