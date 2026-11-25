@@ -29,9 +29,9 @@ std::vector<std::pair<Timestamp, double>> PriceHistory::getRecentPrices(int coun
  
 
 // MarketDataInterface implementation
-// MarketDataInterface::MarketDataInterface() : DataInterface() {
-//     LOG_INFO("MarketDataInterface constructor");
-// }
+MarketDataInterface::MarketDataInterface() : DataInterface() {
+    LOG_INFO("MarketDataInterface constructor");
+}
 
 // MarketDataInterface::~MarketDataInterface() {
 //     if (running_) {
@@ -529,7 +529,7 @@ core::MarketData MarketDataInterface::convertOrderBookToMarketData(
 }
 
 // Factory function implementation
-std::unique_ptr<DataInterface> createDataInterface() {
+std::unique_ptr<DataInterface> createMarketDataInterface() {
     return std::make_unique<MarketDataInterface>();
 }
 

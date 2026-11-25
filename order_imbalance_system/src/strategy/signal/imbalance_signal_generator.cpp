@@ -26,7 +26,12 @@
      : signalCount_(0), nextCallbackId_(0) {
  }
  
- // Initialize the signal generator with configuration
+ ImbalanceSignalGenerator::ImbalanceSignalGenerator(const SignalGeneratorConfig& config)
+    : ImbalanceSignalGenerator() {
+    initialize(config);
+}
+
+// Initialize the signal generator with configuration
  bool ImbalanceSignalGenerator::initialize(const SignalGeneratorConfig& config) {
      std::lock_guard<std::mutex> lock(mutex_);
      config_ = config;

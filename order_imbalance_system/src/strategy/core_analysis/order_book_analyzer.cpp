@@ -47,6 +47,9 @@
      historical_imbalances_.reserve(100);
  }
  
+OrderBookAnalyzer::OrderBookAnalyzer(const OrderBookAnalyzerConfig& config)
+    : OrderBookAnalyzer(core::ExchangeId::unknown(), "", config.depth, 0.0001) {}
+
  void OrderBookAnalyzer::processOrderBook(const data_ingestion::OrderBook& snapshot) {
      std::lock_guard<std::mutex> lock(mutex_);
      

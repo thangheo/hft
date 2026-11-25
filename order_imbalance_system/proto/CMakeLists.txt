@@ -3,6 +3,7 @@ set(PROTO_FILES
     order_book.proto
     execution_service.proto
     common.proto
+    trading_messages.proto
 )
 
 # Set explicit paths for required executables

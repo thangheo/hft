@@ -354,6 +354,12 @@ void TwapAlgorithm::setOrderCallback(const OrderCallback& callback) {
     order_callback_ = callback;
 }
 
+void TwapAlgorithm::setVolumeCallback(
+    const std::function<double(const std::string&, std::chrono::minutes)>& callback) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    volume_callback_ = callback;
+}
+
 void TwapAlgorithm::setCompletionCallback(const CompletionCallback& callback) {
     std::lock_guard<std::mutex> lock(mutex_);
     completion_callback_ = callback;

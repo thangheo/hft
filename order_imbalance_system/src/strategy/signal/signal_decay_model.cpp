@@ -11,6 +11,12 @@
  namespace trading {
  namespace strategy {
  
+SignalDecayModel::SignalDecayModel(const SignalDecayConfig& config)
+    : SignalDecayModel() {
+    params_.base_decay_rate = config.defaultDecayRate;
+    params_.min_valid_strength = config.minSignalStrength;
+}
+
  SignalDecayModel::SignalDecayModel(DecayModelType model_type)
      : model_type_(model_type) {
      // Initialize with default decay parameters

@@ -176,5 +176,10 @@ double SmartOrderRouter::calculateExchangeScore(
     return weighted_score;
 }
 
+// ExchangeInfo carries no capability data yet, so every exchange is treated as
+// supporting every order type and trading pair.
+bool ExchangeInfo::supports_order_type(models::OrderType /*type*/) const { return true; }
+bool ExchangeInfo::supports_trading_pair(const std::string& /*tradingPair*/) const { return true; }
+
 } // namespace execution
 } // namespace trading

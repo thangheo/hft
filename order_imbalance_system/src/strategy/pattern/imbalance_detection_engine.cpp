@@ -28,7 +28,12 @@
      imbalanceState_[ImbalanceType::ABNORMAL_SPREAD] = false;
  }
  
- // Initialize the detection engine with configuration
+ ImbalanceDetectionEngine::ImbalanceDetectionEngine(const ImbalanceDetectionConfig& config)
+    : ImbalanceDetectionEngine() {
+    initialize(config);
+}
+
+// Initialize the detection engine with configuration
  bool ImbalanceDetectionEngine::initialize(const ImbalanceDetectionConfig& config) {
      std::lock_guard<std::mutex> lock(mutex_);
      config_ = config;

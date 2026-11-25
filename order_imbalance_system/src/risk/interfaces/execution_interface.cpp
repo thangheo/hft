@@ -18,7 +18,7 @@ namespace trading {
 namespace risk {
 
 // Helper to log with timestamp (temporary until we integrate with logging system)
-void logWithTimestamp(const std::string& level, const std::string& message) {
+static void logWithTimestamp(const std::string& level, const std::string& message) {
     auto now = std::chrono::system_clock::now();
     auto now_time_t = std::chrono::system_clock::to_time_t(now);
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(

@@ -5,7 +5,7 @@
  * Created: 2025-04-29
  */
 
- #include "../utils/risk_logger.hpp"
+#include "risk/utils/risk_logger.hpp"
  #include <chrono>
  #include <fstream>
  #include <iostream>
@@ -38,7 +38,7 @@
          m_loggingConfig = config.getLoggingConfig();
          
          // Set log level from config
-         m_logLevel = stringToLevel(m_loggingConfig.level);
+         m_logLevel = stringToLevel(m_loggingConfig.logLevel);
          
          // Initialize file logging if enabled
          if (m_loggingConfig.logToFile) {

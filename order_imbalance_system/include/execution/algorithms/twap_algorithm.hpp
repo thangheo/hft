@@ -120,6 +120,7 @@ private:
     // Callbacks
     OrderCallback order_callback_;
     CompletionCallback completion_callback_;
+    std::function<double(const std::string&, std::chrono::minutes)> volume_callback_;  // unused by TWAP
     
     // Mutex for thread safety
     mutable std::mutex mutex_;

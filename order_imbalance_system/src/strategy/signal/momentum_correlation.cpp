@@ -16,6 +16,11 @@
  namespace trading {
  namespace strategy {
  
+// correlationWindowMs/predictionHorizonMs are time-based while this class keeps a
+// sample-count window, so the default window is used.
+MomentumCorrelation::MomentumCorrelation(const MomentumCorrelationConfig& /*config*/)
+    : MomentumCorrelation() {}
+
  MomentumCorrelation::MomentumCorrelation(size_t window_size)
      : window_size_(window_size) {
      // Initialize correlation parameters with defaults

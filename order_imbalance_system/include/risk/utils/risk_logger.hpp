@@ -182,16 +182,16 @@ private:
 /**
  * Macro to get the logger instance
  */
-#define RISK_LOGGER risk::RiskLogger::getInstance()
+#define RISK_LOGGER ::trading::risk::RiskLogger::getInstance()
 
 /**
  * Macros for logging
  */
-#define RISK_LOG_DEBUG(component, message, ...) RISK_LOGGER.debug(component, message, __VA_ARGS__)
-#define RISK_LOG_INFO(component, message, ...) RISK_LOGGER.info(component, message, __VA_ARGS__)
-#define RISK_LOG_WARN(component, message, ...) RISK_LOGGER.warn(component, message, __VA_ARGS__)
-#define RISK_LOG_ERROR(component, message, ...) RISK_LOGGER.error(component, message, __VA_ARGS__)
-#define RISK_LOG_FATAL(component, message, ...) RISK_LOGGER.fatal(component, message, __VA_ARGS__)
+#define RISK_LOG_DEBUG(component, message, ...) RISK_LOGGER.debug(component, message __VA_OPT__(,) __VA_ARGS__)
+#define RISK_LOG_INFO(component, message, ...) RISK_LOGGER.info(component, message __VA_OPT__(,) __VA_ARGS__)
+#define RISK_LOG_WARN(component, message, ...) RISK_LOGGER.warn(component, message __VA_OPT__(,) __VA_ARGS__)
+#define RISK_LOG_ERROR(component, message, ...) RISK_LOGGER.error(component, message __VA_OPT__(,) __VA_ARGS__)
+#define RISK_LOG_FATAL(component, message, ...) RISK_LOGGER.fatal(component, message __VA_OPT__(,) __VA_ARGS__)
 
 } // namespace risk
 } // namespace trading

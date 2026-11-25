@@ -20,10 +20,7 @@
 #include <chrono>
 #include <optional>
 
-// Forward declare json for nlohmann/json.hpp
-namespace nlohmann {
-    class json;
-}
+#include <nlohmann/json_fwd.hpp>
 
 namespace trading::risk {
 
@@ -314,6 +311,7 @@ struct PortfolioConfig {
 struct RiskLoggingConfig {
     std::string logLevel = "INFO";
     std::string logDirectory = "/var/log/riskmanagement";
+    std::string logFilename = "risk.log";
     bool enableDetailedLogs = true;
     bool logToConsole = true;
     bool logToFile = true;

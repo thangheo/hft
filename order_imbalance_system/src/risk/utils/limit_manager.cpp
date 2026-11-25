@@ -5,12 +5,12 @@
  * Created: 2025-04-29
  */
 
- #include "../utils/limit_manager.hpp"
- #include "../utils/risk_logger.hpp"
+#include "risk/utils/limit_manager.hpp"
+#include "risk/utils/risk_logger.hpp"
  #include <algorithm>
  #include <stdexcept>
  
- namespace risk {
+ namespace trading::risk {
  
  LimitManager::LimitManager(const RiskConfig& config)
      : m_config(config)
@@ -284,4 +284,4 @@
      return idIt->second;
  }
  
- } // namespace risk
+ } // namespace trading::risk

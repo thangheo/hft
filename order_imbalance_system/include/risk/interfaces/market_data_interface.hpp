@@ -191,5 +191,8 @@ private:
     ErrorStats errorStats_;
 };
 
+// Factory for the MarketDataInterface implementation
+std::unique_ptr<DataInterface> createMarketDataInterface();
+
 } // namespace risk
 } // namespace trading

@@ -9,6 +9,9 @@ file(GLOB_RECURSE EXECUTION_SOURCES
     "models/*.cpp"
 )
 
+# WIP draft: enum names don't match trading_messages.proto yet; excluded until finished
+list(FILTER EXECUTION_SOURCES EXCLUDE REGEX ".*/ExecutionDecisionEngine\\.cpp$")
+
 # Define library
 add_library(execution ${EXECUTION_SOURCES})
 
@@ -34,4 +37,7 @@ target_link_libraries(execution
     Boost::system
     OpenSSL::SSL
     OpenSSL::Crypto
+    curl
+    jsoncpp
+    uuid
 )

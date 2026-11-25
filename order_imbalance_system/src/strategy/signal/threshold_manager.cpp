@@ -16,6 +16,11 @@
  namespace trading {
  namespace strategy {
  
+ThresholdManager::ThresholdManager(const ThresholdManagerConfig& config)
+    : ThresholdManager() {
+    base_thresholds_.global_sensitivity = config.globalSensitivity;
+}
+
  ThresholdManager::ThresholdManager() {
      // Initialize with default base thresholds
      base_thresholds_.global_sensitivity = 1.0;
