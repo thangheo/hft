@@ -56,19 +56,30 @@
  
  // Analyze order book metrics to detect imbalances
  bool ImbalanceDetectionEngine::analyzeMetrics(const OrderBookMetrics& metrics) {
-     std::lock_guard<std::mutex> lock(mutex_);
-     
-     // Store metrics history for time-series analysis
-     for (const auto& metric : metrics.metrics) {
-         metricHistory_[metric.first] = metric.second;
+     bool volumeImbalance, priceLevelImbalance, liquidityFlowImbalance, abnormalSpread;
+     std::vector<ImbalanceEvent> toNotify;
+     {
+         std::lock_guard<std::mutex> lock(mutex_);
+
+         // Store metrics history for time-series analysis
+         for (const auto& metric : metrics.metrics) {
+             metricHistory_[metric.first] = metric.second;
+         }
+
+         // Apply different detection algorithms
+         volumeImbalance = detectVolumeImbalance(metrics);
+         priceLevelImbalance = detectPriceLevelImbalance(metrics);
+         liquidityFlowImbalance = detectLiquidityFlowImbalance(metrics);
+         abnormalSpread = detectAbnormalSpread(metrics);
+
+         toNotify.swap(pendingNotifications_);
      }
-     
-     // Apply different detection algorithms
-     bool volumeImbalance = detectVolumeImbalance(metrics);
-     bool priceLevelImbalance = detectPriceLevelImbalance(metrics);
-     bool liquidityFlowImbalance = detectLiquidityFlowImbalance(metrics);
-     bool abnormalSpread = detectAbnormalSpread(metrics);
-     
+
+     // Notify outside the lock: notifyImbalanceCallbacks() takes mutex_ itself
+     for (const auto& event : toNotify) {
+         notifyImbalanceCallbacks(event);
+     }
+
      // Return true if any imbalance was detected
      return volumeImbalance || priceLevelImbalance || liquidityFlowImbalance || abnormalSpread;
  }
@@ -577,8 +588,8 @@
      // Add to the list of detected imbalances
      detectedImbalances_.push_back(event);
      
-     // Notify callbacks
-     notifyImbalanceCallbacks(event);
+     // Called with mutex_ held (from analyzeMetrics); callbacks run after it is released
+     pendingNotifications_.push_back(event);
  }
  
  // Notify all registered callbacks about a new imbalance event

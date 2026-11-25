@@ -65,6 +65,7 @@ struct OrderBookUpdate {
     int64_t exchange_timestamp;
     int64_t receivedTimestamp;
     int64_t sequence_number;
+    int64_t first_sequence_number = 0;  // first update id in a range-sequenced event (Binance "U")
     bool is_snapshot;
     std::vector<PriceLevel> bids;
     std::vector<PriceLevel> asks;

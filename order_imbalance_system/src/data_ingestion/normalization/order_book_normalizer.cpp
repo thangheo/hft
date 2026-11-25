@@ -21,7 +21,8 @@ OrderBookNormalizer::~OrderBookNormalizer() = default;
 
 void OrderBookNormalizer::initAdapters() {
     // Add exchange-specific adapters
-    exchange_adapters_["binance"] = std::make_shared<BinanceAdapter>();
+    // Key must match the lookup in processMarketData (ExchangeId::toString() is "BINANCE")
+    exchange_adapters_[ExchangeId::binance().toString()] = std::make_shared<BinanceAdapter>();
     // Add other exchanges as needed
 }
 // Add to order_book_normalizer.cpp 
@@ -89,6 +90,7 @@ void OrderBookNormalizer::processMarketData(const MarketDataUpdate& update) {
             order_book->applyUpdate(
                 normalized.bids, 
                 normalized.asks, 
+                normalized.first_sequence_number,
                 normalized.sequence_number, 
                 std::chrono::system_clock::time_point(std::chrono::nanoseconds(normalized.exchange_timestamp))
             );
@@ -209,6 +211,11 @@ OrderBookUpdate BinanceAdapter::normalize(const MarketDataUpdate& update) const 
             result.sequence_number = data["lastUpdateId"].get<int64_t>();
         } else {
             result.sequence_number = data["u"].get<int64_t>();
+            result.first_sequence_number = data["U"].get<int64_t>();
+            // Binance event time is in milliseconds
+            if (data.contains("E")) {
+                result.exchange_timestamp = data["E"].get<int64_t>() * 1'000'000;
+            }
         }
         
         // Parse bids

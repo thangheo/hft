@@ -51,6 +51,7 @@ OrderBookAnalyzer::OrderBookAnalyzer(const OrderBookAnalyzerConfig& config)
     : OrderBookAnalyzer(core::ExchangeId::unknown(), "", config.depth, 0.0001) {}
 
  void OrderBookAnalyzer::processOrderBook(const data_ingestion::OrderBook& snapshot) {
+   {
      std::lock_guard<std::mutex> lock(mutex_);
      
      // Get bids and asks limited to our depth level
@@ -93,8 +94,9 @@ OrderBookAnalyzer::OrderBookAnalyzer(const OrderBookAnalyzerConfig& config)
      
      // Update timestamps
      last_update_time_ = snapshot.getTimestamp();
-     
-     // Notify callbacks
+   }
+
+     // Notify outside the lock: notifyMetricsUpdated() takes mutex_ itself
      notifyMetricsUpdated();
  }
  

@@ -61,6 +61,9 @@ public:
     bool unsubscribeFromStreams(const std::vector<std::string>& streams);
     std::vector<std::string> getSubscribedStreams() const;
 
+    // Feed a raw frame through the normal message path (used for deterministic replay)
+    void injectMessage(const std::string& message) { onWebSocketMessage(message); }
+
 private:
     // Connection details
     std::string host_;

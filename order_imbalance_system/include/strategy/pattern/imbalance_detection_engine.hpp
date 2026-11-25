@@ -128,6 +128,7 @@ private:
     
     // Detection state
     std::vector<ImbalanceEvent> detectedImbalances_;
+    std::vector<ImbalanceEvent> pendingNotifications_;  // events to notify once mutex_ is released
     std::map<ImbalanceType, bool> imbalanceState_;
     std::map<std::string, double> metricHistory_;
     

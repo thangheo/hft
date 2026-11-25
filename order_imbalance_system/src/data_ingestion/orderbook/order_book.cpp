@@ -80,60 +80,54 @@ bool OrderBook::applySnapshot(const std::vector<PriceLevel>& bids,
                             const std::vector<PriceLevel>& asks,
                             uint64_t sequence_number,
                             Timestamp timestamp) {
-    // Skip older snapshots
-    if (sequence_number <= sequence_number_) {
-        return false;
+    OrderBookDelta delta;
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+
+        // Skip older snapshots
+        if (is_valid_ && sequence_number <= sequence_number_) {
+            return false;
+        }
+
+        captureOrderBookState();
+
+        delta = OrderBookDelta{
+            .exchangeId = exchangeId_,
+            .tradingPair = symbol_.toString(),
+            .timestamp = timestamp,
+            .sequence_number = sequence_number
+        };
+
+        // Clear existing book
+        for (const auto& [price, level] : bids_) {
+            delta.removed_bids.push_back(level);
+        }
+        for (const auto& [price, level] : asks_) {
+            delta.removed_asks.push_back(level);
+        }
+        bids_.clear();
+        asks_.clear();
+
+        for (const auto& bid : bids) {
+            updateBidLevel(bid);
+            delta.added_bids.push_back(bid);
+        }
+        for (const auto& ask : asks) {
+            updateAskLevel(ask);
+            delta.added_asks.push_back(ask);
+        }
+
+        sequence_number_ = sequence_number;
+        timestamp_ = timestamp;
+        is_valid_ = true;
+
+        storeDelta(delta);
     }
-    
-    std::lock_guard<std::mutex> lock(mutex_);
-    
-    // Store the current state for delta calculation
-    captureOrderBookState();
-    
-    // Initialize a delta for this snapshot
-    OrderBookDelta delta{
-        .exchangeId = exchangeId_,
-        .tradingPair = symbol_.toString(),
-        .timestamp = timestamp,
-        .sequence_number = sequence_number
-    };
-    
-    // Clear existing book
-    for (const auto& [price, level] : bids_) {
-        delta.removed_bids.push_back(level);
-    }
-    
-    for (const auto& [price, level] : asks_) {
-        delta.removed_asks.push_back(level);
-    }
-    
-    bids_.clear();
-    asks_.clear();
-    
-    // Add all bid levels
-    for (const auto& bid : bids) {
-        updateBidLevel(bid);
-        delta.added_bids.push_back(bid);
-    }
-    
-    // Add all ask levels
-    for (const auto& ask : asks) {
-        updateAskLevel(ask);
-        delta.added_asks.push_back(ask);
-    }
-    
-    // Update metadata
-    sequence_number_ = sequence_number;
-    timestamp_ = timestamp;
-    is_valid_ = true;
-    
-    // Store this delta
-    storeDelta(delta);
-    
-    // Notify subscribers
+
+    // Notify outside the lock: callbacks may call back into this book (e.g. getSnapshot()).
     notifyCallback();
     notifyDeltaCallback(delta);
-    
+
     return true;
 }
 
@@ -141,61 +135,71 @@ bool OrderBook::applyUpdate(const std::vector<PriceLevel>& bids,
                           const std::vector<PriceLevel>& asks,
                           uint64_t sequence_number,
                           Timestamp timestamp) {
-    // Skip out-of-sequence updates
-    if (sequence_number <= sequence_number_) {
-        return false;
+    return applyUpdate(bids, asks, sequence_number, sequence_number, timestamp);
+}
+
+bool OrderBook::applyUpdate(const std::vector<PriceLevel>& bids,
+                          const std::vector<PriceLevel>& asks,
+                          uint64_t first_sequence_number,
+                          uint64_t last_sequence_number,
+                          Timestamp timestamp) {
+    OrderBookDelta delta;
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+
+        // Updates are only meaningful on top of a snapshot
+        if (!is_valid_) {
+            return false;
+        }
+
+        // Stale or duplicate event
+        if (last_sequence_number <= sequence_number_) {
+            return false;
+        }
+
+        // Gap: we missed events, the book can no longer be trusted
+        if (first_sequence_number > sequence_number_ + 1) {
+            is_valid_ = false;
+            std::cerr << "Sequence gap detected for "
+                      << exchangeId_.toString() << " "
+                      << symbol_.base << "/" << symbol_.quote
+                      << " (" << sequence_number_
+                      << " -> " << first_sequence_number << ")" << std::endl;
+            return false;
+        }
+
+        captureOrderBookState();
+
+        delta = OrderBookDelta{
+            .exchangeId = exchangeId_,
+            .tradingPair = symbol_.toString(),
+            .timestamp = timestamp,
+            .sequence_number = last_sequence_number
+        };
+
+        for (const auto& bid : bids) {
+            trackBidDelta(bid, delta);
+            updateBidLevel(bid);
+        }
+        for (const auto& ask : asks) {
+            trackAskDelta(ask, delta);
+            updateAskLevel(ask);
+        }
+
+        sequence_number_ = last_sequence_number;
+        timestamp_ = timestamp;
+
+        if (!delta.isEmpty()) {
+            storeDelta(delta);
+        }
     }
-    
-    // Detect sequence gaps
-    if (is_valid_ && sequence_number > sequence_number_ + 1) {
-        // We missed some updates, invalidate the book
-        is_valid_ = false;
-        std::cerr << "Sequence gap detected for "
-                  << exchangeId_.toString() << " "
-                  << symbol_.base << "/" << symbol_.quote
-                  << " (" << sequence_number_
-                  << " -> " << sequence_number << ")" << std::endl;
-        return false;
-    }
-    
-    std::lock_guard<std::mutex> lock(mutex_);
-    
-    // Store the current state for delta calculation
-    captureOrderBookState();
-    
-    // Initialize a delta for this update
-    OrderBookDelta delta{
-        .exchangeId = exchangeId_,
-        .tradingPair = symbol_.toString(),
-        .timestamp = timestamp,
-        .sequence_number = sequence_number
-    };
-    
-    // Apply bid updates and track deltas
-    for (const auto& bid : bids) {
-        trackBidDelta(bid, delta);
-        updateBidLevel(bid);
-    }
-    
-    // Apply ask updates and track deltas
-    for (const auto& ask : asks) {
-        trackAskDelta(ask, delta);
-        updateAskLevel(ask);
-    }
-    
-    // Update metadata
-    sequence_number_ = sequence_number;
-    timestamp_ = timestamp;
-    
-    // Store this delta if it's not empty
+
+    // Notify outside the lock: callbacks may call back into this book (e.g. getSnapshot()).
     if (!delta.isEmpty()) {
-        storeDelta(delta);
         notifyDeltaCallback(delta);
     }
-    
-    // Notify subscribers
     notifyCallback();
-    
+
     return true;
 }
 

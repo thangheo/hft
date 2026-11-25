@@ -28,6 +28,15 @@ public:
     OrderBookUpdate getOrderBook(const ExchangeId exchangeId,
                                const std::string& tradingPair,
                                int32_t depth = 10) const;
+
+    // Look up an existing order book (nullptr if none); the pointer stays valid
+    // for the lifetime of the normalizer
+    std::shared_ptr<OrderBook> findOrderBook(const ExchangeId& exchangeId,
+                                             const std::string& tradingPair) const {
+        std::lock_guard<std::mutex> lock(mutex_);
+        auto it = order_books_.find(createOrderBookKey(exchangeId, tradingPair));
+        return it == order_books_.end() ? nullptr : it->second;
+    }
     
 private:
     NormalizedOrderBookCallback callback_;

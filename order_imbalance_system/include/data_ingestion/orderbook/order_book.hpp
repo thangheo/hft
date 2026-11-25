@@ -81,6 +81,15 @@ public:
                     const std::vector<PriceLevel>& asks,
                     uint64_t sequence_number,
                     Timestamp timestamp);
+
+    // Range-sequenced update (e.g. Binance diff depth: U = first, u = last update id).
+    // Requires a prior snapshot. Stale events (last <= current) are dropped; a gap
+    // (first > current + 1) invalidates the book until the next snapshot.
+    bool applyUpdate(const std::vector<PriceLevel>& bids,
+                    const std::vector<PriceLevel>& asks,
+                    uint64_t first_sequence_number,
+                    uint64_t last_sequence_number,
+                    Timestamp timestamp);
     
     // Snapshot and delta methods
     OrderBookUpdate getSnapshot(int depth = 0) const;
